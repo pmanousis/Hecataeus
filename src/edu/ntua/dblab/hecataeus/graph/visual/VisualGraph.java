@@ -5,19 +5,12 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 
 //import edu.uci.ics.jung.graph.Vertex;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -339,7 +332,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 				}
 			}
 
-			return new Dimension((int)(maxX-minX),(int)(maxY-minY));
+			/*return new Dimension((int)(maxX-minX),(int)(maxY-minY));*/
 		}
 		//else return default
 		return new Dimension(1200, 800);
@@ -386,6 +379,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		String nKey = null;
 		String nName = null;
 		String nType = null;
+		int nID=0;
 		String eKey = null;
 		String eName = null;
 		String eType = null;
@@ -435,6 +429,12 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	
 	                NodeList textTypeList = TypeElement.getChildNodes();
 	                nType = ((Node)textTypeList.item(0)).getNodeValue();
+/** @author pmanousi ID NOW NOT NEEDED (TopologicalTravel) */
+//NodeList IDList = firstNodeElement.getElementsByTagName("ID");
+//Element IDElement = (Element)IDList.item(0);
+
+//NodeList textIDList = IDElement.getChildNodes();
+//nID = Integer.parseInt(((Node)textIDList.item(0)).getNodeValue());
 
 	                //----                    
 	                NodeList SQLDefinitionList = firstNodeElement.getElementsByTagName("SQLDefinition");
@@ -444,7 +444,8 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	                	nSQLDefinition = ((Node)textSQLDefinitionList.item(0)).getNodeValue();
 	                }else
 	                	nSQLDefinition="";
-	                
+
+
 					// add node
 					VisualNode v = new VisualNode();
 					v.setName(nName);
@@ -455,7 +456,8 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					this.addVertex(v);
 					//shift node key by current key
 					this.setKey(v,currentKey+new Integer(nKey));
-					
+					v.ID=nID;
+
 					
 					
 	            }//end of if clause
@@ -516,7 +518,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	
 	        }//end of for loop for edges
 	        
-	        // find the policies (if any exists) for nodes
+/*	        // find the policies (if any exists) for nodes
 	        NodeList listOfPolicies = doc.getElementsByTagName("HPolicies");
 	        Element PoliciesElement = (Element)listOfPolicies.item(0);
 	    	
@@ -613,7 +615,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
             		}
             	}//end of for loop for events
             }//end of if events exist
-            
+*/
             //get the last element - graph keygenerator
             NodeList keyGen = doc.getElementsByTagName("HKeyGen");
             Element keyGenElement = (Element)keyGen.item(0);
@@ -657,31 +659,13 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	}
 	
 	public VisualGraph toGraph(List<VisualNode> nodes){
-		VisualGraph subGraph = super.toGraph(nodes);
+		VisualGraph subGraph = super.toGraphE(nodes);
 		for (VisualNode v : nodes)
 			subGraph.setLocation(v, this.getLocation(v)); 
 		return subGraph;
 	}
 	
-	public void exportPoliciesToFile(File file) {
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(file));
-			for (VisualNode v : this.getVertices()){
-				for (EvolutionPolicy<VisualNode> p : v.getPolicies()) {
-					out.write(v + ": " + p.toString() + ";");
-					out.newLine();
-				}	
-			}
-			out.close();
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
-	}
+	
 	public void exportToXML(File file) {
 		
 		
@@ -715,6 +699,10 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					Element elementType = document.createElement("Type");
 					elementType.appendChild(document.createTextNode(v.getType().toString()));
 					elementHnode.appendChild(elementType);
+/** @author pmanousi write element key NOW IT IS NOT NEEDED (TopologicalTravel). */
+//Element elementID = document.createElement("ID");
+//elementID.appendChild(document.createTextNode(String.valueOf(v.ID)));
+//elementHnode.appendChild(elementID);
 					// write element SQL Definition
 					if (!v.getSQLDefinition().isEmpty())
 					{
@@ -722,7 +710,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 						elementSQLDefinition.appendChild(document.createTextNode(v.getSQLDefinition()));
 						elementHnode.appendChild(elementSQLDefinition);
 					}
-					
 				}
 				rootElement.appendChild(elementHnodes);
 				
@@ -756,7 +743,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 				rootElement.appendChild(elementHedges);
 				
 				
-				// write policies
+/*				// write policies
 				Element elementHPolicies = document.createElement("HPolicies");
 				// write events
 				Element elementHEvents = document.createElement("HEvents");
@@ -809,7 +796,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 				rootElement.appendChild(elementHPolicies);
 				rootElement.appendChild(elementHEvents);
 			
-	
+	*/
 				//
 				Element elementHKeyGen = document.createElement("HKeyGen");
 				elementHKeyGen.appendChild(document.createTextNode((new Integer(this.getKeyGenerator()).toString())));

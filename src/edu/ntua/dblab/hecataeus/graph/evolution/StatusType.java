@@ -11,7 +11,7 @@ package edu.ntua.dblab.hecataeus.graph.evolution;
  */
 public enum StatusType {
 	NO_STATUS,
-	TO_ADD_CHILD,
+	/*TO_ADD_CHILD,
 	TO_DELETE,
 	TO_DELETE_CHILD,
 	TO_MODIFY,
@@ -19,7 +19,9 @@ public enum StatusType {
 	TO_MODIFY_PROVIDER,
 	TO_RENAME,
 	TO_RENAME_CHILD,
-	TO_RENAME_PROVIDER,
+	TO_RENAME_PROVIDER,*/
+	UNAFFECTED,
+	PROPAGATE,
 	BLOCKED,
 	PROMPT;     
 	

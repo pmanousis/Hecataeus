@@ -5,6 +5,7 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
@@ -23,7 +24,8 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
 	//the corresponding EvolutionNode object
-	//private EvolutionNode hecataeusEvolutionNode = null;
+//	private EvolutionNode hecataeusEvolutionNode = null;
+	
 	
 	public VisualNode(){
 		super();
@@ -36,6 +38,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
 	}
+	
 	
 	
 //	public void setLocation(Point2D location){
@@ -97,7 +100,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setEvents(this.getEvents());
 		node.setPolicies(this.getPolicies());
 		node.setVisible(this.getVisible());
-		node.setStatus(this.getStatus());
+		node.setStatus(this.getStatus(),true);
 		return node;
 	}
 	

@@ -30,8 +30,8 @@ public class EvolutionPolicy<V extends EvolutionNode> {
 		// just create the policy and set afterwards its properties
 	}
 
-	public EvolutionPolicy(EventType eventType, V eventNode, PolicyType policyType) {
-		EvolutionEvent<V> event = new EvolutionEvent<V>(eventNode, eventType);
+	public EvolutionPolicy(EventType eventType/*, V eventNode*/, PolicyType policyType) {
+		EvolutionEvent<V> event = new EvolutionEvent<V>(/*eventNode,*/ eventType);
 		this._sourceEvent = event;
 		this._policyType = policyType;
 	}
@@ -66,6 +66,6 @@ public class EvolutionPolicy<V extends EvolutionNode> {
 	}
 	
 	public String toString() {
-		return "On "+this._sourceEvent.getEventType()+" To "+this._sourceEvent.getEventNode()+" Then "+this._policyType;
+		return "On "+this._sourceEvent.getEventType()/*+" To "+this._sourceEvent.getEventNode()*/+" Then "+this._policyType;
 	}
 }

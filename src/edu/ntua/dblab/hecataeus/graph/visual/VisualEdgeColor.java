@@ -34,7 +34,7 @@ public final class VisualEdgeColor implements Transformer<VisualEdge, Paint>
         {
         	StatusType status = (e.getStatus());
         	
-        	if (status==StatusType.TO_DELETE)
+        	if (status==StatusType.PROPAGATE)
         		return Color.RED;
         	else if (status==StatusType.NO_STATUS)
         		return Color.WHITE;

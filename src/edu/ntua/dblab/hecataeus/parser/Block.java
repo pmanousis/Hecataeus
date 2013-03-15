@@ -284,8 +284,9 @@ public abstract class Block{
 		sentence=sentence.replaceAll("\\bLOOP\\b","");
 		sentence=sentence.replaceAll("\\bDECLARE\\b","");
 		sentence=sentence.replaceAll("\\bEXCEPTION\\b","");
-		sentence=sentence.replaceAll("RETURN(\\s)+(.|\n)*AS(\\s|\n)+","");
-		sentence=sentence.replaceAll("RETURN(\\s)+(.|\n)*IS(\\s|\n)+","");
+/**@author pmanousi added (\\s|\n)+ before RETURN */
+		sentence=sentence.replaceAll("(\\s|\n)+RETURN(\\s)+(.|\n)*AS(\\s|\n)+","");
+		sentence=sentence.replaceAll("(\\s|\n)+RETURN(\\s)+(.|\n)*IS(\\s|\n)+","");
 		
 		if (sentence.matches("(\\s|\n)*SELECT(\\s|\n)+(.|\n)*INTO(\\s|\n)+(.|\n)*")){
 			isSelectInto=true;

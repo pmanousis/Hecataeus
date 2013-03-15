@@ -3,7 +3,9 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
@@ -14,9 +16,11 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	
 	public enum Orientation{
 		RIGHT2LEFT,
-		BOTTOMUP,
+		DOWN2TOP,
 		LEFT2RIGHT,
-		UPBOTTOM;
+		TOP2DOWN,
+		INVERSELEFT2RIGHT
+		;
 	}
 	
 	private Point2D.Double OFFSET = new Point2D.Double();
@@ -67,13 +71,16 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	case RIGHT2LEFT:
     		initializeRight2Left();
     		break;
-    	case BOTTOMUP:
+    	case DOWN2TOP:
     		initializeBottomUp();
     		break;
     	case LEFT2RIGHT:
     		initializeLeft2Right();
     		break;
-    	case UPBOTTOM:
+    	case INVERSELEFT2RIGHT:
+    		initializeInverseLeft2Right();
+    		break;
+    	case TOP2DOWN:
     		initializeUpBottom();
     		break;
     	default:
@@ -98,7 +105,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	/***
 	 * initialize the locations of nodes 
 	 * according to the topological sort layout, 
-	 * starting from the right side towards the left side of the screen  
+	 * starting from the right side towards the left side of the screen
+	 * First, nodes with <b>no outgoing</b> edges are placed at the right side 
+	 * Then all nodes connected via an <b>outgoing edge</b> with placed nodes  are placed at the left 
 	 */
 	private void initializeRight2Left(){
 		/*
@@ -114,15 +123,19 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		 */
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		
-		// creates a clone of the graph 
-		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
-
-		while (topLevelGraph.getVertices().size()>0) {
-			//hold the current group
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+			
+		while (nodes.size()>0) {
+			//hold the current group of nodes for the layout
 			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
 			//create each group from all vertices with no outgoing edges
-			for (VisualNode v: topLevelGraph.getVertices()) {
-				if (topLevelGraph.getOutEdges(v).size()==0) {
+			for (VisualNode v: nodes) {
+				if (outEdges.get(v).size()==0) {
 					visualizedGroup.add(v);
 				}
 			}
@@ -135,12 +148,12 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				// set the location of the current vertex
 				super.setLocation(v,location);
 				// remove in edges
-				for(VisualEdge e: topLevelGraph.getInEdges(v)){
-					topLevelGraph.removeEdge(e);
+				for(VisualEdge e: this.graph.getInEdges(v)){
+					outEdges.get(e.getFromNode()).remove(e);
 				}
 				//remove each visualized node
-				topLevelGraph.removeVertex(v);
 				visualizedGroup.remove(v);
+				nodes.remove(v);
 				
 	    		//set the location of the next vertex in the group that is visualized
 				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
@@ -151,36 +164,102 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	}	
 	
 	/***
-	 * initialize the locations of nodes 
-	 * according to the topological sort layout, 
-	 * starting from the left side towards the right side of the screen  
+	 * initialize the locations of nodes according to the topological sort layout, 
+	 * starting from the left side towards the right side of the screen
+	 * First, nodes with <b>no incoming</b> edges are placed at the left side 
+	 * Then all nodes connected via an <b>outgoing edge</b> with placed nodes are placed at the right 
 	 */
-	private void initializeLeft2Right(){
+	private void initializeInverseLeft2Right(){
 		/*
 		 * @param initialPosition = the start location of the graph
 		 */
 		if (initialPosition  == null)
 			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
 		
 		/*
 		 * @param location = the current location of the graph
 		 */
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		
-		// creates a clone of the graph 
-		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
-
-		while (topLevelGraph.getVertices().size()>0) {
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the inEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> inEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			inEdges.put(v, new ArrayList<VisualEdge>(this.graph.getInEdges(v)));
+			
+		while (nodes.size()>0) {
 			//hold the current group
 			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
 			//create each group from all vertices with no outgoing edges
-			for (VisualNode v: topLevelGraph.getVertices()) {
-				if (topLevelGraph.getOutEdges(v).size()==0) {
+			for (VisualNode v: nodes) {
+				if (inEdges.get(v).size()==0) {
 					visualizedGroup.add(v);
 				}
 			}
 			//Initialize the offset according to the number of vertices in current group
-			OFFSET.setLocation(new Point2D.Double(-this.getSize().width/2,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
+			//visualize the current group
+			while (!visualizedGroup.isEmpty()) {
+				//get each vertex in group
+				VisualNode v = visualizedGroup.get(0);
+				// set the location of the current vertex
+				super.setLocation(v,location);
+				// remove out edges
+				for(VisualEdge e: this.graph.getOutEdges(v)){
+					inEdges.get(e.getToNode()).remove(e);
+				}
+				//remove each visualized node
+				visualizedGroup.remove(v);
+				nodes.remove(v);
+								
+	    		//set the location of the next vertex in the group that is visualized
+				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
+			}
+			//set the location of the next group that is visualized
+			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
+		}
+	}	
+	/***
+	 * initialize the locations of nodes according to the topological sort layout, 
+	 * starting from the left side towards the right side of the screen
+	 * First, nodes with <b>no outgoing</b> edges are placed at the left side 
+	 * Then all nodes connected via an <b>outgoing edge</b> with placed nodes are placed at the right 
+	 */
+	private void initializeLeft2Right(){
+		/*
+		 * @param initialPosition = the start location of the graph
+		 */
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(0,0);
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+			
+		while (nodes.size()>0) {
+			//hold the current group
+			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: nodes) {
+				if (outEdges.get(v).size()==0) {
+					visualizedGroup.add(v);
+				}
+			}
+			//Initialize the offset according to the number of vertices in current group
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
 			//visualize the current group
 			while (!visualizedGroup.isEmpty()) {
 				//get each vertex in group
@@ -188,12 +267,12 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				// set the location of the current vertex
 				super.setLocation(v,location);
 				// remove in edges
-				for(VisualEdge e: topLevelGraph.getInEdges(v)){
-					topLevelGraph.removeEdge(e);
+				for(VisualEdge e: this.graph.getInEdges(v)){
+					outEdges.get(e.getFromNode()).remove(e);
 				}
 				//remove each visualized node
-				topLevelGraph.removeVertex(v);
 				visualizedGroup.remove(v);
+				nodes.remove(v);
 				
 	    		//set the location of the next vertex in the group that is visualized
 				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
@@ -224,15 +303,20 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		 */
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		
-		// creates a clone of the graph 
-		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
-		
-		while (topLevelGraph.getVertices().size()>0) {
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+			
+		while (nodes.size()>0) {
 			//hold the current group
 			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
 			//create each group from all vertices with no outgoing edges
-			for (VisualNode v: topLevelGraph.getVertices()) {
-				if (topLevelGraph.getOutEdges(v).size()==0) {
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: nodes) {
+				if (outEdges.get(v).size()==0) {
 					visualizedGroup.add(v);
 				}
 			}
@@ -243,12 +327,12 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				//get each vertex in group
 				VisualNode v = visualizedGroup.get(0);
 				// remove in edges
-				for(VisualEdge e: topLevelGraph.getInEdges(v)){
-					topLevelGraph.removeEdge(e);
+				for(VisualEdge e: this.graph.getInEdges(v)){
+					outEdges.get(e.getFromNode()).remove(e);
 				}
 				//remove each visualized node
-				topLevelGraph.removeVertex(v);
 				visualizedGroup.remove(v);
+				nodes.remove(v);
 				
 				// set the location of the current vertex
 				super.setLocation(v,location);
@@ -270,7 +354,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		 * @param initialPosition = the start location of the graph
 		 */
 		if (initialPosition  == null)
-			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
 		else
 			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
 		
@@ -279,31 +363,36 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		 */
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		
-		// creates a clone of the graph 
-		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
-		
-		while (topLevelGraph.getVertices().size()>0) {
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+			
+		while (nodes.size()>0) {
 			//hold the current group
 			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
 			//create each group from all vertices with no outgoing edges
-			for (VisualNode v: topLevelGraph.getVertices()) {
-				if (topLevelGraph.getOutEdges(v).size()==0) {
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: nodes) {
+				if (outEdges.get(v).size()==0) {
 					visualizedGroup.add(v);
 				}
 			}
 			//Initialize the offset according to the number of vertices in current group
-			OFFSET.setLocation(new Point2D.Double(-Math.max(this.getSize().width/visualizedGroup.size(),60),-this.getSize().height/2));
+			OFFSET.setLocation(new Point2D.Double(-Math.max(this.getSize().width/visualizedGroup.size(),60),this.getSize().height/2));
 			//visualize the current group
 			while (!visualizedGroup.isEmpty()) {
 				//get each vertex in group
 				VisualNode v = visualizedGroup.get(0);
 				// remove in edges
-				for(VisualEdge e: topLevelGraph.getInEdges(v)){
-					topLevelGraph.removeEdge(e);
+				for(VisualEdge e: this.graph.getInEdges(v)){
+					outEdges.get(e.getFromNode()).remove(e);
 				}
 				//remove each visualized node
-				topLevelGraph.removeVertex(v);
 				visualizedGroup.remove(v);
+				nodes.remove(v);
 				
 				// set the location of the current vertex
 				super.setLocation(v,location);
@@ -331,15 +420,20 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		 */
 		Point2D location = new Point2D.Double(initialLocation.getX(), initialLocation.getY());
 		
-		// creates a clone of the graph 
-		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
-		
-		while (topLevelGraph.getVertices().size()>0) {
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+			
+		while (nodes.size()>0) {
 			//hold the current group
 			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
 			//create each group from all vertices with no outgoing edges
-			for (VisualNode v: topLevelGraph.getVertices()) {
-				if (topLevelGraph.getOutEdges(v).size()==0) {
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: nodes) {
+				if (outEdges.get(v).size()==0) {
 					visualizedGroup.add(v);
 				}
 			}
@@ -350,12 +444,12 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				//get each vertex in group
 				VisualNode v = visualizedGroup.get(0);
 				// remove in edges
-				for(VisualEdge e: topLevelGraph.getInEdges(v)){
-					topLevelGraph.removeEdge(e);
+				for(VisualEdge e: this.graph.getInEdges(v)){
+					outEdges.get(e.getFromNode()).remove(e);
 				}
 				//remove each visualized node
-				topLevelGraph.removeVertex(v);
 				visualizedGroup.remove(v);
+				nodes.remove(v);
 				
 				// set the location of the current vertex
 				super.setLocation(v,location);

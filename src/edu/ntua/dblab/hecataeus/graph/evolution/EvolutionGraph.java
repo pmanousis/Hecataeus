@@ -4,17 +4,37 @@
  */
 package edu.ntua.dblab.hecataeus.graph.evolution;
 
+import java.awt.TrayIcon.MessageType;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.PriorityQueue;
 
-import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
+import javax.print.attribute.standard.NumberOfInterveningJobs;
+import javax.swing.JPanel;
+
+import javax.swing.JOptionPane;
+
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.Message;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.MessageCompare;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleNode;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestro;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestroRewrite;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
-
-import sun.misc.Queue;
 
 public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> extends DirectedSparseGraph<V, E>{
 
@@ -142,7 +162,52 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		
 		return null;
 	}
-
+	
+/**
+ *  get node by its name, after finding his parent
+ *  OTHERWISE return node
+ **/
+public V findVertexByNameParent(String name) {
+	String parent="";
+	String node="";
+	if(name.contains("."))
+	{
+		parent=name.substring(0, name.indexOf("."));
+		node=name.substring(name.indexOf(".")+1);
+		for (V u: this.getVertices()) {
+			if (u.getName().toUpperCase().equals(parent.toUpperCase())) {
+				for(int i=0;i<u.getOutEdges().size();i++)
+				{
+					if(u.getOutEdges().get(i).getToNode().getName().equals(node.toUpperCase()))
+					{
+						return (V) (u.getOutEdges().get(i).getToNode());
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		return(findVertexByName(name));
+	}
+	return null;
+}
+	
+	/**
+	 * @author pmanousi
+	 * @param iD the number of id we are searching for
+	 * @return node with ID=id
+	 */
+	public V findVertexById(double iD)
+	{
+		for (V u: this.getVertices(NodeCategory.MODULE)) {
+			if (u.ID==iD)
+			{
+				return u;
+			}
+		}
+		return null;
+	}
 	
 	/**
 	 * get edge by key
@@ -188,7 +253,11 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	public V getAttributeNode(String TableName, String AttributeName) {
 		for (V u: this.getVertices()) {
 			if (u.getName().toUpperCase().equals(TableName)
-					&&(u.getType().getCategory() == NodeCategory.MODULE)){
+/**
+ * @author pmanousi
+ * Changed it to work with INOUTSCHEMA
+ */
+&&((u.getType().getCategory() == NodeCategory.INOUTSCHEMA)||(u.getType().getCategory() == NodeCategory.MODULE))){
 				for (E e :  this.getOutEdges(u)) {
 					if ( this.getDest(e).getName().toUpperCase().equals(AttributeName.toUpperCase()) ) {
 						return this.getDest(e);
@@ -303,418 +372,298 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 **/
 	public void initializeChange(EvolutionEvent<V> event){
 
-		SIDGenerator = SIDGenerator + 1;
-		int SID = SIDGenerator;
-		PolicyType Default_System_Policy = PolicyType.PROPAGATE;
-		Queue queue = new Queue();
-		EvolutionMessage firstMessage = new EvolutionMessage(SID,null,event.getEventNode(),event,null,Default_System_Policy);
-		queue.enqueue(firstMessage);
-		System.out.println("in initializeChange Before call propagateChanges");
-		List<V> nodesVisited = new ArrayList<V>();
-		propagateChanges(queue, nodesVisited);
+for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
+{	// Clear statuses of nodes.
+	entry.getKey().setStatus(StatusType.NO_STATUS,true);
+}
+for(Entry<E, Pair<V>> entry : this.edges.entrySet())
+{	// Clear statuses of edges.
+	entry.getKey().setStatus(StatusType.NO_STATUS,true);
+}
 
+V node= event.getEventNode();
+V toNode = null;
+V toSchema = null;
+String parameter="";
+switch(node.getType())
+{
+case NODE_TYPE_RELATION:
+case NODE_TYPE_QUERY:
+case NODE_TYPE_VIEW:
+	toNode=node;
+	for(int i=0;i<node.getOutEdges().size();i++)
+	{
+		toSchema= (V) node.getOutEdges().get(i).getToNode();
+		if(toSchema.getType()==NodeType.NODE_TYPE_OUTPUT)
+		{
+			parameter=node.getName();
+			break;
+		}
+	}
+	break;
+
+case NODE_TYPE_OUTPUT:
+case NODE_TYPE_SEMANTICS:
+	toSchema=node;
+	for(int i=0;i<node.getInEdges().size();i++)
+	{
+		if(node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_OUTPUT||node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
+		{
+			toNode=(V) node.getInEdges().get(i).getFromNode();
+			break;
+		}
+		parameter=node.getName();
+		if(event.getEventType()==EventType.ADD_ATTRIBUTE)
+		{
+			parameter="";
+		}
+		
+	}
+	break;
+
+default:
+	for(int i=0;i<node.getInEdges().size();i++)
+	{
+		if(node.getInEdges().get(i).getFromNode().getType()==NodeType.NODE_TYPE_OUTPUT)
+		{
+			toSchema=(V) node.getInEdges().get(i).getFromNode();
+			for(int j=0;j<toSchema.getInEdges().size();j++)
+			{
+				if(toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_RELATION||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_QUERY||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_VIEW)
+				{
+					toNode=(V) toSchema.getInEdges().get(j).getFromNode();
+				}
+			}
+			parameter=node.getName();
+			if(event.getEventType()==EventType.DELETE_SELF)
+			{
+				event.setEventType(EventType.DELETE_ATTRIBUTE);
+			}
+			else if(event.getEventType()==EventType.RENAME_SELF)
+			{
+				event.setEventType(EventType.RENAME_ATTRIBUTE);
+			}
+			break;
+		}
+	}
+	if(toSchema==null)
+	{
+		while(toNode==null)
+		{
+			toSchema=(V) node.getInEdges().get(0).getFromNode();
+			if(toSchema.getType()==NodeType.NODE_TYPE_SEMANTICS)
+			{
+				event.setEventType(EventType.ALTER_SEMANTICS);
+				toNode=(V) toSchema.getInEdges().get(0).getFromNode();
+			}
+		}
+	}
+	break;
+}
+Message<V,E> firstMessage=new Message<V,E>(toNode,toSchema,event.getEventType(),parameter);
+propagateChanges(firstMessage);
 	}
 
-//	/**
-//	 *  determines the status given that prevailing policy is propagate 
-//	 *  and the raised event of a node according to
-//	 *  1. the type of event
-//	 *  2. the scope of event (self, child, provider)
-//	 *  3. the type of node
-//	 **/
-//	private void determineStatus(EvolutionMessage message) {
-//		int SID = message.get_SID();
-//		EvolutionNode ns = message.getNodeSender();
-//		EvolutionNode nr = message.getNodeReceiver();
-//		EvolutionEvent event = message.getEvent();
-//		EvolutionEdge edge = message.getEdge();
-//		PolicyType policyType = message.getPolicyType();
-//		
-//		//initialize the event of the next message as the old event
-//		EventType newEventType = event.getEventType();
-//		/*
-//		 * the determination of status is according to the following order
-//		 * --Examine each event Type
-//		 * 		--Examine each node Type
-//		 *  		--Examine the scope of event
-//		 */
-//		
-//		//examine each possible event type
-//		switch (event.getEventType()) {
-//		
-//		//case addition 
-//		case ADD_RELATION: //none affected
-//			break;
-//		case ADD_VIEW: //none affected
-//			break;
-//		case ADD_QUERY: //none affected
-//			break;
-//		case ADD_ATTRIBUTE:
-//			//examine the type of node affected by the event 
-//			switch (nr.getType()) {
-//			case NODE_TYPE_RELATION:
-//				 //add attribute always comes from null edge
-//				nr.setStatus(StatusType.TO_ADD_CHILD);
-//				newEventType = EventType.ADD_ATTRIBUTE;
-//				break;
-//			case NODE_TYPE_VIEW:
-//				 //both from provider or self the reaction is the same
-//				nr.setStatus(StatusType.TO_ADD_CHILD);
-//				newEventType = EventType.ADD_ATTRIBUTE;
-//				break;
-//			case NODE_TYPE_QUERY:
-//				 //both from provider or self the reaction is the same
-//				nr.setStatus(StatusType.TO_ADD_CHILD);
-//				newEventType = EventType.ADD_ATTRIBUTE;
-//				break;
-//			case NODE_TYPE_OPERAND:
-//				 //the add attribute came from a subquery
-//				nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-//				newEventType = EventType.MODIFY_CONDITION;
-//				break;
-//			default: 
-//				throw new HecataeusException("Unhandled Error Occured- Event: " + event.getEventType());
-//				break;
-//			}
-//			break;
-//		case ADD_CONDITION:
-//			//examine the type of node affected by the event 
-//			switch (nr.getType()) {
-//			case NODE_TYPE_RELATION:
-//				 //add condition comes from child edge
-//				nr.setStatus(StatusType.TO_ADD_CHILD);
-//				newEventType = EventType.ADD_CONDITION;
-//				break;
-//			case NODE_TYPE_VIEW:
-//				 //examine whether add condition comes from self or provider edge
-//				if (edge.isProvider()) {
-//					nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-//					newEventType = EventType.MODIFY_CONDITION;
-//				}else {
-//					nr.setStatus(StatusType.TO_ADD_CHILD);
-//					newEventType = EventType.ADD_CONDITION;
-//				}
-//				break;
-//			case NODE_TYPE_QUERY:
-//				 //examine whether add condition comes from self or provider edge
-//				if (edge.isProvider()) {
-//					nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-//					newEventType = EventType.MODIFY_CONDITION;
-//				}else {
-//					nr.setStatus(StatusType.TO_ADD_CHILD);
-//					newEventType = EventType.ADD_CONDITION;
-//				}
-//				break;
-//			case NODE_TYPE_ATTRIBUTE:
-//				 //a constraint is added to 
-//				nr.setStatus(StatusType.TO_ADD_CHILD);
-//				newEventType = EventType.ADD_CONDITION;
-//				break;
-//			}
-//			break;
-//			
-//		case ADD_ORDER_BY:
-//			//examine the type of node affected by the event 
-//			switch (nr.getType()) {
-//			case NODE_TYPE_VIEW:
-//				 //examine whether add condition comes from self or provider edge
-//				if (edge.isProvider()) {
-//					nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-//					newEventType = EventType.MODIFY_CONDITION;
-//				}else {
-//					nr.setStatus(StatusType.TO_ADD_CHILD);
-//					newEventType = EventType.ADD_CONDITION;
-//				}
-//				break;
-//			case NODE_TYPE_QUERY:
-//				 //examine whether add condition comes from self or provider edge
-//				if (edge.isProvider()) {
-//					nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-//					newEventType = EventType.MODIFY_CONDITION;
-//				}else {
-//					nr.setStatus(StatusType.TO_ADD_CHILD);
-//					newEventType = EventType.ADD_CONDITION;
-//				}
-//				break;
-//			break;
-//		case ADD_GROUP_BY:
-//			break;
-//			
-//			//case deletion 
-//		
-//		
-//		}	
-//	}
+
 	
 	/**
 	 *  sets the status of the parts of the graph affected by an event
 	 **/
-	private void propagateChanges(Queue queue, List<V> nodesVisited) {
+/** @author pmanousi private void propagateChanges(Queue queue, List<V> nodesVisited) */
+@SuppressWarnings("unused")
+private void propagateChanges(Message<V,E> message)
+{
+V arxikoModule=message.toNode;
+EvolutionGraph<V, E> ograph = new EvolutionGraph<V,E>();
+ograph.vertices.putAll(this.vertices);
+int modulesAffected=0;
+int internalsAffected=0;
+int numberOfModules=0;
+int numberOfNodes=0;
 
-		while (!queue.isEmpty()){
-			try {
-				EvolutionMessage currentMessage = (EvolutionMessage) queue.dequeue();
-
-				int SID = currentMessage.get_SID();
-				V ns = (V)currentMessage.getNodeSender();
-				V nr = (V)currentMessage.getNodeReceiver();
-				EvolutionEvent<V> event = currentMessage.getEvent();
-				E edge = (E)currentMessage.getEdge();
-				PolicyType policyType = currentMessage.getPolicyType();
-
-				if (!nodesVisited.contains(nr)) {
-					//initialize the event of the next message as the old event
-					EventType newEventType = event.getEventType();
-
-					//determine policy for current node
-					policyType = determinePolicy(event,nr,edge,policyType);
-
-					if (policyType==PolicyType.PROMPT){
-						System.out.println("Policy=prompt");
-						nr.setStatus(StatusType.PROMPT);
-					}else if(policyType==PolicyType.BLOCK){
-						System.out.println("Policy=block");
-						nr.setStatus(StatusType.BLOCKED);
-					}else {
-						//policy is propagate
-						//determine status for node according to eventType
-						switch (event.getEventType()) {
-
-						case ADD_ATTRIBUTE:
-							System.out.println("in add_Attribute");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							//if receiver node is operand then add_attribute occurred in subquery
-							if (nr.getType()==NodeType.NODE_TYPE_OPERAND) {
-								//new event is modify condition
-								newEventType = EventType.MODIFY_CONDITION;
-								nr.setStatus(StatusType.TO_MODIFY_PROVIDER);	
-							}else {
-								//new event is add attribute
-								//only through schema and top-level provider edges
-								newEventType = EventType.ADD_ATTRIBUTE;
-								nr.setStatus(StatusType.TO_ADD_CHILD);
-								
-							}
-							break;
-
-						case ADD_CONDITION:
-							System.out.println("in Add_Condition");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-							
-							//propagate the same event
-							newEventType = event.getEventType();
-							//new event is add condition only through schema and top-level provider edges
-							break;
-						case ADD_RELATION:
-							nr.setStatus(StatusType.PROMPT);
-							break;
-						case MODIFY_CONDITION:
-							System.out.println("in Modify_Condition");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-							//new event is modify condition only through schema and top-level provider edges
-							//propagate the same event
-							newEventType = event.getEventType();
-							break;
-						case MODIFYDOMAIN_ATTRIBUTE:
-
-							System.out.println("in MODIFYDOMAIN_ATTRIBUTE");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							if (nr.getType()==NodeType.NODE_TYPE_ATTRIBUTE) {
-								nr.setStatus(StatusType.TO_MODIFY);
-								//new event to modify domain
-							}
-							else nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-							//propagate the same event
-							newEventType = event.getEventType();
-							break;
-						case RENAME_ATTRIBUTE:
-							System.out.println("in rename_Attribute");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							if (nr.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
-								nr.setStatus(StatusType.TO_RENAME);
-							//new event = rename attribute
-							else nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-							//new event = rename attribute	
-							//propagate the same event
-							newEventType = event.getEventType();
-							break;
-
-						case RENAME_RELATION:
-							System.out.println("in Rename_Relation");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							nr.setStatus(StatusType.TO_RENAME);
-							break;
-
-						case DELETE_ATTRIBUTE:
-							System.out.println("in Remove_Attribute");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							if (nr.getType().getCategory()==NodeCategory.CONTAINER)
-							{
-								newEventType = EventType.DELETE_ATTRIBUTE;
-								nr.setStatus(StatusType.TO_MODIFY_CHILD);
-							}
-							
-							else if (nr.getType().getCategory()==NodeCategory.MODULE)
-							{
-								/**
-								 *event has come from other view and not from attribute 
-								 *correct algorithm in determine next to signal
-								 **/
-								if (edge!=null&&edge.isProvider()) {
-									nodesVisited.remove(nr);
-									break;
-								}
-
-								newEventType = EventType.DELETE_RELATION;
-								nr.setStatus(StatusType.TO_DELETE);
-								//new event = remove relation
-								//check if has any child with no delete
-								for (E e : this.getOutEdges(nr)) {
-									if(e.isPartOf()&&e.getToNode().getStatus()!=StatusType.TO_DELETE) {
-										newEventType = EventType.DELETE_ATTRIBUTE;
-										nr.setStatus(StatusType.TO_DELETE_CHILD);
-										//new event = remove attribute
-									}
-								}
-							}
-							else if ((nr.getType()==NodeType.NODE_TYPE_GROUP_BY)
-									||(nr.getType()==NodeType.NODE_TYPE_FUNCTION)
-							)
-							{
-								newEventType = EventType.DELETE_ATTRIBUTE;
-								nr.setStatus(StatusType.TO_DELETE);
-								//new event = REMOVE_ATTRIBUTE relation
-								//check if has any child as constant
-								for (E e : this.getOutEdges(nr)) {
-									if(e.getToNode().getType()==NodeType.NODE_TYPE_ATTRIBUTE && e.getToNode().getStatus()!=StatusType.TO_DELETE) {
-										nr.setStatus(StatusType.TO_DELETE_CHILD);
-										newEventType = EventType.MODIFY_CONDITION;
-										//new event = remove attribute
-									}
-								}
-							}
-
-
-							else if (nr.getType()==NodeType.NODE_TYPE_OPERAND||
-									nr.getType()==NodeType.NODE_TYPE_CONDITION) {
-								newEventType = EventType.DELETE_CONDITION;
-								nr.setStatus(StatusType.TO_DELETE);
-							}
-							//new event = remove condition
-							else if (nr.getType()==NodeType.NODE_TYPE_ATTRIBUTE) {
-								newEventType= EventType.DELETE_ATTRIBUTE;
-								nr.setStatus(StatusType.TO_DELETE);
-							}
-							//new event = remove attribute				
-							break;
-
-						case DELETE_CONDITION:
-							System.out.println("in Remove_Condition");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-							nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-							//new event is remove condition only through schema and top-level provider edges
-							break;
-
-						case DELETE_RELATION:
-							System.out.println("in Remove_Relation");
-							System.out.println("nr is: "+nr.getName());
-							System.out.println("Policy=propagate");
-
-							List<E> outEdges = new ArrayList<E>(this.getOutEdges(nr));
-							if (ns==null)
-								for (E schemaEdge : outEdges){
-									this.getDest(schemaEdge).setStatus(StatusType.TO_DELETE);
-									initializeChange(new EvolutionEvent<V>((V) schemaEdge.getToNode(),EventType.DELETE_ATTRIBUTE));
-								}
-
-							Boolean flag = false;
-							for (E schemaEdge : outEdges)
-								if (!(this.getDest(schemaEdge).getStatus()==StatusType.TO_DELETE))
-										flag = true;
-							if (flag) 
-								nr.setStatus(StatusType.TO_MODIFY_PROVIDER);
-							else nr.setStatus(StatusType.TO_DELETE);
-							break;
-
-						default: nr.setStatus(StatusType.PROMPT);
-						}
-					}
-
-					//flag node receiver as visited
-					nodesVisited.add(nr);
-
-					//get policy for the new event type if applied to the node itself 
-					EvolutionEvent<V> newEvent = new EvolutionEvent<V>(nr,newEventType);
-					policyType = determinePolicy(newEvent,nr,edge,policyType);
-
-					if (policyType==PolicyType.PROMPT){
-						System.out.println("Policy=prompt");
-						nr.setStatus(StatusType.PROMPT);
-					}else if(policyType==PolicyType.BLOCK){
-						System.out.println("Policy=block");
-						nr.setStatus(StatusType.BLOCKED);}
-					
-					
-					//determine next to signal
-					List<E> inEdges =  new ArrayList<E>(this.getInEdges(nr));
-					
-					//if status <>block prepare next message for queue according to the status and the node type
-					if (nr.getStatus()!= StatusType.BLOCKED){
-
-						//get first provider edges
-						for (E e : inEdges){
-							if (e.isProvider()) {
-								e.setStatus(nr.getStatus());
-								if ((event.getEventType()==EventType.ADD_ATTRIBUTE) 
-										||(event.getEventType()==EventType.ADD_CONDITION)
-										||(event.getEventType()==EventType.MODIFY_CONDITION)
-										||(event.getEventType()==EventType.RENAME_RELATION)
-										||(event.getEventType()==EventType.DELETE_CONDITION)
-										||(event.getEventType()==EventType.DELETE_RELATION)
-								){
-									newEvent = new EvolutionEvent<V>(nr,newEventType);
-									EvolutionMessage newMessage = new EvolutionMessage(SID,nr,e.getFromNode(),newEvent,e,policyType);
-									queue.enqueue(newMessage);
-								}else
-								{
-									if ((nr.getType()!=NodeType.NODE_TYPE_QUERY)
-											&&(nr.getType()!=NodeType.NODE_TYPE_VIEW)
-											&&(nr.getType()!=NodeType.NODE_TYPE_RELATION)){
-										newEvent = new EvolutionEvent<V>((V) e.getFromNode(),newEventType);
-										EvolutionMessage newMessage = new EvolutionMessage(SID,nr,e.getFromNode(),newEvent,e,policyType);
-										queue.enqueue(newMessage);
-									}
-								}
-							}
-						}
-					}
-
-					//get second schema edges, inform then nodes
-					for (E e: inEdges){
-						if (e.isPartOf()) {
-							e.setStatus(nr.getStatus());
-							newEvent = new EvolutionEvent<V>(nr,newEventType);
-							EvolutionMessage newMessage = new EvolutionMessage(SID,nr,e.getFromNode(),newEvent,e,policyType);
-							queue.enqueue(newMessage);
-						}
-					}
+	PriorityQueue<Message<V,E>> queue= new PriorityQueue<Message<V,E>>(1, new MessageCompare());
+	queue.add(message);
+	List<ModuleNode<V,E>> epireasmenoi=new LinkedList<ModuleNode<V,E>>();
+/**
+ * @author pmanousi
+ * For time count of step 1.
+ */
+StopWatch step1 = new StopWatch();
+step1.start();
+	while (!queue.isEmpty())
+	{
+		try
+		{
+			ModuleMaestro<V,E> maestro = new ModuleMaestro<V,E>(queue);
+			PriorityQueue<Message<V, E>> mins=new PriorityQueue<Message<V,E>>();
+			mins.add(maestro.arxikoMinima.clone());
+			Iterator<Message<V,E>> i=maestro.myQueue.iterator();
+			while(i.hasNext())
+			{
+				Message<V,E> tmpPMMsg=i.next();
+				if(mins.contains(tmpPMMsg)==false)
+				{
+					mins.add(tmpPMMsg.clone());
 				}
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+			}
+			epireasmenoi.add(new ModuleNode(maestro.arxikoMinima.toNode,mins, message.event));
+			maestro.propagateMessages();	// Status determination
+		}
+		catch(Exception e)
+		{
+		}
+	}
+/**
+ * @author pmanousi
+ * For time count of step 1.
+ */
+step1.stop();
+/*
+ * counting nodes with status! 
+ */
+for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
+{
+	String name=entry.getKey().getName();
+	if(entry.getKey().getStatus() != StatusType.NO_STATUS && name.contains(" AND ")==false&&name.contains(" OR ")==false)
+	{
+		if(entry.getKey().getType().getCategory()==NodeCategory.MODULE&&entry.getKey()!=arxikoModule)
+		{
+			modulesAffected++;
+		}
+		else
+		{
+			if(entry.getKey().getType().getCategory()!=NodeCategory.INOUTSCHEMA||entry.getKey().getType().getCategory()!=NodeCategory.SEMANTICS)
+			{
+				internalsAffected++;
 			}
 		}
-
 	}
+}
+numberOfModules=this.getVertices(NodeType.NODE_TYPE_QUERY).size()+this.getVertices(NodeType.NODE_TYPE_VIEW).size();
+numberOfNodes=this.getVertexCount();
+int relNodes=0;
+List<V> rel=this.getVertices(NodeType.NODE_TYPE_RELATION);
+for(int i=0;i<rel.size();i++)
+{
+	relNodes+=2;
+	V relationProsElegxo=rel.get(i);
+	V schemaProsElegxo=(V) rel.get(i).getOutEdges().get(0).getToNode();
+	relNodes+=schemaProsElegxo.getOutEdges().size();
+}
+
+
+
+	for(int k=0;k<epireasmenoi.size();k++)
+	{
+		epireasmenoi.get(k).setEmeis(epireasmenoi);
+	}
+	// Check graph for block status
+	StatusType st=StatusType.PROPAGATE;
+	Iterator<ModuleNode<V,E>> i=epireasmenoi.iterator();
+/**
+ * @author pmanousi
+ * For time count of step 2.
+ */
+StopWatch step2 = new StopWatch();
+step2.start();
+	while (i.hasNext())
+	{
+		ModuleNode<V, E> prosElegxo=i.next();
+		if(prosElegxo.getStatus()==StatusType.BLOCKED)
+		{
+			st=StatusType.BLOCKED;
+			prosElegxo.backPropagation();
+			prosElegxo.neededRewrites=0;
+		}
+	}
+/**
+ * @author pmanousi
+ * For time count of step 2.
+ */
+step2.stop();
+/**
+ * @author pmanousi
+ * For time count of step 3.
+ */
+
+MetriseisRewrite mr=new MetriseisRewrite();
+int clonedModules=0;
+int rewrittenModules=0;
+StopWatch step3 = new StopWatch();
+step3.start();
+
+	if(st==StatusType.BLOCKED)
+	{
+		if(message.toNode.getType()==NodeType.NODE_TYPE_RELATION && message.event!=EventType.ADD_ATTRIBUTE)
+		{	// Whatever happens to relation stops there!
+			rewrittenModules=0;
+		}
+		else
+		{
+			i=epireasmenoi.iterator();
+			String tempParam="";
+			while (i.hasNext())
+			{
+				ModuleNode<V, E> prosEpaneggrafi=i.next();
+				if(prosEpaneggrafi.neededRewrites==1)
+				{	// They move to new version.
+					ModuleMaestroRewrite<V, E> m=new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
+					m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
+					tempParam=m.doRewrite(tempParam, this, step3,mr);
+					rewrittenModules++;
+				}
+				if(prosEpaneggrafi.neededRewrites==2)
+				{	// They copy themselves and do rewrite on new version.
+					V neos=prosEpaneggrafi.cloneQVModule(this);
+					clonedModules++;
+					Iterator<Message<V, E>> j = prosEpaneggrafi.messages.iterator();
+					while(j.hasNext())
+					{	// messages are for neos node...
+						Message<V, E> n=j.next();
+						for(int k=0;k<neos.getOutEdges().size();k++)
+						{
+							if(neos.getOutEdges().get(k).getToNode().getName().equals(n.toSchema.getName().replace(n.toNode.getName(), neos.getName())))
+							{
+								n.toSchema=(V) neos.getOutEdges().get(k).getToNode();
+							}
+						}
+						n.toNode=neos;
+					}
+					prosEpaneggrafi.en=neos;
+					ModuleMaestroRewrite<V, E> m=new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
+					m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
+					tempParam=m.doRewrite(tempParam, this, step3,mr);
+					rewrittenModules++;
+				}
+			}
+		}
+	}
+	else
+	{
+		String newParameter=new String();
+		for(int j=0;j<epireasmenoi.size();j++)
+		{
+			ModuleMaestroRewrite<V,E> rewriter=new ModuleMaestroRewrite<V,E>(epireasmenoi.get(j).messages);
+			newParameter=rewriter.doRewrite(newParameter, this, step3,mr);	// Rewrite
+			rewrittenModules++;
+		}
+	}
+/**
+ * @author pmanousi
+ * For time count of step 3.
+ */
+step3.stop();
+
+
+
+try
+{
+    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
+    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules);
+    out.close();
+} catch (IOException e)
+{}
+}
 
 
 	/**
@@ -757,7 +706,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 
 		//If no policy is returned check parents' policy for this event to override provider's policy
 		if (this.getParentNode(nr)!=null) {
-			EvolutionEvent<V> newEvent = new EvolutionEvent<V>(nr,event.getEventType());
+			EvolutionEvent<V> newEvent = new EvolutionEvent<V>(/*nr,*/event.getEventType());
 			return getPrevailingPolicy(newEvent,this.getParentNode(nr),previousPolicyType);
 		}
 
@@ -777,7 +726,8 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_FROM"))
 					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_GROUP_BY"))
 					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_OPERATOR"))
-					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_ALIAS"))){
+					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_ALIAS"))
+					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_USES"))){
 				providerEdges.add(e);
 			}
 		}
@@ -1000,7 +950,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 * and adds them to the collection of graph's nodes and edges 
 	 * @return a graph object
 	 */
-	public <G extends EvolutionGraph<V,E>> G toGraph(List<V> nodes){
+	public <G extends EvolutionGraph<V,E>> G toGraphE(List<V> nodes){
 		G subGraph;
 		try {
 			subGraph = (G) this.getClass().newInstance();
@@ -1024,4 +974,22 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		return null;
 	}
 	
+	public void exportPoliciesToFile(File file) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			for (V v : this.getVertices()){
+				for (EvolutionPolicy<V> p : v.getPolicies()) {
+					out.write(v + ": " + p.toString() + ";");
+					out.newLine();
+				}	
+			}
+			out.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
 }

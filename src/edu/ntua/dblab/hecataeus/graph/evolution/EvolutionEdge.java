@@ -67,8 +67,19 @@ public class EvolutionEdge{
 	/* (non-Javadoc)
 	 * @see edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge#setStatus(edu.ntua.dblab.hecataeus.graph.evolution.StatusType)
 	 */
-	public void setStatus(StatusType status) {
-		this._status = status ;
+	public void setStatus(StatusType status, boolean cl) {
+		if(cl==true)
+		{
+			this._status=status;
+		}
+		else
+		{
+			if(this._status==StatusType.BLOCKED||status==StatusType.NO_STATUS)
+			{
+				return;
+			}
+			this._status = status;
+		}
 	}
 	
     
@@ -121,10 +132,10 @@ public class EvolutionEdge{
 	 */
 	public void addPolicy(EventType eventType, EvolutionNode<? extends EvolutionEdge> eventNode, PolicyType policyType) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(eventType, eventNode);
+		EvolutionPolicy policy = policies.get(eventType/*, eventNode*/);
 		if(policy!=null)
 				policies.remove(policy);
-		policies.add(new EvolutionPolicy(eventType,eventNode,policyType));
+		policies.add(new EvolutionPolicy(eventType/*,eventNode*/,policyType));
 	}
 
 	/* (non-Javadoc)
@@ -132,7 +143,7 @@ public class EvolutionEdge{
 	 */
 	public void addPolicy(EvolutionPolicy p) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType(), p.getSourceEvent().getEventNode());
+		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType()/*, p.getSourceEvent().getEventNode()*/);
 		if(policy!=null)
 				policies.remove(policy);
 		policies.add(p);
@@ -151,14 +162,17 @@ public class EvolutionEdge{
 	 */
     public boolean isPartOf() {
     	if ((this.getType()==EdgeType.EDGE_TYPE_SCHEMA) 
+    			||(this.getType()==EdgeType.EDGE_TYPE_SEMANTICS) 
+    			||(this.getType()==EdgeType.EDGE_TYPE_INPUT)
+    			||(this.getType()==EdgeType.EDGE_TYPE_OUTPUT)
     			||(this.getType()==EdgeType.EDGE_TYPE_WHERE)
     			||((this.getType()==EdgeType.EDGE_TYPE_OPERATOR)
     					&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE)
     					&&(this.getToNode().getType()!=NodeType.NODE_TYPE_QUERY))
     					||((this.getType()==EdgeType.EDGE_TYPE_GROUP_BY)
-    	    					&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
-    	    					||((this.getType()==EdgeType.EDGE_TYPE_MAPPING)
-    	    							&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
+    							&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
+    							||((this.getType()==EdgeType.EDGE_TYPE_MAPPING)
+    									&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
     	    							||(this.getType()==EdgeType.EDGE_TYPE_CONTAINS)
     	){
     		return true;

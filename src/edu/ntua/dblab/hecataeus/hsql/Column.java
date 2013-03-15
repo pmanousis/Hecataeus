@@ -558,7 +558,20 @@ class Column {
 		case SMALLINT:
 			return new Short(s);
 		case BIGINT:
+		{
+/**
+ * @author pmanousi
+ * Skyserver has 0x0815074d60330233 which is REALLY big. Just return string.
+ */
+if(s.startsWith("0X"))
+{
+	return(s);
+}
+else
+{
 			return new Long(s);
+}
+		}	
 		case REAL:
 			return new Float(s);
 		case BINARY:

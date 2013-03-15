@@ -17,13 +17,15 @@ import java.util.ArrayList;
  */
 public enum EventType {
 	ADD_ATTRIBUTE 	(EventCategory.ADDITION)  ,      
+/*
 	ADD_CONDITION 	(EventCategory.ADDITION),
 	ADD_GROUP_BY 	(EventCategory.ADDITION) ,
 	ADD_ORDER_BY	(EventCategory.ADDITION) ,
 	ADD_VIEW		(EventCategory.ADDITION)		   ,
 	ADD_QUERY		(EventCategory.ADDITION)		   ,
-	ADD_RELATION    (EventCategory.ADDITION)       ,
+	ADD_RELATION    (EventCategory.ADDITION)       ,*/
 	DELETE_ATTRIBUTE    (EventCategory.DELETION)   ,
+/*
 	DELETE_CONDITION   (EventCategory.DELETION)    ,
 	DELETE_GROUP_BY	(EventCategory.DELETION)	   ,
 	DELETE_FUNCTION	(EventCategory.DELETION)	   ,
@@ -34,10 +36,23 @@ public enum EventType {
 	MODIFYDOMAIN_ATTRIBUTE (EventCategory.MODIFICATION),
 	MODIFY_CONDITION (EventCategory.MODIFICATION)      ,
 	MODIFY_CONSTANT(EventCategory.MODIFICATION)   ,
-	MODIFY_GROUP_BY	(EventCategory.MODIFICATION)   ,
+	MODIFY_GROUP_BY	(EventCategory.MODIFICATION)   ,*/
 	RENAME_ATTRIBUTE   (EventCategory.RENAME)  ,
+	
+RENAME_SELF (EventCategory.RENAME),
+DELETE_PROVIDER (EventCategory.DELETION),
+RENAME_PROVIDER (EventCategory.RENAME),
+ADD_ATTRIBUTE_PROVIDER (EventCategory.ADDITION),
+//ADD_PROVIDER (EventCategory.ADDITION),
+ALTER_SEMANTICS (EventCategory.MODIFICATION),
+ADD_CONSTRAINT (EventCategory.ADDITION),
+DELETE_CONSTRAINT (EventCategory.DELETION),
+UPDATE_CONSTRAINT (EventCategory.MODIFICATION),
+DELETE_SELF (EventCategory.DELETION);
+	
+/*
 	RENAME_CONDITION (EventCategory.RENAME)   ,
-	RENAME_RELATION (EventCategory.RENAME); 
+	RENAME_RELATION (EventCategory.RENAME);*/ 
 	
 	private EventCategory _category;
 	
@@ -64,50 +79,77 @@ public enum EventType {
 		
 		switch (nodeType) {
 		case NODE_TYPE_RELATION:
-			eventTypes.add(EventType.ADD_ATTRIBUTE);
+			//eventTypes.add(EventType.ADD_ATTRIBUTE);
+/*eventTypes.add(EventType.RENAME_SELF);
+eventTypes.add(EventType.DELETE_SELF);
 			eventTypes.add(EventType.ADD_CONDITION);
 			eventTypes.add(EventType.DELETE_RELATION);
-			eventTypes.add(EventType.RENAME_RELATION);
+			eventTypes.add(EventType.RENAME_RELATION);*/
 			break;
 		case NODE_TYPE_QUERY:
-			eventTypes.add(EventType.ADD_ATTRIBUTE);
+			//eventTypes.add(EventType.ADD_ATTRIBUTE);
+/*eventTypes.add(EventType.RENAME_SELF);
+eventTypes.add(EventType.DELETE_SELF);
 			eventTypes.add(EventType.ADD_CONDITION);
 			eventTypes.add(EventType.ADD_GROUP_BY);
 			eventTypes.add(EventType.ADD_ORDER_BY);
-			eventTypes.add(EventType.DELETE_QUERY);
+			eventTypes.add(EventType.DELETE_QUERY);*/
 			break;
 		case NODE_TYPE_VIEW:
-			eventTypes.add(EventType.ADD_ATTRIBUTE);
+			//eventTypes.add(EventType.ADD_ATTRIBUTE);
+/*eventTypes.add(EventType.RENAME_SELF);
+eventTypes.add(EventType.DELETE_SELF);
 			eventTypes.add(EventType.ADD_CONDITION);
 			eventTypes.add(EventType.ADD_GROUP_BY);
 			eventTypes.add(EventType.ADD_ORDER_BY);
-			eventTypes.add(EventType.DELETE_VIEW);
+			eventTypes.add(EventType.DELETE_VIEW);*/
 			break;
 		case NODE_TYPE_ATTRIBUTE:
-			eventTypes.add(EventType.DELETE_ATTRIBUTE);
+/*			eventTypes.add(EventType.DELETE_ATTRIBUTE);
 			eventTypes.add(EventType.RENAME_ATTRIBUTE);
-			eventTypes.add(EventType.MODIFYDOMAIN_ATTRIBUTE);
+			eventTypes.add(EventType.MODIFYDOMAIN_ATTRIBUTE);*/
+eventTypes.add(EventType.RENAME_SELF);
+eventTypes.add(EventType.DELETE_SELF);
+eventTypes.add(EventType.RENAME_PROVIDER);
+eventTypes.add(EventType.DELETE_PROVIDER);
 			break;
 		case NODE_TYPE_CONDITION:
-			eventTypes.add(EventType.DELETE_CONDITION);
+//! TODO: Maybe not yet, only if this is connected to a variable that is connected to a SCHEMA node
+/*			eventTypes.add(EventType.DELETE_CONDITION);
 			eventTypes.add(EventType.MODIFY_CONDITION);
-			eventTypes.add(EventType.RENAME_CONDITION);
+			eventTypes.add(EventType.RENAME_CONDITION);*/
 			break;
 		case NODE_TYPE_OPERAND:
-			eventTypes.add(EventType.DELETE_CONDITION);
-			eventTypes.add(EventType.MODIFY_CONDITION);
+/*			eventTypes.add(EventType.DELETE_CONDITION);
+			eventTypes.add(EventType.MODIFY_CONDITION);*/
 			break;
 		case NODE_TYPE_CONSTANT:
-			eventTypes.add(EventType.DELETE_CONSTANT);
-			eventTypes.add(EventType.MODIFY_CONSTANT);
+/*			eventTypes.add(EventType.DELETE_CONSTANT);
+			eventTypes.add(EventType.MODIFY_CONSTANT);*/
 			break;
 		case NODE_TYPE_FUNCTION:
-			eventTypes.add(EventType.DELETE_FUNCTION);
+/*			eventTypes.add(EventType.DELETE_FUNCTION);*/
 			break;
 		case NODE_TYPE_GROUP_BY:
-			eventTypes.add(EventType.DELETE_GROUP_BY);
-			eventTypes.add(EventType.MODIFY_GROUP_BY);
+/*			eventTypes.add(EventType.DELETE_GROUP_BY);
+			eventTypes.add(EventType.MODIFY_GROUP_BY);*/
 			break;
+
+case NODE_TYPE_INPUT:
+	eventTypes.add(EventType.RENAME_PROVIDER);
+	eventTypes.add(EventType.DELETE_PROVIDER);
+	eventTypes.add(EventType.ADD_ATTRIBUTE_PROVIDER);
+	break;
+case NODE_TYPE_OUTPUT:
+	eventTypes.add(EventType.ADD_ATTRIBUTE);
+	eventTypes.add(EventType.ADD_ATTRIBUTE_PROVIDER);
+	eventTypes.add(EventType.DELETE_SELF);
+	eventTypes.add(EventType.RENAME_SELF);
+	break;
+case NODE_TYPE_SEMANTICS:
+	eventTypes.add(EventType.ALTER_SEMANTICS);
+	//eventTypes.add(EventType.ADD_PROVIDER);
+	break;
 
 		default:
 			//get otherwise all type of nodes

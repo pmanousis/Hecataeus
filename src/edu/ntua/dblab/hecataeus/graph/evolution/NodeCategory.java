@@ -16,6 +16,11 @@ public enum NodeCategory {
 	CONTAINER	,
 	MODULE		,      
 	SCHEMA		,
+/**
+ * @author pmanousi
+ */
+INOUTSCHEMA,
+
 	SEMANTICS	;
 	
 	

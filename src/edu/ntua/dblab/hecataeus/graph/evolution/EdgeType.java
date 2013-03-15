@@ -21,6 +21,16 @@ public enum EdgeType {
 	EDGE_TYPE_OPERATOR,
 	EDGE_TYPE_HAVING ,
 	EDGE_TYPE_ORDER_BY,
+
+/**
+ * @author pmanousi
+ * For input/output schemas
+ */
+EDGE_TYPE_OUTPUT,
+EDGE_TYPE_INPUT,
+EDGE_TYPE_SEMANTICS,
+EDGE_TYPE_USES,
+
 	EDGE_TYPE_CONTAINS 		//added by sgerag
 	;
 	

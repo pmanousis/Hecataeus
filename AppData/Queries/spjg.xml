@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><HGraph><HNodes><HNode x="3316.869926867304" y="37.532414359018844"><Key>249</Key><Name>WS_ITEM_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3226.758825234793" y="127.47973484021725"><Key>428</Key><Name>CATALOG_SALES.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="843.8574267953762" y="591.8505100716088"><Key>214</Key><Name>SPJG</Name><Type>NODE_TYPE_VIEW</Type><SQLDefinition>CREATE VIEW SPJG AS
+	SELECT CA_COUNTY, D_QOY, D_YEAR, SUM(SS_EXT_SALES_PRICE) AS SUMPRICE
+	FROM STORE_SALES, DATE_DIM, CUSTOMER_ADDRESS
+	WHERE SS_SOLD_DATE_SK = D_DATE_SK AND SS_ADDR_SK=CA_ADDRESS_SK
+	GROUP BY CA_COUNTY,D_QOY, D_YEAR;</SQLDefinition></HNode><HNode x="1039.5217334360013" y="448.9367527473901"><Key>255</Key><Name>D_YEAR</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="385.8154956430325" y="72.78298611531"><Key>259</Key><Name>CA_ADDRESS_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="391.3632861703762" y="281.8272404182885"><Key>267</Key><Name>D_DATE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="712.0159350961575" y="328.4705662239526"><Key>275</Key><Name>D_DATE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="1140.9669238656888" y="569.4029087532494"><Key>280</Key><Name>D_QOY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="292.65977990524607" y="709.4929145485801"><Key>284</Key><Name>SS_EXT_SALES_PRICE</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3196.869926867304" y="187.53241435901884"><Key>431</Key><Name>WEB_SALES.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3049.103067897519" y="329.70957475727084"><Key>434</Key><Name>STORE_RETURNS.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="920.5137378305325" y="738.8485984314416"><Key>495</Key><Name>SPJG.SMTX</Name><Type>NODE_TYPE_SEMANTICS</Type></HNode><HNode x="327.587102088345" y="203.29577679524164"><Key>436</Key><Name>DATE_DIM.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3140.3231882716777" y="-198.94185655937042"><Key>500</Key><Name>CUSTOMER.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="3009.164814972093" y="561.3969115380378"><Key>438</Key><Name>ITEM.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="158.06771600143747" y="594.9241889626426"><Key>225</Key><Name>STORE_SALES</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE STORE_SALES
+(
+ SS_SOLD_DATE_SK VARCHAR(25) ,
+
+ SS_ITEM_SK VARCHAR(25) NOT NULL,
+ SS_CUSTOMER_SK VARCHAR(25) ,
+
+
+ SS_ADDR_SK VARCHAR(25) ,
+
+
+ SS_TICKET_NUMBER VARCHAR(25) NOT NULL,
+
+
+
+
+
+ SS_EXT_SALES_PRICE DECIMAL(7,2) ,
+
+
+
+
+
+
+
+ PRIMARY KEY (SS_ITEM_SK, SS_TICKET_NUMBER)
+);</SQLDefinition></HNode><HNode x="823.8574267953762" y="291.8505100716088"><Key>503</Key><Name>SPJG.IN.DATE_DIM</Name><Type>NODE_TYPE_INPUT</Type></HNode><HNode x="293.9651311625703" y="635.0873969704551"><Key>288</Key><Name>SS_SOLD_DATE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="2986.758825234793" y="127.47973484021725"><Key>440</Key><Name>CATALOG_SALES.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3289.103067897519" y="179.70957475727084"><Key>292</Key><Name>SR_TICKET_NUMBER</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3216.869926867304" y="37.532414359018844"><Key>228</Key><Name>WEB_SALES</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE WEB_SALES
+(
+
+
+
+ WS_ITEM_SK VARCHAR(25) NOT NULL,
+
+
+
+
+
+
+
+
+
+
+
+ WS_WAREHOUSE_SK VARCHAR(25) ,
+ WS_PROMO_SK VARCHAR(25) ,
+ WS_ORDER_NUMBER VARCHAR(25) NOT NULL,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PRIMARY KEY (WS_ITEM_SK, WS_ORDER_NUMBER)
+);</SQLDefinition></HNode><HNode x="326.9813677086972" y="255.96110811645264"><Key>509</Key><Name>DATE_DIM.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="74.62705862666591" y="320.92615023071045"><Key>231</Key><Name>DATE_DIM</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE DATE_DIM
+(
+ D_DATE_SK VARCHAR(25) NOT NULL,
+
+ D_DATE VARCHAR(25) ,
+
+ D_WEEK_SEQ VARCHAR(25) ,
+
+ D_YEAR VARCHAR(25) ,
+
+ D_MOY VARCHAR(25) ,
+
+ D_QOY VARCHAR(25) ,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PRIMARY KEY (D_DATE_SK)
+);</SQLDefinition></HNode><HNode x="3169.103067897519" y="329.70957475727084"><Key>298</Key><Name>SR_RETURN_QUANTITY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="797.750188025845" y="60.96477932820062"><Key>300</Key><Name>CA_ADDRESS_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="805.91742435397" y="715.3906559456323"><Key>442</Key><Name> AND </Name><Type>NODE_TYPE_OPERAND</Type></HNode><HNode x="3106.758825234793" y="127.47973484021725"><Key>446</Key><Name>CATALOG_SALES.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="292.32020553024165" y="52.322303038791375"><Key>518</Key><Name>CUSTOMER_ADDRESS.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="3140.3231882716777" y="-48.94185655937042"><Key>305</Key><Name>C_CUSTOMER_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="305.29378259079294" y="658.1176704079551"><Key>319</Key><Name>SS_ADDR_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="844.2769824594387" y="95.81324429402093"><Key>311</Key><Name>CA_COUNTY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3029.164814972093" y="411.3969115380378"><Key>323</Key><Name>I_ITEM_ID</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="1048.76312747897" y="320.818817566726"><Key>523</Key><Name>SPJG.OUT</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="3129.164814972093" y="561.3969115380378"><Key>327</Key><Name>I_ITEM_DESC</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="185.23393233688228" y="-4.950402039333625"><Key>234</Key><Name>CUSTOMER_ADDRESS</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE CUSTOMER_ADDRESS
+(
+ CA_ADDRESS_SK VARCHAR(25) NOT NULL,
+
+
+
+
+
+
+ CA_COUNTY VARCHAR(25) ,
+
+
+
+
+
+ PRIMARY KEY (CA_ADDRESS_SK)
+);</SQLDefinition></HNode><HNode x="3109.103067897519" y="329.70957475727084"><Key>448</Key><Name>STORE_RETURNS.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="1079.66156497897" y="657.9810032356713"><Key>451</Key><Name>GB</Name><Type>NODE_TYPE_GROUP_BY</Type></HNode><HNode x="3189.103067897519" y="179.70957475727084"><Key>237</Key><Name>STORE_RETURNS</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE STORE_RETURNS
+(
+ SR_RETURNED_DATE_SK VARCHAR(25) ,
+
+ SR_ITEM_SK VARCHAR(25) NOT NULL,
+
+
+
+
+
+
+ SR_TICKET_NUMBER VARCHAR(25) NOT NULL,
+ SR_RETURN_QUANTITY VARCHAR(25) ,
+
+
+
+
+
+
+
+
+
+ PRIMARY KEY (SR_ITEM_SK, SR_TICKET_NUMBER)
+);</SQLDefinition></HNode><HNode x="549.79486576022" y="506.6941074837182"><Key>529</Key><Name>SPJG.IN.STORE_SALES</Name><Type>NODE_TYPE_INPUT</Type></HNode><HNode x="3316.869926867304" y="-112.46758564098116"><Key>535</Key><Name>WEB_SALES.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="294.0206042856106" y="-32.32191043010016"><Key>456</Key><Name>CUSTOMER_ADDRESS.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3140.3231882716777" y="101.05814344062958"><Key>458</Key><Name>CUSTOMER.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="286.4126867045625" y="456.1596625954551"><Key>460</Key><Name>STORE_SALES.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3229.103067897519" y="329.70957475727084"><Key>335</Key><Name>SR_RETURNED_DATE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="263.3824132670625" y="524.0617622048301"><Key>329</Key><Name>SS_TICKET_NUMBER</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="2949.164814972093" y="561.3969115380378"><Key>462</Key><Name>ITEM.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3226.758825234793" y="-172.52026515978275"><Key>541</Key><Name>CATALOG_SALES.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="190.98147332565622" y="521.7073920876426"><Key>337</Key><Name>SS_CUSTOMER_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3040.3231882716777" y="101.05814344062958"><Key>464</Key><Name>CUSTOMER.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3129.164814972093" y="261.3969115380378"><Key>547</Key><Name>ITEM.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="3076.869926867304" y="187.53241435901884"><Key>339</Key><Name>WS_WAREHOUSE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="616.5847217172512" y="659.1698460091088"><Key>341</Key><Name>SS_EXT_SALES_PRICE</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="237.7879842509492" y="513.4323676735801"><Key>350</Key><Name>SS_ITEM_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="567.214055213345" y="618.4239353645776"><Key>346</Key><Name>SS_ADDR_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3029.164814972093" y="411.3969115380378"><Key>240</Key><Name>ITEM</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE ITEM
+(
+ I_ITEM_SK VARCHAR(25) NOT NULL,
+ I_ITEM_ID CHAR(16) NOT NULL,
+
+
+ I_ITEM_DESC VARCHAR(25) ,
+ I_CURRENT_PRICE DECIMAL(7,2) ,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ I_PRODUCT_NAME CHAR(50) ,
+ PRIMARY KEY (I_ITEM_SK)
+);</SQLDefinition></HNode><HNode x="855.5273486703762" y="219.2505039680932"><Key>466</Key><Name> = </Name><Type>NODE_TYPE_OPERAND</Type></HNode><HNode x="395.1395312875637" y="357.4216770637963"><Key>355</Key><Name>D_QOY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3256.869926867304" y="187.53241435901884"><Key>470</Key><Name>WEB_SALES.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3040.3231882716777" y="-48.94185655937042"><Key>243</Key><Name>CUSTOMER</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE CUSTOMER
+(
+ C_CUSTOMER_SK VARCHAR(25) NOT NULL,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PRIMARY KEY (C_CUSTOMER_SK)
+);</SQLDefinition></HNode><HNode x="1243.4844409555326" y="624.9041141975854"><Key>358</Key><Name>SUMPRICE</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="742.8317920297512" y="455.4403233040307"><Key>361</Key><Name>D_QOY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3046.758825234793" y="127.47973484021725"><Key>366</Key><Name>CS_SOLD_DATE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="399.1488086313137" y="215.6966709602807"><Key>472</Key><Name>DATE_DIM.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="906.5133105844387" y="9.132482003066343"><Key>554</Key><Name>SPJG.IN.CUSTOMER_ADDRESS</Name><Type>NODE_TYPE_INPUT</Type></HNode><HNode x="739.5217944711575" y="382.8062595833276"><Key>368</Key><Name>D_YEAR</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3136.869926867304" y="187.53241435901884"><Key>474</Key><Name>WEB_SALES.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="2829.164814972093" y="561.3969115380378"><Key>476</Key><Name>ITEM.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3126.758825234793" y="-22.520265159782753"><Key>246</Key><Name>CATALOG_SALES</Name><Type>NODE_TYPE_RELATION</Type><SQLDefinition>CREATE TABLE CATALOG_SALES
+(
+ CS_SOLD_DATE_SK VARCHAR(25) ,
+
+
+ CS_BILL_CUSTOMER_SK VARCHAR(25) ,
+
+
+
+
+
+
+
+
+
+
+
+ CS_ITEM_SK VARCHAR(25) NOT NULL,
+
+ CS_ORDER_NUMBER VARCHAR(25) NOT NULL,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ PRIMARY KEY (CS_ITEM_SK, CS_ORDER_NUMBER)
+);</SQLDefinition></HNode><HNode x="3289.103067897519" y="29.709574757270843"><Key>559</Key><Name>STORE_RETURNS.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="3069.164814972093" y="561.3969115380378"><Key>374</Key><Name>I_CURRENT_PRICE</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="1045.5357104867826" y="176.1162724007104"><Key>376</Key><Name>CA_COUNTY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="386.98099246920435" y="102.31675763020257"><Key>379</Key><Name>CA_COUNTY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="2889.164814972093" y="561.3969115380378"><Key>382</Key><Name>I_PRODUCT_NAME</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3189.103067897519" y="179.70957475727084"><Key>384</Key><Name>SR_ITEM_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="272.2960420861386" y="348.6883877795386"><Key>389</Key><Name>D_DATE</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3289.103067897519" y="329.70957475727084"><Key>478</Key><Name>STORE_RETURNS.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="3316.869926867304" y="187.53241435901884"><Key>391</Key><Name>WS_PROMO_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="690.5474902719387" y="593.140579651687"><Key>480</Key><Name> = </Name><Type>NODE_TYPE_OPERAND</Type></HNode><HNode x="3226.758825234793" y="-22.520265159782753"><Key>393</Key><Name>CS_ITEM_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="399.84810367525904" y="318.4472813118432"><Key>399</Key><Name>D_YEAR</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="242.50527703659372" y="647.2361701638144"><Key>565</Key><Name>STORE_SALES.SCHEMA</Name><Type>NODE_TYPE_OUTPUT</Type></HNode><HNode x="3126.758825234793" y="-22.520265159782753"><Key>402</Key><Name>CS_ORDER_NUMBER</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="239.10255968715177" y="345.14526644164795"><Key>407</Key><Name>D_MOY</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="332.76187625826685" y="-51.809062529709536"><Key>484</Key><Name>CUSTOMER_ADDRESS.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="214.76688254024015" y="341.6021451037573"><Key>415</Key><Name>D_WEEK_SEQ</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3166.758825234793" y="127.47973484021725"><Key>413</Key><Name>CS_BILL_CUSTOMER_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="258.7669881571992" y="470.33211742943945"><Key>486</Key><Name>STORE_SALES.PK</Name><Type>NODE_TYPE_CONDITION</Type></HNode><HNode x="523.8574267953762" y="591.8505100716088"><Key>409</Key><Name>SS_SOLD_DATE_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="1102.924992713345" y="615.4635166634057"><Key>489</Key><Name>SUM</Name><Type>NODE_TYPE_FUNCTION</Type></HNode><HNode x="3129.164814972093" y="411.3969115380378"><Key>417</Key><Name>I_ITEM_SK</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="3216.869926867304" y="37.532414359018844"><Key>423</Key><Name>WS_ORDER_NUMBER</Name><Type>NODE_TYPE_ATTRIBUTE</Type></HNode><HNode x="133.68541467087107" y="491.5908759743613"><Key>493</Key><Name>STORE_SALES.NC</Name><Type>NODE_TYPE_CONDITION</Type></HNode></HNodes><HEdges><HEdge><Key>496</Key><Name>SUM</Name><Type>EDGE_TYPE_SEMANTICS</Type><FromNode>495</FromNode><ToNode>489</ToNode></HEdge><HEdge><Key>555</Key><Name>IN_S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>214</FromNode><ToNode>554</ToNode></HEdge><HEdge><Key>492</Key><Name>map-select</Name><Type>EDGE_TYPE_MAPPING</Type><FromNode>358</FromNode><ToNode>489</ToNode></HEdge><HEdge><Key>501</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>243</FromNode><ToNode>500</ToNode></HEdge><HEdge><Key>488</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>329</FromNode><ToNode>486</ToNode></HEdge><HEdge><Key>562</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>237</FromNode><ToNode>559</ToNode></HEdge><HEdge><Key>506</Key><Name>IN_S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>214</FromNode><ToNode>503</ToNode></HEdge><HEdge><Key>481</Key><Name>op1</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>442</FromNode><ToNode>480</ToNode></HEdge><HEdge><Key>454</Key><Name>group by 2</Name><Type>EDGE_TYPE_GROUP_BY</Type><FromNode>451</FromNode><ToNode>361</ToNode></HEdge><HEdge><Key>499</Key><Name>group by</Name><Type>EDGE_TYPE_GROUP_BY</Type><FromNode>495</FromNode><ToNode>451</ToNode></HEdge><HEdge><Key>540</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>535</FromNode><ToNode>249</ToNode></HEdge><HEdge><Key>410</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>409</FromNode><ToNode>288</ToNode></HEdge><HEdge><Key>538</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>228</FromNode><ToNode>535</ToNode></HEdge><HEdge><Key>498</Key><Name>SPJGSMTX_S</Name><Type>EDGE_TYPE_SEMANTICS</Type><FromNode>214</FromNode><ToNode>495</ToNode></HEdge><HEdge><Key>539</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>535</FromNode><ToNode>391</ToNode></HEdge><HEdge><Key>429</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>393</FromNode><ToNode>428</ToNode></HEdge><HEdge><Key>561</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>559</FromNode><ToNode>292</ToNode></HEdge><HEdge><Key>567</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>565</FromNode><ToNode>288</ToNode></HEdge><HEdge><Key>453</Key><Name>group by 3</Name><Type>EDGE_TYPE_GROUP_BY</Type><FromNode>451</FromNode><ToNode>368</ToNode></HEdge><HEdge><Key>513</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>509</FromNode><ToNode>355</ToNode></HEdge><HEdge><Key>435</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>384</FromNode><ToNode>434</ToNode></HEdge><HEdge><Key>377</Key><Name>map-select</Name><Type>EDGE_TYPE_MAPPING</Type><FromNode>376</FromNode><ToNode>311</ToNode></HEdge><HEdge><Key>543</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>541</FromNode><ToNode>413</ToNode></HEdge><HEdge><Key>479</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>292</FromNode><ToNode>478</ToNode></HEdge><HEdge><Key>494</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>350</FromNode><ToNode>493</ToNode></HEdge><HEdge><Key>449</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>384</FromNode><ToNode>448</ToNode></HEdge><HEdge><Key>491</Key><Name>map-select</Name><Type>EDGE_TYPE_MAPPING</Type><FromNode>489</FromNode><ToNode>341</ToNode></HEdge><HEdge><Key>381</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>311</FromNode><ToNode>379</ToNode></HEdge><HEdge><Key>432</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>423</FromNode><ToNode>431</ToNode></HEdge><HEdge><Key>551</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>240</FromNode><ToNode>547</ToNode></HEdge><HEdge><Key>542</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>246</FromNode><ToNode>541</ToNode></HEdge><HEdge><Key>505</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>503</FromNode><ToNode>368</ToNode></HEdge><HEdge><Key>532</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>529</FromNode><ToNode>341</ToNode></HEdge><HEdge><Key>441</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>393</FromNode><ToNode>440</ToNode></HEdge><HEdge><Key>572</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>565</FromNode><ToNode>329</ToNode></HEdge><HEdge><Key>549</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>547</FromNode><ToNode>382</ToNode></HEdge><HEdge><Key>533</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>529</FromNode><ToNode>409</ToNode></HEdge><HEdge><Key>457</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>259</FromNode><ToNode>456</ToNode></HEdge><HEdge><Key>510</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>509</FromNode><ToNode>415</ToNode></HEdge><HEdge><Key>475</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>423</FromNode><ToNode>474</ToNode></HEdge><HEdge><Key>568</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>565</FromNode><ToNode>337</ToNode></HEdge><HEdge><Key>477</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>417</FromNode><ToNode>476</ToNode></HEdge><HEdge><Key>487</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>350</FromNode><ToNode>486</ToNode></HEdge><HEdge><Key>430</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>402</FromNode><ToNode>428</ToNode></HEdge><HEdge><Key>485</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>259</FromNode><ToNode>484</ToNode></HEdge><HEdge><Key>573</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>565</FromNode><ToNode>284</ToNode></HEdge><HEdge><Key>515</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>231</FromNode><ToNode>509</ToNode></HEdge><HEdge><Key>537</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>535</FromNode><ToNode>423</ToNode></HEdge><HEdge><Key>545</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>541</FromNode><ToNode>393</ToNode></HEdge><HEdge><Key>536</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>535</FromNode><ToNode>339</ToNode></HEdge><HEdge><Key>504</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>503</FromNode><ToNode>275</ToNode></HEdge><HEdge><Key>497</Key><Name>where</Name><Type>EDGE_TYPE_WHERE</Type><FromNode>495</FromNode><ToNode>442</ToNode></HEdge><HEdge><Key>563</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>559</FromNode><ToNode>384</ToNode></HEdge><HEdge><Key>525</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>523</FromNode><ToNode>255</ToNode></HEdge><HEdge><Key>570</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>565</FromNode><ToNode>350</ToNode></HEdge><HEdge><Key>571</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>225</FromNode><ToNode>565</ToNode></HEdge><HEdge><Key>365</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>361</FromNode><ToNode>355</ToNode></HEdge><HEdge><Key>465</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>305</FromNode><ToNode>464</ToNode></HEdge><HEdge><Key>450</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>292</FromNode><ToNode>448</ToNode></HEdge><HEdge><Key>467</Key><Name>op2</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>442</FromNode><ToNode>466</ToNode></HEdge><HEdge><Key>569</Key><Name>from</Name><Type>EDGE_TYPE_FROM</Type><FromNode>529</FromNode><ToNode>565</ToNode></HEdge><HEdge><Key>277</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>275</FromNode><ToNode>267</ToNode></HEdge><HEdge><Key>557</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>554</FromNode><ToNode>300</ToNode></HEdge><HEdge><Key>564</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>559</FromNode><ToNode>335</ToNode></HEdge><HEdge><Key>546</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>541</FromNode><ToNode>402</ToNode></HEdge><HEdge><Key>560</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>559</FromNode><ToNode>298</ToNode></HEdge><HEdge><Key>519</Key><Name>OUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>234</FromNode><ToNode>518</ToNode></HEdge><HEdge><Key>514</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>509</FromNode><ToNode>399</ToNode></HEdge><HEdge><Key>401</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>368</FromNode><ToNode>399</ToNode></HEdge><HEdge><Key>558</Key><Name>from</Name><Type>EDGE_TYPE_FROM</Type><FromNode>554</FromNode><ToNode>518</ToNode></HEdge><HEdge><Key>482</Key><Name>op1</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>480</FromNode><ToNode>409</ToNode></HEdge><HEdge><Key>553</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>547</FromNode><ToNode>327</ToNode></HEdge><HEdge><Key>556</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>554</FromNode><ToNode>311</ToNode></HEdge><HEdge><Key>524</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>523</FromNode><ToNode>376</ToNode></HEdge><HEdge><Key>520</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>518</FromNode><ToNode>259</ToNode></HEdge><HEdge><Key>433</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>249</FromNode><ToNode>431</ToNode></HEdge><HEdge><Key>516</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>509</FromNode><ToNode>389</ToNode></HEdge><HEdge><Key>452</Key><Name>group by 1</Name><Type>EDGE_TYPE_GROUP_BY</Type><FromNode>451</FromNode><ToNode>311</ToNode></HEdge><HEdge><Key>566</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>565</FromNode><ToNode>319</ToNode></HEdge><HEdge><Key>437</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>267</FromNode><ToNode>436</ToNode></HEdge><HEdge><Key>468</Key><Name>op2</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>466</FromNode><ToNode>300</ToNode></HEdge><HEdge><Key>530</Key><Name>IN_S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>214</FromNode><ToNode>529</ToNode></HEdge><HEdge><Key>463</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>417</FromNode><ToNode>462</ToNode></HEdge><HEdge><Key>507</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>503</FromNode><ToNode>361</ToNode></HEdge><HEdge><Key>447</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>402</FromNode><ToNode>446</ToNode></HEdge><HEdge><Key>552</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>547</FromNode><ToNode>374</ToNode></HEdge><HEdge><Key>483</Key><Name>op2</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>480</FromNode><ToNode>275</ToNode></HEdge><HEdge><Key>473</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>267</FromNode><ToNode>472</ToNode></HEdge><HEdge><Key>528</Key><Name>SPJGOUT_S</Name><Type>EDGE_TYPE_OUTPUT</Type><FromNode>214</FromNode><ToNode>523</ToNode></HEdge><HEdge><Key>362</Key><Name>map-select</Name><Type>EDGE_TYPE_MAPPING</Type><FromNode>280</FromNode><ToNode>361</ToNode></HEdge><HEdge><Key>439</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>323</FromNode><ToNode>438</ToNode></HEdge><HEdge><Key>303</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>300</FromNode><ToNode>259</ToNode></HEdge><HEdge><Key>471</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>249</FromNode><ToNode>470</ToNode></HEdge><HEdge><Key>526</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>523</FromNode><ToNode>280</ToNode></HEdge><HEdge><Key>527</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>523</FromNode><ToNode>358</ToNode></HEdge><HEdge><Key>511</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>509</FromNode><ToNode>407</ToNode></HEdge><HEdge><Key>371</Key><Name>map-select</Name><Type>EDGE_TYPE_MAPPING</Type><FromNode>255</FromNode><ToNode>368</ToNode></HEdge><HEdge><Key>521</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>518</FromNode><ToNode>379</ToNode></HEdge><HEdge><Key>461</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>329</FromNode><ToNode>460</ToNode></HEdge><HEdge><Key>469</Key><Name>op1</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>466</FromNode><ToNode>346</ToNode></HEdge><HEdge><Key>550</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>547</FromNode><ToNode>417</ToNode></HEdge><HEdge><Key>502</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>500</FromNode><ToNode>305</ToNode></HEdge><HEdge><Key>517</Key><Name>from</Name><Type>EDGE_TYPE_FROM</Type><FromNode>503</FromNode><ToNode>509</ToNode></HEdge><HEdge><Key>347</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>346</FromNode><ToNode>319</ToNode></HEdge><HEdge><Key>548</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>547</FromNode><ToNode>323</ToNode></HEdge><HEdge><Key>512</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>509</FromNode><ToNode>267</ToNode></HEdge><HEdge><Key>544</Key><Name>S</Name><Type>EDGE_TYPE_SCHEMA</Type><FromNode>541</FromNode><ToNode>366</ToNode></HEdge><HEdge><Key>534</Key><Name>S</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>529</FromNode><ToNode>346</ToNode></HEdge><HEdge><Key>459</Key><Name>op</Name><Type>EDGE_TYPE_OPERATOR</Type><FromNode>305</FromNode><ToNode>458</ToNode></HEdge><HEdge><Key>345</Key><Name>map-select</Name><Type>EDGE_TYPE_INPUT</Type><FromNode>341</FromNode><ToNode>284</ToNode></HEdge></HEdges><HPolicies/><HEvents/><HKeyGen>1373</HKeyGen></HGraph>

@@ -8,12 +8,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 
 
 import edu.ntua.dblab.hecataeus.*;
 import edu.ntua.dblab.hecataeus.graph.evolution.*;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 
@@ -77,71 +79,95 @@ public final class HecataeusSQLExtensionParser{
 		this._inputFile = inputFile ;
 	}
 
-	public void processFile() throws HecataeusException{
-		// holds each separate sentence
-		String sentence = "";
-		//holds database wide policies, so that to parse them last
-		ArrayList<String> nodeSentences = new ArrayList<String>() ;
-		//holds database wide policies, so that to parse them last
-		ArrayList<String> databaseSentences = new ArrayList<String>() ;
-				
-
-		try {
+	public void processFile() throws HecataeusException
+	{
+		String sentence = "";	// holds each separate sentence
+		ArrayList<String> nodeSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		//ArrayList<String> databaseSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		ArrayList<String> relationSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		ArrayList<String> viewSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		ArrayList<String> querySentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		try
+		{
 			BufferedReader reader = new BufferedReader(new FileReader(this._inputFile )); 
-		
 			this.clearPolicies();
-			
-			while (reader.ready()) {
+			while (reader.ready())
+			{
 				sentence=this.readSentence(reader);
-				
-				if(sentence.endsWith(";")){
+				if(sentence.endsWith(";"))
+				{
 					sentence = sentence.toUpperCase().replace(";", "");
 					StringTokenizer token = new StringTokenizer(sentence);
-					
-					//get node name
-					String nodeName = token.nextToken(":");
-					//check whether it is database wide or node policy
-					if (nodeName.trim().equalsIgnoreCase("DATABASE")) {
-						databaseSentences.add(sentence);
-					}else {
+					String nodeName = token.nextToken(":");	//get node name
+					if (nodeName.trim().startsWith("RELATION."))	//check whether it is relation wide policy
+					{
+						relationSentences.add(sentence);
+					}
+					else if(nodeName.trim().startsWith("VIEW."))	//check whether it is view wide policy
+					{
+						viewSentences.add(sentence);
+					}
+					else if(nodeName.trim().startsWith("QUERY."))	//check whether it is query wide policy
+					{
+						querySentences.add(sentence);
+					}
+					else
+					{
 						nodeSentences.add(sentence);
-						
 					}
 				}
 			}
-				
 			reader.close();
 		}
-		catch (IOException e){
+		catch (IOException e)
+		{
 			throw new HecataeusException(e.getMessage());
-		}  
-		
-		try {
-			if ((databaseSentences.size()+nodeSentences.size())<=0) {
-				throw new Exception("Input file is not in the correct format");
-			}else {
-				//parse first the global policies
-				for (int i = 0; i < databaseSentences.size(); i++) {
-					sentence = databaseSentences.get(i);
-					this.parseDefaultPolicy(sentence);
+		}
+		try
+		{
+			if ((relationSentences.size()+viewSentences.size()+querySentences.size()+nodeSentences.size())<=0)
+			{
+				throw new Exception("Input file is not in the correct format or empty file");
+			}
+			else
+			{
+				for (int i = 0; i < relationSentences.size(); i++)	//parse first the global policies
+				{
+					sentence = relationSentences.get(i);
+					this.parseRelationPolicy(sentence);
 				}
-				//parse then the node policies
-				for (int i = 0; i < nodeSentences.size(); i++) {
-					sentence = nodeSentences.get(i);
-					this.parseNodePolicy(sentence);
+				for (int i = 0; i < viewSentences.size(); i++)	//parse first the global policies
+				{
+					sentence = viewSentences.get(i);
+					this.parseViewPolicy(sentence);
+				}
+				for (int i = 0; i < querySentences.size(); i++)	//parse first the global policies
+				{
+					sentence = querySentences.get(i);
+					this.parseQueryPolicy(sentence);
+				}
+				for (int i = 0; i < nodeSentences.size(); i++)	//parse then the node policies
+				{
+					sentence = nodeSentences.get(i).toUpperCase();
+					if(sentence.contains(".ATTRIBUTES"))
+					{
+						this.parseNodeAttributesPolicy(sentence);
+					}
+					else
+					{
+						this.parseNodePolicy(sentence);
+					}
 				}
 			}
-			
-			
 		}
-		catch (HecataeusException e){
+		catch (HecataeusException e)
+		{
 			throw new HecataeusException("Error parsing sentence: " + sentence + "\n" + e.getMessage());
 		}
-		catch (Exception e){
+		catch (Exception e)
+		{
 			throw new HecataeusException(e.getMessage());
 		}
-		
-				
 	}
 	
 
@@ -157,179 +183,298 @@ public final class HecataeusSQLExtensionParser{
 		}
 	}
 	
-	private void parseDefaultPolicy(String policyStringClause) throws HecataeusException {
-		
-		
-		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
-		
-		//Default policies always start with reserved word DATABASE
-		policyClause.nextToken(":").trim();
-		
+	/**
+	 * @author pmanousi
+	 * Sets policy to a specific node.
+	 * @throws HecataeusException 
+	 */
+	private void setPolicy(String policy, VisualNode node) throws HecataeusException
+	{
+		StringTokenizer policyClause= new StringTokenizer(policy);
 		String currentWord = policyClause.nextToken(" ").trim();
-		currentWord = policyClause.nextToken(" ").trim();
-		//Expect ON keyword
-		if (!(currentWord.equalsIgnoreCase("ON"))){
+		//currentWord = policyClause.nextToken(" ").trim();
+		if (!(currentWord.equalsIgnoreCase("ON")))	//Expect ON keyword
+		{
 			throw new HecataeusException("Unknown Token: " + currentWord + "\nExpected: ON");
 		}
-		//Get event type
-		currentWord = policyClause.nextToken().trim();
+		currentWord = policyClause.nextToken().trim();	//Get event type
 		EventType eventType;
-		try {
+		try
+		{
 			eventType = EventType.toEventType(currentWord.toUpperCase());
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			throw new HecataeusException( "Unknown Event: " + currentWord); 
 		}
-		
-		//Expect TO keyword
-		currentWord = policyClause.nextToken().trim();
-		if (!(currentWord.equalsIgnoreCase("TO"))){
-			throw new HecataeusException("Unknown Token: " + currentWord + "\nExpected: TO");
-		}
-		
-		//Get Node on which the event is applied
-		currentWord = policyClause.nextToken().trim();
-		DBNodes eventNodeType;
-		try {
-			eventNodeType = DBNodes.toType(currentWord.toUpperCase());
-		} catch (Exception e) {
-			throw new HecataeusException( "Unknown Node Type: " + currentWord); 
-		}
-		
-		//Expect THEN keyword
-		currentWord = policyClause.nextToken().trim();
-		if (!(currentWord.equalsIgnoreCase("THEN"))){
+		currentWord = policyClause.nextToken().trim();	//Expect THEN keyword
+		if (!(currentWord.equalsIgnoreCase("THEN")))
+		{
 			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: THEN");
 		}
-		
-		//Get Policy Type
-		currentWord = policyClause.nextToken().trim();
+		currentWord = policyClause.nextToken().trim();//Get Policy Type
 		PolicyType policyType;
-		try {
+		try
+		{
 			policyType = PolicyType.toPolicyType(currentWord.toUpperCase());
-		
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			throw new HecataeusException( "Unknown Policy: " + currentWord); 
 		}
+		node.addPolicy(eventType, policyType);
+	}
+	
+	/**
+	 * @author pmanousi
+	 * Sets policy to relation node or relation's attributes nodes.
+	 */
+	private void parseRelationPolicy(String policyStringClause) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String selfOrAttributes = policyClause.nextToken(":").trim();	//Relation policies always start with reserved word RELATION.OUT.(SELF|ATTRIBUTES)
 		
-		switch (eventNodeType) {
-		//all nodes
-		case NODE: 
-			for (VisualNode node: this._graph.getVertices()) {
-				node.addPolicy(eventType, node, policyType);
-			}
-			break;
-		//top-level nodes
-		case RELATION:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_RELATION)) {
-				node.addPolicy(eventType, node, policyType);
-				if (eventType!=EventType.ADD_ATTRIBUTE
-						&&eventType!=EventType.ADD_CONDITION
-						&&eventType!=EventType.RENAME_RELATION) {
-					for (VisualNode child : this._graph.getModule(node)) {
-						child.addPolicy(eventType, child, policyType);
-				}
-				}
-			}
-			break;
-		case QUERY :
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_QUERY)) {
-				node.addPolicy(eventType, node, policyType);
-				
-				//fill tree for certain events
-				if (eventType!=EventType.ADD_ATTRIBUTE
-						&&eventType!=EventType.ADD_CONDITION
-						&&eventType!=EventType.RENAME_RELATION) {
-					for (VisualNode child : this._graph.getModule(node)) {
-						child.addPolicy(eventType, child, policyType);
-					}
-				}else
+		List<VisualNode> nodes = this._graph.getVertices(NodeType.NODE_TYPE_RELATION);
+		String tmpString = policyClause.nextToken().trim();
+		if(selfOrAttributes.endsWith(".OUT.ATTRIBUTES")==true)
+		{ // For all RELATIONS of graph go to their ATTRS.
+			for(int i=0;i<nodes.size();i++)
+			{
+				VisualNode schemaNode=nodes.get(i).getOutEdges().get(0).getToNode();	// RELATION.SCHEMA
+				for(int j=0;j<schemaNode.getOutEdges().size();j++)
 				{
-					//declare policies for events coming form providers top level nodes
-					//through FROM edges
-					for (EvolutionEdge edge: this._graph.getOutEdges(node)) {
-						if (edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-							node.addPolicy(eventType, edge.getToNode(), policyType);
-						}
-					}
+					setPolicy(tmpString, schemaNode.getOutEdges().get(j).getToNode());
 				}
 			}
-			break;
-		case VIEW:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_VIEW)) {
-				node.addPolicy(eventType, node, policyType);
-				if (eventType!=EventType.ADD_ATTRIBUTE
-						&&eventType!=EventType.ADD_CONDITION
-						&&eventType!=EventType.RENAME_RELATION) {
-					for (VisualNode child : this._graph.getModule(node)) {
-						child.addPolicy(eventType, child, policyType);
-					}
-				}else
-				{
-					//declare policies for events coming form providers toplevel nodes
-					//through FROM edges
-					for (EvolutionEdge edge: this._graph.getOutEdges(node)) {
-						if (edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-							node.addPolicy(eventType, edge.getToNode(), policyType);
-						}
-					}
-				}
+		}
+		else if(selfOrAttributes.endsWith(".OUT.SELF")==true)
+		{ // For all RELATIONS of graph
+			for(int i=0;i<nodes.size();i++)
+			{
+				setPolicy(tmpString, nodes.get(i).getOutEdges().get(0).getToNode());
 			}
-			break;
-		//low-level nodes
-		case ATTRIBUTE:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_ATTRIBUTE)) {
-				node.addPolicy(eventType, node, policyType);
-				for (VisualNode child : this._graph.getModule(node)) {
-					child.addPolicy(eventType, child, policyType);
-				}
-			}
-			break;
-		case GROUP_BY:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_GROUP_BY)) {
-				node.addPolicy(eventType, node, policyType);
-			}
-			break;
-		case FUNCTION:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_FUNCTION)) {
-				node.addPolicy(eventType, node, policyType);
-			}
-			break;
-		case CONSTANT:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_CONSTANT)) {
-				node.addPolicy(eventType, node, policyType);
-			}
-			break;
-		case CONDITION:
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_OPERAND)) {
-				node.addPolicy(eventType, node, policyType);
-				for (VisualNode child : this._graph.getModule(node)) {
-					child.addPolicy(eventType, child, policyType);
-				}
-			}
-			break;
-		default: //for PK, UC, FK, NC
-			for (VisualNode node: this._graph.getVertices(NodeType.NODE_TYPE_CONDITION)) {
-				if (node.getName().toUpperCase().contains(eventNodeType.toString().toUpperCase()))
-					node.addPolicy(eventType, node, policyType);
-			}
-			break;
 		}
 		this._graph.getDefaultPolicyDecsriptions().add(policyStringClause);
 	}
 	
-	private void parseNodePolicy(String policyStringClause) throws HecataeusException {
-		
-		
+	/**
+	 * @author pmanousi
+	 * Sets policy to view's: smtx, in, out nodes or in's, out's attributes.
+	 */
+	private void parseViewPolicy(String policyStringClause) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String selfOrAttributes = policyClause.nextToken(":").trim();	//View policies always start with reserved word VIEW.(IN|SMTX|OUT).(SELF|ATTRIBUTES)
 		
+		List<VisualNode> nodes = this._graph.getVertices(NodeType.NODE_TYPE_VIEW);
+		
+		String tmpString = policyClause.nextToken().trim();
+		if(selfOrAttributes.endsWith(".OUT.ATTRIBUTES"))
+		{ // For all VIEWS of graph go to their ATTRS.
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
+					{
+						VisualNode outNode=edges.get(j).getToNode();	// VIEW.OUT
+						for(int k=0;k<outNode.getOutEdges().size();k++)
+						{
+							setPolicy(tmpString, outNode.getOutEdges().get(k).getToNode());
+						}
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".OUT.SELF"))
+		{ // For all VIEWS of graph
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
+					{
+						setPolicy(tmpString, edges.get(j).getToNode());
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".IN.ATTRIBUTES"))
+		{ // For all VIEWS of graph go to their ATTRS.
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
+					{
+						VisualNode outNode=edges.get(j).getToNode();	// VIEW.IN
+						for(int k=0;k<outNode.getOutEdges().size();k++)
+						{
+							if(outNode.getOutEdges().get(k).getType()!=EdgeType.EDGE_TYPE_FROM)
+							{
+								setPolicy(tmpString, outNode.getOutEdges().get(k).getToNode());
+							}
+						}
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".IN.SELF"))
+		{ // For all VIEWS of graph
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
+					{
+						setPolicy(tmpString, edges.get(j).getToNode());
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".SMTX.SELF"))
+		{ // For all VIEWS of graph
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
+					{
+						setPolicy(tmpString, edges.get(j).getToNode());
+					}
+				}
+			}
+		}
+		this._graph.getDefaultPolicyDecsriptions().add(policyStringClause);
+	}
+	
+	/**
+	 * @author pmanousi
+	 * Sets policy to query's: smtx, in, out nodes or in's, out's attributes.
+	 */
+	private void parseQueryPolicy(String policyStringClause) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String selfOrAttributes = policyClause.nextToken(":").trim();	//Query policies always start with reserved word QUERY.(IN|SMTX|OUT).(SELF|ATTRIBUTES)
+		
+		List<VisualNode> nodes = this._graph.getVertices(NodeType.NODE_TYPE_QUERY);
+		
+		if(selfOrAttributes.endsWith(".OUT.ATTRIBUTES"))
+		{ // For all QUERIES of graph go to their ATTRS.
+			String tmpString = policyClause.nextToken().trim();
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
+					{
+						VisualNode outNode=edges.get(j).getToNode();	// QUERY.OUT
+						for(int k=0;k<outNode.getOutEdges().size();k++)
+						{
+							setPolicy(tmpString, outNode.getOutEdges().get(k).getToNode());
+						}
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".OUT.SELF"))
+		{ // For all QUERIES of graph
+			String tmpString = policyClause.nextToken().trim();
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
+					{
+						setPolicy(tmpString, edges.get(j).getToNode());
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".IN.ATTRIBUTES"))
+		{ // For all QUERIES of graph go to their ATTRS.
+			String tmpString = policyClause.nextToken().trim();
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
+					{
+						VisualNode outNode=edges.get(j).getToNode();	// QUERY.IN
+						for(int k=0;k<outNode.getOutEdges().size();k++)
+						{
+							if(outNode.getOutEdges().get(k).getType()!=EdgeType.EDGE_TYPE_FROM)
+							{
+								setPolicy(tmpString, outNode.getOutEdges().get(k).getToNode());
+							}
+						}
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".IN.SELF"))
+		{ // For all QUERIES of graph
+			String tmpString = policyClause.nextToken().trim();
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
+					{
+						setPolicy(tmpString, edges.get(j).getToNode());
+					}
+				}
+			}
+		}
+		else if(selfOrAttributes.endsWith(".SMTX.SELF"))
+		{ // For all QUERIES of graph
+			String tmpString = policyClause.nextToken().trim();
+			for(int i=0;i<nodes.size();i++)
+			{
+				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				for(int j=0;j<edges.size();j++)
+				{
+					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
+					{
+						setPolicy(tmpString, edges.get(j).getToNode());
+					}
+				}
+			}
+		}
+		this._graph.getDefaultPolicyDecsriptions().add(policyStringClause);
+	}
+	
+	/**
+	 * @author pmanousi
+	 */
+	private void parseNodeAttributesPolicy(String policyStringClause) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String nodeName = policyClause.nextToken(":").trim();	//get node on which policy is applied
+		VisualNode node;
+		node = this.getNodeByName(nodeName);
+		if (node==null)
+			throw new HecataeusException("Unknown Node: " + nodeName);
+		String tmpString = policyClause.nextToken().trim();
+		for(int i=0;i<node.getOutEdges().size();i++)
+		{
+			setPolicy(tmpString, node.getOutEdges().get(i).getToNode());
+		}
+	};
+	
+	private void parseNodePolicy(String policyStringClause) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String nodeName = policyClause.nextToken(":").trim();
-		
 		//get node on which policy is applied
 		VisualNode node;
 		node = this.getNodeByName(nodeName);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
-		
 		String currentWord = policyClause.nextToken(" ").trim();
 		currentWord = policyClause.nextToken(" ").trim();
 		//Expect ON keyword
@@ -344,29 +489,11 @@ public final class HecataeusSQLExtensionParser{
 		} catch (Exception e) {
 			throw new HecataeusException( "Unknown Event: " + currentWord); 
 		}
-		
-		//Expect TO keyword
-		currentWord = policyClause.nextToken().trim();
-		if (!(currentWord.equalsIgnoreCase("TO"))){
-			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: TO");
-		}
-		
-		//Get Node on which the event is applied
-		currentWord = policyClause.nextToken().trim();
-		VisualNode eventNode;
-		try {
-		 eventNode = this.getNodeByName(currentWord.toUpperCase());
-			if (eventNode==null)
-				throw new HecataeusException( "Unknown Node: " + currentWord);
-		} catch (Exception e) {
-			throw new HecataeusException( "Unknown Node: " + currentWord); 
-		}
 		//Expect THEN keyword
 		currentWord = policyClause.nextToken().trim();
 		if (!(currentWord.equalsIgnoreCase("THEN"))){
 			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: THEN");
 		}
-		
 		//Get Policy Type
 		currentWord = policyClause.nextToken().trim();
 		PolicyType policyType;
@@ -376,83 +503,11 @@ public final class HecataeusSQLExtensionParser{
 		} catch (Exception e) {
 			throw new HecataeusException( "Unknown Policy: " + currentWord); 
 		}
-	   
 		if (policyClause.hasMoreTokens()) {
 			throw new HecataeusException( "Unexpected Token: " + policyClause.nextToken());
 			}
-		
 		//add new policy to Node, if not the same exists  
-		
-		switch (node.getType()) {
-		//top-level nodes
-		case NODE_TYPE_RELATION :
-			if (EventType.values(node.getType()).contains(eventType))
-				node.addPolicy(eventType, eventNode, policyType);
-			else
-				for (VisualNode child : this._graph.getModule(node)) {
-					if (EventType.values(child.getType()).contains(eventType))
-						node.addPolicy(eventType, child, policyType);
-				}
-			break;
-		case NODE_TYPE_QUERY  :
-			// if event node is in current module
-			if (this._graph.getModule(node).contains(eventNode)) {
-				if (EventType.values(node.getType()).contains(eventType))
-					node.addPolicy(eventType, eventNode, policyType);
-				else  
-				for (VisualNode child : this._graph.getModule(node)) {
-					if (EventType.values(child.getType()).contains(eventType))
-						node.addPolicy(eventType, child, policyType);
-				}
-			}else // apply policy to all nodes connected with event node
-				if (EventType.values(eventNode.getType()).contains(eventType))
-					node.addPolicy(eventType, eventNode, policyType);
-				else  
-				for (VisualNode child : this._graph.getModule(node)) 
-					if (!child.equals(node)) {
-						for (VisualNode providerChild : this._graph.getModule(eventNode)) 
-							if (this._graph.getPaths(child, providerChild)>0)
-								if (EventType.values(child.getType()).contains(eventType))
-									node.addPolicy(eventType, child, policyType);
-					}
-			break;
-		case NODE_TYPE_VIEW :
-			// if event node is in current module
-			if (this._graph.getModule(node).contains(eventNode)) {
-				if (EventType.values(node.getType()).contains(eventType))
-					node.addPolicy(eventType, eventNode, policyType);
-				else  
-				for (VisualNode child : this._graph.getModule(node)) {
-					if (EventType.values(child.getType()).contains(eventType))
-						node.addPolicy(eventType, child, policyType);
-				}
-			}else // apply policy to all nodes connected with event node
-				if (EventType.values(eventNode.getType()).contains(eventType))
-					node.addPolicy(eventType, eventNode, policyType);
-				else  
-				for (VisualNode child : this._graph.getModule(node))
-					if (!child.equals(node)) {
-						for (VisualNode providerChild : this._graph.getModule(eventNode)) 
-							if (this._graph.getPaths(child, providerChild)>0)
-								if (EventType.values(child.getType()).contains(eventType))
-									node.addPolicy(eventType, child, policyType);
-					}
-			break;
-		//low-level nodes
-		case NODE_TYPE_ATTRIBUTE :
-			if (EventType.values(node.getType()).contains(eventType))
-				node.addPolicy(eventType, eventNode, policyType);
-			 
-			break;
-		case NODE_TYPE_OPERAND  :
-			if (EventType.values(node.getType()).contains(eventType))
-				node.addPolicy(eventType, eventNode, policyType);
-			break;
-		default: //for all other nodes
-			node.addPolicy(eventType, eventNode, policyType);
-		break;
-		}
-		
+		node.addPolicy(eventType, policyType);
 	};
 	
 	private VisualNode getNodeByName(String name) {
@@ -471,7 +526,6 @@ public final class HecataeusSQLExtensionParser{
 		return node;
 		
 	} 
-	
 		
 	private  String readSentence(BufferedReader ffile) throws HecataeusException{
 		String sentence="";

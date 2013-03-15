@@ -36,6 +36,8 @@ public class Script extends Block{
 	 * @exception Exception
 	 */
 	void parse(String sentence,BufferedReader reader) throws IOException,SQLException,Exception{
+		//String sentence =new String(sentence);
+		
 		sentence=sentence.replaceAll("( |\r\t)+"," ");
 		sentence=sentence.replaceAll("( |\\r\\t)*;",";");
 		sentence=sentence.trim();
@@ -45,7 +47,8 @@ public class Script extends Block{
 			sentence=sentence.replaceAll("( |\r\t)+"," ");
 			sentence=sentence.trim();
 			
-			if (sentence.startsWith("CREATE"))	sentence=HecataeusSQLParser.removeExtraNewLines(sentence,"CREATE");
+			if (sentence.startsWith("CREATE")){	
+				sentence=HecataeusSQLParser.removeExtraNewLines(sentence,"CREATE");}
 			else if (sentence.startsWith("EXECUTE"))	sentence=HecataeusSQLParser.removeExtraNewLines(sentence,"EXECUTE");
 			
 			//if's check if block inside block exist
@@ -108,7 +111,7 @@ public class Script extends Block{
 				this.addBlock(emb);
 			}
 			else {
-				sentence=clearSentence(sentence);
+				//sentence=clearSentence(sentence);
 				
 				String[] linesAfterClear=sentence.split("\r\n|\r|\n");
 				

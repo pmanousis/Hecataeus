@@ -111,10 +111,10 @@ public final class HecataeusNodeEvents extends JDialog {
 				VisualGraph graph = (VisualGraph) ll.getGraph();
 				//clear previous status of nodes
 				for (VisualNode n: graph.getVertices()){
-        			n.setStatus(StatusType.NO_STATUS);
+        			n.setStatus(StatusType.NO_STATUS,true);
         		}	
 				for (VisualEdge edge : graph.getEdges()) {
-					edge.setStatus(StatusType.NO_STATUS);
+					edge.setStatus(StatusType.NO_STATUS,true);
         		}	
 				//initialize algorithm
 				graph.initializeChange(event);
@@ -139,10 +139,10 @@ public final class HecataeusNodeEvents extends JDialog {
 				VisualGraph graph = (VisualGraph) ll.getGraph();
 				//clear previous status of nodes
 				for (VisualNode u : graph.getVertices()) {
-					u.setStatus(StatusType.NO_STATUS);
+					u.setStatus(StatusType.NO_STATUS,true);
 				}	
 				for (VisualEdge edge : graph.getEdges()) {
-					edge.setStatus(StatusType.NO_STATUS);
+					edge.setStatus(StatusType.NO_STATUS,true);
 				}	
 				//initialize algorithm
 				graph.initializeChange(event);
@@ -184,7 +184,7 @@ public final class HecataeusNodeEvents extends JDialog {
         		// get event type from the combo box
 				EventType eventType = (EventType) comboBoxEventType.getSelectedItem();
 				// create and add selected event
-				EvolutionEvent<VisualNode> newEvent = new EvolutionEvent<VisualNode>(node,eventType);
+				EvolutionEvent<VisualNode> newEvent = new EvolutionEvent<VisualNode>(/*node,*/eventType);
             	boolean eventExists = false;
             	EvolutionEvents events = node.getEvents();
         		            	

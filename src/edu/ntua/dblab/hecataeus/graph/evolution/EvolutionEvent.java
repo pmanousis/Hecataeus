@@ -9,9 +9,9 @@ public class EvolutionEvent<V extends EvolutionNode> {
 	
 	private EventType eventType;
 	private V eventNode;
-	
-	public EvolutionEvent(V node,EventType type){
-		this.eventNode = node;
+/**@author pmanousi*/	
+	public EvolutionEvent(/*V node,*/EventType type){
+		//this.eventNode = node;
 		this.eventType = type;
 	}
 	

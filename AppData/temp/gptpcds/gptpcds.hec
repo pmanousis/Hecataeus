@@ -1,0 +1,2 @@
+SQL: SQLS/web_sales_DDL.sql, SQLS/web_sales_SQL_views.sql
+POL: POLICIES/DefaultPolicy.plc, POLICIES/PropagateAll.plc

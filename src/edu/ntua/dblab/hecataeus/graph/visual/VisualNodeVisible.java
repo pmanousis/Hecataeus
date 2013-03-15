@@ -49,16 +49,16 @@ import edu.uci.ics.jung.graph.util.Context;
     		 
     		 switch (layer) {
     		 case CONTAINER:
-    			 v.setVisible(v.getType().getCategory()==NodeCategory.CONTAINER); 
+    			 v.setVisible(v.getType().getCategory()==NodeCategory.CONTAINER);
     			 break;
     		 case MODULE:
     			 v.setVisible(v.getType().getCategory()==NodeCategory.MODULE
     					 ||v.getType().getCategory()==NodeCategory.CONTAINER);
     			 break;
     		 case SCHEMA:
-    			 v.setVisible(v.getType().getCategory()==NodeCategory.SCHEMA
-    					 ||v.getType().getCategory()==NodeCategory.MODULE
-    					 ||v.getType().getCategory()==NodeCategory.CONTAINER);
+    			 v.setVisible(v.getType().getCategory()==NodeCategory.MODULE
+    					 ||v.getType().getCategory()==NodeCategory.CONTAINER
+    					 ||v.getType().getCategory()==NodeCategory.INOUTSCHEMA);
     			 break;
     		 case SEMANTICS:
     			 v.setVisible(true);

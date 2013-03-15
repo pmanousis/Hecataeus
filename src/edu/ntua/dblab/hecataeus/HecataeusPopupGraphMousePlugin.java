@@ -64,7 +64,11 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 	protected PluggableRenderContext<VisualNode,VisualEdge> pr; 
 	protected VisualNode clickedVertex ;
 	protected VisualEdge clickedEdge ;
-	
+/**
+ * @author pmanousi
+ * Needed for the epilegmenosKombos variable.
+ */
+protected HecataeusViewer viewer;
 
 	public HecataeusPopupGraphMousePlugin() {
 		super(new Factory<VisualNode>() {
@@ -75,9 +79,19 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 			public VisualEdge create() {
 				return new VisualEdge();
 			}
-		});		
+		});
 	}
-	@SuppressWarnings("serial")
+	
+/**
+ * @author pmanousi
+ * @param v
+ */
+public void HecataeusViewerPM(HecataeusViewer v)
+{
+	this.viewer=v;
+}
+	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void handlePopup(MouseEvent e) {
 
@@ -133,7 +147,12 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 					popup.add(this.getMenuSetEvents());
 					if (clickedVertex.getHasEvents())
 						popup.add(this.getMenuApplyEvent());
-				}    
+/**
+ * @author pmanousi
+ */
+this.viewer.epilegmenosKombos=clickedVertex;
+this.viewer.updateManagers();
+				}
 				//for any vertex 
 				if(pickedNodes.size() > 0) {
 					popup.add(this.getMenuSetFrequency());
@@ -153,7 +172,7 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 					popup.add(this.getMenuCreateNode());// end AbstractAction("Create Vertex") 
 				}// end else
 			if(popup.getComponentCount() > 0) {
-				popup.show(vv, e.getX(), e.getY());
+/** @author pmanousi				popup.show(vv, e.getX(), e.getY());*/
 			}
 		}
 	}
@@ -384,10 +403,10 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 					// initialize the event
 					//clear previous status of nodes if exist
 					for (VisualNode u : graph.getVertices()) {
-						u.setStatus(StatusType.NO_STATUS);
+						u.setStatus(StatusType.NO_STATUS,true);
 					}	
 					for (VisualEdge edge : graph.getEdges()) {
-						edge.setStatus(StatusType.NO_STATUS);
+						edge.setStatus(StatusType.NO_STATUS,true);
 					}	
 					//initialize algorithm
 					graph.initializeChange(event);
@@ -779,18 +798,18 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 					// create and add selected policy
 					for( VisualNode other: pickedNodes) {
 						if ((eventType==EventType.ADD_ATTRIBUTE) 
-								||(eventType==EventType.ADD_CONDITION)
+/** @author pmanousi						||(eventType==EventType.ADD_CONDITION)
 								||(eventType==EventType.MODIFY_CONDITION)
 								||(eventType==EventType.RENAME_RELATION)
 								||(eventType==EventType.DELETE_CONDITION)
-								||(eventType==EventType.DELETE_RELATION)
+								||(eventType==EventType.DELETE_RELATION)*/
 						){for (VisualEdge edge :  other.getOutEdges()) {
 							if (edge.isProvider()) {
-								other.addPolicy(eventType,edge.getToNode(),policyType);
+								other.addPolicy(eventType/*,edge.getToNode()*/,policyType);
 							}
 						}
 						}else{
-							other.addPolicy(eventType,other,policyType);
+							other.addPolicy(eventType/*,other*/,policyType);
 						}
 						vv.repaint();  							
 					}

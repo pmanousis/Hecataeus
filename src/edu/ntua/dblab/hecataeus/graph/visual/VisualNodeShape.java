@@ -29,6 +29,11 @@ public final class VisualNodeShape extends AbstractVertexShapeTransformer<Visual
 					return INITIAL_SIZE;
 				else if (type.getCategory()== NodeCategory.CONTAINER)
 					return INITIAL_SIZE * 4 ;
+/***
+ * @author pmanousi
+ */
+else if (type.getCategory()== NodeCategory.INOUTSCHEMA)
+	return INITIAL_SIZE / 2;
 				else
 					return INITIAL_SIZE/4;
 
@@ -66,7 +71,16 @@ public final class VisualNodeShape extends AbstractVertexShapeTransformer<Visual
 			return factory.getEllipse(v);
 		else if (type ==NodeType.NODE_TYPE_VIEW)
 			return factory.getRegularPolygon(v,3);
-		else 
+/***
+ * @author pmanousi
+ */
+else if (type ==NodeType.NODE_TYPE_OUTPUT)
+	return factory.getRegularPolygon(v,5);
+else if (type ==NodeType.NODE_TYPE_INPUT)
+	return factory.getRegularPolygon(v,5);
+else if (type==NodeType.NODE_TYPE_SEMANTICS)
+	return factory.getRegularPolygon(v,5);
+		else
 			return factory.getRegularPolygon(v,4);
 	} 
 	

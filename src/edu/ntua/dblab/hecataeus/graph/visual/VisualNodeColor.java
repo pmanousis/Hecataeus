@@ -35,7 +35,7 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
         {	
         	StatusType status = (v.getStatus());
         	
-        	if (status==StatusType.TO_DELETE)
+/*pmanousi 	if (status==StatusType.TO_DELETE)
         		return Color.RED;
         	else if (status==StatusType.TO_DELETE_CHILD)
         		return new Color(130,0,0);
@@ -45,8 +45,8 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
         		return Color.GREEN;
         	else if (status==StatusType.TO_RENAME)
         		return Color.ORANGE;
-        	else if (status==StatusType.TO_MODIFY)
-        		return Color.ORANGE;
+        	else */if (status==StatusType.PROPAGATE)
+        		return Color.RED;
         	else if (status==StatusType.BLOCKED)
         		return Color.BLACK;
         	else if (status==StatusType.PROMPT)
@@ -102,6 +102,15 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
                 		return new Color(100,255,50);
                 	else if (type==NodeType.NODE_TYPE_ATTRIBUTE)
                 		return Color.LIGHT_GRAY;
+/**
+ * @author pmanousi
+ */
+else if (type==NodeType.NODE_TYPE_INPUT)
+	return Color.BLUE;
+else if (type==NodeType.NODE_TYPE_OUTPUT)
+	return Color.ORANGE;
+else if (type==NodeType.NODE_TYPE_SEMANTICS)
+	return Color.MAGENTA;
                 	else return Color.WHITE;
                 }
         	}

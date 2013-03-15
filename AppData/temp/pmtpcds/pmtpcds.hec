@@ -1,0 +1,2 @@
+SQL: SQLS/tpcds.ddl,SQLS/tpcds0.sql,SQLS/tpcds1.sql,SQLS/tpcds2.sql
+POL: POLICIES/DefaultPolicy.plc, POLICIES/PropagateAll.plc, POLICIES/Mixture.plc

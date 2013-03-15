@@ -251,10 +251,9 @@ public class HecataeusMetricManager {
 		 int countDegree =0;
 		 //clear all statuses
 		 for (V aNode : graph.getVertices())
-			 aNode.setStatus(StatusType.NO_STATUS);
+			 aNode.setStatus(StatusType.NO_STATUS,true);
 		 for (E aEdge: graph.getEdges())
-			 aEdge.setStatus(StatusType.NO_STATUS);
-		 
+			 aEdge.setStatus(StatusType.NO_STATUS,true);
 		 graph.initializeChange(event);
 		 
 		 for (V aNode : graph.getVertices())

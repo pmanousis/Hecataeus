@@ -11,7 +11,10 @@ import java.util.List;
  * @author  George Papastefanatos
  */
 public class EvolutionNode<E extends EvolutionEdge>{
-	
+/** @author pmanousi To be used in topological sorting for messages. */
+public double ID=0.0;
+static int counter;
+
 	private String _Name = null;
 	private NodeType _Type ;
 	private int _frequency = 0;
@@ -28,6 +31,8 @@ public class EvolutionNode<E extends EvolutionEdge>{
 		this._inEdges = new ArrayList<E>();
 		this._policies = new EvolutionPolicies();
 		this._events = new EvolutionEvents();
+		counter++;
+		ID=counter;
 	}
 
 	public EvolutionNode(String Name, NodeType Type) {
@@ -37,6 +42,8 @@ public class EvolutionNode<E extends EvolutionEdge>{
 		this._inEdges = new ArrayList<E>();
 		this._policies = new EvolutionPolicies();
 		this._events = new EvolutionEvents();
+		counter++;
+		ID=counter;
 	}
 
 	/**
@@ -99,8 +106,19 @@ public class EvolutionNode<E extends EvolutionEdge>{
 		return this._events;
 	}
 	
-	public void setStatus(StatusType status) {
-		this._status = status ;
+	public void setStatus(StatusType status,boolean cl) {
+		if(cl==true)
+		{
+			this._status = status;
+		}
+		else
+		{
+			if(this._status==StatusType.BLOCKED||status==StatusType.NO_STATUS)
+			{
+				return;
+			}
+			this._status = status;
+		}
 	}
 	
 	public StatusType getStatus() {
@@ -119,12 +137,12 @@ public class EvolutionNode<E extends EvolutionEdge>{
 	/**
 	*  creates and adds policy to node
 	**/
-	public void addPolicy(EventType eventType, EvolutionNode child, PolicyType policyType) {
+	public void addPolicy(EventType eventType/*, EvolutionNode child*/, PolicyType policyType) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType, child);
+		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType/*, child*/);
 		if(policy!=null)
 				policies.remove(policy);
-		policies.add(new EvolutionPolicy<EvolutionNode>(eventType,child,policyType));
+		policies.add(new EvolutionPolicy<EvolutionNode>(eventType/*,child*/,policyType));
 	}
 
 	/**
@@ -132,7 +150,7 @@ public class EvolutionNode<E extends EvolutionEdge>{
 	**/
 	public void addPolicy(EvolutionPolicy p) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType(), p.getSourceEvent().getEventNode());
+		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType()/*, p.getSourceEvent().getEventNode()*/);
 		if(policy!=null)
 				policies.remove(policy);
 		policies.add(p);
@@ -156,7 +174,7 @@ public class EvolutionNode<E extends EvolutionEdge>{
 			if ((event.getEventType()==eventType))
 				events.remove(event);
 		}
-		events.add(new EvolutionEvent(this, eventType));
+		events.add(new EvolutionEvent(/*this,*/ eventType));
 	}
 
 	/**

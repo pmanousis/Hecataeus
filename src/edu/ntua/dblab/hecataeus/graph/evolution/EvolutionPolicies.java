@@ -10,9 +10,9 @@ public class EvolutionPolicies extends java.util.ArrayList<EvolutionPolicy> {
 		
 	}
 	
-	public <V extends EvolutionNode> EvolutionPolicy<V> get(EventType eventType, V  eventNode) {
+	public <V extends EvolutionNode> EvolutionPolicy<V> get(EventType eventType/*, V  eventNode*/) {
 		for (EvolutionPolicy<V> u : this) {
-			if ( u.getSourceEvent().getEventType()==eventType && u.getSourceEvent().getEventNode().equals(eventNode)) {
+			if ( u.getSourceEvent().getEventType()==eventType/* && u.getSourceEvent().getEventNode().equals(eventNode )*/) {
 				return u;
 			}
 		}

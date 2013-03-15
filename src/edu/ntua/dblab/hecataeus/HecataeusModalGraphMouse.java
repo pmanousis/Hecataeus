@@ -34,13 +34,19 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
 
 	protected TranslatingGraphMousePlugin  translatingPluginMiddleButton;
 	protected HecataeusPopupGraphMousePlugin  popupEditingPlugin;
-	
+
+/**
+ * @author pmanousi
+ * Needed for the epilegmenosKombos variable.
+ */
+protected HecataeusViewer viewer;
+
      /**
      * create an instance with default values
      *
      */
     public HecataeusModalGraphMouse() {
-    	super(); 
+    	super();
     }
     
     /**
@@ -52,8 +58,7 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
     	super(in, out); 
     }
     
-    protected void loadPlugins() { 
-    	
+    protected void loadPlugins() {
     	pickingPlugin = new HecataeusPickingGraphMousePlugin();
     	animatedPickingPlugin = new AnimatedPickingGraphMousePlugin<VisualNode,VisualEdge>();
     	// add an additional translating plugin 
@@ -67,17 +72,35 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
     	add(scalingPlugin);
     	add(translatingPluginMiddleButton);
     	add(popupEditingPlugin);
-    	setMode(Mode.TRANSFORMING);
-    	    	
-    } 
+/** @author pmanousi changed from Mode.TRANSFORMING to Mode.PICKING */
+    	setMode(Mode.PICKING);
+    }
+
+/**
+ * @author pmanousi
+ * @param v The viewer that has epilegmenosKobmos.
+ */
+public void HecataeusViewerPM(HecataeusViewer v)
+{
+   	this.viewer=v;
+   	popupEditingPlugin.HecataeusViewerPM(this.viewer);
+}
     
        
     public JMenu getModeMenu() {
     	if(modeMenu == null) {
-        	modeMenu = new JMenu("Graph");
+/**
+ * @author pmanousi
+ * Changed from "Graph" to "Visualize"
+ */
+        	modeMenu = new JMenu("Visualize");
 			
-            final JRadioButtonMenuItem transformingButton = 
-                new JRadioButtonMenuItem("Move");
+            final JRadioButtonMenuItem transformingButton =
+/**
+ * @author pmanousi
+ * Changed from "Move" to "Move Graph"
+ */
+                new JRadioButtonMenuItem("Move Graph");
             transformingButton.addItemListener(new ItemListener() {
                 public void itemStateChanged(ItemEvent e) {
                     if(e.getStateChange() == ItemEvent.SELECTED) {
@@ -97,7 +120,8 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
             ButtonGroup radio = new ButtonGroup();
             radio.add(transformingButton);
             radio.add(pickingButton);
-            transformingButton.setSelected(true);
+/** @author pmanousi transformingButton.setSelected(true);*/
+            pickingButton.setSelected(true);
             modeMenu.add(transformingButton);
             modeMenu.add(pickingButton);
             modeMenu.setToolTipText("Menu for setting Mouse Mode");
@@ -126,10 +150,10 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
 			
 			VisualizationViewer<VisualNode,VisualEdge> vv = (VisualizationViewer<VisualNode,VisualEdge>) me.getSource();
 			VisualGraph g = (VisualGraph) vv.getGraphLayout().getGraph();
-			if (node.getType().getCategory()==NodeCategory.MODULE) {
+			if (node.getType().getCategory()==NodeCategory.MODULE||node.getType().getCategory()==NodeCategory.INOUTSCHEMA) {
 				List<VisualNode> module = g.getModule(node);
 				for (VisualNode child : module) {
-					child.setVisible(!child.getVisible());
+						child.setVisible(!child.getVisible());
 				}
 				node.setVisible(true);
 			}

@@ -23,8 +23,14 @@ public enum NodeType {
 	NODE_TYPE_VARIABLE	(NodeCategory.MODULE),					/**added by sgerag*/
 	
 	NODE_TYPE_ATTRIBUTE (NodeCategory.SCHEMA),
-	
-	
+
+/**
+ * @author pmanousi
+ */
+NODE_TYPE_INPUT (NodeCategory.INOUTSCHEMA),
+NODE_TYPE_OUTPUT (NodeCategory.INOUTSCHEMA),
+NODE_TYPE_SEMANTICS (NodeCategory.INOUTSCHEMA),
+
 	NODE_TYPE_CONDITION (NodeCategory.SEMANTICS),
 	NODE_TYPE_OPERAND 	(NodeCategory.SEMANTICS),
 	NODE_TYPE_CONSTANT	(NodeCategory.SEMANTICS),
