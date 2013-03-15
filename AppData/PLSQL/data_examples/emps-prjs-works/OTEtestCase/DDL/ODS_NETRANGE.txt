@@ -1,0 +1,113 @@
+CREATE TABLE ODS_NETRANGE
+(
+  NETRANGE_SK            NUMBER(5)              NOT NULL,
+  NETRANGE_CODE          VARCHAR2(20 BYTE)      NOT NULL,
+  NETRANGE_DESCR         VARCHAR2(100 BYTE),
+  NETRANGE_CREATIONDATE  DATE                   NOT NULL,
+  NETRANGE_CREATIONUSER  VARCHAR2(30 BYTE)      NOT NULL,
+  NETRANGE_ORD           NUMBER(10)
+)
+TABLESPACE ODS_ODS_TBL
+PCTUSED    0
+PCTFREE    10
+INITRANS   1
+MAXTRANS   255
+STORAGE    (
+            INITIAL          160K
+            MINEXTENTS       1
+            MAXEXTENTS       2147483645
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+LOGGING 
+NOCOMPRESS 
+NOCACHE
+NOPARALLEL
+MONITORING;
+
+
+CREATE UNIQUE INDEX ODS_NETRANGE_CODE_UIDX ON ODS_NETRANGE
+(NETRANGE_CODE)
+LOGGING
+TABLESPACE INDEXES
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          160K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       2147483645
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+NOPARALLEL;
+
+
+CREATE UNIQUE INDEX ODS_NETRANGE_PIDX ON ODS_NETRANGE
+(NETRANGE_SK)
+LOGGING
+TABLESPACE INDEXES
+PCTFREE    10
+INITRANS   2
+MAXTRANS   255
+STORAGE    (
+            INITIAL          160K
+            NEXT             1M
+            MINEXTENTS       1
+            MAXEXTENTS       2147483645
+            PCTINCREASE      0
+            BUFFER_POOL      DEFAULT
+           )
+NOPARALLEL;
+
+
+CREATE OR REPLACE TRIGGER ODS_NETRANGE_BIR_TRI BEFORE INSERT ON ODS_NETRANGE
+FOR EACH ROW
+DECLARE
+	   tmpVar NUMBER;
+/******************************************************************************
+   COMPANY: ORACLE
+   PROJECT: MIS
+   NAME:	ODS_NETRANGE_BIR_TRI
+   PURPOSE: Default values for several columns of the table
+   NOTES:
+
+   REVISIONS:
+   Ver        Date        Author           Description
+   ---------  ----------  ---------------  ------------------------------------
+   1.0        8/01/2007   GPAPOUTS         1. Created this trigger.
+******************************************************************************/
+BEGIN
+	 IF INSERTING THEN
+	 	IF :NEW.NETRANGE_SK IS NULL THEN
+          SELECT ODS_NETRANGE_SEQ.NEXTVAL INTO tmpVar FROM dual;
+          :NEW.NETRANGE_SK := tmpVar;
+		END IF;
+		:NEW.NETRANGE_CREATIONDATE	:= SYSDATE;
+     	:NEW.NETRANGE_CREATIONUSER := nvl(v('APP_USER'), user);
+	 END IF;
+EXCEPTION
+		 WHEN OTHERS THEN
+-- Consider logging the error and then re-raise
+   			RAISE;
+END ODS_NETRANGE_BIR_TRI;
+/
+SHOW ERRORS;
+
+
+
+CREATE PUBLIC SYNONYM ODS_NETRANGE FOR ODS_NETRANGE;
+
+
+ALTER TABLE ODS_NETRANGE ADD (
+  CONSTRAINT ODS_NETRANGE_PK
+ PRIMARY KEY
+ (NETRANGE_SK));
+
+ALTER TABLE ODS_NETRANGE ADD (
+  CONSTRAINT ODS_NETRANGE_CODE_UK
+ UNIQUE (NETRANGE_CODE));
+
+
+GRANT ALTER, DELETE, INDEX, INSERT, REFERENCES, SELECT, UPDATE, ON COMMIT REFRESH, QUERY REWRITE, DEBUG, FLASHBACK ON  ODS_NETRANGE TO MIS WITH GRANT OPTION;

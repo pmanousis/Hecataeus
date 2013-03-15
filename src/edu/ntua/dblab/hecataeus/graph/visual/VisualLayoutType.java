@@ -1,6 +1,7 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Dimension;
+import java.awt.geom.Point2D;
 
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTopologicalLayout.Orientation;
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
@@ -21,6 +22,8 @@ public enum VisualLayoutType {
 	BalloonLayout,
 	HorizontalTopologicalLayout,
 	VerticalTopologicalLayout,
+	InverseHorizontalTopologicalLayout,
+	InverseVerticalTopologicalLayout,
 	RadialTreeLayout,
 	KKLayout,
 	FRLayout,
@@ -53,6 +56,10 @@ public enum VisualLayoutType {
 				return "Horizontal Topological Layout";
 			case VerticalTopologicalLayout:
 				return "Vertical Topological Layout";
+			case InverseHorizontalTopologicalLayout:
+				return "Inverse Horizontal Topological Layout";
+			case InverseVerticalTopologicalLayout:
+				return "Inverse Topological Layout";
 			default:
 				return name();
 			}
@@ -67,6 +74,22 @@ public enum VisualLayoutType {
 			return valueOf(value);
 		}
 		
+		public static Layout<VisualNode, VisualEdge> getLayoutFor(VisualGraph g, VisualLayoutType type, Point2D initialPosition) {
+			VisualTopologicalLayout layout;
+			switch (type) {
+			case HorizontalTopologicalLayout: 
+				layout = new VisualTopologicalLayout(g, Orientation.RIGHT2LEFT);
+				layout.setInitialPosition(initialPosition);
+				return layout;
+			case VerticalTopologicalLayout : 
+				layout = new VisualTopologicalLayout(g, Orientation.BOTTOMUP);
+				layout.setInitialPosition(initialPosition);
+				return layout;
+			default: 
+				return getLayoutFor(g, type); 
+			}
+			
+		}
 		public static Layout<VisualNode, VisualEdge> getLayoutFor(VisualGraph g, VisualLayoutType type) {
 			switch (type) {
 			case StaticLayout: 
@@ -90,7 +113,7 @@ public enum VisualLayoutType {
 			case RadialTreeLayout:
 				return new RadialTreeLayout<VisualNode, VisualEdge>(new DelegateForest<VisualNode, VisualEdge>(g));
 			default: 
-				return new StaticLayout<VisualNode, VisualEdge>(g, new VisualNodeLocation());
+				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
 		}
 		

@@ -1,0 +1,32 @@
+
+create table SPR_CATEGORIES
+(
+  CAT_RSC_CODE      VARCHAR(4) not null,
+  CAT_RES_YEAR      NUMERIC(4) not null,
+  CAT_ID            NUMERIC(7) not null,
+  CAT_DESCR         VARCHAR(250) not null,
+  CAT_LEVEL         NUMERIC(2) not null,
+  CAT_LAST          NUMERIC(1) not null,
+  CAT_STRCODE       VARCHAR(20) not null,
+  CAT_UNIT          VARCHAR(2),
+  CAT_TYPE          VARCHAR(2),
+  CAT_BUTCHER       NUMERIC(1),
+  CAT_FIELD         NUMERIC(4,1),
+  CAT_CREATED_BY    VARCHAR(30),
+  CAT_CHANGED_BY    VARCHAR(30),
+  CAT_DATETIME_CREATED  DATETIME,
+  CAT_DATETIME_CHANGED  DATETIME,
+  CAT_CAT_ID        NUMERIC(7),
+  CAT_CAT_RSC_CODE  VARCHAR(4),
+  CAT_DESCR_ENG     VARCHAR(250),
+  CAT_MCA_CODE      VARCHAR(6),
+  CAT_EUROSTAT      VARCHAR(30),
+  CAT_SHDESCR       VARCHAR(100),
+  CAT_ORDER         NUMERIC(5,1),
+  CAT_REPORTS_DESCR VARCHAR(250)
+)
+
+
+
+alter table SPR_CATEGORIES
+  add constraint SPR_CATEGORIES_PK primary key (CAT_RES_YEAR, CAT_RSC_CODE, CAT_ID)

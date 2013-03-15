@@ -1,0 +1,126 @@
+
+/*****************************************************************************
+--  Note: This generated code is for demonstration purposes only and may
+--        not be deployable.
+*****************************************************************************/
+
+CREATE OR REPLACE PACKAGE ""MAP_MTR_SPQUAL_DIM_PKG"" AS
+OWB$MAP_OBJECT_ID VARCHAR2(32) := '';
+sql_stmt  VARCHAR2(32767);
+get_abort BOOLEAN := FALSE;
+get_abort_procedure BOOLEAN := FALSE;
+get_trigger_success BOOLEAN := TRUE;
+get_errors NUMBER(22) := 0;
+get_status NUMBER(22) := 0;
+get_error_ratio NUMBER(22) := 0;
+get_global_names              VARCHAR2(10) := 'FALSE';
+-- Status variable for Batch cursors
+"MTR_SPQUAL_DIM_St" BOOLEAN := FALSE; 
+
+-- Function Main 
+-- Entry point in package ""MAP_MTR_SPQUAL_DIM_PKG""
+FUNCTION Main RETURN NUMBER;  
+
+END ""MAP_MTR_SPQUAL_DIM_PKG"";
+
+/
+
+CREATE OR REPLACE PACKAGE BODY ""MAP_MTR_SPQUAL_DIM_PKG"" AS
+
+
+
+
+---------------------------------------------------------------------------
+-- Function "MTR_SPQUAL_DIM_Bat"
+--   performs batch extraction
+--   Returns TRUE on success
+--   Returns FALSE on failure
+---------------------------------------------------------------------------
+FUNCTION "MTR_SPQUAL_DIM_Bat" 
+ RETURN BOOLEAN IS
+
+BEGIN
+  EXECUTE IMMEDIATE 'ALTER SESSION ENABLE PARALLEL DML';
+
+  BEGIN
+    MERGE
+INTO
+  "MTR"."MTR_SPQUAL_DIM"
+USING
+  (SELECT
+  "STAGE_SPQUAL_STAGE"."SPQUAL_SK" "SPQUAL_SK",
+  "STAGE_SPQUAL_STAGE"."LINETYPE_DESCR" "LINETYPE_DESCR",
+  "STAGE_SPQUAL_STAGE"."LINETYPE_CODE" "LINETYPE_CODE",
+  "STAGE_SPQUAL_STAGE"."SPQUAL_DESCR" "SPQUAL_DESCR",
+  "STAGE_SPQUAL_STAGE"."SPQUAL_CODE" "SPQUAL_CODE"
+FROM
+  "STAGE"."STAGE_SPQUAL_STAGE" "STAGE_SPQUAL_STAGE"
+  WHERE 
+  ( "STAGE_SPQUAL_STAGE"."SPQUAL_UPDFLAG" = 'Y' )
+  )
+    MERGE_SUBQUERY
+ON (
+  "MTR"."MTR_SPQUAL_DIM"."SPQUAL_SK" = "MERGE_SUBQUERY"."SPQUAL_SK" AND
+  "MTR"."MTR_SPQUAL_DIM"."SPQUAL_CODE" = "MERGE_SUBQUERY"."SPQUAL_CODE"
+   )
+  
+  WHEN MATCHED THEN
+    UPDATE
+    SET
+                  "LINETYPE_DESCR" = "MERGE_SUBQUERY"."LINETYPE_DESCR",
+  "LINETYPE_CODE" = "MERGE_SUBQUERY"."LINETYPE_CODE",
+  "SPQUAL_DESCR" = "MERGE_SUBQUERY"."SPQUAL_DESCR"
+       
+  WHEN NOT MATCHED THEN
+    INSERT
+      ("MTR"."MTR_SPQUAL_DIM"."SPQUAL_SK",
+      "MTR"."MTR_SPQUAL_DIM"."LINETYPE_DESCR",
+      "MTR"."MTR_SPQUAL_DIM"."LINETYPE_CODE",
+      "MTR"."MTR_SPQUAL_DIM"."SPQUAL_DESCR",
+      "MTR"."MTR_SPQUAL_DIM"."SPQUAL_CODE")
+    VALUES
+      ("MERGE_SUBQUERY"."SPQUAL_SK",
+      "MERGE_SUBQUERY"."LINETYPE_DESCR",
+      "MERGE_SUBQUERY"."LINETYPE_CODE",
+      "MERGE_SUBQUERY"."SPQUAL_DESCR",
+      "MERGE_SUBQUERY"."SPQUAL_CODE")
+  ;
+    COMMIT;
+  EXCEPTION WHEN OTHERS THEN
+    ROLLBACK;
+    COMMIT;
+    RETURN FALSE;
+  END;
+  COMMIT;
+  RETURN TRUE;
+END "MTR_SPQUAL_DIM_Bat";
+
+FUNCTION Main RETURN NUMBER IS
+get_batch_status           BOOLEAN := TRUE;
+BEGIN
+  
+
+
+
+
+  
+PROCEDURE EXEC_AUTONOMOUS_SQL(CMD IN VARCHAR2) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  EXECUTE IMMEDIATE (CMD);
+  COMMIT;
+END;
+  -- Initialize all batch status variables
+	"MTR_SPQUAL_DIM_St" := FALSE;
+
+
+
+			
+"MTR_SPQUAL_DIM_St" := "MTR_SPQUAL_DIM_Bat"; 
+
+
+RETURN get_status;
+END Main;
+END ""MAP_MTR_SPQUAL_DIM_PKG"";
+
+/

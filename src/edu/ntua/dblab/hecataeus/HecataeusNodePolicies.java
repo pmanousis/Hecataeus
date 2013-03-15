@@ -209,7 +209,7 @@ public final class HecataeusNodePolicies extends JDialog {
 				VisualNode eventNode  = (VisualNode) comboBoxEventNodeChild.getSelectedItem();
 				if (eventNode!=null) {
 					// create and add selected policy
-					EvolutionPolicy newPolicy = new EvolutionPolicy(eventType,eventNode, policyType);
+					EvolutionPolicy<VisualNode> newPolicy = new EvolutionPolicy<VisualNode>(eventType,eventNode, policyType);
 					EvolutionPolicies policies = node.getPolicies();
 					if (policies.get(eventType, eventNode)!=null) {
 						if (JOptionPane.showConfirmDialog(null,"This policy already exists! Do you want to replace it?","Warning Message",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
@@ -268,7 +268,7 @@ public final class HecataeusNodePolicies extends JDialog {
 		remove.add(okRemoveButton);
 		okRemoveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				EvolutionPolicy policyToRemove= (EvolutionPolicy) comboBoxPolicies.getSelectedItem();
+				EvolutionPolicy<VisualNode> policyToRemove= (EvolutionPolicy<VisualNode>) comboBoxPolicies.getSelectedItem();
 				//get  node
 				node.removePolicy(policyToRemove);
 				vv.repaint();
@@ -308,7 +308,7 @@ public final class HecataeusNodePolicies extends JDialog {
 		}
 		//fill existing policies for node
 		if (node.getHasPolicies()){
-			for (EvolutionPolicy policy : node.getPolicies()) {
+			for (EvolutionPolicy<VisualNode> policy : node.getPolicies()) {
 				jTextArea.append(" - " + policy +"\n\n");
 				comboBoxPolicies.addItem(policy);
 			} 

@@ -5,12 +5,12 @@
 package edu.ntua.dblab.hecataeus.graph.evolution;
 
 
-public class EvolutionEvent {
+public class EvolutionEvent<V extends EvolutionNode> {
 	
 	private EventType eventType;
-	private EvolutionNode eventNode;
+	private V eventNode;
 	
-	public EvolutionEvent(EvolutionNode node,EventType type){
+	public EvolutionEvent(V node,EventType type){
 		this.eventNode = node;
 		this.eventType = type;
 	}
@@ -23,11 +23,11 @@ public class EvolutionEvent {
 		return this.eventType;
 	}
 	
-	public void setEventNode(EvolutionNode node){
+	public void setEventNode(V node){
 		this.eventNode = node;
 	}
 	
-	public EvolutionNode getEventNode(){
+	public V getEventNode(){
 		return this.eventNode;
 	}
 	

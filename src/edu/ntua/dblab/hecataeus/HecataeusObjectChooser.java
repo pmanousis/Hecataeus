@@ -24,6 +24,11 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 import edu.ntua.dblab.hecataeus.dao.HecataeusDatabase;
 import edu.ntua.dblab.hecataeus.dao.HecataeusDatabaseSettings;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -338,8 +343,21 @@ public final class HecataeusObjectChooser extends JDialog  {
 		
 	}
 	
-	public ArrayList<String> getStatements(){
-		return this._statements;
+	public File getDBFile(){
+		File f = null;
+		try {
+			f = File.createTempFile("DatabaseFile", "db");
+			FileWriter fop=new FileWriter(f); 
+			BufferedWriter bf = new BufferedWriter(fop);  
+			for (String statement:this._statements) {
+				bf.write(statement+";");
+			}
+			bf.close();
+			f.deleteOnExit();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return f;
 	}
 		 
 	/**

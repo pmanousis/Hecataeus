@@ -1,6 +1,7 @@
 package edu.ntua.dblab.hecataeus;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Frame;
 import java.io.FileReader;
 import java.io.IOException;
@@ -9,10 +10,13 @@ import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
-public class HecataeusMessageDialog extends JDialog{
+public class HecataeusMessageDialog extends JDialog implements	HyperlinkListener{
 
 	private static final long serialVersionUID = 1L;
+	private	JEditorPane	textField;
 
 	/**
 	 * Constructs a new message object
@@ -24,12 +28,13 @@ public class HecataeusMessageDialog extends JDialog{
 		super(owner, title, true);
 		setSize(600,600);
 		JPanel content = new JPanel();
-		JEditorPane textField ;
 		if (type.equals(HecataeusMessageDialog.HTML_FILE))
 			try {
 				textField = new JEditorPane();
+				// Create an HTML viewer to display the URL
 				textField.setContentType(HecataeusMessageDialog.HTML_TEXT);
 				textField.read(new FileReader(msg), null);
+		    	textField.addHyperlinkListener( this );
 			} catch (IOException e) {
 				textField = new JEditorPane(HecataeusMessageDialog.HTML_TEXT, "Help file "+ msg + " is missing");
 			}
@@ -37,7 +42,7 @@ public class HecataeusMessageDialog extends JDialog{
 				textField = new JEditorPane(type, msg);
 
 
-		textField.setEditable(false);
+
 		JScrollPane pane = new JScrollPane(textField);
 		content.setLayout(new BorderLayout());
 		content.add(pane, BorderLayout.CENTER);
@@ -46,7 +51,6 @@ public class HecataeusMessageDialog extends JDialog{
 		this.setLocationRelativeTo(owner);
 		this.setVisible(true);
 	}
-
 
 	/**
 	 * Constructs a new message object with default "text/plain" text type
@@ -66,11 +70,23 @@ public class HecataeusMessageDialog extends JDialog{
 		this(null,title, msg, HecataeusMessageDialog.PLAIN_TEXT);
 	}
 
-
 	final static String PLAIN_TEXT = "text/plain";
 	final static String HTML_TEXT = "text/html";
 	final static String RTF_TEXT = "text/rtf";
 	final static String HTML_FILE = "file/html";
+
+	@Override
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		if( event.getEventType() == HyperlinkEvent.EventType.ACTIVATED )
+		{
+			// Load some cursors
+			Cursor cursor = textField.getCursor();
+			Cursor waitCursor = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+			this.setCursor(waitCursor);
+			textField.setText(event.getURL().toExternalForm());
+			this.setCursor(cursor);
+		}
+	}
 
 }
 

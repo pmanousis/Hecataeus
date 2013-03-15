@@ -49,6 +49,10 @@ public final class HecataeusSQLExtensionParser{
 		NODE,
 		RELATION,
 		QUERY,
+		INSERT,				/**added by sgerag*/
+		DELETE,				/**added by sgerag*/
+		UPDATE,				/**added by sgerag*/
+		// FIXME: ADD AND HANDLE ALL TYPES OF NODES IN POLICY PARSING
 		VIEW, 
 		ATTRIBUTE,
 		CONDITION,
@@ -379,72 +383,70 @@ public final class HecataeusSQLExtensionParser{
 		
 		//add new policy to Node, if not the same exists  
 		
-		node.addPolicy(eventType, eventNode, policyType);
-		
-		
 		switch (node.getType()) {
 		//top-level nodes
 		case NODE_TYPE_RELATION :
-			node.addPolicy(eventType, eventNode, policyType);
-			if (eventType!=EventType.ADD_ATTRIBUTE
-					&&eventType!=EventType.ADD_CONDITION
-					&&eventType!=EventType.RENAME_RELATION) {
-				for (VisualNode child : this._graph.getModule(eventNode)) {
-					child.addPolicy(eventType, child, policyType);
+			if (EventType.values(node.getType()).contains(eventType))
+				node.addPolicy(eventType, eventNode, policyType);
+			else
+				for (VisualNode child : this._graph.getModule(node)) {
+					if (EventType.values(child.getType()).contains(eventType))
+						node.addPolicy(eventType, child, policyType);
 				}
-			}
 			break;
 		case NODE_TYPE_QUERY  :
-				//fill tree for certain events
-			node.addPolicy(eventType, eventNode, policyType);
-			if (eventType!=EventType.ADD_ATTRIBUTE
-					&&eventType!=EventType.ADD_CONDITION
-					&&eventType!=EventType.RENAME_RELATION) {
-				for (VisualNode child : this._graph.getModule(eventNode)) {
-					child.addPolicy(eventType, child, policyType);
+			// if event node is in current module
+			if (this._graph.getModule(node).contains(eventNode)) {
+				if (EventType.values(node.getType()).contains(eventType))
+					node.addPolicy(eventType, eventNode, policyType);
+				else  
+				for (VisualNode child : this._graph.getModule(node)) {
+					if (EventType.values(child.getType()).contains(eventType))
+						node.addPolicy(eventType, child, policyType);
 				}
-			}else
-			{
-				//declare policies for events coming form providers top level nodes
-				//through FROM edges
-				for (EvolutionEdge edge: this._graph.getOutEdges(node)) {
-					if (edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-						node.addPolicy(eventType, edge.getToNode(), policyType);
+			}else // apply policy to all nodes connected with event node
+				if (EventType.values(eventNode.getType()).contains(eventType))
+					node.addPolicy(eventType, eventNode, policyType);
+				else  
+				for (VisualNode child : this._graph.getModule(node)) 
+					if (!child.equals(node)) {
+						for (VisualNode providerChild : this._graph.getModule(eventNode)) 
+							if (this._graph.getPaths(child, providerChild)>0)
+								if (EventType.values(child.getType()).contains(eventType))
+									node.addPolicy(eventType, child, policyType);
 					}
-				}
-			}
 			break;
 		case NODE_TYPE_VIEW :
-			node.addPolicy(eventType, eventNode, policyType);
-			if (eventType!=EventType.ADD_ATTRIBUTE
-					&&eventType!=EventType.ADD_CONDITION
-					&&eventType!=EventType.RENAME_RELATION) {
-				for (VisualNode child : this._graph.getModule(eventNode)) {
-					child.addPolicy(eventType, child, policyType);
+			// if event node is in current module
+			if (this._graph.getModule(node).contains(eventNode)) {
+				if (EventType.values(node.getType()).contains(eventType))
+					node.addPolicy(eventType, eventNode, policyType);
+				else  
+				for (VisualNode child : this._graph.getModule(node)) {
+					if (EventType.values(child.getType()).contains(eventType))
+						node.addPolicy(eventType, child, policyType);
 				}
-			}else
-			{
-				//declare policies for events coming form providers toplevel nodes
-				//through FROM edges
-				for (EvolutionEdge edge: this._graph.getOutEdges(node)) {
-					if (edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-						node.addPolicy(eventType, edge.getToNode(), policyType);
+			}else // apply policy to all nodes connected with event node
+				if (EventType.values(eventNode.getType()).contains(eventType))
+					node.addPolicy(eventType, eventNode, policyType);
+				else  
+				for (VisualNode child : this._graph.getModule(node))
+					if (!child.equals(node)) {
+						for (VisualNode providerChild : this._graph.getModule(eventNode)) 
+							if (this._graph.getPaths(child, providerChild)>0)
+								if (EventType.values(child.getType()).contains(eventType))
+									node.addPolicy(eventType, child, policyType);
 					}
-				}
-			}
 			break;
 		//low-level nodes
 		case NODE_TYPE_ATTRIBUTE :
-			node.addPolicy(eventType, eventNode, policyType);
-			for (VisualNode child : this._graph.getModule(eventNode)) {
-				child.addPolicy(eventType, child, policyType);
-			}
+			if (EventType.values(node.getType()).contains(eventType))
+				node.addPolicy(eventType, eventNode, policyType);
+			 
 			break;
 		case NODE_TYPE_OPERAND  :
-			node.addPolicy(eventType, eventNode, policyType);
-			for (VisualNode child : this._graph.getModule(eventNode)) {
-				child.addPolicy(eventType, child, policyType);
-			}
+			if (EventType.values(node.getType()).contains(eventType))
+				node.addPolicy(eventType, eventNode, policyType);
 			break;
 		default: //for all other nodes
 			node.addPolicy(eventType, eventNode, policyType);

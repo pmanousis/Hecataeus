@@ -27,6 +27,8 @@ public final class VisualNodeShape extends AbstractVertexShapeTransformer<Visual
 				NodeType type = (v.getType());
 				if (type.getCategory()== NodeCategory.MODULE)
 					return INITIAL_SIZE;
+				else if (type.getCategory()== NodeCategory.CONTAINER)
+					return INITIAL_SIZE * 4 ;
 				else
 					return INITIAL_SIZE/4;
 
@@ -40,9 +42,26 @@ public final class VisualNodeShape extends AbstractVertexShapeTransformer<Visual
 	
 	public Shape transform(VisualNode v) {
 		NodeType type = (v.getType());
-		
-		if (type ==NodeType.NODE_TYPE_QUERY)
+		 
+		if (type ==NodeType.NODE_TYPE_QUERY 
+				|| type==NodeType.NODE_TYPE_INSERT			//
+				|| type==NodeType.NODE_TYPE_DELETE			//added by sgerag
+				|| type==NodeType.NODE_TYPE_UPDATE			//
+				|| type==NodeType.NODE_TYPE_MERGE_INTO		//
+				|| type==NodeType.NODE_TYPE_CURSOR			//
+				|| type==NodeType.NODE_TYPE_VARIABLE		//
+				|| type==NodeType.NODE_TYPE_ASSIGNMENT)
 			return factory.getRegularPolygon(v,6);
+		else if (type ==NodeType.NODE_TYPE_FILE)
+			return factory.getRoundRectangle(v);
+		else if (type==NodeType.NODE_TYPE_ANONYMOUS_BLOCK	//
+				|| type==NodeType.NODE_TYPE_SCRIPT			//added by sgerag
+				|| type==NodeType.NODE_TYPE_STORED_PROCEDURE			//
+				|| type==NodeType.NODE_TYPE_STORED_FUNCTION			//
+				|| type==NodeType.NODE_TYPE_TRIGGER		//
+				|| type==NodeType.NODE_TYPE_PACKAGE		//
+				|| type==NodeType.NODE_TYPE_EMBEDDED_STATEMENT)
+			return factory.getRectangle(v);
 		else if (type ==NodeType.NODE_TYPE_RELATION)
 			return factory.getEllipse(v);
 		else if (type ==NodeType.NODE_TYPE_VIEW)

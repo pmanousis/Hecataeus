@@ -1,0 +1,126 @@
+
+/*****************************************************************************
+--  Note: This generated code is for demonstration purposes only and may
+--        not be deployable.
+*****************************************************************************/
+
+CREATE OR REPLACE PACKAGE ""MAP_MTR_CLIENT_DIM_PKG"" AS
+OWB$MAP_OBJECT_ID VARCHAR2(32) := '';
+sql_stmt  VARCHAR2(32767);
+get_abort BOOLEAN := FALSE;
+get_abort_procedure BOOLEAN := FALSE;
+get_trigger_success BOOLEAN := TRUE;
+get_errors NUMBER(22) := 0;
+get_status NUMBER(22) := 0;
+get_error_ratio NUMBER(22) := 0;
+get_global_names              VARCHAR2(10) := 'FALSE';
+-- Status variable for Batch cursors
+"MTR_CLIENT_DIM_St" BOOLEAN := FALSE; 
+
+-- Function Main 
+-- Entry point in package ""MAP_MTR_CLIENT_DIM_PKG""
+FUNCTION Main RETURN NUMBER;  
+
+END ""MAP_MTR_CLIENT_DIM_PKG"";
+
+/
+
+CREATE OR REPLACE PACKAGE BODY ""MAP_MTR_CLIENT_DIM_PKG"" AS
+
+
+
+
+---------------------------------------------------------------------------
+-- Function "MTR_CLIENT_DIM_Bat"
+--   performs batch extraction
+--   Returns TRUE on success
+--   Returns FALSE on failure
+---------------------------------------------------------------------------
+FUNCTION "MTR_CLIENT_DIM_Bat" 
+ RETURN BOOLEAN IS
+
+BEGIN
+  EXECUTE IMMEDIATE 'ALTER SESSION ENABLE PARALLEL DML';
+
+  BEGIN
+    MERGE
+INTO
+  "MTR"."MTR_CLIENT_DIM"
+USING
+  (SELECT
+  "STAGE_CLIENT_STAGE"."CLIENT_SK" "CLIENT_SK",
+  "STAGE_CLIENT_STAGE"."CLIENTTYPE_DESCR" "CLIENTTYPE_DESCR",
+  "STAGE_CLIENT_STAGE"."CLIENTTYPE_CODE" "CLIENTTYPE_CODE",
+  "STAGE_CLIENT_STAGE"."CLIENT_CODE" "CLIENT_CODE",
+  "STAGE_CLIENT_STAGE"."CLIENT_DESCR" "CLIENT_DESCR"
+FROM
+  "STAGE"."STAGE_CLIENT_STAGE" "STAGE_CLIENT_STAGE"
+  WHERE 
+  ( "STAGE_CLIENT_STAGE"."CLIENT_UPDFLAG" = 'Y' )
+  )
+    MERGE_SUBQUERY
+ON (
+  "MTR"."MTR_CLIENT_DIM"."CLIENT_SK" = "MERGE_SUBQUERY"."CLIENT_SK" AND
+  "MTR"."MTR_CLIENT_DIM"."CLIENT_CODE" = "MERGE_SUBQUERY"."CLIENT_CODE"
+   )
+  
+  WHEN MATCHED THEN
+    UPDATE
+    SET
+                  "CLIENTTYPE_DESCR" = "MERGE_SUBQUERY"."CLIENTTYPE_DESCR",
+  "CLIENTTYPE_CODE" = "MERGE_SUBQUERY"."CLIENTTYPE_CODE",
+  "CLIENT_DESCR" = "MERGE_SUBQUERY"."CLIENT_DESCR"
+       
+  WHEN NOT MATCHED THEN
+    INSERT
+      ("MTR"."MTR_CLIENT_DIM"."CLIENT_SK",
+      "MTR"."MTR_CLIENT_DIM"."CLIENTTYPE_DESCR",
+      "MTR"."MTR_CLIENT_DIM"."CLIENTTYPE_CODE",
+      "MTR"."MTR_CLIENT_DIM"."CLIENT_CODE",
+      "MTR"."MTR_CLIENT_DIM"."CLIENT_DESCR")
+    VALUES
+      ("MERGE_SUBQUERY"."CLIENT_SK",
+      "MERGE_SUBQUERY"."CLIENTTYPE_DESCR",
+      "MERGE_SUBQUERY"."CLIENTTYPE_CODE",
+      "MERGE_SUBQUERY"."CLIENT_CODE",
+      "MERGE_SUBQUERY"."CLIENT_DESCR")
+  ;
+    COMMIT;
+  EXCEPTION WHEN OTHERS THEN
+    ROLLBACK;
+    COMMIT;
+    RETURN FALSE;
+  END;
+  COMMIT;
+  RETURN TRUE;
+END "MTR_CLIENT_DIM_Bat";
+
+FUNCTION Main RETURN NUMBER IS
+get_batch_status           BOOLEAN := TRUE;
+BEGIN
+  
+
+
+
+
+  
+PROCEDURE EXEC_AUTONOMOUS_SQL(CMD IN VARCHAR2) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  EXECUTE IMMEDIATE (CMD);
+  COMMIT;
+END;
+  -- Initialize all batch status variables
+	"MTR_CLIENT_DIM_St" := FALSE;
+
+
+
+			
+"MTR_CLIENT_DIM_St" := "MTR_CLIENT_DIM_Bat"; 
+
+
+RETURN get_status;
+END Main;
+END ""MAP_MTR_CLIENT_DIM_PKG"";
+
+/

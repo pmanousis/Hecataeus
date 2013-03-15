@@ -21,7 +21,7 @@ public enum EdgeType {
 	EDGE_TYPE_OPERATOR,
 	EDGE_TYPE_HAVING ,
 	EDGE_TYPE_ORDER_BY,
-	EDGE_TYPE_CONTAINS
+	EDGE_TYPE_CONTAINS 		//added by sgerag
 	;
 	
 	/**

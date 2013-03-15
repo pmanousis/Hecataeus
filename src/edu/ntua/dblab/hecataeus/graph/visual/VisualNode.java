@@ -38,29 +38,29 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	}
 	
 	
-	public void setLocation(Point2D location){
-		this.location.setLocation(location);
-	}
+//	public void setLocation(Point2D location){
+//		this.location.setLocation(location);
+//	}
+//	
+//	/**
+//	 * @return  the node location
+//	 */
+//	public Point2D getLocation(){
+//		return this.location; 
+//	}
 	
-	/**
-	 * @return  the node location
-	 */
-	public Point2D getLocation(){
-		return this.location; 
-	}
-	
-	public void setLastChildLocation(double x,double y){
-		this.lastChildLocation.setLocation(x, y);
-	}
-	
-	/**
-	 * @return  the location of its child, if exists, otherwise null 
-	 */
-	public Point2D getLastChildLocation(){
-		if (!(this.lastChildLocation==null)){
-			return this.lastChildLocation;
-		}else return null;
-	}
+//	public void setLastChildLocation(double x,double y){
+//		this.lastChildLocation.setLocation(x, y);
+//	}
+//	
+//	/**
+//	 * @return  the location of its child, if exists, otherwise null 
+//	 */
+//	public Point2D getLastChildLocation(){
+//		if (!(this.lastChildLocation==null)){
+//			return this.lastChildLocation;
+//		}else return null;
+//	}
 	
 	public void setVisible(boolean Value) {
 		this.isVisible = Value;
@@ -89,10 +89,10 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		VisualNode node = new VisualNode();
 		node.setName(this.getName());
 		node.setType(this.getType());
-		Point2D newLoc = new Point2D.Double(this.location.getX(),this.location.getY());
-		node.setLocation(newLoc);
-		newLoc = new Point2D.Double(this.lastChildLocation.getX(),this.lastChildLocation.getY());
-		node.setLastChildLocation(newLoc.getX(),newLoc.getY());
+//		Point2D newLoc = new Point2D.Double(this.location.getX(),this.location.getY());
+//		node.setLocation(newLoc);
+//		newLoc = new Point2D.Double(this.lastChildLocation.getX(),this.lastChildLocation.getY());
+//		node.setLastChildLocation(newLoc.getX(),newLoc.getY());
 		node.setSQLDefinition(this.getSQLDefinition());
 		node.setEvents(this.getEvents());
 		node.setPolicies(this.getPolicies());

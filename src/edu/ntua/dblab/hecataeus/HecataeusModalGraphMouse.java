@@ -8,7 +8,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.control.GraphMouseListener;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AnimatedPickingGraphMousePlugin;
@@ -23,12 +22,10 @@ import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
-import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 
 
@@ -37,6 +34,7 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
 
 	protected TranslatingGraphMousePlugin  translatingPluginMiddleButton;
 	protected HecataeusPopupGraphMousePlugin  popupEditingPlugin;
+	
      /**
      * create an instance with default values
      *
@@ -50,9 +48,8 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
      * @param in override value for scale in
      * @param out override value for scale out
      */
-    public HecataeusModalGraphMouse(float in, float out) {
+    public HecataeusModalGraphMouse( float in, float out) {
     	super(in, out); 
-
     }
     
     protected void loadPlugins() { 
@@ -126,6 +123,7 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
 	 */
 	public void graphClicked(VisualNode node, MouseEvent me) {
 		if (me.getClickCount()==2) {
+			
 			VisualizationViewer<VisualNode,VisualEdge> vv = (VisualizationViewer<VisualNode,VisualEdge>) me.getSource();
 			VisualGraph g = (VisualGraph) vv.getGraphLayout().getGraph();
 			if (node.getType().getCategory()==NodeCategory.MODULE) {
@@ -135,6 +133,14 @@ public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,
 				}
 				node.setVisible(true);
 			}
+			if (node.getType().getCategory()==NodeCategory.CONTAINER) {
+				List<VisualNode> module = g.getModule(node);
+				for (VisualNode child : module) {
+					child.setVisible(!child.getVisible());
+				}
+				node.setVisible(true);
+			}
+			
 		}
 	}
 	

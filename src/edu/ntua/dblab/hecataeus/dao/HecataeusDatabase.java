@@ -111,7 +111,7 @@ public class HecataeusDatabase {
 				ResultSet resCol = _metaData.getColumns(_connection.getCatalog(), null, strTable, null);
 				String strColumns="";
 				while (resCol.next()) {
-					strColumns += resCol.getString("COLUMN_NAME")+" integer(1) " + (resCol.getString("NULLABLE").equals("0")? CONSTRAINT_NOTNULL :"") + " ,";
+					strColumns += resCol.getString("COLUMN_NAME")+" varchar(25) " + (resCol.getString("NULLABLE").equals("0")? CONSTRAINT_NOTNULL :"") + " ,";
 					
 					/*
 					System.out.println(

@@ -14,9 +14,14 @@ import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 
 //import edu.uci.ics.jung.graph.Vertex;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -316,14 +321,17 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		if (this.getVertexCount()>0) {
 			
 			//initialize coords with first vertex location
-			double minX=this.getVertices().get(0).getLocation().getX();
-			double minY=this.getVertices().get(0).getLocation().getY();
-			double maxX=this.getVertices().get(0).getLocation().getX();
-			double maxY=this.getVertices().get(0).getLocation().getY();
+			VisualNode v = this.getVertices().get(0); 
+			double minX = this.getLocation(v).getX();
+			double minY = this.getLocation(v).getY();
+			double maxX = this.getLocation(v).getX();
+			double maxY = this.getLocation(v).getY();
+			
+			
 
 			for (VisualNode jungNode: this.getVertices()) {
 				if (jungNode.getVisible()) {
-					Point2D p = jungNode.getLocation();
+					Point2D p = this.getLocation(jungNode);
 					minX=(minX>p.getX()?p.getX():minX);
 					minY=(minY>p.getY()?p.getY():minY);
 					maxX=(maxX<p.getX()?p.getX():maxX);
@@ -349,14 +357,14 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 			
 			//initialize coords with first vertex location
 			VisualNode v = this.getVertices().get(0); 
-			double minX = v.getLocation().getX();
-			double minY = v.getLocation().getY();
-			double maxX = v.getLocation().getX();
-			double maxY = v.getLocation().getY();
+			double minX = this.getLocation(v).getX();
+			double minY = this.getLocation(v).getY();
+			double maxX = this.getLocation(v).getX();
+			double maxY = this.getLocation(v).getY();
 
 			for (VisualNode jungNode: this.getVertices()) {
 				if (jungNode.getVisible()) {
-					Point2D p = jungNode.getLocation();
+					Point2D p = this.getLocation(jungNode);
 					minX=(minX>p.getX()?p.getX():minX);
 					minY=(minY>p.getY()?p.getY():minY);
 					maxX=(maxX<p.getX()?p.getX():maxX);
@@ -439,13 +447,15 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	                
 					// add node
 					VisualNode v = new VisualNode();
-					v.setLocation(new Point2D.Double(nodeX,nodeY));
-					this.addVertex(v);
 					v.setName(nName);
-					//shift node key by current key
-					v.setKey(currentKey+new Integer(nKey));
 					v.setType(NodeType.valueOf(nType));
+//					v.setLocation(new Point2D.Double(nodeX,nodeY));
+					this.setLocation(v,new Point2D.Double(nodeX,nodeY));
 					v.setSQLDefinition(nSQLDefinition);
+					this.addVertex(v);
+					//shift node key by current key
+					this.setKey(v,currentKey+new Integer(nKey));
+					
 					
 					
 	            }//end of if clause
@@ -499,7 +509,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	                // add edge
 					VisualEdge e = new VisualEdge(eName,EdgeType.toEdgeType(eType), this.findVertex(currentKey+new Integer(eFromNode)), this.findVertex(currentKey+new Integer(eToNode)));
 					this.addEdge(e);
-					e.setKey(currentKey+new Integer(eKey));
+					this.setKey(e,currentKey+new Integer(eKey));
 					 
 								
 	            }//end of if clause
@@ -631,7 +641,47 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	    }
 	
 	}
+	
+	//hold the location of each node in the graph
+	protected Map<VisualNode, Point2D> nodeLocations = new HashMap<VisualNode, Point2D>();
+	
+	public void setLocation(VisualNode v, Point2D location){
+		this.nodeLocations.put(v,location);
+	}
+	
+	/**
+	 * @return  the node location
+	 */
+	public Point2D getLocation(VisualNode v){
+		return this.nodeLocations.get(v); 
+	}
+	
+	public VisualGraph toGraph(List<VisualNode> nodes){
+		VisualGraph subGraph = super.toGraph(nodes);
+		for (VisualNode v : nodes)
+			subGraph.setLocation(v, this.getLocation(v)); 
+		return subGraph;
+	}
+	
+	public void exportPoliciesToFile(File file) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			for (VisualNode v : this.getVertices()){
+				for (EvolutionPolicy<VisualNode> p : v.getPolicies()) {
+					out.write(v + ": " + p.toString() + ";");
+					out.newLine();
+				}	
+			}
+			out.close();
 
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
 	public void exportToXML(File file) {
 		
 		
@@ -650,12 +700,12 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					// write HNode
 					Element elementHnode = document.createElement("HNode");
 					
-					elementHnode.setAttribute("x", new Double(v.getLocation().getX()).toString());
-					elementHnode.setAttribute("y", new Double(v.getLocation().getY()).toString());
+					elementHnode.setAttribute("x", new Double(this.getLocation(v).getX()).toString());
+					elementHnode.setAttribute("y", new Double(this.getLocation(v).getY()).toString());
 					elementHnodes.appendChild(elementHnode);
 					// write element key
 					Element elementKey = document.createElement("Key");
-					elementKey.appendChild(document.createTextNode(new Integer(v.getKey()).toString()));
+					elementKey.appendChild(document.createTextNode(this.getKey(v).toString()));
 					elementHnode.appendChild(elementKey);
 					// write element name
 					Element elementName = document.createElement("Name");
@@ -683,7 +733,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					elementHedges.appendChild(elementHedge);
 					// write element key
 					Element elementKey = document.createElement("Key");
-					elementKey.appendChild(document.createTextNode(new Integer(e.getKey()).toString()));
+					elementKey.appendChild(document.createTextNode(this.getKey(e).toString()));
 					elementHedge.appendChild(elementKey);
 					// write element name
 					Element elementName = document.createElement("Name");
@@ -695,11 +745,11 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					elementHedge.appendChild(elementType);
 					// write element fromNode
 					Element elementFromNode = document.createElement("FromNode");
-					elementFromNode.appendChild(document.createTextNode(new Integer(e.getFromNode().getKey()).toString()));
+					elementFromNode.appendChild(document.createTextNode(this.getKey(e.getFromNode()).toString()));
 					elementHedge.appendChild(elementFromNode);
 					// write element toNode
 					Element elementToNode = document.createElement("ToNode");
-					elementToNode.appendChild(document.createTextNode(new Integer(e.getToNode().getKey()).toString()));
+					elementToNode.appendChild(document.createTextNode(this.getKey(e.getToNode()).toString()));
 					elementHedge.appendChild(elementToNode);
 					// end element HEdge
 				}
@@ -712,20 +762,20 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 				Element elementHEvents = document.createElement("HEvents");
 				
 				for (VisualNode v : this.getVertices()) {
-					for (EvolutionPolicy p: v.getPolicies()) {
+					for (EvolutionPolicy<VisualNode> p: v.getPolicies()) {
 						//start tag HPolicy
 						Element elementHPolicy = document.createElement("HPolicy");
 						elementHPolicies.appendChild(elementHPolicy);
 						//write Node having the policy
 						Element elementHNode = document.createElement("HNode");
-						elementHNode.appendChild(document.createTextNode(new Integer(v.getKey()).toString()));
+						elementHNode.appendChild(document.createTextNode(this.getKey(v).toString()));
 						elementHPolicy.appendChild(elementHNode);
 						//write event handled by the policy
 						Element elementEvent = document.createElement("HEvent");
 						elementHPolicy.appendChild(elementEvent);
 						
 						Element elementEventNode = document.createElement("HEventNode");
-						elementEventNode.appendChild(document.createTextNode(new Integer(p.getSourceEvent().getEventNode().getKey()).toString()));
+						elementEventNode.appendChild(document.createTextNode(this.getKey(p.getSourceEvent().getEventNode()).toString()));
 						elementEvent.appendChild(elementEventNode);
 						
 						Element elementEventType = document.createElement("HEventType");
@@ -737,17 +787,17 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 						elementHPolicy.appendChild(elementPolicyType);
 						// end element HPolicy
 					}
-					for (EvolutionEvent e : v.getEvents()) {
+					for (EvolutionEvent<VisualNode> e : v.getEvents()) {
 						//write element event
 						Element elementHEvent = document.createElement("HEvent");
 						elementHEvents.appendChild(elementHEvent);
 						//write Node having the event
 						Element elementHNode = document.createElement("HNode");
-						elementHNode.appendChild(document.createTextNode(new Integer(v.getKey()).toString()));
+						elementHNode.appendChild(document.createTextNode(this.getKey(v).toString()));
 						elementHEvent.appendChild(elementHNode);
 						
 						Element elementEventNode = document.createElement("HEventNode");
-						elementEventNode.appendChild(document.createTextNode(new Integer(e.getEventNode().getKey()).toString()));
+						elementEventNode.appendChild(document.createTextNode(this.getKey(e.getEventNode()).toString()));
 						elementHEvent.appendChild(elementEventNode);
 						Element elementEventType = document.createElement("HEventType");
 						elementEventType.appendChild(document.createTextNode(e.getEventType().toString()));

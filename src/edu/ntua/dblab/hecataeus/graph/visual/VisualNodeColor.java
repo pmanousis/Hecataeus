@@ -66,10 +66,40 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
                 		return new Color(0,0,230);
                 	else if (type==NodeType.NODE_TYPE_CONDITION)
                 		return new Color(100,150,255);
+                	else if (type==NodeType.NODE_TYPE_FILE)				//
+                		return new Color(50,200,40,70);								//
+                	else if (type==NodeType.NODE_TYPE_ANONYMOUS_BLOCK)		//
+                		return new Color(200,170,10,70);								//
+                	else if (type==NodeType.NODE_TYPE_SCRIPT)				//
+                		return new Color(180,50,180);								//
+                	else if (type==NodeType.NODE_TYPE_STORED_PROCEDURE)				//
+                		return new Color(60,60,5,70);									//
+                	else if (type==NodeType.NODE_TYPE_STORED_FUNCTION)				//
+                		return new Color(100,40,36,70);								//
+                	else if (type==NodeType.NODE_TYPE_TRIGGER)				//
+                		return new Color(120,150,25,70);								//
+                	else if (type==NodeType.NODE_TYPE_PACKAGE)				//
+                		return new Color(100,255,50,70);								//
+                	else if (type==NodeType.NODE_TYPE_EMBEDDED_STATEMENT)			//
+                		return new Color(150,25,250,70);								//
+                	else if (type==NodeType.NODE_TYPE_INSERT)				//added by sgerag
+                		return new Color(50,200,40);								//
+                	else if (type==NodeType.NODE_TYPE_DELETE)				//
+                		return new Color(200,170,10);								//
+                	else if (type==NodeType.NODE_TYPE_UPDATE)				//
+                		return new Color(180,50,180);								//
+                	else if (type==NodeType.NODE_TYPE_MERGE_INTO)				//
+                		return new Color(100,100,100);								//
+                	else if (type==NodeType.NODE_TYPE_CURSOR)				//
+                		return new Color(60,60,5);									//
+                	else if (type==NodeType.NODE_TYPE_VARIABLE)			//
+                		return new Color(100,40,36);								//
+                	else if (type==NodeType.NODE_TYPE_ASSIGNMENT)			//
+                		return new Color(120,150,25);								//
                 	else if (type==NodeType.NODE_TYPE_VIEW)
                 		return new Color(46, 139, 87);
                 	else if (type==NodeType.NODE_TYPE_GROUP_BY)
-                		return new Color(100,255,50) ;
+                		return new Color(100,255,50);
                 	else if (type==NodeType.NODE_TYPE_ATTRIBUTE)
                 		return Color.LIGHT_GRAY;
                 	else return Color.WHITE;

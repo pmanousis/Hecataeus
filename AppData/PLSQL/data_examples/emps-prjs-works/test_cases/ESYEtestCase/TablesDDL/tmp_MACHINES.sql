@@ -1,0 +1,26 @@
+create table tmp_MACHINES
+(
+  MAC_RSC_CODE    VARCHAR(4) not null,
+  MAC_RES_YEAR    NUMERIC(4) not null,
+  MAC_SAM_CODE    VARCHAR(8) not null,
+  MAC_CAT_ID      NUMERIC(7) not null,
+  MAC_OWNED       NUMERIC(5),
+  MAC_COOWNED     NUMERIC(5),
+  MAC_OWNEDPERC   NUMERIC(5,2),
+  MAC_OTHER       NUMERIC(1),
+  CREATED_BY      VARCHAR(30),
+  CHANGED_BY      VARCHAR(30),
+  DATE_CREATED    DATETIME,
+  DATE_CHANGED    DATETIME,
+  MAC_SAM_GEOCODE VARCHAR(8)
+)
+
+alter table TMP_MACHINES
+  add constraint TMP_MACHINES_PK primary key (MAC_SAM_CODE, MAC_RES_YEAR, MAC_RSC_CODE, MAC_CAT_ID)
+
+
+alter table TMP_MACHINES
+  add constraint TMP_MAC_SAM_FK foreign key (MAC_RES_YEAR, MAC_RSC_CODE, MAC_SAM_CODE)
+  references TMP_SAMPLES (SAM_RES_YEAR, SAM_RSC_CODE, SAM_CODE)
+
+ 

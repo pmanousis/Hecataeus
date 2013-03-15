@@ -23,7 +23,8 @@ import java.io.*;
 public class Result {
 	private Record rTail;
 	private int iSize;
-	private int iColumnCount;
+	//sgerag modification --> make public
+	public int iColumnCount;
 	public final static int UPDATECOUNT=0;
 	public final static int ERROR=1;
 	public final static int DATA=2;
@@ -33,7 +34,8 @@ public class Result {
 	Record rRoot;
 	String sLabel[];
 	String sTable[];
-	String sName[];
+	//sgerag modification --> make public
+	public String sName[];
 	int iType[];
 
 	public Result() {

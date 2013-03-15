@@ -6,8 +6,11 @@ package edu.ntua.dblab.hecataeus.graph.evolution;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
@@ -21,11 +24,16 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	private static final long serialVersionUID = 1L;
 
 	private static int _KeyGenerator;
+	
+	protected Map<V, Integer> nodeKeys;
+	protected Map<E, Integer> edgeKeys;
 
 	//used by function initializeChange() to increase the SID(Session ID) by one
 	static int SIDGenerator = 0;
 
 	public EvolutionGraph() {
+		nodeKeys = new HashMap<V, Integer>();
+		edgeKeys = new HashMap<E, Integer>();
 	}
 		
 	/**
@@ -34,7 +42,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 **/
 	public boolean addVertex(V Node) {
 		// assign key
-		Node.setKey(++EvolutionGraph._KeyGenerator);
+		nodeKeys.put(Node, ++EvolutionGraph._KeyGenerator);
 		return super.addVertex(Node);
 	}
 
@@ -50,7 +58,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 * adds edge by HecataeusEdge
 	 **/
 	public boolean addEdge(E Edge) {
-		Edge.setKey(++EvolutionGraph._KeyGenerator);
+		edgeKeys.put(Edge, ++EvolutionGraph._KeyGenerator);
 		// add edge to incoming edges of ToNode
 		V fromNode = (V) Edge.getFromNode();
 		if (!fromNode.getOutEdges().contains(Edge))
@@ -67,12 +75,14 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		Edge.getToNode().getInEdges().remove(Edge);
 		// remove edge from outEdges
 		Edge.getFromNode().getOutEdges().remove(Edge);
+		edgeKeys.remove(Edge);
 		return super.removeEdge(Edge);
 	}
 	
 	public boolean removeVertex(V Vertex) {
 		Vertex.getInEdges().clear();
 		Vertex.getOutEdges().clear();
+		nodeKeys.remove(Vertex);
 		return super.removeVertex(Vertex);
 	}
 
@@ -81,28 +91,45 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 **/
 	public void clear() {
 			
+		edgeKeys.clear();
 		for (E e:this.getEdges()) {
     		this.removeEdge(e);
     	}
-		
+		nodeKeys.clear();
 		for (V v:this.getVertices()) {
     		this.removeVertex(v);
     	}
+		
 	
 	}
 	
 	/**
 	 * get Vertex by Key
 	 **/
-	public V findVertex(int Key) {
-		 for (V v : this.getVertices()) {
-			 if (v.getKey()==Key)
+	public V findVertex(int key) {
+		for (V v : this.getVertices()) {
+			if (nodeKeys.get(v)==key) 
 			 return v;
 		 }
 		 return null;
 	}
 
+	/**
+	 * get Key of a Vertex
+	 **/
+	public Integer getKey(V node) {
+		return nodeKeys.get(node);
+	}
 
+	/**
+	 * set Key of a Vertex
+	 **/
+	public void setKey(V node, Integer key) {
+		nodeKeys.remove(node);
+		nodeKeys.put(node,key);
+	}
+
+	
 	/**
 	 *  get node by its name, for more than one occurrences, the first is returned
 	 **/
@@ -120,14 +147,29 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 * get edge by key
 	 **/
-	public E findEdge(int Key) {
+	public E findEdge(int key) {
 		for (E e : this.getEdges()) {
-			 if (e.getKey()==Key)
-			 return e;
+			if (edgeKeys.get(e)==key) 
+				 return e;
 		 }
 		 return null;	
 	}
 
+	/**
+	 * get Key of an edge
+	 **/
+	public Integer getKey(E edge) {
+		return edgeKeys.get(edge);
+	}
+
+	/**
+	 * set Key of an edge
+	 **/
+	public void setKey(E edge, Integer key) {
+		edgeKeys.remove(edge);
+		edgeKeys.put(edge,key);
+	}
+	
 	/**
 	 * get edge by name and type
 	 **/
@@ -259,7 +301,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 *  makes the necessary initializations to execute propagateChanges()
 	 **/
-	public void initializeChange(EvolutionEvent event){
+	public void initializeChange(EvolutionEvent<V> event){
 
 		SIDGenerator = SIDGenerator + 1;
 		int SID = SIDGenerator;
@@ -416,7 +458,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 				int SID = currentMessage.get_SID();
 				V ns = (V)currentMessage.getNodeSender();
 				V nr = (V)currentMessage.getNodeReceiver();
-				EvolutionEvent event = currentMessage.getEvent();
+				EvolutionEvent<V> event = currentMessage.getEvent();
 				E edge = (E)currentMessage.getEdge();
 				PolicyType policyType = currentMessage.getPolicyType();
 
@@ -515,10 +557,13 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 							System.out.println("in Remove_Attribute");
 							System.out.println("nr is: "+nr.getName());
 							System.out.println("Policy=propagate");
-							if ((nr.getType()==NodeType.NODE_TYPE_QUERY)
-									||(nr.getType()==NodeType.NODE_TYPE_VIEW)
-									||(nr.getType()==NodeType.NODE_TYPE_RELATION))
-
+							if (nr.getType().getCategory()==NodeCategory.CONTAINER)
+							{
+								newEventType = EventType.DELETE_ATTRIBUTE;
+								nr.setStatus(StatusType.TO_MODIFY_CHILD);
+							}
+							
+							else if (nr.getType().getCategory()==NodeCategory.MODULE)
 							{
 								/**
 								 *event has come from other view and not from attribute 
@@ -559,7 +604,8 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 							}
 
 
-							else if (nr.getType()==NodeType.NODE_TYPE_OPERAND) {
+							else if (nr.getType()==NodeType.NODE_TYPE_OPERAND||
+									nr.getType()==NodeType.NODE_TYPE_CONDITION) {
 								newEventType = EventType.DELETE_CONDITION;
 								nr.setStatus(StatusType.TO_DELETE);
 							}
@@ -588,7 +634,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 							if (ns==null)
 								for (E schemaEdge : outEdges){
 									this.getDest(schemaEdge).setStatus(StatusType.TO_DELETE);
-									initializeChange(new EvolutionEvent(schemaEdge.getToNode(),EventType.DELETE_ATTRIBUTE));
+									initializeChange(new EvolutionEvent<V>((V) schemaEdge.getToNode(),EventType.DELETE_ATTRIBUTE));
 								}
 
 							Boolean flag = false;
@@ -607,10 +653,22 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 					//flag node receiver as visited
 					nodesVisited.add(nr);
 
+					//get policy for the new event type if applied to the node itself 
+					EvolutionEvent<V> newEvent = new EvolutionEvent<V>(nr,newEventType);
+					policyType = determinePolicy(newEvent,nr,edge,policyType);
+
+					if (policyType==PolicyType.PROMPT){
+						System.out.println("Policy=prompt");
+						nr.setStatus(StatusType.PROMPT);
+					}else if(policyType==PolicyType.BLOCK){
+						System.out.println("Policy=block");
+						nr.setStatus(StatusType.BLOCKED);}
+					
+					
 					//determine next to signal
 					List<E> inEdges =  new ArrayList<E>(this.getInEdges(nr));
-					EvolutionEvent newEvent;
-					//if status <>block prepare next message for queue according to status an node type
+					
+					//if status <>block prepare next message for queue according to the status and the node type
 					if (nr.getStatus()!= StatusType.BLOCKED){
 
 						//get first provider edges
@@ -624,7 +682,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 										||(event.getEventType()==EventType.DELETE_CONDITION)
 										||(event.getEventType()==EventType.DELETE_RELATION)
 								){
-									newEvent = new EvolutionEvent(nr,newEventType);
+									newEvent = new EvolutionEvent<V>(nr,newEventType);
 									EvolutionMessage newMessage = new EvolutionMessage(SID,nr,e.getFromNode(),newEvent,e,policyType);
 									queue.enqueue(newMessage);
 								}else
@@ -632,7 +690,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 									if ((nr.getType()!=NodeType.NODE_TYPE_QUERY)
 											&&(nr.getType()!=NodeType.NODE_TYPE_VIEW)
 											&&(nr.getType()!=NodeType.NODE_TYPE_RELATION)){
-										newEvent = new EvolutionEvent(e.getFromNode(),newEventType);
+										newEvent = new EvolutionEvent<V>((V) e.getFromNode(),newEventType);
 										EvolutionMessage newMessage = new EvolutionMessage(SID,nr,e.getFromNode(),newEvent,e,policyType);
 										queue.enqueue(newMessage);
 									}
@@ -645,7 +703,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 					for (E e: inEdges){
 						if (e.isPartOf()) {
 							e.setStatus(nr.getStatus());
-							newEvent = new EvolutionEvent(nr,newEventType);
+							newEvent = new EvolutionEvent<V>(nr,newEventType);
 							EvolutionMessage newMessage = new EvolutionMessage(SID,nr,e.getFromNode(),newEvent,e,policyType);
 							queue.enqueue(newMessage);
 						}
@@ -665,18 +723,13 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 * @param2 = Node receiving the message
 	 * @param3 = The previous prevailing policy
 	 **/
-	private PolicyType determinePolicy(EvolutionEvent event, V nr, E edge, PolicyType previousPolicyType) {
+	private PolicyType determinePolicy(EvolutionEvent<V> event, V nr, E edge, PolicyType previousPolicyType) {
 
 		//  policy hierarchy
 		// 1. query.condition, 2. query.attribute, 3. query, 4. relation.condition, 5. relation.attribute, 6. relation
 		//  search for policy towards the path 
 
 		System.out.println("determining policy for : " + nr.getName());
-		
-		if (nr.getName().equalsIgnoreCase("P_Budget")){
-			System.out.println("determining policy for : " + nr.getName());
-			
-		}
 		//if edge is part of and child node has policy
 		//then override parent's policy 
 		if (edge!=null && edge.isPartOf()){
@@ -691,11 +744,11 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/*
 	 * gets the prevailing policy in a module (e.g. a query, relation, view)
 	 */
-	private PolicyType getPrevailingPolicy(EvolutionEvent event, V nr, PolicyType previousPolicyType) {
+	private PolicyType getPrevailingPolicy(EvolutionEvent<V> event, V nr, PolicyType previousPolicyType) {
 
 		EvolutionPolicies policies = nr.getPolicies();
 		//if policy for this event exist override previousPolicy coming from provider node
-		for (EvolutionPolicy nrPolicy : policies){
+		for (EvolutionPolicy<V> nrPolicy : policies){
 			if ((nrPolicy.getSourceEvent().getEventNode().equals(event.getEventNode()))
 					&&(nrPolicy.getSourceEvent().getEventType()==event.getEventType())){
 				return nrPolicy.getPolicyType();
@@ -704,7 +757,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 
 		//If no policy is returned check parents' policy for this event to override provider's policy
 		if (this.getParentNode(nr)!=null) {
-			EvolutionEvent newEvent = new EvolutionEvent(nr,event.getEventType());
+			EvolutionEvent<V> newEvent = new EvolutionEvent<V>(nr,event.getEventType());
 			return getPrevailingPolicy(newEvent,this.getParentNode(nr),previousPolicyType);
 		}
 
@@ -808,6 +861,27 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 			 }
 		 }
 		return false;
+	 }
+	 /**
+	  * calculates the number of connections between two modules (subGraphs) as
+	  * the number of all dependency edges between these modules
+	  * directing from the fromModule towards the toModule
+	  * @param fromModule is the parent node of outgoing edges module
+	  * @param toModule is the parent node of incoming edges module
+	  * @return strength
+	  */
+	 public int getConnections(List<V> fromModule, List<V> toModule) {
+		 List<EvolutionEdge> connections = new ArrayList<EvolutionEdge>();
+		 for ( V node : fromModule) {
+			 for (E edge : node.getOutEdges()) {
+				 if (edge.isProvider()
+						 &&toModule.contains(edge.getToNode())
+						 &&(!connections.contains(edge))) {
+					 connections.add(edge);
+				 }
+			 }
+		 }
+		return connections.size();
 	 }
 	 /**
 	  * get two  Nodes and return the number of paths between them

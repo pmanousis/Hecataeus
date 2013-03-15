@@ -1,0 +1,123 @@
+
+/*****************************************************************************
+--  Note: This generated code is for demonstration purposes only and may
+--        not be deployable.
+*****************************************************************************/
+
+CREATE OR REPLACE PACKAGE ""MAP_MTR_NETRANGE_DIM_PKG"" AS
+OWB$MAP_OBJECT_ID VARCHAR2(32) := '';
+sql_stmt  VARCHAR2(32767);
+get_abort BOOLEAN := FALSE;
+get_abort_procedure BOOLEAN := FALSE;
+get_trigger_success BOOLEAN := TRUE;
+get_errors NUMBER(22) := 0;
+get_status NUMBER(22) := 0;
+get_error_ratio NUMBER(22) := 0;
+get_global_names              VARCHAR2(10) := 'FALSE';
+-- Status variable for Batch cursors
+"MTR_NETRANGE_DIM_St" BOOLEAN := FALSE; 
+
+-- Function Main 
+-- Entry point in package ""MAP_MTR_NETRANGE_DIM_PKG""
+FUNCTION Main RETURN NUMBER;  
+
+END ""MAP_MTR_NETRANGE_DIM_PKG"";
+
+/
+
+CREATE OR REPLACE PACKAGE BODY ""MAP_MTR_NETRANGE_DIM_PKG"" AS
+
+
+
+
+---------------------------------------------------------------------------
+-- Function "MTR_NETRANGE_DIM_Bat"
+--   performs batch extraction
+--   Returns TRUE on success
+--   Returns FALSE on failure
+---------------------------------------------------------------------------
+FUNCTION "MTR_NETRANGE_DIM_Bat" 
+ RETURN BOOLEAN IS
+
+BEGIN
+  EXECUTE IMMEDIATE 'ALTER SESSION ENABLE PARALLEL DML';
+
+  BEGIN
+    MERGE
+/*+ APPEND PARALLEL("MTR_NETRANGE_DIM") */
+INTO
+  "MTR"."MTR_NETRANGE_DIM"
+USING
+  (SELECT
+  "STAGE_NETRANGE_STAGE"."NETRANGE_SK" "NETRANGE_SK",
+  "STAGE_NETRANGE_STAGE"."NETRANGE_CODE" "NETRANGE_CODE",
+  "STAGE_NETRANGE_STAGE"."NETRANGE_DESCR" "NETRANGE_DESCR",
+  "STAGE_NETRANGE_STAGE"."NETRANGE_ORD" "NETRANGE_ORD"
+FROM
+  "STAGE"."STAGE_NETRANGE_STAGE" "STAGE_NETRANGE_STAGE"
+  WHERE 
+  ( "STAGE_NETRANGE_STAGE"."NETRANGE_UPDFLAG" = 'Y' )
+  )
+    MERGE_SUBQUERY
+ON (
+  "MTR"."MTR_NETRANGE_DIM"."NETRANGE_SK" = "MERGE_SUBQUERY"."NETRANGE_SK" AND
+  "MTR"."MTR_NETRANGE_DIM"."NETRANGE_CODE" = "MERGE_SUBQUERY"."NETRANGE_CODE"
+   )
+  
+  WHEN MATCHED THEN
+    UPDATE
+    SET
+                  "NETRANGE_DESCR" = "MERGE_SUBQUERY"."NETRANGE_DESCR",
+  "NETRANGE_ORD" = "MERGE_SUBQUERY"."NETRANGE_ORD"
+       
+  WHEN NOT MATCHED THEN
+    INSERT
+      ("MTR"."MTR_NETRANGE_DIM"."NETRANGE_SK",
+      "MTR"."MTR_NETRANGE_DIM"."NETRANGE_CODE",
+      "MTR"."MTR_NETRANGE_DIM"."NETRANGE_DESCR",
+      "MTR"."MTR_NETRANGE_DIM"."NETRANGE_ORD")
+    VALUES
+      ("MERGE_SUBQUERY"."NETRANGE_SK",
+      "MERGE_SUBQUERY"."NETRANGE_CODE",
+      "MERGE_SUBQUERY"."NETRANGE_DESCR",
+      "MERGE_SUBQUERY"."NETRANGE_ORD")
+  ;
+    COMMIT;
+  EXCEPTION WHEN OTHERS THEN
+    ROLLBACK;
+    COMMIT;
+    RETURN FALSE;
+  END;
+  COMMIT;
+  RETURN TRUE;
+END "MTR_NETRANGE_DIM_Bat";
+
+FUNCTION Main RETURN NUMBER IS
+get_batch_status           BOOLEAN := TRUE;
+BEGIN
+  
+
+
+
+
+  
+PROCEDURE EXEC_AUTONOMOUS_SQL(CMD IN VARCHAR2) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  EXECUTE IMMEDIATE (CMD);
+  COMMIT;
+END;
+  -- Initialize all batch status variables
+	"MTR_NETRANGE_DIM_St" := FALSE;
+
+
+
+			
+"MTR_NETRANGE_DIM_St" := "MTR_NETRANGE_DIM_Bat"; 
+
+
+RETURN get_status;
+END Main;
+END ""MAP_MTR_NETRANGE_DIM_PKG"";
+
+/

@@ -1,0 +1,109 @@
+
+/*****************************************************************************
+--  Note: This generated code is for demonstration purposes only and may
+--        not be deployable.
+*****************************************************************************/
+
+CREATE OR REPLACE PACKAGE ""MAP_STAGE_CLIENT_UPDFLG_PKG"" AS
+OWB$MAP_OBJECT_ID VARCHAR2(32) := '';
+sql_stmt  VARCHAR2(32767);
+get_abort BOOLEAN := FALSE;
+get_abort_procedure BOOLEAN := FALSE;
+get_trigger_success BOOLEAN := TRUE;
+get_errors NUMBER(22) := 0;
+get_status NUMBER(22) := 0;
+get_error_ratio NUMBER(22) := 0;
+get_global_names              VARCHAR2(10) := 'FALSE';
+-- Status variable for Batch cursors
+"STAGE_CLIENT_STAGE_1_St" BOOLEAN := FALSE; 
+
+"CONSTANT_0_UPDATE_FLAG" VARCHAR2(1) := 'N';
+
+-- Function Main 
+-- Entry point in package ""MAP_STAGE_CLIENT_UPDFLG_PKG""
+FUNCTION Main RETURN NUMBER;  
+
+END ""MAP_STAGE_CLIENT_UPDFLG_PKG"";
+
+/
+
+CREATE OR REPLACE PACKAGE BODY ""MAP_STAGE_CLIENT_UPDFLG_PKG"" AS
+
+
+
+
+---------------------------------------------------------------------------
+-- Function "STAGE_CLIENT_STAGE_1_Bat"
+--   performs batch extraction
+--   Returns TRUE on success
+--   Returns FALSE on failure
+---------------------------------------------------------------------------
+FUNCTION "STAGE_CLIENT_STAGE_1_Bat" 
+ RETURN BOOLEAN IS
+
+BEGIN
+  EXECUTE IMMEDIATE 'ALTER SESSION ENABLE PARALLEL DML';
+
+  BEGIN
+    MERGE
+INTO
+  "STAGE"."STAGE_CLIENT_STAGE"
+USING
+  (SELECT
+  "STAGE_CLIENT_STAGE"."CLIENT_SK" "CLIENT_SK",
+  "MAP_STAGE_CLIENT_UPDFLG_PKG"."GET_CONSTANT_0_UPDATE_FLAG" "UPDATE_FLAG"
+FROM
+  "STAGE"."STAGE_CLIENT_STAGE" "STAGE_CLIENT_STAGE"
+  WHERE 
+  ( "STAGE_CLIENT_STAGE"."CLIENT_UPDFLAG" = 'Y' )
+  )
+    MERGE_SUBQUERY
+ON (
+  "STAGE"."STAGE_CLIENT_STAGE"."CLIENT_SK" = "MERGE_SUBQUERY"."CLIENT_SK"
+   )
+  
+  WHEN MATCHED THEN
+    UPDATE
+    SET
+                  "CLIENT_UPDFLAG" = "MERGE_SUBQUERY"."UPDATE_FLAG"
+       
+  ;
+    COMMIT;
+  EXCEPTION WHEN OTHERS THEN
+    ROLLBACK;
+    COMMIT;
+    RETURN FALSE;
+  END;
+  COMMIT;
+  RETURN TRUE;
+END "STAGE_CLIENT_STAGE_1_Bat";
+
+FUNCTION Main RETURN NUMBER IS
+get_batch_status           BOOLEAN := TRUE;
+BEGIN
+  
+
+
+
+
+  
+PROCEDURE EXEC_AUTONOMOUS_SQL(CMD IN VARCHAR2) IS
+  PRAGMA AUTONOMOUS_TRANSACTION;
+BEGIN
+  EXECUTE IMMEDIATE (CMD);
+  COMMIT;
+END;
+  -- Initialize all batch status variables
+	"STAGE_CLIENT_STAGE_1_St" := FALSE;
+
+
+
+			
+"STAGE_CLIENT_STAGE_1_St" := "STAGE_CLIENT_STAGE_1_Bat"; 
+
+
+RETURN get_status;
+END Main;
+END ""MAP_STAGE_CLIENT_UPDFLG_PKG"";
+
+/

@@ -14,14 +14,33 @@ public enum NodeType {
 	NODE_TYPE_RELATION 	(NodeCategory.MODULE) ,
 	NODE_TYPE_VIEW		(NodeCategory.MODULE) ,
 	NODE_TYPE_QUERY 	(NodeCategory.MODULE) ,
+	NODE_TYPE_INSERT	(NodeCategory.MODULE) ,					/**added by sgerag*/
+	NODE_TYPE_DELETE	(NodeCategory.MODULE) ,					/**added by sgerag*/
+	NODE_TYPE_UPDATE	(NodeCategory.MODULE) ,					/**added by sgerag*/
+	NODE_TYPE_MERGE_INTO (NodeCategory.MODULE) ,					/**added by sgerag*/
+	NODE_TYPE_CURSOR	(NodeCategory.MODULE) ,					/**added by sgerag*/
+	NODE_TYPE_ASSIGNMENT(NodeCategory.MODULE), 					/**added by sgerag*/
+	NODE_TYPE_VARIABLE	(NodeCategory.MODULE),					/**added by sgerag*/
+	
 	NODE_TYPE_ATTRIBUTE (NodeCategory.SCHEMA),
+	
+	
 	NODE_TYPE_CONDITION (NodeCategory.SEMANTICS),
 	NODE_TYPE_OPERAND 	(NodeCategory.SEMANTICS),
 	NODE_TYPE_CONSTANT	(NodeCategory.SEMANTICS),
 	NODE_TYPE_GROUP_BY	(NodeCategory.SEMANTICS),
 	NODE_TYPE_FUNCTION	(NodeCategory.SEMANTICS),
-	NODE_TYPE_STORED_PROCEDURE	(NodeCategory.CONTAINER),
-	NODE_TYPE_VARIABLE	(NodeCategory.SCHEMA)
+	
+	NODE_TYPE_FILE 				(NodeCategory.CONTAINER),				/**added by sgerag*/
+	NODE_TYPE_ANONYMOUS_BLOCK	(NodeCategory.CONTAINER),		/**added by sgerag*/
+	NODE_TYPE_SCRIPT			(NodeCategory.CONTAINER),				/**added by sgerag*/
+	NODE_TYPE_STORED_PROCEDURE	(NodeCategory.CONTAINER),			/**added by sgerag*/
+	NODE_TYPE_STORED_FUNCTION	(NodeCategory.CONTAINER),				/**added by sgerag*/
+	NODE_TYPE_TRIGGER			(NodeCategory.CONTAINER),				/**added by sgerag*/
+	NODE_TYPE_PACKAGE			(NodeCategory.CONTAINER),				/**added by sgerag*/
+	NODE_TYPE_EMBEDDED_STATEMENT(NodeCategory.CONTAINER),				/**added by sgerag*/
+
+	
 	;
 	
 

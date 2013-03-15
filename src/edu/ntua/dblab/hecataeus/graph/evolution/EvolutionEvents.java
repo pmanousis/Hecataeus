@@ -13,10 +13,10 @@ public class EvolutionEvents extends java.util.ArrayList<EvolutionEvent>{
 		/*
 		 * gets an event by its type
 		 */
-		public EvolutionEvent get(EventType type){
-			for (int i=0; i<this.size(); i++){
-				if (this.get(i).getEventType()==type)
-					return this.get(i);
+		public <V extends EvolutionNode> EvolutionEvent<V> get(EventType type){
+			for (EvolutionEvent<V> event : this){
+				if (event.getEventType()==type)
+					return event;
 			}
 			return null;
 		}

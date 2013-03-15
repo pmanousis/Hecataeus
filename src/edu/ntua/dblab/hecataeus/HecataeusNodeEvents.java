@@ -105,7 +105,7 @@ public final class HecataeusNodeEvents extends JDialog {
 		btnHighlight.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//get event
-				EvolutionEvent event = (EvolutionEvent) comboBoxHighlight.getSelectedItem();
+				EvolutionEvent<VisualNode> event = (EvolutionEvent<VisualNode>) comboBoxHighlight.getSelectedItem();
 				//get current graph
 				Layout<VisualNode,VisualEdge> ll = vv.getGraphLayout();
 				VisualGraph graph = (VisualGraph) ll.getGraph();
@@ -133,7 +133,7 @@ public final class HecataeusNodeEvents extends JDialog {
 		btnShowImpact.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//get event
-				EvolutionEvent event = (EvolutionEvent) comboBoxHighlight.getSelectedItem();
+				EvolutionEvent<VisualNode> event = (EvolutionEvent<VisualNode>) comboBoxHighlight.getSelectedItem();
 				//get current graph
 				Layout<VisualNode,VisualEdge> ll = vv.getGraphLayout();
 				VisualGraph graph = (VisualGraph) ll.getGraph();
@@ -184,11 +184,11 @@ public final class HecataeusNodeEvents extends JDialog {
         		// get event type from the combo box
 				EventType eventType = (EventType) comboBoxEventType.getSelectedItem();
 				// create and add selected event
-            	EvolutionEvent newEvent = new EvolutionEvent(node,eventType);
+				EvolutionEvent<VisualNode> newEvent = new EvolutionEvent<VisualNode>(node,eventType);
             	boolean eventExists = false;
             	EvolutionEvents events = node.getEvents();
-        		
-            	for (EvolutionEvent event : events){
+        		            	
+            	for (EvolutionEvent<VisualNode> event : events){
         			if ((event.getEventType()==newEvent.getEventType())&&(event.getEventNode().equals(newEvent.getEventNode())))
         				eventExists=true;
         		}
@@ -249,7 +249,7 @@ public final class HecataeusNodeEvents extends JDialog {
 		btnRemove.addActionListener(
 				new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						EvolutionEvent eventToRemove  = (EvolutionEvent) comboBoxEvents.getSelectedItem();
+						EvolutionEvent<VisualNode> eventToRemove  = (EvolutionEvent<VisualNode>) comboBoxEvents.getSelectedItem();
 						node.removeEvent(eventToRemove);
 						vv.repaint();
 						initialize();
@@ -289,7 +289,7 @@ public final class HecataeusNodeEvents extends JDialog {
 		//fill existing events of node
 		if (node.getHasEvents()){
 			EvolutionEvents events = node.getEvents();
-			for (EvolutionEvent event:events) {
+			for (EvolutionEvent<VisualNode> event:events) {
 				jTextArea.append(" - "+event.getEventType()+"\n\n");
 				comboBoxHighlight.addItem(event);
 				comboBoxEvents.addItem(event);
@@ -304,7 +304,7 @@ public final class HecataeusNodeEvents extends JDialog {
 	//class for presenting the error
 	private class showImpact extends JFrame{
 		
-		public showImpact(EvolutionEvent event){
+		public showImpact(EvolutionEvent<VisualNode> event){
 			this.setTitle("Impact of event");
 			//this.setModal(true);
 			JPanel content = new JPanel();
@@ -315,8 +315,7 @@ public final class HecataeusNodeEvents extends JDialog {
 	        content.add(pane, BorderLayout.CENTER);
 	        
 	        //get current graph
-			Layout ll = vv.getGraphLayout();
-			VisualGraph graph = (VisualGraph) ll.getGraph();
+			VisualGraph graph = (VisualGraph) vv.getGraphLayout().getGraph();
 			
 			String msg = "Event: " +event.getEventType().toString()+"\tOn "+event.getEventNode().getName()+"\n";
 			msg += "Module\t\tNode Name\t\tStatus\n" ;

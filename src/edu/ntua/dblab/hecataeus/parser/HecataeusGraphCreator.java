@@ -5,12 +5,14 @@
 package edu.ntua.dblab.hecataeus.parser;
 
 import java.sql.SQLException;
+import java.util.Vector;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.*;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.hsql.*; 
+import edu.ntua.dblab.hecataeus.parser.PlainSQL.SpecificOperator;
 
 /**
  * @author  gpapas
@@ -19,14 +21,31 @@ import edu.ntua.dblab.hecataeus.hsql.*;
 public class HecataeusGraphCreator{
 
 	private static int queries;
-	/**
-	 * @uml.property  name="hGraph"
-	 * @uml.associationEnd  multiplicity="(1 1)"
-	 */
+	private static int anon_blocks;			//
+	private static int scripts;				//	
+	private static int inserts;				//
+	private static int deletes;				//added by sgerag
+	private static int updates;				//
+	private static int assignments;			//
+	private static int embeddeds;			//
+	private static int mergeIntos;			//
+	
+	private static int line;				//
+	private static String path;				//added by sgerag
+	
 	VisualGraph HGraph;
 
 	HecataeusGraphCreator() {
-		queries = 0;
+		queries=0;
+		inserts=0;						//
+		anon_blocks=0;					//
+		scripts=0;						//
+		deletes=0;						//added by sgerag
+		updates=0;						//
+		assignments=0;					//
+		embeddeds=0;
+		line=0;							//
+		path="";						//
 		HGraph =  new VisualGraph();
 	}
 
@@ -36,6 +55,8 @@ public class HecataeusGraphCreator{
 
 	private VisualNode add_node(String Label, NodeType Type) {
 		VisualNode v = new VisualNode(Label, Type);
+		v.setPath(path);														//added by sgerag
+		v.setLine(line);
 		HGraph.addVertex(v);
 		return v;
 	}
@@ -46,7 +67,8 @@ public class HecataeusGraphCreator{
 		return  e ;
 	}
 
-	public boolean add_table(Table tTable, String definition) throws SQLException {
+	//sgerag modification: return type (boolean--->HecataeusEvolutionNode)
+	public VisualNode add_table(Table tTable, String definition) throws SQLException {
 		try {
 			VisualNode u  ;
 			VisualNode v  ;
@@ -61,11 +83,11 @@ public class HecataeusGraphCreator{
 				e = add_edge(u, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 			}
 			addTableConstraints(tTable);
+			return u;								//added by sgerag
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new SQLException(e.getMessage());
 		}
-		return true;
 	}
 
 	private void addTableConstraints(Table  tTable) {
@@ -158,6 +180,26 @@ public class HecataeusGraphCreator{
 		return u ;
 	}
 
+	private VisualNode dfind_attribute(Select sSelect, String attribute) {
+		Table tTable ;
+		String foundTable = "";
+		int foundColumns = 0;
+		for (int i = 0; i < sSelect.tFilter.length; i++) {
+			tTable = sSelect.tFilter[i].getTable();
+			for (int j = 0; j < tTable.getColumnCount() ;j++) {
+				if (attribute==tTable.getColumnName(j)) {
+					foundColumns++;
+					foundTable = tTable.getName() ;
+				}
+			}
+		}
+		if ( foundColumns == 1 ) {
+			return find_attribute(foundTable, attribute);
+		} else{
+			return null;
+		}
+	}
+	
 	public boolean add_query(Select sSelect, String definition) throws SQLException{
 		try {
 			queries++;
@@ -183,7 +225,246 @@ public class HecataeusGraphCreator{
 		return true;
 	}
 
+	/**
+	 * adds a block node in the graph
+	 * @author Stefanos Geraggelos
+	 * @param block
+	 * @param fileNode
+	 * @exception SQLException
+	 */
+	private void addBlock(Block block,VisualNode fileNode) throws SQLException{
+		try{
+			VisualNode blockNode=null;
+			boolean emptyBlock=true;
+			
+			if (block instanceof AnonymousBlock){
+				anon_blocks++;
+				line=block.getLine();
+				
+				if (!blockHasEmptyChildren(block)){
+					blockNode=add_node("ANONYMOUS_BLOCK_"+anon_blocks,NodeType.NODE_TYPE_ANONYMOUS_BLOCK);
+					emptyBlock=false;
+				}
+			}
+			else if (block instanceof Script){
+				scripts++;					
+				line=block.getLine();
+			}
+			else if (block instanceof StoredProcedure){
+				StoredProcedure proc=(StoredProcedure)block;
+				line=block.getLine();
+				
+				if (!blockHasEmptyChildren(block)){
+					blockNode=add_node(proc.getName(),NodeType.NODE_TYPE_STORED_PROCEDURE);
+					emptyBlock=false;
+				}
+			}
+			else if (block instanceof StoredFunction){
+				StoredFunction func=(StoredFunction)block;
+				line=block.getLine();
+				
+				if (!blockHasEmptyChildren(block)){
+					blockNode=add_node(func.getName(),NodeType.NODE_TYPE_STORED_FUNCTION);
+					emptyBlock=false;
+				}
+			}
+			else if (block instanceof Trigger){
+				Trigger trig=(Trigger)block;
+				line=block.getLine();
+				
+				if (!blockHasEmptyChildren(block)){
+					blockNode=add_node(trig.getName(),NodeType.NODE_TYPE_TRIGGER);
+					emptyBlock=false;
+				}
+			}
+			else if (block instanceof Package){
+				Package pack=(Package)block;
+				line=block.getLine();
+				
+				if (!blockHasEmptyChildren(block)){	
+					blockNode=add_node(pack.getName(),NodeType.NODE_TYPE_PACKAGE);
+					emptyBlock=false;
+				}
+			}
+			else if (block instanceof EmbeddedStatement){
+				embeddeds++;
+				EmbeddedStatement emb=(EmbeddedStatement)block;
+				line=block.getLine();
+				
+				if (!blockHasEmptyChildren(block)){
+					blockNode=add_node("EMBEDDED_"+embeddeds,NodeType.NODE_TYPE_EMBEDDED_STATEMENT);
+					emptyBlock=false;
+				}
+			}
+			
+			//visualize nested blocks
+			Vector<Block> blocks=block.getBlocks();
+			for (Block bl:blocks){
+				if (!(block instanceof Script))		addBlock(bl,blockNode);
+				else	addBlock(bl,fileNode);
+			}
+			
+			if (!(block instanceof Script) && !emptyBlock){
+				add_edge(fileNode,blockNode,EdgeType.EDGE_TYPE_CONTAINS,"contains");
+			}
+			
+			Vector<Statement> stmts=block.getStatements();
+			
+			for (Statement nod:stmts){
+				VisualNode stmtNode=new VisualNode();
+				if (nod instanceof Relation){
+					Relation rel=((Relation)nod);
+					line=rel.getLine();
+					
+					stmtNode=this.add_table(rel.getTable(),rel.getDefinition());
+				}
+				else if (nod instanceof View){
+					View view=((View)nod);
+					line=view.getLine();
+					
+					stmtNode=add_node(view.getName(), NodeType.NODE_TYPE_VIEW);
+					this.createQuery(stmtNode,view.getSelect(),false);
+					stmtNode.setSQLDefinition(view.getDefinition());
+				}
+				else if (nod instanceof PlainSQL){
+					PlainSQL plain=((PlainSQL)nod);
+					line=plain.getLine();
+					
+					if (plain.getOperator()==SpecificOperator.SELECT){
+						queries++;
+						
+						if (plain.isSelectInto()) stmtNode=add_node(plain.getName(),NodeType.NODE_TYPE_QUERY);
+						else	stmtNode=add_node("Q"+queries, NodeType.NODE_TYPE_QUERY);
+						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode.setSQLDefinition(plain.getDefinition());
+					}
+					else if (plain.getOperator()==SpecificOperator.INSERT){
+						inserts++;
+						stmtNode=add_node("I"+inserts,NodeType.NODE_TYPE_INSERT);
+						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode.setSQLDefinition(plain.getDefinition());
+					}
+					else if (plain.getOperator()==SpecificOperator.DELETE){
+						deletes++;
+						stmtNode=add_node("D"+deletes,NodeType.NODE_TYPE_DELETE);
+						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode.setSQLDefinition(plain.getDefinition());
+					}
+					else if (plain.getOperator()==SpecificOperator.UPDATE){
+						updates++;
+						stmtNode=add_node("U"+updates,NodeType.NODE_TYPE_UPDATE);
+						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode.setSQLDefinition(plain.getDefinition());
+					}
+				}
+				else if (nod instanceof Cursor){
+					Cursor cur=((Cursor)nod);
+					line=cur.getLine();
+					
+					if (cur.getId()==0){
+						//static cursor
+						stmtNode=add_node(cur.getName(),NodeType.NODE_TYPE_CURSOR);
+					}
+					else {
+						//dynamic cursor
+						stmtNode=add_node(cur.getName()+"_"+cur.getId(),NodeType.NODE_TYPE_CURSOR);
+					}
+					this.createQuery(stmtNode,cur.getSelect(),false);
+					stmtNode.setSQLDefinition(cur.getDefinition());
+				}
+				else if (nod instanceof Variable){
+					Variable var=((Variable)nod);
+					line=var.getLine();
+					
+					stmtNode=add_node(var.getName(),NodeType.NODE_TYPE_VARIABLE);
+					this.createQuery(stmtNode,var.getSelect(),false);
+					stmtNode.setSQLDefinition(var.getDefinition());
+				}
+				else if (nod instanceof Assignment){
+					assignments++;
+					Assignment assig=((Assignment)nod);
+					line=assig.getLine();
+					
+					stmtNode=add_node("A"+assignments,NodeType.NODE_TYPE_ASSIGNMENT);
+					this.createQuery(stmtNode,assig.getSelect(),false);
+					stmtNode.setSQLDefinition(assig.getDefinition());
+				}
+				else if (nod instanceof MergeInto){
+					mergeIntos++;
+					MergeInto merge = (MergeInto) nod;
+					line = merge.getLine();
+					
+//					stmtNode=add_node("Merge_"+mergeIntos,NodeType.NODE_TYPE_MERGE_INTO);
+//					this.createQuery(stmtNode,merge.getSelect(),false);
+//					stmtNode.setSQLDefinition(plain.getDefinition());
+					
+				}
+				
+				if (block instanceof Script){
+					add_edge(fileNode,stmtNode,EdgeType.EDGE_TYPE_CONTAINS,"contains");
+				}
+				else {
+					add_edge(blockNode,stmtNode,EdgeType.EDGE_TYPE_CONTAINS,"contains");
+				}
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			throw new SQLException();
+		}	
+	}
+	
+	
+	/**
+	 * adds a file node in the graph
+	 * @author Stefanos Geraggelos
+	 * @param plain
+	 * @exception SQLException
+	 */
+	public boolean addFile(FileContainer file) throws SQLException{
+		try {
+			path=file.getPath();
+			
+			VisualNode fileNode=null;
+			
+			Vector<Block> blcks=file.getBlocks();
+			if (!blcks.isEmpty())	fileNode=add_node(file.getName(),NodeType.NODE_TYPE_FILE);
+			
+			for (Block block:blcks){
+				addBlock(block,fileNode);
+			}
 
+		}catch (Exception e){
+			e.printStackTrace();
+			throw new SQLException();
+		}
+		
+		return true;
+	}
+	
+	
+	/**
+	 * checks if all of the children's of block node are empty 
+	 * @author Stefanos Geraggelos
+	 * @param blockNode
+	 * @exception SQLException
+	 */
+	private boolean blockHasEmptyChildren(Block blockNode){
+		boolean hasEmpty=true;
+		
+		Vector<Block> blChilds=blockNode.getBlocks();
+		
+		for (Block bl:blChilds){
+			hasEmpty=blockHasEmptyChildren(bl);
+		}
+		
+		Vector<Statement> stChilds=blockNode.getStatements();
+		
+		if (!stChilds.isEmpty())	return false;
+		
+		return hasEmpty;
+	}
+	
 	private void createQuery(VisualNode u, Select sSelect, boolean nested) throws SQLException{
 
 		Expression expression;
@@ -215,6 +496,8 @@ public class HecataeusGraphCreator{
 			if (expression.getType()== Expression.COLUMN) {
 				v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE) ;
 				e = add_edge(u, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
+//				VisualNode v1 = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE) ;
+//				VisualEdge e1 = add_edge(u, v1, EdgeType.EDGE_TYPE_SCHEMA, "outS") ;
 				x = find_attribute(expression.getTableName(), expression.getColumnName()) ;
 				e = add_edge(v,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
 			}

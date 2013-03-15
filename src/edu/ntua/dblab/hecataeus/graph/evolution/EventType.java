@@ -86,6 +86,7 @@ public enum EventType {
 		case NODE_TYPE_ATTRIBUTE:
 			eventTypes.add(EventType.DELETE_ATTRIBUTE);
 			eventTypes.add(EventType.RENAME_ATTRIBUTE);
+			eventTypes.add(EventType.MODIFYDOMAIN_ATTRIBUTE);
 			break;
 		case NODE_TYPE_CONDITION:
 			eventTypes.add(EventType.DELETE_CONDITION);

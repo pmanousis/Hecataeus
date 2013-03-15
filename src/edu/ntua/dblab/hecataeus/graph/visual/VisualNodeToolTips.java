@@ -5,6 +5,7 @@ import org.apache.commons.collections15.Transformer;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 /**
  * 
@@ -27,20 +28,24 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 			}
 			
 			if (node.getHasPolicies()) {
-				for (int i = 0; i < node.getPolicies().size(); i++) {
-					EvolutionPolicy p = node.getPolicies().get(i);
+				for (EvolutionPolicy<VisualNode> p : node.getPolicies()) {
 					tooltip += "<i>Policy:</i>" + p;
 					tooltip += "<br>";
 				}
 			}
 			if (node.getHasEvents()) {
-				for (int i = 0; i < node.getEvents().size(); i++) {
-					EvolutionEvent e = node.getEvents().get(i);
+				for (EvolutionEvent<VisualNode> e: node.getEvents()) {
 					tooltip += "<i>Event:</i> " + e;
 					tooltip += "<br>";
 				}
 			}
 			
+			if (node.getType()== NodeType.NODE_TYPE_FILE){		//
+				tooltip += "<i>Path: </i>"+node.getPath()+"<br/>";		//added by sgerag
+			}																						//
+			else { 																					//
+				tooltip += "<i>Line: </i>"+node.getLine()+"<br/>";		//added by sgerag
+			}	
 			tooltip += "<i>Status: </i>"
 				+ node.getStatus();
 			tooltip += "</html>";

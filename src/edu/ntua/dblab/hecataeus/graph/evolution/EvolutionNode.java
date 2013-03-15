@@ -14,10 +14,9 @@ public class EvolutionNode<E extends EvolutionEdge>{
 	
 	private String _Name = null;
 	private NodeType _Type ;
-	private int _NodeKey = 0 ;
 	private int _frequency = 0;
 	
-	private EvolutionPolicies _policies = null;
+	private EvolutionPolicies  _policies = null;
 	private EvolutionEvents _events = null;
 	protected List<E> _outEdges = null;
 	protected List<E> _inEdges = null;
@@ -68,20 +67,7 @@ public class EvolutionNode<E extends EvolutionEdge>{
 		this._Type = Value;
 	}
 
-	/**
-	 * Returns the unique key of the node
-	 */
-	public int getKey() {
-		return this._NodeKey;
-	}
-
-	/**
-	 * Sets the unique key of the node
-	 */
-	public void setKey(int Value) {
-		this._NodeKey = Value;
-	}
-	
+		
 	/**
 	 * Returns the frequency of the node
 	 */
@@ -135,10 +121,10 @@ public class EvolutionNode<E extends EvolutionEdge>{
 	**/
 	public void addPolicy(EventType eventType, EvolutionNode child, PolicyType policyType) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(eventType, child);
+		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType, child);
 		if(policy!=null)
 				policies.remove(policy);
-		policies.add(new EvolutionPolicy(eventType,child,policyType));
+		policies.add(new EvolutionPolicy<EvolutionNode>(eventType,child,policyType));
 	}
 
 	/**
@@ -214,6 +200,34 @@ public class EvolutionNode<E extends EvolutionEdge>{
 	 */
 	public String toString() {
 		return this._Name;
+	}
+	
+	private String _path="";									/*added by sgerag*/
+	/***
+	 * Gets path of the sql definition that created the node
+	 */
+	public String getPath() {									/*added by sgerag*/
+		return this._path;
+	}
+	/***
+	 * Sets the path of the sql definition that created the node
+	 */
+	public void setPath(String path) {							/*added by sgerag*/	
+		this._path=path;
+	}
+	
+	private int _line=0;										/*added by sgerag*/
+	/***
+	 * Gets line of the sql definition that created the node
+	 */
+	public int getLine() {										/*added by sgerag*/
+		return this._line;
+	}
+	/***
+	 * Sets the line of the sql definition that created the node
+	 */
+	public void setLine(int line) {								/*added by sgerag*/	
+		this._line=line;
 	}
 	
 }

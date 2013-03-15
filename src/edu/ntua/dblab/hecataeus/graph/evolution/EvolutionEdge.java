@@ -11,7 +11,6 @@ public class EvolutionEdge{
      
 	private String _Name = null;
 	private EdgeType _Type;
-	private int _EdgeKey = 0;
 	private EvolutionNode<? extends EvolutionEdge> _FromNode = null;
     private EvolutionNode<? extends EvolutionEdge> _ToNode = null;
     private EvolutionPolicies _policies = null;
@@ -57,19 +56,6 @@ public class EvolutionEdge{
 		this._Type = Value;
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge#getKey()
-	 */
-	public int getKey() {
-		return this._EdgeKey;
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge#setKey(java.lang.String)
-	 */
-	public void setKey(int Value) {
-		this._EdgeKey = Value;
-	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge#getStatus()
@@ -173,6 +159,7 @@ public class EvolutionEdge{
     	    					&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
     	    					||((this.getType()==EdgeType.EDGE_TYPE_MAPPING)
     	    							&&(this.getToNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
+    	    							||(this.getType()==EdgeType.EDGE_TYPE_CONTAINS)
     	){
     		return true;
     	}        

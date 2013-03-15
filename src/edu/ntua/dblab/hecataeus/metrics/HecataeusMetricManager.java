@@ -5,7 +5,6 @@
 package edu.ntua.dblab.hecataeus.metrics;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
@@ -15,8 +14,8 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
+import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 
 public class HecataeusMetricManager {
 	
@@ -34,8 +33,8 @@ public class HecataeusMetricManager {
 	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int countPolicies(List<V> nodes, PolicyType policyType) {
 		 int policies =0;
-		 for (  EvolutionNode<E> node: nodes) {
-			 for (EvolutionPolicy p : node.getPolicies()) {
+		 for (V node: nodes) {
+			 for (EvolutionPolicy<V> p : node.getPolicies()) {
      			if (p.getPolicyType().equals(policyType)) {
      				policies++;
      			}
@@ -46,7 +45,7 @@ public class HecataeusMetricManager {
 	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int countEvents(List<V> nodes) {
 		 int events =0;
-		 for (EvolutionNode<E> node: nodes) {
+		 for (V node: nodes) {
 			 events += node.getEvents().size();
 		 }
 		 return events;
@@ -66,7 +65,7 @@ public class HecataeusMetricManager {
 	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inDegree( V node, EdgeType edgeType) {
 		 int countedges = 0;
-		 for (EvolutionEdge edge : node.getInEdges()) {
+		 for (E edge : node.getInEdges()) {
 			if (edge.getType()==edgeType) {
 				 countedges++;
 			 }
@@ -76,7 +75,7 @@ public class HecataeusMetricManager {
 	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outDegree( V node, EdgeType edgeType) {
 		 int countedges = 0;
-		 for (EvolutionEdge edge :  node.getOutEdges()) {
+		 for (E edge :  node.getOutEdges()) {
 				 if (edge.getType()==edgeType) {
 				 countedges++;
 			 }
@@ -86,13 +85,13 @@ public class HecataeusMetricManager {
 	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int degree( V node, EdgeType edgeType) {
 		 int countInedges = 0;
-		 for (EvolutionEdge edge :  node.getInEdges()) {
+		 for (E edge :  node.getInEdges()) {
 				 if (edge.getType()==edgeType) {
 				 countInedges++;
 			 }
 		}
 		 int countOutedges = 0;
-		 for (EvolutionEdge edge :  node.getOutEdges()) {
+		 for (E edge :  node.getOutEdges()) {
 			 if (edge.getType()==edgeType) {
 				 countOutedges++;
 			 }
@@ -100,35 +99,11 @@ public class HecataeusMetricManager {
 		return countInedges+countOutedges;
 	 }
 	 
-	 /**
-	  * calculates the strength between two modules (subGraphs) as
-	  * the number of all dependency edges between these modules
-	  * directing from the fromModule towards the toModule
-	  * @param fromModule is the parent node of outgoing edges module
-	  * @param toModule is the parent node of incoming edges module
-	  * @return strength
-	  */
-	 private static <V extends EvolutionNode<E>,E extends EvolutionEdge> int strength(List<V> fromModule, List<V> toModule) {
-		 List<EvolutionEdge> strength = new ArrayList<EvolutionEdge>();
-		 for ( EvolutionNode<E> node : fromModule) {
-			 for (EvolutionEdge edge : node.getOutEdges()) {
-				 if (edge.isProvider()
-						 &&toModule.contains(edge.getToNode())
-						 &&(!strength.contains(edge))) {
-					 strength.add(edge);
-				 }
-			 }
-		 }
-		return strength.size();
-	 }
-	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inStrength(V node, EvolutionGraph<V,E> graph) {
 		 int nodeStrength = 0;
 			if (node.getType().getCategory()== NodeCategory.MODULE) {
-				for ( V toNode: graph.getVertices()){
-					if (toNode.getType().getCategory()== NodeCategory.MODULE) {
-						nodeStrength+= HecataeusMetricManager.strength(graph.getModule(toNode), graph.getModule(node));
-					}
+				for ( V toNode: graph.getVertices(NodeCategory.MODULE)){
+						nodeStrength+= graph.getConnections(graph.getModule(toNode), graph.getModule(node));
 				}
 			}
 			return nodeStrength;
@@ -137,10 +112,8 @@ public class HecataeusMetricManager {
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outStrength( V node, EvolutionGraph<V,E> graph) {
 		 int nodeStrength = 0;
 			if (node.getType().getCategory()== NodeCategory.MODULE) {
-				for ( V toNode : graph.getVertices()) {
-					if (toNode.getType().getCategory()== NodeCategory.MODULE) {
-						nodeStrength+= HecataeusMetricManager.strength(graph.getModule(node), graph.getModule(toNode));
-					}
+				for ( V toNode : graph.getVertices(NodeCategory.MODULE)) {
+						nodeStrength+= graph.getConnections(graph.getModule(node), graph.getModule(toNode));
 				}
 			}
 			return nodeStrength;
@@ -149,11 +122,9 @@ public class HecataeusMetricManager {
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int strength(V node, EvolutionGraph<V,E> graph) {
 		 int nodeStrength = 0;
 			if (node.getType().getCategory()== NodeCategory.MODULE){
-				for (V toNode : graph.getVertices()) {
-					if (toNode.getType().getCategory()== NodeCategory.MODULE) {
-						nodeStrength+= HecataeusMetricManager.strength(graph.getModule(node), graph.getModule(toNode));
-						nodeStrength+= HecataeusMetricManager.strength(graph.getModule(toNode), graph.getModule(node));
-					}
+				for (V toNode : graph.getVertices(NodeCategory.MODULE)) {
+						nodeStrength+= graph.getConnections(graph.getModule(node), graph.getModule(toNode));
+						nodeStrength+= graph.getConnections(graph.getModule(toNode), graph.getModule(node));
 				}
 			}
 			return nodeStrength;
@@ -164,7 +135,7 @@ public class HecataeusMetricManager {
 			if (node.getType().getCategory()== NodeCategory.MODULE) {
 				for ( V toNode : graph.getVertices()) {
 					if (toNode.getType().getCategory()== NodeCategory.MODULE) {
-						nodeStrength+= toNode.getFrequency()*HecataeusMetricManager.strength(graph.getModule(toNode), graph.getModule(node));
+						nodeStrength+= toNode.getFrequency()*graph.getConnections(graph.getModule(toNode), graph.getModule(node));
 					}
 				}
 			}
@@ -175,126 +146,161 @@ public class HecataeusMetricManager {
 		 return node.getFrequency();
 	 }
 	 
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int transitiveDegree(V node) {
+		   return inTransitiveDegree(node) + outTransitiveDegree(node);
+	 }
+	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inTransitiveDegree(V node) {
 		 int countDegree =0;
-		 if (node.getType().getCategory()== NodeCategory.MODULE) {
-			 for (EvolutionEdge edge: node.getInEdges()) {
-				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-					 countDegree++;
-					 countDegree+=inTransitiveDegree((EvolutionNode<E>)edge.getFromNode());
-				 }
-			 }
-		 }else {
-			 for (EvolutionEdge edge: node.getInEdges()) {
-				 if (edge.isProvider() && edge.getType()!=EdgeType.EDGE_TYPE_FROM) {
-					 countDegree++;
-				 }
-				 countDegree+=inTransitiveDegree(( EvolutionNode<E>) edge.getFromNode());
-					
-			}	
+		 for (E edge: node.getInEdges()) {
+			 countDegree++;
+			 countDegree+=inTransitiveDegree(edge.getFromNode());
 		 }
+//		 if (node.getType().getCategory()== NodeCategory.MODULE) {
+//			 for (E edge: node.getInEdges()) {
+//				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
+//					 countDegree++;
+//					 countDegree+=inTransitiveDegree(edge.getFromNode());
+//				 }
+//			 }
+//		 }else {
+//			 for (E edge: node.getInEdges()) {
+//				 if (edge.isProvider() && edge.getType()!=EdgeType.EDGE_TYPE_FROM) {
+//					 countDegree++;
+//				 }
+//				 countDegree+=inTransitiveDegree(edge.getFromNode());
+//					
+//			}	
+//		 }
 		 	 
 		 return countDegree;
 	 }
 	 
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outTransitiveDegree( V node) {
 		 int countDegree =0;
-		 if (node.getType().getCategory()== NodeCategory.MODULE) {
-			 for (EvolutionEdge edge: node.getOutEdges()) {
-				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-					 countDegree++;
-					 countDegree+=outTransitiveDegree(( EvolutionNode<E>) edge.getToNode());
-				 }
-			 }
-		 }else {
-			 for (EvolutionEdge edge: node.getOutEdges()) {
-				 if (edge.isProvider() && edge.getType()!=EdgeType.EDGE_TYPE_FROM) {
-					 countDegree++;
-				 }
-				 countDegree+=outTransitiveDegree(( EvolutionNode<E>) edge.getToNode());
-					
-			}	
+		 for (E edge: node.getOutEdges()) {
+			 countDegree++;
+			 countDegree+=outTransitiveDegree(edge.getToNode());
 		 }
-		 	 
+//		 if (node.getType().getCategory()== NodeCategory.MODULE) {
+//			 for (E edge: node.getOutEdges()) {
+//				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
+//					 countDegree++;
+//					 countDegree+=outTransitiveDegree(edge.getToNode());
+//				 }
+//			 }
+//		 }else {
+//			 for (E edge: node.getOutEdges()) {
+//				 if (edge.isProvider() && edge.getType()!=EdgeType.EDGE_TYPE_FROM) {
+//					 countDegree++;
+//				 }
+//				 countDegree+=outTransitiveDegree(edge.getToNode());
+//					
+//			}	
+//		 }
+//		 	 
 		 return countDegree;
 	 }
 	 
-	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inPolicyTransitiveDegree( V node) {
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outTransitiveModuleDegree(V node) {
 		 int countDegree =0;
-		 if (node.getType().getCategory()== NodeCategory.MODULE) {
-			 for (EvolutionEdge edge: node.getInEdges()) {
+		 if (node.getType().getCategory()== NodeCategory.MODULE)
+			 for (E edge: node.getOutEdges()) 
 				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
-					 
-					 if (node.getPolicies().size()>0) {
-						
-						 //TODO: matsakonia,ypothetw oti gia kathe kombo 
-						 //yparxei mia mono policy h opoia einai block
-						 //FIX: prepei na kanei iterate over all policies.
-						 if (node.getPolicies().get(0).getPolicyType()!=PolicyType.BLOCK) { 
-							 countDegree++;
-							 countDegree+=inPolicyTransitiveDegree(( EvolutionNode<E>) edge.getFromNode());}
-					 }else {countDegree+=inPolicyTransitiveDegree(( EvolutionNode<E>) edge.getFromNode());
 					 countDegree++;
-					 }
+					 countDegree+=outTransitiveModuleDegree(edge.getToNode());
 				 }
-			 }
-		 }else {
-			 for (EvolutionEdge edge: node.getInEdges()) {
-				 if (edge.isProvider() && edge.getType()!=EdgeType.EDGE_TYPE_FROM) {
+		 return countDegree;
+	 }
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inTransitiveModuleDegree(V node) {
+		 int countDegree =0;
+		 if (node.getType().getCategory()== NodeCategory.MODULE)
+			 for (E edge: node.getInEdges()) 
+				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
 					 countDegree++;
+					 countDegree+=inTransitiveModuleDegree(edge.getFromNode());
 				 }
-				 if (node.getPolicies().size()>0) {
-					 //TODO: matsakonia,ypothetw oti gia kathe kombo 
-					 //yparxei mia mono policy h opoia einai block
-					 //FIX: prepei na kanei iterate over all policies.
-					 if (node.getPolicies().get(0).getPolicyType()!=PolicyType.BLOCK) 
-						 countDegree+=inPolicyTransitiveDegree(( EvolutionNode<E>) edge.getFromNode());
-				 }else countDegree+=inPolicyTransitiveDegree(( EvolutionNode<E>) edge.getFromNode());
-			}	
-		 }
-		 	 
+		 return countDegree;
+	 }
+		 
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outTransitiveStrength(V node, EvolutionGraph<V,E> graph) {
+		 int countDegree =0;
+		 if (node.getType().getCategory()== NodeCategory.MODULE)
+			 for (E edge: node.getOutEdges()) 
+				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
+					 V toNode = (V) edge.getToNode();
+					 countDegree+=graph.getConnections(graph.getModule(node), graph.getModule(toNode));
+					 countDegree+=outTransitiveStrength(toNode,graph);
+				 }
+		 return countDegree;
+	 }
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inTransitiveStrength(V node, EvolutionGraph<V,E> graph) {
+		 int countDegree =0;
+		 if (node.getType().getCategory()== NodeCategory.MODULE)
+			 for (E edge: node.getInEdges()) 
+				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
+					 V fromNode = (V) edge.getFromNode();
+					 countDegree+=graph.getConnections(graph.getModule(fromNode), graph.getModule(node));
+					 countDegree+=inTransitiveStrength(fromNode,graph);
+				 }
 		 return countDegree;
 	 }
 	 
-	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outPolicyTransitiveDegree( V node, EvolutionEvent event) {
+	 
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int inPolicyTransitiveDegree(EvolutionEvent<V> event, EvolutionGraph<V,E> graph) {
+		 int countDegree =0;
+		 //clear all statuses
+		 for (V aNode : graph.getVertices())
+			 aNode.setStatus(StatusType.NO_STATUS);
+		 for (E aEdge: graph.getEdges())
+			 aEdge.setStatus(StatusType.NO_STATUS);
+		 
+		 graph.initializeChange(event);
+		 
+		 for (V aNode : graph.getVertices())
+			 if (aNode.getStatus()!=StatusType.BLOCKED
+					 &&aNode.getStatus()!=StatusType.NO_STATUS)
+				 countDegree ++;
+		 return countDegree;
+	 }
+	 
+	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> int outPolicyTransitiveDegree( V node, EvolutionEvent<V> event) {
 		 int countDegree =0;
 		 if (node.getType().getCategory()== NodeCategory.MODULE) {
-			 for (EvolutionEdge edge: node.getOutEdges()) {
+			 for (E edge: node.getOutEdges()) {
 				 if (edge.isProvider() && edge.getType()==EdgeType.EDGE_TYPE_FROM) {
 					 if (edge.getToNode().getPolicies().size()>0) {
-						 for (int j=0; j<edge.getToNode().getPolicies().size();j++) {
-							 EvolutionPolicy p = edge.getToNode().getPolicies().get(j);
+						 for ( EvolutionPolicy<V> p : edge.getToNode().getPolicies()) {
 							 //TODO: matsakonia,ypothetw oti gia kathe kombo 
 							 //yparxei mia mono policy h opoia einai block
 							 //FIX: prepei na kanei iterate over all policies.
 							 if (p.getSourceEvent().getEventType()==event.getEventType()&&p.getPolicyType()!=PolicyType.BLOCK) {
 								 countDegree++;
-								 countDegree+=outPolicyTransitiveDegree(( EvolutionNode<E>) edge.getToNode(),event);
+								 countDegree+=outPolicyTransitiveDegree((V) edge.getToNode(),event);
 							 }
 						 }
 					 }else {
-						 countDegree+=outPolicyTransitiveDegree(( EvolutionNode<E>) edge.getToNode(),event);
+						 countDegree+=outPolicyTransitiveDegree((V) edge.getToNode(),event);
 						 countDegree++;
 					 }
 				 }
 			 }
 		 }else {
-			 for (EvolutionEdge edge: node.getOutEdges()) {
+			 for (E edge: node.getOutEdges()) {
 				 if (edge.isProvider() && edge.getType()!=EdgeType.EDGE_TYPE_FROM) {
 					 countDegree++;
 				 }
 				 if (edge.getToNode().getPolicies().size()>0) {
-					 for (int j=0; j<edge.getToNode().getPolicies().size();j++) {
-						 EvolutionPolicy p = edge.getToNode().getPolicies().get(j);
+					 for (EvolutionPolicy<V> p: edge.getToNode().getPolicies()) {
 						 //TODO: matsakonia,ypothetw oti gia kathe kombo 
 						 //yparxei mia mono policy h opoia einai block
 						 //FIX: prepei na kanei iterate over all policies.
 						 if (p.getSourceEvent().getEventType()==event.getEventType()&&p.getPolicyType()!=PolicyType.BLOCK) {
 							 countDegree++;
-							 countDegree+=outPolicyTransitiveDegree(( EvolutionNode<E>) edge.getToNode(),event);
+							 countDegree+=outPolicyTransitiveDegree((V) edge.getToNode(),event);
 						 }
 					 }
-				 }else countDegree+=outPolicyTransitiveDegree(( EvolutionNode<E>) edge.getToNode(), event);
+				 }else countDegree+=outPolicyTransitiveDegree((V) edge.getToNode(), event);
 					
 			}	
 		 }
@@ -305,19 +311,17 @@ public class HecataeusMetricManager {
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> float entropyGraph(EvolutionGraph<V,E> graph) {
 		 double totalPaths =0;
 		 float countEntropy=0;
-		 List<V> nodes = new ArrayList<V>(graph.getVertices());
+		 List<V> nodes = new ArrayList<V>(graph.getVertices(NodeCategory.MODULE));
 		 double[] noPaths= new double[nodes.size()];
 		 for ( V srcNode: nodes) {
-			 if (srcNode.getType().getCategory()== NodeCategory.MODULE) {
 				 noPaths[nodes.indexOf(srcNode)]=0;
 				 for (V toNode : nodes) {
-					 if (!toNode.equals(srcNode)
-							 &&(toNode.getType().getCategory()== NodeCategory.MODULE)){
+					 if (!toNode.equals(srcNode)){
 						 noPaths[nodes.indexOf(srcNode)] += graph.getPaths(srcNode, toNode);
 					 }
 				 }
 				 totalPaths +=noPaths[nodes.indexOf(srcNode)];
-			 }
+			 
 		 }
 			 
 		 //compute entropy
@@ -334,7 +338,7 @@ public class HecataeusMetricManager {
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge>float entropyOutPerNode( V srcNode,EvolutionGraph<V,E> graph) {
 		 double totalPaths =0;
 		 float countEntropy=0;
-		 List<V> nodes = new ArrayList<V>(graph.getVertices());
+		 List<V> nodes = new ArrayList<V>(graph.getVertices(NodeCategory.MODULE));
 		 double[] noPaths= new double[nodes.size()];
 		 
 		 for (V toNode:nodes) {
@@ -362,12 +366,11 @@ public class HecataeusMetricManager {
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge>float entropyInPerNode(V trgNode,EvolutionGraph<V,E> graph) {
 		 double totalPaths =0;
 		 float countEntropy=0;
-		 List<V> nodes = new ArrayList<V>(graph.getVertices());
+		 List<V> nodes = new ArrayList<V>(graph.getVertices(NodeCategory.MODULE));
 		 double[] noPaths= new double[nodes.size()];
 		 
 		 for ( V fromNode : nodes) {
-			 if ((!fromNode.equals(trgNode))
-					 &&((fromNode.getType().getCategory()== NodeCategory.MODULE))){
+			 if (!fromNode.equals(trgNode)){
 				 noPaths[nodes.indexOf(fromNode)] = graph.getPaths(fromNode, trgNode);
 				 totalPaths +=noPaths[nodes.indexOf(fromNode)];
 			 }
@@ -394,12 +397,12 @@ public class HecataeusMetricManager {
 	  */
 	 public static <V extends EvolutionNode<E>,E extends EvolutionEdge> boolean isBipartite(EvolutionGraph<V, E> graph) {
 		 
-		 List<EvolutionNode<EvolutionEdge>> oddGroup = new ArrayList<EvolutionNode<EvolutionEdge>>();
-		 List<EvolutionNode<EvolutionEdge>> evenGroup = new ArrayList<EvolutionNode<EvolutionEdge>>();
-		 EvolutionNode<EvolutionEdge> v= (EvolutionNode<EvolutionEdge>) graph.getVertices().iterator().next();
+		 List<V> oddGroup = new ArrayList<V>();
+		 List<V> evenGroup = new ArrayList<V>();
+		 V v=  graph.getVertices().iterator().next();
 		 oddGroup.add(v);
 		 evaluateBipartite(v,oddGroup, evenGroup);
-		 for (EvolutionEdge edge : graph.getEdges()) {
+		 for (E edge : graph.getEdges()) {
 			 if ((oddGroup.contains(edge.getFromNode())&& oddGroup.contains(edge.getToNode()))
 					 ||(evenGroup.contains(edge.getFromNode())&& evenGroup.contains(edge.getToNode())))
 				 return false;
@@ -407,9 +410,9 @@ public class HecataeusMetricManager {
 		 return true;
 	 }
 	 
-	 private static void evaluateBipartite( EvolutionNode<EvolutionEdge> v, List<EvolutionNode<EvolutionEdge>> oddGroup, List<EvolutionNode<EvolutionEdge>> evenGroup) {
-		 for(EvolutionEdge e :v.getInEdges()) {
-			 EvolutionNode<EvolutionEdge> y = ( EvolutionNode<EvolutionEdge>) e.getFromNode();
+	 private static <V extends EvolutionNode<E>,E extends EvolutionEdge> void evaluateBipartite( V v, List<V> oddGroup, List<V> evenGroup) {
+		 for(E e :v.getInEdges()) {
+			 V y =  (V) e.getFromNode();
 			 if (oddGroup.contains(v)) { 
 				 if (!evenGroup.contains(y)) {
 					 evenGroup.add(y);
@@ -419,8 +422,8 @@ public class HecataeusMetricManager {
 					 oddGroup.add(y);
 					 evaluateBipartite(y,oddGroup, evenGroup);}}
 		 }
-		 for (int k = 0; k < v.getOutEdges().size(); k++) {
-			  EvolutionNode<EvolutionEdge> y= ( EvolutionNode<EvolutionEdge>) v.getOutEdges().get(k).getToNode();
+		 for (E e : v.getOutEdges()) {
+			 V y= (V) e.getToNode();
 			 if (oddGroup.contains(v)) { 
 				 if (!evenGroup.contains(y)) {
 					 evenGroup.add(y);

@@ -6,10 +6,12 @@ package edu.ntua.dblab.hecataeus;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
+import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
@@ -30,6 +32,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import javax.swing.AbstractAction;
@@ -128,6 +131,8 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 					popup.addSeparator();
 					popup.add(this.getMenuSetPolicies());
 					popup.add(this.getMenuSetEvents());
+					if (clickedVertex.getHasEvents())
+						popup.add(this.getMenuApplyEvent());
 				}    
 				//for any vertex 
 				if(pickedNodes.size() > 0) {
@@ -211,7 +216,7 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 				pickedNodeState.pick(clickedVertex, false);
 				final NameType edit = new NameType(true);
 				edit.textFieldName.setText(clickedVertex.getName());
-				edit.comboBoxType.setSelectedItem(clickedVertex.getType().toString());
+				edit.comboBoxType.setSelectedItem(clickedVertex.getType());
 				edit.textSQLDef.setText(clickedVertex.getSQLDefinition().replace("\t", ""));
 				edit.okButton.addActionListener(
 						new ActionListener() {
@@ -219,7 +224,7 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 								String name = edit.textFieldName.getText();
 								if (!name.equals("")) {
 									clickedVertex.setName(name);
-									clickedVertex.setType(NodeType.valueOf((String) edit.comboBoxType.getSelectedItem()));
+									clickedVertex.setType((NodeType) edit.comboBoxType.getSelectedItem());
 									clickedVertex.setSQLDefinition(edit.textSQLDef.getText());
 									vv.repaint();
 									edit.dispose();
@@ -298,12 +303,12 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 			public void actionPerformed(ActionEvent e) {
 				final NameType edit = new NameType(false);
 				edit.textFieldName.setText(clickedEdge.getName());
-				edit.comboBoxType.setSelectedItem(clickedEdge.getType().ToString());
+				edit.comboBoxType.setSelectedItem(clickedEdge.getType());
 				edit.okButton.addActionListener(
 						new ActionListener() {
 							public void actionPerformed(ActionEvent e) {
 								String name = edit.textFieldName.getText();
-								EdgeType type = EdgeType.toEdgeType((String) edit.comboBoxType.getSelectedItem());
+								EdgeType type = (EdgeType) edit.comboBoxType.getSelectedItem();
 								if (!name.equals("")) {
 									clickedEdge.setName(name);
 									clickedEdge.setType(type);
@@ -370,6 +375,32 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 		};
 	}
 	
+	private JMenu getMenuApplyEvent(){
+		JMenu mnuApplyEvent = new JMenu("Apply Event");
+		
+		for (final EvolutionEvent<VisualNode> event: clickedVertex.getEvents()) {
+			mnuApplyEvent.add(new AbstractAction(event.toString()) {
+				public void actionPerformed(ActionEvent e) {
+					// initialize the event
+					//clear previous status of nodes if exist
+					for (VisualNode u : graph.getVertices()) {
+						u.setStatus(StatusType.NO_STATUS);
+					}	
+					for (VisualEdge edge : graph.getEdges()) {
+						edge.setStatus(StatusType.NO_STATUS);
+					}	
+					//initialize algorithm
+					graph.initializeChange(event);
+					vv.repaint();
+				}});
+		}
+		
+		
+		return mnuApplyEvent;
+		 
+	}
+	
+	
 	private AbstractAction getMenuDeletePolicy(){
 		return new AbstractAction("Delete Policy") {
 			public void actionPerformed(ActionEvent e) {
@@ -420,53 +451,7 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 	private AbstractAction getMenuShowInNewWindow(){
 		return new AbstractAction("Show in new Window") {
 			public void actionPerformed(ActionEvent e) {
-				VisualGraph subGraph = new VisualGraph();
-				//clone nodes
-				for(VisualNode node: pickedNodes) {
-					VisualNode newNode = subGraph.findVertex(node.getKey());
-					if (newNode==null) {								
-						newNode = node.clone();
-						subGraph.addVertex(newNode);
-						//key is not cloned, it is assigned each time a node is added in the graph
-						newNode.setKey(node.getKey());
-					}
-					// add in edges
-					for(VisualEdge edge : node.getInEdges()) {
-						if (pickedNodes.contains(edge.getFromNode())){
-							VisualNode newFromNode =subGraph.findVertex(edge.getFromNode().getKey());
-							if (newFromNode==null) {
-								newFromNode = edge.getFromNode().clone();
-								subGraph.addVertex(newFromNode);
-								newFromNode.setKey(edge.getFromNode().getKey());
-							};
-							VisualEdge newEdge =subGraph.findEdge(edge.getKey());
-							if (newEdge==null) {
-								newEdge = new VisualEdge(edge.getName(),edge.getType(),newFromNode, newNode);
-								subGraph.addEdge(newEdge);
-								newEdge.setKey(edge.getKey());
-							};
-
-						}	
-					}
-					//add out edges
-
-					for(VisualEdge edge : node.getOutEdges()) {
-						if (pickedNodes.contains(edge.getToNode())){
-							VisualNode newToNode=subGraph.findVertex(edge.getToNode().getKey());
-							if (newToNode==null) {
-								newToNode = edge.getToNode().clone();
-								subGraph.addVertex(newToNode);
-								newToNode.setKey(edge.getToNode().getKey());
-							};
-							VisualEdge newEdge=subGraph.findEdge(edge.getKey());
-							if (newEdge==null) {
-								newEdge = new VisualEdge(edge.getName(),edge.getType(),newNode, newToNode);
-								subGraph.addEdge(newEdge);
-								newEdge.setKey(edge.getKey());
-							};
-						}	
-					}
-				}
+				VisualGraph subGraph = graph.toGraph(new ArrayList<VisualNode>(pickedNodes));
 				HecataeusViewer nvv = new HecataeusViewer(subGraph);
 				 //set the layout of the graph
 				nvv.setLayout(VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);

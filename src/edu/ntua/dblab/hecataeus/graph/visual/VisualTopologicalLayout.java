@@ -10,13 +10,17 @@ import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 
 public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdge>{
-		
+
+	
 	public enum Orientation{
 		RIGHT2LEFT,
-		BOTTOMUP;
+		BOTTOMUP,
+		LEFT2RIGHT,
+		UPBOTTOM;
 	}
 	
 	private Point2D.Double OFFSET = new Point2D.Double();
+	
 	private Orientation orientation;
 	
 	VisualGraph graph;
@@ -30,9 +34,18 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	this.orientation = Orientation.RIGHT2LEFT;
     }
 	/**
-     * Creates an instance for the specified graph and size with default orientation
+     * Creates an instance for the specified graph and orientation
      */
     public VisualTopologicalLayout(Graph<VisualNode, VisualEdge> graph, Orientation orientation)  {
+    	super(graph);
+    	this.graph = (VisualGraph) graph;
+    	this.orientation = orientation;
+    }
+
+    /**
+     * Creates an instance for the specified graph, orientation , and initialPosition of the first vertex
+     */
+    public VisualTopologicalLayout(Graph<VisualNode, VisualEdge> graph, Orientation orientation, Point2D.Double initialLocation)  {
     	super(graph);
     	this.graph = (VisualGraph) graph;
     	this.orientation = orientation;
@@ -46,6 +59,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	super(graph, size);
     	this.graph = (VisualGraph) graph;
     	this.orientation = orientation;
+    	
     }
     
     public void initialize() {
@@ -56,6 +70,12 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	case BOTTOMUP:
     		initializeBottomUp();
     		break;
+    	case LEFT2RIGHT:
+    		initializeLeft2Right();
+    		break;
+    	case UPBOTTOM:
+    		initializeUpBottom();
+    		break;
     	default:
     		initializeRight2Left();
     	}
@@ -65,6 +85,15 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		this.initialize();
 	}
 	
+	private Point2D initialPosition = new Point2D.Double();
+	
+	// Gets the initial location of the vertex in the layout
+	public Point2D getInitialPosition() {
+		return initialPosition;
+	}
+	public void setInitialPosition(Point2D initialPosition2) {
+		this.initialPosition = initialPosition2;
+	}
 	
 	/***
 	 * initialize the locations of nodes 
@@ -73,14 +102,17 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	 */
 	private void initializeRight2Left(){
 		/*
-		 * @param initialLocation = the start location of the graph
+		 * @param initialPosition = the start location of the graph
 		 */
-		Point2D initialLocation = new Point2D.Double(this.getSize().getWidth(),0);
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
 		
 		/*
 		 * @param location = the current location of the graph
 		 */
-		Point2D location = new Point2D.Double(initialLocation.getX(), initialLocation.getY());
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		
 		// creates a clone of the graph 
 		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
@@ -114,9 +146,63 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
 			}
 			//set the location of the next group that is visualized
-			location.setLocation(location.getX()+ OFFSET.getX(), initialLocation.getY());
+			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
 		}
-	}		
+	}	
+	
+	/***
+	 * initialize the locations of nodes 
+	 * according to the topological sort layout, 
+	 * starting from the left side towards the right side of the screen  
+	 */
+	private void initializeLeft2Right(){
+		/*
+		 * @param initialPosition = the start location of the graph
+		 */
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
+		
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		// creates a clone of the graph 
+		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
+
+		while (topLevelGraph.getVertices().size()>0) {
+			//hold the current group
+			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: topLevelGraph.getVertices()) {
+				if (topLevelGraph.getOutEdges(v).size()==0) {
+					visualizedGroup.add(v);
+				}
+			}
+			//Initialize the offset according to the number of vertices in current group
+			OFFSET.setLocation(new Point2D.Double(-this.getSize().width/2,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
+			//visualize the current group
+			while (!visualizedGroup.isEmpty()) {
+				//get each vertex in group
+				VisualNode v = visualizedGroup.get(0);
+				// set the location of the current vertex
+				super.setLocation(v,location);
+				// remove in edges
+				for(VisualEdge e: topLevelGraph.getInEdges(v)){
+					topLevelGraph.removeEdge(e);
+				}
+				//remove each visualized node
+				topLevelGraph.removeVertex(v);
+				visualizedGroup.remove(v);
+				
+	    		//set the location of the next vertex in the group that is visualized
+				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
+			}
+			//set the location of the next group that is visualized
+			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
+		}
+	}	
+	
 
 	/***
 	 * initialize the locations of nodes 
@@ -125,7 +211,118 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	 */
 	private void initializeBottomUp(){
 		/*
-		 * @param initialLocation = the start location of the graph
+		 * @param initialPosition = the start location of the graph
+		 */
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		
+		
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		// creates a clone of the graph 
+		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
+		
+		while (topLevelGraph.getVertices().size()>0) {
+			//hold the current group
+			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: topLevelGraph.getVertices()) {
+				if (topLevelGraph.getOutEdges(v).size()==0) {
+					visualizedGroup.add(v);
+				}
+			}
+			//Initialize the offset according to the number of vertices in current group
+			OFFSET.setLocation(new Point2D.Double(-Math.max(this.getSize().width/visualizedGroup.size(),60),-this.getSize().height/2));
+			//visualize the current group
+			while (!visualizedGroup.isEmpty()) {
+				//get each vertex in group
+				VisualNode v = visualizedGroup.get(0);
+				// remove in edges
+				for(VisualEdge e: topLevelGraph.getInEdges(v)){
+					topLevelGraph.removeEdge(e);
+				}
+				//remove each visualized node
+				topLevelGraph.removeVertex(v);
+				visualizedGroup.remove(v);
+				
+				// set the location of the current vertex
+				super.setLocation(v,location);
+	    		//set the location of the next vertex in the group that is visualized
+				location.setLocation(location.getX()+ OFFSET.getX(), location.getY());
+			}
+			//set the location of the next group that is visualized
+			location.setLocation(initialPosition.getX(), location.getY()+ OFFSET.getY());
+		}
+	}
+	
+	/***
+	 * initialize the locations of nodes 
+	 * according to the topological sort layout, starting from the up side 
+	 * towards the bottom side of the screen
+	 */
+	private void initializeUpBottom(){
+		/*
+		 * @param initialPosition = the start location of the graph
+		 */
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		// creates a clone of the graph 
+		VisualGraph topLevelGraph = this.graph.toGraph(this.graph.getVertices());
+		
+		while (topLevelGraph.getVertices().size()>0) {
+			//hold the current group
+			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
+			//create each group from all vertices with no outgoing edges
+			for (VisualNode v: topLevelGraph.getVertices()) {
+				if (topLevelGraph.getOutEdges(v).size()==0) {
+					visualizedGroup.add(v);
+				}
+			}
+			//Initialize the offset according to the number of vertices in current group
+			OFFSET.setLocation(new Point2D.Double(-Math.max(this.getSize().width/visualizedGroup.size(),60),-this.getSize().height/2));
+			//visualize the current group
+			while (!visualizedGroup.isEmpty()) {
+				//get each vertex in group
+				VisualNode v = visualizedGroup.get(0);
+				// remove in edges
+				for(VisualEdge e: topLevelGraph.getInEdges(v)){
+					topLevelGraph.removeEdge(e);
+				}
+				//remove each visualized node
+				topLevelGraph.removeVertex(v);
+				visualizedGroup.remove(v);
+				
+				// set the location of the current vertex
+				super.setLocation(v,location);
+	    		//set the location of the next vertex in the group that is visualized
+				location.setLocation(location.getX()+ OFFSET.getX(), location.getY());
+			}
+			//set the location of the next group that is visualized
+			location.setLocation(initialPosition.getX(), location.getY()+ OFFSET.getY());
+		}
+	}
+	
+	/***
+	 * initialize the locations of nodes 
+	 * according to the topological sort layout, starting from inner circle
+	 * towards outer circles on the screen
+	 */
+	private void initializeCircleOut(){
+		/*
+		 * @param initialPosition = the start location of the graph
 		 */
 		Point2D initialLocation = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
 		
@@ -169,7 +366,6 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			location.setLocation(initialLocation.getX(), location.getY()+ OFFSET.getY());
 		}
 	}
-	
 // 	/**
 //	*  
 //	*  
@@ -179,7 +375,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 //		/*
 //		 * @param initialPosition = the start location of the graph
 //		 */
-//		Point2D initialLocation = new Point2D.Double(this.getSize().getWidth(),0);
+//		Point2D initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
 //				
 //		/*
 //		 * @param relationOFFSET = offset from the last vertex of the relation tree
@@ -192,9 +388,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 //		List<VisualNode> nodesLocated = new ArrayList<VisualNode>();
 //		for (VisualNode relationNode: graph.getVertices(NodeType.NODE_TYPE_RELATION)) {
 //				//draw the relation tree
-//				initialLocation = this.drawTree(relationNode,initialLocation, nodesLocated);
+//				initialPosition = this.drawTree(relationNode,initialPosition, nodesLocated);
 //				//set the location of the next relation
-//				initialLocation.setLocation(initialLocation.getX(), initialLocation.getY()+OFFSET.getY());
+//				initialPosition.setLocation(initialPosition.getX(), initialPosition.getY()+OFFSET.getY());
 //		}
 //	}
 //	

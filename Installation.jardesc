@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="Cp1253" standalone="no"?>
+<jardesc>
+    <jar path="C:/Users/gpapas/Desktop/Hecateus Software/Hecataeus.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/HECATAEUS/Installation.jardesc" exportErrors="false" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="false" manifestLocation="/HECATAEUS/installation" manifestVersion="1.0" reuseManifest="true" saveManifest="true" usesManifest="true">
+        <sealing sealJar="true">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
+        <javaElement handleIdentifier="=HECATAEUS/src"/>
+    </selectedElements>
+</jardesc>

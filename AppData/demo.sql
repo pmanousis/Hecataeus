@@ -1,0 +1,12 @@
+/*CREATE TABLE EMP(	E_ID INTEGER PRIMARY KEY, 
+E_NAME	VARCHAR(25) NOT NULL,
+				E_TITLE	VARCHAR(10),
+				E_SAL	INTEGER NOT NULL);
+			
+
+select * from emp;
+*/
+
+CREATE TABLE EMP(E_ID INTEGER );
+
+select * from emp;

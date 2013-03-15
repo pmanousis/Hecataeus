@@ -1,0 +1,222 @@
+<html>
+<head>
+    <title>Instructions for importing policies from file</title>
+</head>
+
+<body>
+    <h3>
+        <span>Instructions for importing policies from file</span></h3>
+    <p>
+        <span>Policies can be defined in an external file and imported to Hecataeus. Input files
+            must be ascii text files and they must conform to the following conventions: </span>
+    </p>
+    <ol>
+        <li>Each policy clause ends with a semicolon - ";"</li>
+
+         <li>Each policy clause is of the form: 
+
+    <p style="text-align: left">
+        <em>
+        &lt;nodeName&gt;|DATABASE : ON &lt;eventType&gt; TO &lt;nodeName&gt;|&lt;nodeType&gt;
+            THEN &lt;policyType&gt; ;</em></p>
+    <p>
+        &nbsp;<table style="text-align: left">
+            <tr>
+                <td colspan="4">
+                    <em>&lt;eventType&gt; </em>can have one of the following values:
+                </td>
+            </tr>
+            <tr>
+               
+                <td style="width: 100px">
+                    <table>
+                        <tr>
+                <td style="width: 100px">
+                    ADD_ATTRIBUTE</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    ADD_CONDITION</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    ADD_RELATION</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    DELETE_ATTRIBUTE</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    DELETE_CONDITION</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    DELETE_RELATION</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    MODIFYDOMAIN_ATTRIBUTE</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    RENAME_ATTRIBUTE</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    MODIFY_CONDITION</td>
+                        </tr>
+                        <tr>
+                <td style="width: 100px">
+                    RENAME_RELATION</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <em></em>
+    </p>
+    <p>
+        <em>
+            <table style="text-align: left">
+                <tr>
+                    <td colspan="4">
+                        <em>&lt;policyType&gt; </em>can have one of the following values:</td>
+                </tr>
+                <tr>
+                   
+                    <td style="width: 100px">
+                        <table>
+                            <tr>
+                                <td style="width: 100px">
+                        PROPAGATE</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100px">
+                        BLOCK</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100px">
+                        PROMPT</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </em>
+    </p>
+    Any other values are discarder by the parser.<br />
+    <br />
+    </li>
+    
+      <li>There are two kinds of clauses :
+      
+      <p>a) Clauses with policies for types of nodes (database defaults). Then each clause is of the form:</p>
+            
+        <p><em>
+            DATABASE : ON &lt;eventType&gt; TO &lt;nodeType Sustaining the event&gt;
+            THEN &lt;policyType&gt; ;</em></p>
+          <p>
+              <em>
+                  <table style="text-align: left">
+                      <tr>
+                          <td colspan="2">
+                              <em>&lt;nodeType Sustaining the event&gt; </em>can have one of the following values:
+                          </td>
+                      </tr>
+                      <tr>
+                          <td style="width: 100px">
+                          </td>
+                          <td style="width: 100px">
+                              <table>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          NODE</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          RELATION</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          VIEW</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          QUERY</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          ATTRIBUTE</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          CONDITION</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          CONSTANT</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          GROUP_BY</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          FUNCTION</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          PK</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          FK</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          UC</td>
+                                  </tr>
+                                  <tr>
+                                      <td style="width: 100px">
+                                          NC</td>
+                                  </tr>
+                              </table>
+                          </td>
+                      </tr>
+                  </table>
+              </em>
+          </p>
+          <p>
+              b) Clauses with policies for specific nodes. Then each
+              clause is of the form:</p>
+          <p>   &lt;nodeName&gt: <em>ON &lt;eventType&gt TO &lt;nodeName Sustaining the event&gt THEN &lt;policyType&gt;;</em>
+              </p>
+          <p>
+              <nodename>
+</nodename>
+              <em>&lt;nodeName&gt; </em>can be the name of top-level node, such as a relation
+              (e.g. EMPS), view (e.g., MyView) or query (e.g., Q1), or of a specific low level
+              node (e.g. attribute). It is then preferred to refer to the low level node with
+              the suffix (separated by a dot ".") of its parent, e.g. EMPS.Name, MyView.Description,
+              Q1.T_Hours, etc.</p>
+          <p>
+              When a policy is defined for a node it applies to itself as well as for all descending
+              nodes.</p>
+          <p>
+              <em>
+              </em>
+          </p>
+          </li> 
+      
+        <li>The Parser processes the clauses of the input file with the following ordering:
+        <p>
+a) First it parses the database defaults which are applied on then graph, according to the order they are read in the input file.
+</p>
+ <p>b) It then parses again and processes the node specific policy clauses, according to the order they are read in the input file.
+</p>
+        
+        <li>The Parser is case insensitive and ignores extra spaces and tabs.
+    </ol>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=windows-1253">
+	<link type = "text/css" rel="stylesheet" href="./body_style_01.css">
+	<title>Hecataeus: Managing the Evolution of Data-Centric Ecosystems</title>
+</head>
+
+<body>
+<p align="right"><a href="#Credits">Credits</a> <a href="#Licence">Licence</a> <a href="#Website">Website</a></p>
+
+
+<img src="./logo.svg.png" width="25%" align ="left">
+<h1><a name="Intro">Hecataeus: Managing the Evolution of Data-Centric Ecosystems</a></h1>
+<p> Databases are continuously evolving environments, where design constructs are added, removed or updated rather often. Small changes in the database configurations might impact a large number of applications and data stores around the system: queries and data entry forms can be invalidated, application programs might crash. <em>A data-centric ecosystem comprises a central database and all the software modules and applications that base their operations on it: forms, reports, stored procedures, workflows, etc</em>. <strong>HECATAEUS is a tool that represents the database schema along with its dependent views and queries (acting as an abstraction for all the above software modules) as a uniform directed graph</strong>. The tool enables the user to <strong>create hypothetical evolution events and examine their impact over the overall graph</strong> as well as to define rules so that both syntactical and semantic correctness of the affected workload is retained.
+<p> <strong>Our approach is to provide a mechanism for performing impact analysis for potential changes of database configuration</strong>. A graph model that uniformly models queries, views, relations and their significant properties (e.g., attributes, conditions) is the basis of the approach. Apart from the simple task of capturing the semantics of a database system, the graph model allows us to predict the impact of a change over the system. Furthermore, we provide a framework for annotating the database graph with policies concerning its behavior in the presence of hypothetical changes occurring in the database schema. Rules that dictate the proper actions, when additions, deletions or modifications are performed to relations, attributes and conditions (all treated as first-class citizens of the model) are provided. Specifically, assuming that a graph construct is annotated with a policy for a particular event (e.g., a relation node is tuned to deny deletions of its attributes), Hecataeus performs the identification of the affected part of the graph. <strong>Moreover, Hecataeus is equiped with capabilities of computing important graph-based metrics that characterize the importance or vulnerability of each node of the graph</strong>.
+
+<hr>
+<h2><a name="Credits">Credits</a></h2>
+<p><b>Design</b></p>
+George Papastefanatos (contact person), Panos Vassiliadis
+
+<p><b>Development</b></p>
+
+ George Papastefanatos, Fotini Anagnostou, Stefanos Geraggelos, Kostis Kyzirakos, Konstantinos Aggistalis
+
+<p><b>Other Credits</b></p>
+
+Alkis Simitsis, Yannis Vassiliou, Fotini Pechlivani
+
+
+<hr>
+<h2><a name="Licence">License</a></h2>
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/gr/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-sa/3.0/gr/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/gr/">Creative Commons Attribution-Noncommercial-Share Alike 3.0 Greece License</a>.
+<p>The software and documentation made available under the terms of this license are provided with no warranty. </p>
+
+<hr>
+<h2><a name="Website">Website</a></h2>
+For more information visit <a href="http://www.cs.uoi.gr/~pvassil/projects/hecataeus/">Hecataeus website</a> or <a href = "http://www.youtube.com/user/HecataeusSoftware"> youtube channel</a>
+<hr>
+<h6>Hecataeus Software (c) 2005-2010</h6>
+<p> <a href="http://en.wikipedia.org/wiki/Hecataeus_of_Miletus" target="new">Hecataeus of Miletus</a> (c. 550–c. 476 BC), was a Greek philosopher,one of the first Greek historians and the first to produce an adequate visualization of the part of the Earth known to the Greeks at his time, i.e., a <a href="http://www.livius.org/he-hg/hecataeus/hecataeus.htm" target="new">map</a>. The logo of this page is from <a href="http://en.wikipedia.org/wiki/Image:Hecataeus_world_map-en.svg" target="new"> http://en.wikipedia.org/wiki/Image:Hecataeus_world_map-en.svg </a>
+
+<h6> <a href="#Intro">Back to top</a></h6>
+
+</h2>
+
+</h2>
+
+</body>
+</html>
