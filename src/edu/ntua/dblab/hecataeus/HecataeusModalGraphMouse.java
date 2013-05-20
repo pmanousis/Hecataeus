@@ -146,7 +146,7 @@ public void HecataeusViewerPM(HecataeusViewer v)
 	 *  the subgraph of the module    
 	 */
 	public void graphClicked(VisualNode node, MouseEvent me) {
-		if (me.getClickCount()==2) {
+		if (me.getClickCount()==2 && me.getButton()== MouseEvent.BUTTON1) {
 			
 			VisualizationViewer<VisualNode,VisualEdge> vv = (VisualizationViewer<VisualNode,VisualEdge>) me.getSource();
 			VisualGraph g = (VisualGraph) vv.getGraphLayout().getGraph();
@@ -176,7 +176,10 @@ public void HecataeusViewerPM(HecataeusViewer v)
 
 	@Override
 	public void graphReleased(VisualNode v, MouseEvent me) {
-	
+		PopUpClickListener pucl = new PopUpClickListener();
+		if(me.getButton() == MouseEvent.BUTTON3){
+			pucl.doPop(me);
+		}
 	}
 }
 

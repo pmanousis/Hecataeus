@@ -4,11 +4,11 @@
  */
 package edu.ntua.dblab.hecataeus;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
+import java.awt.Dialog;
 import java.awt.Dimension;
-import java.awt.Font;
+import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -22,14 +22,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-
-/**
- * @author pmanousi
- */
-import java.awt.FileDialog;
-import java.awt.Dialog;
-import java.io.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -42,7 +34,7 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon; 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
@@ -76,41 +68,31 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeLabel;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeToolTips;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeColor;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeFont;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeLabel;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeToolTips;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.picking.LayoutLensShapePickSupport;
-import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 import edu.uci.ics.jung.visualization.Layer;
-import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.decorators.EdgeShape;
-import edu.ntua.dblab.hecataeus.HecataeusEventManagerGUI;;
+/**
+ * @author pmanousi
+ */
 
 public class HecataeusViewer{
 
 	// a dummy counter for disposing or exiting application  
 	private static int countOpenViewers = 0;
+	private static int countOpenTabs = 0;
 	
 	// the frame and swing objects of the application
 	final HecataeusFrame frame  ;
@@ -118,36 +100,53 @@ public class HecataeusViewer{
 	
 	// the visual graph object
 /**@author pmanousi Needed for topologicalTravel so became public. */
-public VisualGraph graph;
+	public VisualGraph graph;
+//	public VisualSubGraph grafos;
+	public Viewers viewer;
 	
+	public static HecataeusViewer myViewer;
 	// the scale object for zoom capabilities 
 	private final ScalingControl scaler = new CrossoverScalingControl();
 	
 	protected VisualAggregateLayout layout ;
-//	protected VisualAggregateLayout containerLayout ;
+	protected VisualAggregateLayout containerLayout;
+	protected VisualAggregateLayout subLayout ;
+
 	
-		// the visual component
+	// the visual component
 	protected final VisualizationViewer<VisualNode, VisualEdge> vv;
-//	protected final VisualizationViewer<VisualNode, VisualEdge> vvContainer ;
+	protected VisualizationViewer<VisualNode, VisualEdge> vv1;
+	public static VisualizationViewer<VisualNode, VisualEdge> vv2;
+//	protected final VisualizationViewer<VisualNode, VisualEdge> vv3;
+	public static VisualizationViewer<VisualNode, VisualEdge> vveva;
+
 /**
  * @author pmanousi
  * Now user can see the policies in a widget next to the Layouts, also have a topological sort of IDs of nodes.
  * */
-protected HecataeusProjectConfiguration projectConf;
-protected HecataeusPolicyManagerGUI policyManagerGui;
-protected VisualNode epilegmenosKombos;
-protected HecataeusEventManagerGUI eventManagerGui;
-protected JTabbedPane managerTabbedPane;
+	protected HecataeusProjectConfiguration projectConf;
+	protected HecataeusPolicyManagerGUI policyManagerGui;
+	protected VisualNode epilegmenosKombos;
+	protected HecataeusEventManagerGUI eventManagerGui;
+	protected JTabbedPane managerTabbedPane;
 
+	protected JTabbedPane tabbedPane;
+	
 	private static final String frameTitle = "HECATAEUS";
 	private static final String frameIconUrl = "resources/hecataeusIcon.png";
+	public final JTabbedPane JTabbedPane = null;
+	
+	
 	//private String curPath = "AppData";
 
+
 	public HecataeusViewer(VisualGraph inGraph) {
+		
 		
 		// assign the graph
 		projectConf=new HecataeusProjectConfiguration();
 		this.graph = inGraph;
+//		this.grafos = new VisualSubGraph();
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize(); 
 		
 		frame = new HecataeusFrame(frameTitle);
@@ -158,74 +157,19 @@ protected JTabbedPane managerTabbedPane;
 		// the layout
 		layout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		 
-        //the visualization viewer
-        vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
-		vv.setSize(new Dimension((int)prefferedSize.getWidth()/2,(int)prefferedSize.getHeight()/2));
-        vv.setBackground(Color.white);
-		vv.setPickSupport(new LayoutLensShapePickSupport<VisualNode, VisualEdge>(vv));
+        
+	//	containerLayout = new VisualAggregateLayout(grafos, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
+		subLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
+		//the visualization viewer
+		vv = new Viewers(layout).vv;
+		vv1 = new Viewers(layout).vv;
+		vv2 = new Viewers(layout).vv;
+//		vv3 = new Viewers(containerLayout).vv;
+		vveva = new Viewers(layout).vv;
 		
-		vv.setVertexToolTipTransformer(new VisualNodeToolTips());
-		vv.setEdgeToolTipTransformer(new VisualEdgeToolTips());
-		// the renderer of the vv
-		RenderContext<VisualNode, VisualEdge>  pr = vv.getRenderContext();
-		// the labels of the Vertices
-		pr.setVertexLabelTransformer(new VisualNodeLabel());
-		vv.getRenderer().getVertexLabelRenderer().setPosition(Position.AUTO); 
-		// the fonts of the vertices
-		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8)));
-		//the shape of the edges
-		pr.setEdgeShapeTransformer(new EdgeShape.QuadCurve<VisualNode, VisualEdge>());
-		// the labels of the Edges
-		pr.setEdgeLabelTransformer(new VisualEdgeLabel());
-		// call the setVertexPaintFunction to paint the nodes
-		pr.setVertexFillPaintTransformer(new VisualNodeColor(vv.getPickedVertexState()));
-		// call the setEdgePaintFunction to paint the edges
-		pr.setEdgeFillPaintTransformer( new VisualEdgeColor(vv.getPickedEdgeState()));
-		// call the setVertexShapeFunction to set the shape of the nodes
-		pr.setVertexShapeTransformer(new VisualNodeShape());
-		// call the setNodeVisible to set the shape of the nodes according to
-		pr.setVertexIncludePredicate(new VisualNodeVisible());
-		pr.setVertexIconTransformer(new VisualNodeIcon());
-		
-		/*containerLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout); 
-		vvContainer = new VisualizationViewer<VisualNode,VisualEdge>(containerLayout);
-		vvContainer.setBackground(Color.white);
-		vvContainer.setSize(new Dimension((int)prefferedSize.getWidth()/2,(int)prefferedSize.getHeight()/2));
-		vvContainer.setPickSupport(new LayoutLensShapePickSupport<VisualNode, VisualEdge>(vvContainer));
-		//set the the same pick state
-		vvContainer.setPickedVertexState(vv.getPickedVertexState());
-		vvContainer.setPickedEdgeState(vv.getPickedEdgeState());
-		vvContainer.setVertexToolTipTransformer(new VisualNodeToolTips());
-		vvContainer.setEdgeToolTipTransformer(new VisualEdgeToolTips());
-		RenderContext<VisualNode, VisualEdge>  pr2 = vvContainer.getRenderContext();
-		// the labels of the Vertices
-		pr2.setVertexLabelTransformer(pr.getVertexLabelTransformer());
-		vvContainer.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR); 
-		//the font of the nodes
-		pr2.setVertexFontTransformer(pr.getVertexFontTransformer());
-		//the shape of the edges
-		pr2.setEdgeShapeTransformer(pr.getEdgeShapeTransformer());
-		// the labels of the Edges
-		pr2.setEdgeLabelTransformer(pr.getEdgeLabelTransformer());
-		// call the setVertexPaintFunction to paint the nodes
-		pr2.setVertexFillPaintTransformer(new VisualNodeColor(vvContainer.getPickedVertexState()));
-		// call the setEdgePaintFunction to paint the edges
-		pr2.setEdgeFillPaintTransformer( new VisualEdgeColor(vvContainer.getPickedEdgeState()));
-		// call the setVertexShapeFunction to set the shape of the nodes
-		pr2.setVertexShapeTransformer(pr.getVertexShapeTransformer());
-		// call the setNodeVisible to set the shape of the nodes according to
-		pr2.setVertexIncludePredicate(pr.getVertexIncludePredicate());
-		pr2.setVertexIconTransformer(pr.getVertexIconTransformer());
-		
-		vvContainer.getRenderContext().setMultiLayerTransformer(vv.getRenderContext().getMultiLayerTransformer());*/
-		vv.getRenderContext().getMultiLayerTransformer().addChangeListener(vv);
-		//vvContainer.getRenderContext().getMultiLayerTransformer().addChangeListener(vvContainer);
-		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
-		vv.setGraphMouse(gm);
-		//vvContainer.setGraphMouse(gm);
-		vv.addGraphMouseListener(gm);
-		//vvContainer.addGraphMouseListener(gm);
-		content.add(getMainPanel());
+
+		content.add(getMainPanel("Logical Layout"));
+
 		frame.setJMenuBar(this.getMenuBar());
 		frame.pack();
 		frame.setExtendedState(frame.getExtendedState()| JFrame.MAXIMIZED_BOTH);
@@ -236,7 +180,10 @@ protected JTabbedPane managerTabbedPane;
  * @author pmanousi
  * Inform mouse plugins for the viewer (and have access to epilegmenosKombos in order to update managers. 
  */
-gm.HecataeusViewerPM(this);
+		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
+		vv.setGraphMouse(gm);
+		gm.HecataeusViewerPM(this);
+
 	}
 
 /**
@@ -450,6 +397,7 @@ private void openProject()
 			FileFilterImpl filter = new FileFilterImpl("xml");
 			chooser.addChoosableFileFilter(filter);
 			int option = chooser.showOpenDialog(content);
+//			String Name = HecataeusPopupGraphMousePlugin.Gname();
 			if (option == JFileChooser.APPROVE_OPTION)
 			{
 				File file = chooser.getSelectedFile();
@@ -526,9 +474,12 @@ private void exitHecataeus()
 	 * Constructs the JPanel
 	 * @return
 	 */
-	private JComponent getMainPanel() {
-		final JTabbedPane tabbedPane = new JTabbedPane();
-		tabbedPane.addTab("Logical Layout", null, new GraphZoomScrollPane(vv), "Displays the logical dependencies between modules");
+	private JComponent getMainPanel(String name) {
+//		final JTabbedPane tabbedPane = new JTabbedPane();
+		tabbedPane = new JTabbedPane();
+		tabbedPane.addTab(name, null, new GraphZoomScrollPane(vv), "Displays the logical dependencies between modules");
+//		tabbedPane.addTab("TEST", null, new GraphZoomScrollPane(vveva), "Displays the logical dependencies between modules");
+
 /** @author pmanousi		tabbedPane.addTab("Physical Layout", null , new GraphZoomScrollPane(vvContainer), "Displays the physical dependencies between modules");*/
 
 		//return splitPane;
@@ -550,6 +501,8 @@ private void exitHecataeus()
 		jsp.setResizeWeight(0.5);
 		return(jsp);
 	}	
+	
+
 	
 	
 	/***
@@ -2092,6 +2045,52 @@ logicalNodes.addAll(graph.getVertices(NodeCategory.INOUTSCHEMA));
 		//else 
 			//return vvContainer;
 	}
+	
+	
+	protected void zoomToTab(VisualGraph subGraph){
+		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
+		Point2D p;String name = null;
+		Shape r = activeViewer.getBounds();
+		Point2D vvcenter = activeViewer.getCenter();
+		VisualNode myNode = null;
+//		vv1 = activeViewer;
+//		for (VisualNode jungNode: activeViewer.getGraphLayout().getGraph().getVertices()) {
+		for(VisualNode jungNode: subGraph.getVertices()){
+			System.out.println("o selected kombos " + jungNode.getName());
+			name = jungNode.getName();
+			if (jungNode.getVisible()) {
+				myNode = jungNode;
+//				p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
+//				while (!r.contains(p)) 
+//					{
+//					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
+//					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
+//					try {
+//						Thread.sleep(100);
+//					} catch (InterruptedException ex) {
+//					}
+//				}
+			}
+		}
+		myNode.setVisible(true);
+
+
+		subLayout = new VisualAggregateLayout(subGraph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
+		
+
+		subLayout.setLocation(myNode, subGraph.getCenter());
+
+		vv1 = new Viewers(layout).vv;
+
+		
+		vv1.setGraphLayout(subLayout);
+		tabbedPane.addTab(name, null, new GraphZoomScrollPane(vv1), "Displays the logical dependencies between modules");
+
+		
+		
+		
+	}
+	
 	/**
 	 * Animated zoom out the graph till no vertex is out of screen view
 	 */
@@ -2099,6 +2098,8 @@ logicalNodes.addAll(graph.getVertices(NodeCategory.INOUTSCHEMA));
 		
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
 		// pass properties to visualization viewer
+		
+		
 		Runnable animator = new Runnable() {
 			public void run() {
 				Shape r = activeViewer.getBounds();
@@ -2989,6 +2990,6 @@ logicalNodes.addAll(graph.getVertices(NodeCategory.INOUTSCHEMA));
 	 * a driver for this viewer
 	 */
 	public static void main(String[] args) {
-		HecataeusViewer viewer = new HecataeusViewer(new VisualGraph());
+		myViewer = new HecataeusViewer(new VisualGraph());
 	}
 }

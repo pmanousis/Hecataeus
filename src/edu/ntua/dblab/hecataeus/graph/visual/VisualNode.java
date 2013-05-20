@@ -5,11 +5,14 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+
+import edu.ntua.dblab.hecataeus.HecataeusModalGraphMouse;
+import edu.ntua.dblab.hecataeus.PopUpClickListener;
+import edu.ntua.dblab.hecataeus.PopUpMenu;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-
-import java.awt.geom.Point2D; 
 
 /**
  * The class implements a visual node of the graph
@@ -103,6 +106,17 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setStatus(this.getStatus(),true);
 		return node;
 	}
+
+	public void addMouseListener(HecataeusModalGraphMouse myListener, MouseEvent e) {
+		// TODO Auto-generated method stub
+
+		if (e.isPopupTrigger())
+			myListener.graphReleased(this, e);
+		
+	}
+
+
+
 	
 	
 }
