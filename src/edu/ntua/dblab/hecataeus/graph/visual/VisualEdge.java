@@ -38,5 +38,17 @@ public class VisualEdge extends EvolutionEdge{
         return (VisualNode) super.getToNode();
     }
     
-    
+
+    public VisualEdge clone(){
+    	
+    	VisualEdge edge = new VisualEdge();
+    	
+    	edge.setName(this.getName());
+    	edge.setFromNode(this.getFromNode());
+    	edge.setToNode(this.getToNode());
+    	edge.setPolicies(this.getPolicies());
+    	edge.setStatus(this.getStatus(), true);
+    	edge.setType(this.getType());
+    	return edge;
+    }
 }

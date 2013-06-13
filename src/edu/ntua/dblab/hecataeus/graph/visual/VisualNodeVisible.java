@@ -4,6 +4,7 @@
  */
 package edu.ntua.dblab.hecataeus.graph.visual;
 
+import java.awt.Component;
 import java.util.List;
 
 import org.apache.commons.collections15.Predicate;
@@ -12,6 +13,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Context;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /*
  * sets the visibility of nodes 

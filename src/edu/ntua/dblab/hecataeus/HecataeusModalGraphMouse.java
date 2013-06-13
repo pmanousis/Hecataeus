@@ -76,15 +76,15 @@ protected HecataeusViewer viewer;
     	setMode(Mode.PICKING);
     }
 
-/**
- * @author pmanousi
- * @param v The viewer that has epilegmenosKobmos.
- */
-public void HecataeusViewerPM(HecataeusViewer v)
-{
-   	this.viewer=v;
-   	popupEditingPlugin.HecataeusViewerPM(this.viewer);
-}
+	/**
+	 * @author pmanousi
+	 * @param v The viewer that has epilegmenosKobmos.
+	 */
+	public void HecataeusViewerPM(HecataeusViewer v)
+	{
+	   	this.viewer=v;
+	   	popupEditingPlugin.HecataeusViewerPM(this.viewer);
+	}
     
        
     public JMenu getModeMenu() {
@@ -147,13 +147,18 @@ public void HecataeusViewerPM(HecataeusViewer v)
 	 */
 	public void graphClicked(VisualNode node, MouseEvent me) {
 		if (me.getClickCount()==2 && me.getButton()== MouseEvent.BUTTON1) {
-			
+			HecataeusViewer testV = viewer;
+			@SuppressWarnings("unchecked")
 			VisualizationViewer<VisualNode,VisualEdge> vv = (VisualizationViewer<VisualNode,VisualEdge>) me.getSource();
 			VisualGraph g = (VisualGraph) vv.getGraphLayout().getGraph();
-			if (node.getType().getCategory()==NodeCategory.MODULE||node.getType().getCategory()==NodeCategory.INOUTSCHEMA) {
+			
+			System.out.println("oi komboi    "   + g);
+			
+			if (node.getType().getCategory()== NodeCategory.MODULE||node.getType().getCategory()== NodeCategory.INOUTSCHEMA) {
 				List<VisualNode> module = g.getModule(node);
 				for (VisualNode child : module) {
-						child.setVisible(!child.getVisible());
+					child.setVisible(!child.getVisible());
+						
 				}
 				node.setVisible(true);
 			}

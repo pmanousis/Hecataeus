@@ -32,10 +32,10 @@ import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualSubGraph;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -84,6 +84,7 @@ public class PopUpClickListener extends MouseAdapter{
 		layout = vv.getGraphLayout();	
 		pr = (PluggableRenderContext<VisualNode, VisualEdge>) vv.getRenderContext();
 		graph = (VisualGraph) layout.getGraph();
+//		graph = HecataeusViewer.graphs.get(0);
 		pointClicked = e.getPoint();
 
 		viewer = HecataeusViewer.myViewer;
@@ -107,10 +108,10 @@ public class PopUpClickListener extends MouseAdapter{
 				System.out.println("picked   nodes  " + pickedNodes);
 			
 				//if more than 2 vertices picked
-				if(pickedNodes.size() > 2) 
+				if(pickedNodes.size() > 2) {
 					//add menu for creating multiple edges
 					menu.popSelect.add(getMenuCreateMultipleEdges());
-
+				}
 				//if more than one vertex were picked
 				if(pickedNodes.size() > 1) {
 					//add menu for creating Directed edges
@@ -123,10 +124,14 @@ public class PopUpClickListener extends MouseAdapter{
 					menu.popSelect.add(getMenuAddEvent());
 					//delete policy in bulk
 					menu.popSelect.add(getMenuDeletePolicy());
+					
+					
+					menu.popZoom.addActionListener(zoomToNewModuleTab());
 				}
 
 				//if only 1 vertex is picked
 				if (pickedNodes.size() == 1) {
+					menu.popZoom.addActionListener(zoomToNewModuleTab());
 					menu.popSelect.add(getMenuSelectNode());
 					menu.popSelect.add(getMenuDeleteNode());
 					menu.popSelect.add(getMenuEditNode());
@@ -138,13 +143,7 @@ public class PopUpClickListener extends MouseAdapter{
 //					clickedVertex.addMouseListener(new PopUpClickListener(), e);
 //					clickedVertex.addMouseListener(new PopUpClickListener(), e);
 					
-					if (clickedVertex.getHasEvents())
-						menu.popSelect.add(getMenuApplyEvent());
-///**
-// * @author pmanousi
-// */
-//				hpgmp.viewer.epilegmenosKombos=clickedVertex;
-//				hpgmp.viewer.updateManagers();
+					if (clickedVertex.getHasEvents())menu.popSelect.add(getMenuApplyEvent());
 				}
 				//for any vertex 
 				if(pickedNodes.size() > 0) {
@@ -169,6 +168,9 @@ public class PopUpClickListener extends MouseAdapter{
 			}
 		}
 	}
+	
+	
+	
 	
 	protected JMenu getMenuCreateDirectedEdges(){
 		JMenu directedMenu = new JMenu("Create Directed Edge");
@@ -203,6 +205,40 @@ public class PopUpClickListener extends MouseAdapter{
 			}
 		}
 		return directedMenu;
+	}
+	
+	/**
+	 * @author eva
+	 */
+	protected AbstractAction zoomToNewModuleTab(){
+		return new AbstractAction("Zoom -> Module level") {
+			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();
+			public void actionPerformed(ActionEvent e) {
+	
+//				VisualSubGraph sub = new VisualSubGraph(activeViewer); \
+				VisualGraph sub;
+				List<VisualNode> parent = new ArrayList<VisualNode>();
+				//List<VisualNode> nodes = null;
+				//get parentNode
+				
+				for(final VisualNode node :pickedNodes) {
+					System.out.println("PICKED NODES   "  + pickedNodes);
+					parent.addAll(graph.getModule(node));
+		//			sub.addVertex(node);
+				}
+//				for(VisualNode node : parent){
+//					sub.addVertex(node);
+//					
+//				}
+				//nodes = parent;
+				//sub = graph.toGraph(nodes);
+				
+				VisualGraph GV = new VisualGraph(graph.toGraph(parent));
+				sub =  new VisualGraph(GV);
+				
+				HecataeusViewer.myViewer.zoomToModuleTab(parent, sub);
+			}
+		};
 	}
 	
 	protected AbstractAction getMenuDeleteNodes(){
@@ -255,20 +291,22 @@ public class PopUpClickListener extends MouseAdapter{
 	}
 	
 	
-	/*
+
+	/**
 	 * @author eva
-	 * select node
 	 */
 	
 	protected AbstractAction getMenuSelectNode(){
 		return new AbstractAction("Select Node") {
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				/**
 				 * @author pmanousi
 				 */
+				System.out.println("SELECT NODE    " + clickedVertex.getName() );
 				viewer.epilegmenosKombos = clickedVertex;
 				viewer.updateManagers();
+//				viewer.epilegmenosKombos = clickedVertex;
+//				viewer.updateManagers();
 				
 			}
 		};
@@ -481,7 +519,7 @@ public class PopUpClickListener extends MouseAdapter{
 	}
 	
 	protected AbstractAction getMenuShowInNewWindow(){
-		return new AbstractAction("Show in new Window") {
+		return new AbstractAction("Show in new Tab") {
 			public void actionPerformed(ActionEvent e) {
 				VisualGraph subGraph = graph.toGraph(new ArrayList<VisualNode>(pickedNodes));
 //				HecataeusViewer nvv = new HecataeusViewer(subGraph);

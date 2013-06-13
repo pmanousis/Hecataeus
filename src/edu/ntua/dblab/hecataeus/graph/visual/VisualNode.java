@@ -7,12 +7,14 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.ntua.dblab.hecataeus.HecataeusModalGraphMouse;
-import edu.ntua.dblab.hecataeus.PopUpClickListener;
-import edu.ntua.dblab.hecataeus.PopUpMenu;
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /**
  * The class implements a visual node of the graph
@@ -26,6 +28,8 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Point2D location;
 	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
+	private VisualizationViewer<VisualNode, VisualEdge> Viewer;
+	//private VisualGraph myGraph;
 	//the corresponding EvolutionNode object
 //	private EvolutionNode hecataeusEvolutionNode = null;
 	
@@ -34,45 +38,38 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		super();
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
+		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
+//		this.myGraph = graph;
 	}
 	
 	public VisualNode(String name, NodeType type) {
 		super(name, type);
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
+		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
+//		this.myGraph = graph;
 	}
 	
+
 	
-	
-//	public void setLocation(Point2D location){
-//		this.location.setLocation(location);
-//	}
-//	
-//	/**
-//	 * @return  the node location
-//	 */
-//	public Point2D getLocation(){
-//		return this.location; 
-//	}
-	
-//	public void setLastChildLocation(double x,double y){
-//		this.lastChildLocation.setLocation(x, y);
-//	}
-//	
-//	/**
-//	 * @return  the location of its child, if exists, otherwise null 
-//	 */
-//	public Point2D getLastChildLocation(){
-//		if (!(this.lastChildLocation==null)){
-//			return this.lastChildLocation;
-//		}else return null;
-//	}
+	public void setVisibleInViewer(boolean Value, VisualizationViewer<VisualNode, VisualEdge> Viewer){
+		List<VisualNode> nodes = new ArrayList<VisualNode>();
+		nodes.addAll(Viewer.getGraphLayout().getGraph().getVertices());
+	}
 	
 	public void setVisible(boolean Value) {
+//	public void setVisible(boolean Value, VisualizationViewer<VisualNode, VisualEdge> viewer) {
+//		List<VisualNode> nodes = new ArrayList<VisualNode>();
+//		nodes.addAll(viewer.getGraphLayout().getGraph().getVertices());
+//		for(VisualNode node : nodes){
+//			node.isVisible = Value;
+//		}
 		this.isVisible = Value;
+//		this.Viewer = viewer;
 	}
 	
 	public Boolean getVisible() {
+
 		return this.isVisible ;
 	}
 	
@@ -104,19 +101,14 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setPolicies(this.getPolicies());
 		node.setVisible(this.getVisible());
 		node.setStatus(this.getStatus(),true);
+		node._inEdges=this.getInEdges();
+		node._outEdges= this.getOutEdges();
 		return node;
 	}
 
 	public void addMouseListener(HecataeusModalGraphMouse myListener, MouseEvent e) {
 		// TODO Auto-generated method stub
-
 		if (e.isPopupTrigger())
 			myListener.graphReleased(this, e);
-		
 	}
-
-
-
-	
-	
 }

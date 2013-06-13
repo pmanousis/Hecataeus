@@ -161,5 +161,4 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 		super.setLocation(v,location);
 		graph.setLocation(v,location);
 	}
-	
 }

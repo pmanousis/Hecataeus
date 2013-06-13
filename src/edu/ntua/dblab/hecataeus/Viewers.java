@@ -23,6 +23,8 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.LayoutLensShapePickSupport;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
@@ -31,28 +33,19 @@ import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
  * @author eva
  *
  */
-public class Viewers extends VisualizationViewer<VisualNode, VisualEdge> {
+public class Viewers {
 
-	
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	
-	public HecataeusViewer hec;
 
-	public VisualizationViewer<VisualNode, VisualEdge> vv;
-	public Viewers(Layout<VisualNode, VisualEdge> layout) {
-		super(layout);
-
+	protected VisualizationViewer<VisualNode, VisualEdge> vv;
+	protected HecataeusViewer viewer;
+	
+	protected VisualizationViewer<VisualNode, VisualEdge> SetViewers(Layout<VisualNode, VisualEdge> layout, HecataeusViewer viewer) {
+		
+		this.viewer = viewer;
 		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
-//		layout = new VisualAggregateLayout(hec.graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-		 //the visualization viewer
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize(); 
         vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
-		vv.setSize(new Dimension((int)prefferedSize.getWidth()/2,(int)prefferedSize.getHeight()/2));
+		vv.setSize(new Dimension((int)prefferedSize.getWidth(),(int)prefferedSize.getHeight()));
         vv.setBackground(Color.white);
 		vv.setPickSupport(new LayoutLensShapePickSupport<VisualNode, VisualEdge>(vv));
 		
@@ -79,11 +72,17 @@ public class Viewers extends VisualizationViewer<VisualNode, VisualEdge> {
 		pr.setVertexIncludePredicate(new VisualNodeVisible());
 		pr.setVertexIconTransformer(new VisualNodeIcon());
 		
+//		double amount = 1.0;
+//		ScalingControl scaler = new CrossoverScalingControl();
+//		scaler.scale(vv, amount > 0 ? 1.1f : 1 / 1.1f, vv.getCenter());
 		vv.getRenderContext().getMultiLayerTransformer().addChangeListener(vv);
 		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
+		gm.HecataeusViewerPM(viewer);
 		vv.setGraphMouse(gm);
 		vv.addGraphMouseListener(gm);
 		
+		return vv;
+
 	}
 	
 

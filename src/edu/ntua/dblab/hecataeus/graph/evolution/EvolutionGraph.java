@@ -43,7 +43,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static int _KeyGenerator;
+	protected static int _KeyGenerator;
 	
 	protected Map<V, Integer> nodeKeys;
 	protected Map<E, Integer> edgeKeys;
@@ -950,6 +950,7 @@ try
 	 * and adds them to the collection of graph's nodes and edges 
 	 * @return a graph object
 	 */
+	@SuppressWarnings("unchecked")
 	public <G extends EvolutionGraph<V,E>> G toGraphE(List<V> nodes){
 		G subGraph;
 		try {
