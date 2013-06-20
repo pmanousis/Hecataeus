@@ -6,6 +6,7 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
 import java.awt.Paint;
+import java.awt.geom.Rectangle2D;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -29,7 +30,10 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
     {
         if (picked.isPicked(v))
         {
-            return Color.CYAN; 
+
+
+        	return Color.cyan;
+          //  return (Paint) new GradientVertexRenderer<Integer, Number>( new Color(175,224,0), new Color(133,170,173), true); 
         }
         else
         {	

@@ -42,6 +42,11 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 //		this.myGraph = graph;
 	}
 	
+	public void setLocation(Point2D loc){
+		this.location = loc;
+	}
+	
+	
 	public VisualNode(String name, NodeType type) {
 		super(name, type);
 		this.location = new Point2D.Double();
@@ -58,14 +63,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	}
 	
 	public void setVisible(boolean Value) {
-//	public void setVisible(boolean Value, VisualizationViewer<VisualNode, VisualEdge> viewer) {
-//		List<VisualNode> nodes = new ArrayList<VisualNode>();
-//		nodes.addAll(viewer.getGraphLayout().getGraph().getVertices());
-//		for(VisualNode node : nodes){
-//			node.isVisible = Value;
-//		}
 		this.isVisible = Value;
-//		this.Viewer = viewer;
 	}
 	
 	public Boolean getVisible() {

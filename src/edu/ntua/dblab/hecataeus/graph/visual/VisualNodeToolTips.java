@@ -16,7 +16,8 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 	public String transform(VisualNode node) {
 		if (node.getVisible()) {
 			String tooltip="<html>";
-			
+			String cat = node.getType().getCategory().toString();
+			tooltip += cat + "  ";
 			if ((node.getSQLDefinition()!=null)&&(!node.getSQLDefinition().isEmpty())) {
 				tooltip += "<b>SQL Definition</b><br>";
 				String definition = node.getSQLDefinition();

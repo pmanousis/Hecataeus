@@ -3,10 +3,13 @@
  */
 package edu.ntua.dblab.hecataeus;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
+
+import org.apache.commons.collections15.functors.ConstantTransformer;
 
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
@@ -23,8 +26,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.LayoutLensShapePickSupport;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
@@ -43,10 +44,10 @@ public class Viewers {
 		
 		this.viewer = viewer;
 		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
-		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize(); 
-        vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
-		vv.setSize(new Dimension((int)prefferedSize.getWidth(),(int)prefferedSize.getHeight()));
-        vv.setBackground(Color.white);
+		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
+		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
+		vv.setSize(new Dimension((int)prefferedSize.getWidth()-800,(int)prefferedSize.getHeight()-300));
+		vv.setBackground(Color.white);
 		vv.setPickSupport(new LayoutLensShapePickSupport<VisualNode, VisualEdge>(vv));
 		
 		vv.setVertexToolTipTransformer(new VisualNodeToolTips());
@@ -56,6 +57,8 @@ public class Viewers {
 		// the labels of the Vertices
 		pr.setVertexLabelTransformer(new VisualNodeLabel());
 		vv.getRenderer().getVertexLabelRenderer().setPosition(Position.AUTO); 
+
+		vv.getRenderContext().setEdgeStrokeTransformer(new ConstantTransformer(new BasicStroke(0.1f)));
 		// the fonts of the vertices
 		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8)));
 		//the shape of the edges
