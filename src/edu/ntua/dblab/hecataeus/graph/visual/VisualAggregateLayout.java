@@ -50,8 +50,9 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 		//pass the old size to the new layout
 		topLayout.setSize(this.getSize());
 		//set the new layout as delegate layout
-		for (VisualNode v : this.topLayoutGraph.getVertices())
+		for (VisualNode v : this.topLayoutGraph.getVertices()){
 			super.setLocation(v, topLayout.transform(v));
+		}
 	}
 	
 	/***

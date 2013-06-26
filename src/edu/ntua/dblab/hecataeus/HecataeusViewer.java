@@ -327,8 +327,8 @@ public class HecataeusViewer {
 					this.graphs.add(graph);
 					//TODO theloun allages edw
 					//pass the location of the vertices to the layout of the graph
-			//		HecataeusViewer.this.setLayout(VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-					layout = new VisualLayout(graph);
+					HecataeusViewer.this.setLayout(VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
+			//		layout = new VisualLayout(graph);
 					
 					
 //					GraphZoomScrollPane test = new MyPane(vv, graph);

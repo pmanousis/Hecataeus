@@ -8,9 +8,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.geom.Point2D;
 
+import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.functors.ConstantTransformer;
 
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeLabel;
@@ -35,12 +39,54 @@ import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
  *
  */
 public class Viewers {
-
-
+	public static int cnt = 0;
+	protected Transformer<VisualNode, Point2D> locationTransformer;
 	protected VisualizationViewer<VisualNode, VisualEdge> vv;
 	protected HecataeusViewer viewer;
 	
+	protected void setTr(){
+		final Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
+		locationTransformer = new Transformer<VisualNode, Point2D>() {
+			@Override
+			public Point2D transform(VisualNode node) {
+				NodeType type = (node.getType());
+				Point2D p2d;
+				if(type.getCategory() == NodeCategory.SCHEMA){
+					p2d = new Point2D.Double(prefferedSize.getWidth()-200, 100+cnt);
+					cnt++;
+					return p2d;
+				}
+				else if (type.getCategory()== NodeCategory.MODULE){
+					p2d = new Point2D.Double(prefferedSize.getWidth()-400, 100+cnt);
+					cnt++;
+					return p2d;
+				}
+				else if (type.getCategory()== NodeCategory.CONTAINER){
+					p2d = new Point2D.Double(prefferedSize.getWidth()-600, 100+cnt);
+					cnt++;
+					return p2d;
+				}
+				else if (type.getCategory()== NodeCategory.INOUTSCHEMA){
+					p2d = new Point2D.Double(prefferedSize.getWidth()-800, 100+cnt);
+					cnt++;
+					return p2d;
+				}
+				else
+					p2d = new Point2D.Double(prefferedSize.getWidth()-300, 100+cnt);
+					return p2d;
+			}
+		};
+	}
+	
+	
 	protected VisualizationViewer<VisualNode, VisualEdge> SetViewers(Layout<VisualNode, VisualEdge> layout, HecataeusViewer viewer) {
+		
+		
+		
+		
+		
+		
+		
 		
 		this.viewer = viewer;
 		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
