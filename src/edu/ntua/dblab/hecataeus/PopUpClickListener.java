@@ -2,12 +2,14 @@ package edu.ntua.dblab.hecataeus;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -22,6 +24,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import org.apache.commons.collections15.Transformer;
+
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
@@ -30,17 +34,20 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
+import edu.ntua.dblab.hecataeus.graph.visual.VertexCollapser;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualSubGraph;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.util.Pair;
 import edu.uci.ics.jung.visualization.PluggableRenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import edu.uci.ics.jung.visualization.picking.PickedState;
 
 public class PopUpClickListener extends MouseAdapter{
@@ -127,6 +134,8 @@ public class PopUpClickListener extends MouseAdapter{
 					
 					
 					menu.popZoom.addActionListener(zoomToNewModuleTab());
+					
+					menu.popCollapse.addActionListener(collapser());
 				}
 
 				//if only 1 vertex is picked
@@ -206,10 +215,121 @@ public class PopUpClickListener extends MouseAdapter{
 		}
 		return directedMenu;
 	}
+
 	
 	/**
 	 * @author eva
 	 */
+	
+	
+	
+	protected AbstractAction collapser(){
+		return new AbstractAction("Collapse Nodes") {
+			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();
+
+		
+			public void actionPerformed(ActionEvent e) {
+				new VertexCollapser(vv.getPickedVertexState().getPicked(), graph);
+			}
+		};
+	}
+	
+	
+	
+	public VisualGraph collapse(VisualGraph inGraph, VisualGraph clusterGraph) {
+
+		if(clusterGraph.getVertexCount() < 2) return inGraph;
+		
+		VisualGraph graphos = inGraph;
+//		try {
+//			graphos = createGraph();
+//		} catch(Exception ex) {
+//			ex.printStackTrace();
+//		}
+		Collection cluster = clusterGraph.getVertices();
+		
+		// add all vertices in the delegate, unless the vertex is in the cluster
+		for(VisualNode v : inGraph.getVertices()) {
+			if(cluster.contains(v) == false) {
+				graphos.addVertex(v);
+			}
+		}
+		// add the clusterGraph as a vertex
+//		graphos.addVertex(clusterGraph);
+		
+		
+		//add all edges from the inGraph, unless both endpoints of
+		// the edge are in the cluster
+		for(VisualEdge e : inGraph.getEdges()) {
+			Pair endpoints = inGraph.getEndpoints(e);
+			// don't add edges whose endpoints are both in the cluster
+			if(cluster.containsAll(endpoints) == false) {
+		
+				if(cluster.contains(endpoints.getFirst())) {
+					graphos.addEdge(e, clusterGraph.getVertices().get(0), inGraph.getVertices().get(0), inGraph.getEdgeType(e));
+			//		graphos.addEdge(e, clusterGraph, endpoints.getSecond(), inGraph.getEdgeType(e));
+		
+				} else if(cluster.contains(endpoints.getSecond())) {
+					graphos.addEdge(e, clusterGraph.getVertices().get(0), inGraph.getVertices().get(0), inGraph.getEdgeType(e));
+
+		//			graphos.addEdge(e, endpoints.getFirst(), clusterGraph, inGraph.getEdgeType(e));
+		
+				} else {
+					graphos.addEdge(e, clusterGraph.getVertices().get(0), inGraph.getVertices().get(0), inGraph.getEdgeType(e));
+
+		//			graphos.addEdge(e,endpoints.getFirst(), endpoints.getSecond(), inGraph.getEdgeType(e));
+				}
+			}
+		}
+		return graphos;
+}
+	
+	
+	
+	class ClusterVertexShapeFunction<V> extends EllipseVertexShapeTransformer<V> {
+
+		ClusterVertexShapeFunction() {
+			setSizeTransformer(new ClusterVertexSizeFunction<V>(20));
+		}
+		@Override
+		public Shape transform(V v) {
+			if(v instanceof Graph) {
+				int size = ((Graph)v).getVertexCount();
+				
+				int sides = Math.max(10, 3);
+				
+				return factory.getRegularPolygon(v, sides);
+				
+//				if (size < 8) {   
+//					int sides = Math.max(size, 3);
+//					return factory.getRegularPolygon(v, sides);
+//				}
+//				else {
+//					return factory.getRegularStar(v, size);
+//				}
+			}
+			return super.transform(v);
+			}
+		}
+		class ClusterVertexSizeFunction<V> implements Transformer<V,Integer> {
+			int size;
+			public ClusterVertexSizeFunction(Integer size) {
+				this.size = size;
+			}
+
+			public Integer transform(V v) {
+				if(v instanceof Graph) {
+					return 30;
+				}
+				return size;
+			}
+		}
+	
+	
+	
+	
+	
+	
 	protected AbstractAction zoomToNewModuleTab(){
 		return new AbstractAction("Zoom -> Module level") {
 			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();

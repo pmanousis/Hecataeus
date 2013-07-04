@@ -18,6 +18,7 @@ public class PopUpMenu extends JPopupMenu{
 
 
 	protected JMenuItem popZoom;
+	protected JMenuItem popCollapse;
 	protected JMenu popSelect;
 	protected HecataeusPopupGraphMousePlugin hpgmp;
 	protected PopUpClickListener test;
@@ -26,8 +27,10 @@ public class PopUpMenu extends JPopupMenu{
 		test =  new PopUpClickListener();
 		hpgmp = new HecataeusPopupGraphMousePlugin();
 		popZoom = new JMenuItem("ZOOM");
+		popCollapse = new JMenuItem("COLLAPSE");
 		popSelect = new JMenu("SELECT");
 		add(popZoom);
+		add(popCollapse);
 		add(popSelect);
 //		popZoom.addActionListener(new ActionListener(){
 //			public void actionPerformed(ActionEvent e) {

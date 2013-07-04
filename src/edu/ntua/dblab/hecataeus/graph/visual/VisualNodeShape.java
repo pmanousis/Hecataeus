@@ -18,7 +18,7 @@ import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
  */
 public final class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> implements Transformer<VisualNode,Shape> {
 	
-	private static final int INITIAL_SIZE = 40;
+	private static final int INITIAL_SIZE = 60;
 	
 	public VisualNodeShape() {
 		//extends setSizeTransformer for defining the custom size of nodes  

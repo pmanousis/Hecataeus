@@ -17,6 +17,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeDrawColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeLabel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeToolTips;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
@@ -113,6 +114,9 @@ public class Viewers {
 		pr.setEdgeLabelTransformer(new VisualEdgeLabel());
 		// call the setVertexPaintFunction to paint the nodes
 		pr.setVertexFillPaintTransformer(new VisualNodeColor(vv.getPickedVertexState()));
+		
+		//set edge color
+		pr.setEdgeDrawPaintTransformer(new VisualEdgeDrawColor(vv.getPickedEdgeState()));
 		// call the setEdgePaintFunction to paint the edges
 		pr.setEdgeFillPaintTransformer( new VisualEdgeColor(vv.getPickedEdgeState()));
 		// call the setVertexShapeFunction to set the shape of the nodes

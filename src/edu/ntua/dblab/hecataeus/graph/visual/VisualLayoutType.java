@@ -30,7 +30,9 @@ public enum VisualLayoutType {
 	FRLayout,
 	ISOMLayout,
 	SpringLayout,
-	EvaTestLayout;
+	EvaTestLayout,
+	AnOtherEvaTestLayout,
+	EvaTestLayout1;
 		
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -66,6 +68,10 @@ public enum VisualLayoutType {
 				return "Bottom Up Topological Layout";
 			case EvaTestLayout:
 				return "EvaTestLayout";
+			case AnOtherEvaTestLayout:
+				return "AnOtherEvaTestLayout";
+			case EvaTestLayout1:
+				return "EvaTestLayout1";
 			default:
 				return name();
 			}
@@ -131,6 +137,10 @@ public enum VisualLayoutType {
 				return new RadialTreeLayout<VisualNode, VisualEdge>(new DelegateForest<VisualNode, VisualEdge>(g));
 			case EvaTestLayout:
 				return new VisualTopologicalLayout(g, Orientation.evaTest);
+			case AnOtherEvaTestLayout:
+				return new VisualTopologicalLayout(g, Orientation.evaTest1);
+			case EvaTestLayout1:
+				return new VisualTopologicalLayout(g, Orientation.evaTest2);
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

@@ -41,6 +41,5 @@ public final class VisualEdgeColor implements Transformer<VisualEdge, Paint>
             else 
             	return new Color(200,0,200);
         }
-            
     }
 }

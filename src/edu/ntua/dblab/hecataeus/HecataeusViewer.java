@@ -2,7 +2,6 @@ package edu.ntua.dblab.hecataeus;
 
 
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -49,14 +48,11 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.collections15.Transformer;
-
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
@@ -68,8 +64,6 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.renderers.GradientVertexRenderer;
-import edu.uci.ics.jung.visualization.renderers.Renderer.Vertex;
 
 public class HecataeusViewer {
 	
@@ -810,6 +804,7 @@ public class HecataeusViewer {
 		mnVisualize.addSeparator();
 		
 		JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Icons On");
+		chckbxmntmNewCheckItem.setSelected(true);
 		chckbxmntmNewCheckItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				AbstractButton aButton = (AbstractButton) event.getSource();
@@ -828,7 +823,6 @@ public class HecataeusViewer {
 				}
 			}
 		});
-		chckbxmntmNewCheckItem.setSelected(true);
 		mnVisualize.add(chckbxmntmNewCheckItem);
 		
 		JMenu mnTools = new JMenu("Tools");
@@ -1099,8 +1093,9 @@ public class HecataeusViewer {
 		
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("full zoom", null, panel_1, null);
-		
+
 		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
+
 		splitPane.setRightComponent(managerTabbedPane);
 		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);

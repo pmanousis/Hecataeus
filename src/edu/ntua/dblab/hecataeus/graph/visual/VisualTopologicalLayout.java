@@ -1,15 +1,16 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Dimension;
-import java.awt.Toolkit;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
@@ -28,7 +29,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		LEFT2RIGHT,
 		TOP2DOWN,
 		INVERSELEFT2RIGHT,
-		evaTest
+		evaTest,
+		evaTest1,
+		evaTest2
 		;
 	}
 	
@@ -94,13 +97,28 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     		initializeUpBottom();
     		break;
     	case evaTest:
+    		init();
     		testTest();
+    		break;
+    	case evaTest1:
+    		init();
+    		evaTest1();
+    		break;
+    	case evaTest2:
+    		init();
+    		evaTest2();
     		break;
     	default:
     		initializeRight2Left();
     	}
     }
 
+    private void init(){
+    	cntView = 100;
+    	cntQuery = 100;
+    	cntRelation = 100;
+    }
+    
 	public void reset() {
 		this.initialize();
 	}
@@ -358,6 +376,189 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	}
 	
 	
+	private void evaTest1(){
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+		List<VisualNode> queries = new ArrayList<VisualNode>();
+		List<VisualNode> relations = new ArrayList<VisualNode>();
+		List<VisualNode> views = new ArrayList<VisualNode>();
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_QUERY){
+				queries.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				relations.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+				views.add(v);
+			}
+		}
+	
+		
+		
+		for(VisualNode q : queries){
+			System.out.println(q.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/queries.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX()+200, cntQuery);
+			super.setLocation(q,location);
+			
+			location.setLocation(graph.getCenter().getX()+200, cntQuery);
+			q.setLocation(location);
+			graph.setLocation(q, location);
+			Point2D loc1 = graph.getLocation(q);
+			cntQuery+=100;
+		}
+		
+		for(VisualNode r : relations){
+			System.out.println("+++++ "+r.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
+			super.setLocation(r,location);
+			location.setLocation(graph.getCenter().getX(), cntRelation);
+			r.setLocation(location);
+			graph.setLocation(r, location);
+			Point2D loc1 = graph.getLocation(r);
+			cntRelation+=100;
+		}
+		
+		
+		for(VisualNode v : views){
+			
+			System.out.println("---- "+v.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/views.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX()+400, cntView);
+			super.setLocation(v,location);
+			
+			location.setLocation(graph.getCenter().getX()+400, cntView);
+			v.setLocation(location);
+			graph.setLocation(v, location);
+			Point2D loc1 = graph.getLocation(v);
+			int temp = cntView;
+	//		cntView+=100;
+	//		cntView = cntRelation - 100;
+	//		temp = cntView;
+			cntView = cntRelation-100;
+			System.out.println("---- "+v.getName()   + "  y  " + temp);
+			List<VisualNode> viewToQuery = new ArrayList<VisualNode>();
+			List<VisualNode> viewToRelation = new ArrayList<VisualNode>();
+			
+		}
+	
+	}
+	
+	
+	private void evaTest2(){
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+		List<VisualNode> queries = new ArrayList<VisualNode>();
+		List<VisualNode> relations = new ArrayList<VisualNode>();
+		List<VisualNode> views = new ArrayList<VisualNode>();
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_QUERY){
+				queries.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				relations.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+				views.add(v);
+			}
+		}
+
+		
+		double prevx = graph.getCenter().getX()+900;
+		for(VisualNode q : queries){
+			System.out.println(q.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/queries.size(),60)));
+			location = new Point2D.Double(prevx, cntQuery);
+			super.setLocation(q,location);
+			
+			//location.setLocation(graph.getCenter().getX()+700, cntQuery);
+			q.setLocation(location);
+			graph.setLocation(q, location);
+			cntQuery = relations.size()*100;
+		}
+		int j = 0;
+		double prevyV = 300;
+		TreeMap<Double, VisualNode> idQueries = new TreeMap<Double, VisualNode>();
+		for(VisualNode v : views){
+			idQueries.put(v.ID, v);
+		}
+		Map reverseOrderedMap = new TreeMap(idQueries.descendingMap());
+		
+
+		
+		System.out.println("VIEWS  map" + reverseOrderedMap);
+		Collection c = reverseOrderedMap.values();
+		Iterator itr = c.iterator();
+		
+		Set keys = reverseOrderedMap.keySet();
+		for (Iterator it = keys.iterator(); it.hasNext();) {
+			Double key = (Double)it.next();
+			VisualNode viewNode = (VisualNode) reverseOrderedMap.get(key);
+			System.out.println(key + " = " + viewNode);
+				
+	//		OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/views.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX()+500-j, prevyV);
+			
+			double temp = graph.getCenter().getX()+500-j;
+			
+			j+=150;
+			viewNode.setLocation(location);
+			graph.setLocation(viewNode, location);
+			super.setLocation(viewNode,location);
+			cntView+=100;
+			System.out.println(viewNode.getName()+ "  loc x "+ temp + "  loc y   " + prevyV);
+			System.out.println(viewNode.getName()+ "!!!!  loc "+  location);
+		}
+		
+	
+		
+
+		
+		for(VisualNode r : relations){
+			System.out.println("+++++ "+r.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
+			super.setLocation(r,location);
+			location.setLocation(graph.getCenter().getX(), cntRelation);
+			r.setLocation(location);
+			graph.setLocation(r, location);
+			Point2D loc1 = graph.getLocation(r);
+			System.out.println(r.getName()+ "  loc x "+ graph.getCenter().getX() + "  loc y   " + cntRelation);
+
+			cntRelation+=100;
+		}
+	}
+	
+	
+
 	
 	private void testTest(){
 		
@@ -391,48 +592,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
 				Tempviews.add(v);
+				views.add(v);
 			}
 		}
-		
-		for(VisualNode tempView : Tempviews){
-			if(this.graph.getInEdges(tempView).size() != 0){
-				views.add(tempView);
-			}
-		}
-		
-		for(VisualNode tempView : Tempviews){
-			if(!views.contains(tempView)){
-				views.add(tempView);
-			}
-		}
-//		for(VisualNode q : queries){
-//			System.out.println(q.getName());
-//			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/queries.size(),60)));
-//			location = new Point2D.Double(graph.getCenter().getX()+200, cntQuery);
-//			super.setLocation(q,location);
-//			
-//	//		location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-//			location.setLocation(graph.getCenter().getX()+200, cntQuery);
-//			q.setLocation(location);
-//			graph.setLocation(q, location);
-//			Point2D loc1 = graph.getLocation(q);
-//			cntQuery+=100;
-//		}
-//		
-//		for(VisualNode r : relations){
-//			System.out.println("+++++ "+r.getName());
-//			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
-//			location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
-//			super.setLocation(r,location);
-//			
-//	//		location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-//			location.setLocation(graph.getCenter().getX(), cntRelation);
-//			r.setLocation(location);
-//			graph.setLocation(r, location);
-//			Point2D loc1 = graph.getLocation(r);
-//			cntRelation+=100;
-//		}
-		
 		
 		for(VisualNode v : views){
 			
@@ -446,22 +608,23 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			v.setLocation(location);
 			graph.setLocation(v, location);
 			Point2D loc1 = graph.getLocation(v);
-			cntView+=100;
-			
+			int temp = cntView;
+	//		cntView+=100;
+	//		cntView = cntRelation - 100;
+	//		temp = cntView;
+			System.out.println("---- "+v.getName()   + "  y  " + temp);
 			List<VisualNode> viewToQuery = new ArrayList<VisualNode>();
 			List<VisualNode> viewToRelation = new ArrayList<VisualNode>();
 			
 			
 			
 			if(v.getInEdges()!= null){
-				
-				
 				for(VisualEdge e: this.graph.getInEdges(v)){
 					if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
 						viewToQuery.add( e.getFromNode());
 					}
 					else if(e.getFromNode().getType() == NodeType.NODE_TYPE_RELATION){     //TODO ginetai?????
-						viewToRelation.add( e.getFromNode());
+		//				viewToRelation.add( e.getFromNode());
 					}
 					
 					
@@ -479,18 +642,21 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 						graph.setLocation(myNode, location);
 						cntQuery+=100;
 						
+						System.out.println("Query  "+myNode.getName()   + "  y  " + cntQuery);
+						
 						List<VisualNode> QueryToRelation = new ArrayList<VisualNode>();
 						
 						for(VisualEdge e : this.graph.getOutEdges(myNode)){
 							if(e.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
 								QueryToRelation.add(e.getToNode());
+								
 							}
 						}
 						int RelationSize = QueryToRelation.size()/2;
 						if(QueryToRelation.size() != 0){
 							if(RelationSize == 0){
 								if(QueryToRelation != null){
-									cntRelation = cntQuery;
+									cntRelation = (viewToQuery.size()/2)*(cntQuery -100);
 									location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
 									super.setLocation(QueryToRelation.get(0),location);
 									
@@ -499,6 +665,8 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 									QueryToRelation.get(0).setLocation(location);
 									graph.setLocation(QueryToRelation.get(0), location);
 									cntRelation+=100;
+									
+									System.out.println("Relation  "+QueryToRelation.get(0).getName()   + "  y  " + cntRelation);
 								}
 							}
 							else{
@@ -512,6 +680,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 									myRelationNode.setLocation(location);
 									graph.setLocation(myRelationNode, location);
 									cntRelation+=100;
+									
+									
+									System.out.println("Relation  "+myRelationNode.getName()   + "  y  " + cntRelation);
 								}
 							}
 						}
@@ -524,7 +695,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 					if(e.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
 						viewToRelation.add( e.getToNode());
 					}
-					for(VisualNode RelationNode : viewToRelation){
+				}
+				System.out.println("tralala   " + viewToRelation);
+				for(VisualNode RelationNode : viewToRelation){
 						location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
 						super.setLocation(RelationNode,location);
 						
@@ -532,19 +705,13 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 						RelationNode.setLocation(location);
 						graph.setLocation(RelationNode, location);
 						cntRelation+=100;
-					}
+						
+						System.out.println("Relation  "+RelationNode.getName()   + "  y  " + cntRelation);
 				}
 			}
+			cntView = cntRelation;
+			
 		}
-		
-		
-		
-		
-		
-		
-		
-		
-		
 //		while (nodes.size()>0) {
 //			//hold the current group
 //			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();

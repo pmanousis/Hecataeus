@@ -21,8 +21,8 @@ static int counter;
 	
 	private EvolutionPolicies  _policies = null;
 	private EvolutionEvents _events = null;
-	protected List<E> _outEdges = null;
-	protected List<E> _inEdges = null;
+	public List<E> _outEdges = null;
+	public List<E> _inEdges = null;
 	private StatusType _status = StatusType.NO_STATUS;
 
 	public EvolutionNode() {
