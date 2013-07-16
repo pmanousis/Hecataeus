@@ -174,7 +174,7 @@ public class QueryViewAddAttributeMaestro<V extends EvolutionNode<E>,E extends E
 		{
 			stw.stop();
 			//int reply=JOptionPane.showConfirmDialog(null, "Should "+tempParam+" be used as grouper in group by of "+msg.toNode.getName()+" ?",tempParam,JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
-			int reply=JOptionPane.YES_OPTION;
+			int reply=JOptionPane.NO_OPTION;
 			stw.start();
 			if(reply==JOptionPane.YES_OPTION)
 			{
@@ -189,11 +189,11 @@ public class QueryViewAddAttributeMaestro<V extends EvolutionNode<E>,E extends E
 			{
 				String[] choices={"MIN","MAX","AVG","COUNT","SUM"};	// Aggregate functions.
 				stw.stop();
-				String apantisiF=(String) JOptionPane.showInputDialog(null, "Select aggregate function (MIN, MAX, AVG, COUNT, SUM) that "+tempParam+" should be used at "+msg.toNode.getName()+"\nDefault value is: "+choices[0], tempParam, JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
+				String apantisiF=null;//(String) JOptionPane.showInputDialog(null, "Select aggregate function (MIN, MAX, AVG, COUNT, SUM) that "+tempParam+" should be used at "+msg.toNode.getName()+"\nDefault value is: "+choices[0], tempParam, JOptionPane.QUESTION_MESSAGE, null, choices, choices[0]);
 				stw.start();
 				if(apantisiF==null)
 				{
-					apantisiF=new String("MIN");
+					apantisiF=new String("COUNT");
 				}
 				V nvnout=(V) VisualNodeFactory.create();
 				nvnout.setName(apantisiF);
@@ -268,6 +268,6 @@ public class QueryViewAddAttributeMaestro<V extends EvolutionNode<E>,E extends E
 		ebn.setFromNode(nvnout);
 		ebn.setToNode(nvn);
 		graph.addEdge(ebn);
-		return(tempParam);
+		return(nvnout.getName());
 	}
 }

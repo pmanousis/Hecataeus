@@ -659,7 +659,7 @@ step3.stop();
 try
 {
     PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
-    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules);
+    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules+","+step1.toString()+","+step2.toString()+","+step3.toString());
     out.close();
 } catch (IOException e)
 {}
