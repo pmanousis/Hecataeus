@@ -82,13 +82,6 @@ public class Viewers {
 	
 	protected VisualizationViewer<VisualNode, VisualEdge> SetViewers(Layout<VisualNode, VisualEdge> layout, HecataeusViewer viewer) {
 		
-		
-		
-		
-		
-		
-		
-		
 		this.viewer = viewer;
 		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();

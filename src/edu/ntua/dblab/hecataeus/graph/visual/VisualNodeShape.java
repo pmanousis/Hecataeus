@@ -9,6 +9,7 @@ import java.awt.Shape;
 
 import org.apache.commons.collections15.Transformer;
 
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
@@ -18,13 +19,24 @@ import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
  */
 public final class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> implements Transformer<VisualNode,Shape> {
 	
-	private static final int INITIAL_SIZE = 60;
+	private static int INITIAL_SIZE = 60; // itan 60 alliws 4
 	
 	public VisualNodeShape() {
 		//extends setSizeTransformer for defining the custom size of nodes  
 		setSizeTransformer(new Transformer<VisualNode,Integer>() {
 			public Integer transform(VisualNode v) {
 				NodeType type = (v.getType());
+				int allEdges;
+				if(HecataeusViewer.nodeSize){
+					INITIAL_SIZE = 60;
+				}
+				else{
+					INITIAL_SIZE = 4;
+					allEdges = v._inEdges.size() + v._outEdges.size();
+				//	INITIAL_SIZE = 4*allEdges;
+					INITIAL_SIZE = 4 + 10*(int)Math.log((double)allEdges);
+				}
+				
 				if (type.getCategory()== NodeCategory.MODULE)
 					return INITIAL_SIZE;
 				else if (type.getCategory()== NodeCategory.CONTAINER)

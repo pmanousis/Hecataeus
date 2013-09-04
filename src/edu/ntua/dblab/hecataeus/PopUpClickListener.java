@@ -229,7 +229,7 @@ public class PopUpClickListener extends MouseAdapter{
 
 		
 			public void actionPerformed(ActionEvent e) {
-				new VertexCollapser(vv.getPickedVertexState().getPicked(), graph);
+				new VertexCollapser(vv.getPickedVertexState().getPicked(), graph, vv, layout);
 			}
 		};
 	}

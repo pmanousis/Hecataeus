@@ -11,7 +11,8 @@ public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
     	switch (v.getType().getCategory()) {
     	/*case SCHEMA:
     		return "";*/ 
-    	default: return(v.toString() + v.ID); 
+    	//default: return(v.toString()); 
+    	default: return(""); 
     	}
     	
     }

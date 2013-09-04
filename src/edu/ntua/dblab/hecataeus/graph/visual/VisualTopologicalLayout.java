@@ -469,7 +469,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		 * @param location = the current location of the graph
 		 */
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
-		
+		double rx = 0;
 		//use a list to add/remove nodes from the graph for layout reasons
 		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
 		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
@@ -502,10 +502,16 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			//location.setLocation(graph.getCenter().getX()+700, cntQuery);
 			q.setLocation(location);
 			graph.setLocation(q, location);
-			cntQuery = relations.size()*100;
+		//	cntQuery = relations.size()*100;
+			System.out.println("QUERIES  " + q.getName() + "  y  " + cntQuery);
+		//	cntQuery += ((relations.size()*100) - 100/(queries.size()-1))+100;
+			System.out.println(relations.size());
+			System.out.println(queries.size());
+			cntQuery += ((relations.size()*100) - 100)/(queries.size()-1);
+			System.out.println(cntQuery);
 		}
 		int j = 0;
-		double prevyV = 300;
+		double prevyV = (relations.size()*100)/2;
 		TreeMap<Double, VisualNode> idQueries = new TreeMap<Double, VisualNode>();
 		for(VisualNode v : views){
 			idQueries.put(v.ID, v);
@@ -536,6 +542,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			cntView+=100;
 			System.out.println(viewNode.getName()+ "  loc x "+ temp + "  loc y   " + prevyV);
 			System.out.println(viewNode.getName()+ "!!!!  loc "+  location);
+			rx = graph.getCenter().getX()+500-j;
 		}
 		
 	
@@ -545,13 +552,13 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		for(VisualNode r : relations){
 			System.out.println("+++++ "+r.getName());
 			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
-			location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
+			location = new Point2D.Double(rx, cntRelation);
 			super.setLocation(r,location);
-			location.setLocation(graph.getCenter().getX(), cntRelation);
+			location.setLocation(rx, cntRelation);
 			r.setLocation(location);
 			graph.setLocation(r, location);
 			Point2D loc1 = graph.getLocation(r);
-			System.out.println(r.getName()+ "  loc x "+ graph.getCenter().getX() + "  loc y   " + cntRelation);
+			System.out.println(r.getName()+ "  loc x "+ rx + "  loc y   " + cntRelation);
 
 			cntRelation+=100;
 		}

@@ -33,7 +33,9 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestro;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestroRewrite;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.Hypergraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> extends DirectedSparseGraph<V, E>{
@@ -63,10 +65,16 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	public boolean addVertex(V Node) {
 		// assign key
 		nodeKeys.put(Node, ++EvolutionGraph._KeyGenerator);
+		
 		return super.addVertex(Node);
 	}
 
-	
+	public boolean addVertexEVA(VisualGraph g) {
+		Hypergraph hg = g;
+		hg.addVertex(g);
+		return true;
+	}
+		
 	/**
 	 * adds edge by HecataeusEdge
 	 **/

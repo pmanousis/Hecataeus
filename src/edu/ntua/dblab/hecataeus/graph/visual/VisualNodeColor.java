@@ -5,8 +5,13 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
+import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -30,10 +35,17 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
     {
         if (picked.isPicked(v))
         {
+        	
+        	Color color1 = new Color(0xeb,0xeb,0xeb);
 
-
-        	return Color.cyan;
-          //  return (Paint) new GradientVertexRenderer<Integer, Number>( new Color(175,224,0), new Color(133,170,173), true); 
+        	Color color2 = new Color(0xa2,0xbd,0xd8);
+        	
+        	GradientPaint gp = new GradientPaint( 0f, 0f, color1, 0f, 10f, color2 );
+        	
+            
+        	return gp;
+        	//return Color.cyan;
+            //return (Paint) new GradientVertexRenderer<Integer, Number>( new Color(175,224,0), new Color(133,170,173), true); 
         }
         else
         {	

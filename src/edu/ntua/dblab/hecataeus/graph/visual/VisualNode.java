@@ -46,6 +46,9 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.location = loc;
 	}
 	
+	public Point2D getLocation(){
+		return this.location;
+	}
 	
 	public VisualNode(String name, NodeType type) {
 		super(name, type);

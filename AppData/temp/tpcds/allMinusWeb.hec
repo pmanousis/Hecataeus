@@ -1,0 +1,2 @@
+SQL: SQLS/tpcds.sql,SQLS/allminusweb.sql
+POL: POLICIES/DefaultPolicy.plc,POLICIES/MixtureDBA.plc,POLICIES/MixtureDeveloper.plc,POLICIES/Mixture_cs.plc

@@ -32,7 +32,7 @@ import org.xml.sax.SAXParseException;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.graph.util.Pair;
+import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 //import edu.uci.ics.jung.graph.Vertex;
 
@@ -440,6 +440,12 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 			subGraph.setLocation(v, this.getLocation(v)); 
 		return subGraph;
 	}
+	
+	public Graph toG(VisualGraph inGraph){
+		return inGraph;
+	}
+	
+	
 	
 	public void exportToXML(File file) {
 		

@@ -1,6 +1,5 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import java.awt.Dimension;
 import java.awt.geom.Point2D;
 
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTopologicalLayout.Orientation;
@@ -32,7 +31,9 @@ public enum VisualLayoutType {
 	SpringLayout,
 	EvaTestLayout,
 	AnOtherEvaTestLayout,
-	EvaTestLayout1;
+	EvaTestLayout1,
+	EvaCircleTestLayout,
+	EvaRadialTestLayout;
 		
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -72,6 +73,10 @@ public enum VisualLayoutType {
 				return "AnOtherEvaTestLayout";
 			case EvaTestLayout1:
 				return "EvaTestLayout1";
+			case EvaCircleTestLayout:
+				return "EvaCircleTestLayout";
+			case EvaRadialTestLayout:
+				return "EvaRadialTestLayout";
 			default:
 				return name();
 			}
@@ -141,6 +146,10 @@ public enum VisualLayoutType {
 				return new VisualTopologicalLayout(g, Orientation.evaTest1);
 			case EvaTestLayout1:
 				return new VisualTopologicalLayout(g, Orientation.evaTest2);
+			case EvaCircleTestLayout:
+				return new VisualNewCircleLayout(g);
+			case EvaRadialTestLayout:
+				return new VisualNewRadialLayout(new DelegateForest<VisualNode, VisualEdge>(g));
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
