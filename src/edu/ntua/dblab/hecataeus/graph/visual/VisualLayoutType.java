@@ -33,7 +33,8 @@ public enum VisualLayoutType {
 	AnOtherEvaTestLayout,
 	EvaTestLayout1,
 	EvaCircleTestLayout,
-	EvaRadialTestLayout;
+	EvaSpringTestLayout,
+	EvaDAGTestLayout;
 		
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -75,8 +76,10 @@ public enum VisualLayoutType {
 				return "EvaTestLayout1";
 			case EvaCircleTestLayout:
 				return "EvaCircleTestLayout";
-			case EvaRadialTestLayout:
-				return "EvaRadialTestLayout";
+			case EvaSpringTestLayout:
+				return "EvaSpringTestLayout";
+			case EvaDAGTestLayout:
+				return "EvaDagTestLayout";
 			default:
 				return name();
 			}
@@ -148,8 +151,10 @@ public enum VisualLayoutType {
 				return new VisualTopologicalLayout(g, Orientation.evaTest2);
 			case EvaCircleTestLayout:
 				return new VisualNewCircleLayout(g);
-			case EvaRadialTestLayout:
-				return new VisualNewRadialLayout(new DelegateForest<VisualNode, VisualEdge>(g));
+			case EvaSpringTestLayout:
+			//	return new VisualNewSpringLayout(g);
+			case EvaDAGTestLayout:
+				return new VisualDagLayout(g);
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
