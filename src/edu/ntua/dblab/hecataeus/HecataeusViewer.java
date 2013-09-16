@@ -2,6 +2,7 @@ package edu.ntua.dblab.hecataeus;
 
 
 
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -23,8 +24,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -60,13 +63,18 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
+import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeNeighborColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStrokeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
@@ -132,6 +140,15 @@ public class HecataeusViewer {
 	protected Viewers VisualizationViewer;
 	protected MouseListener ml;
 	
+	protected VisualNodeStroke<Integer,Number> vsh;
+	protected VisualNodeStrokeColor vnsc;
+	protected MyDefaultEdgeLaberRenderer er;
+	protected VisualNodeNeighborColor nnc;
+	protected VisualEdgeColor ec;
+	
+	
+	protected final static Object TRANSPARENCY = "transparency";
+	public static Map<VisualNode,Number> transparency = new HashMap<VisualNode,Number>();
 	
 	public static  List<VisualGraph> graphs;
 	/**
@@ -232,8 +249,26 @@ public class HecataeusViewer {
 				gm.HecataeusViewerPM(this);
 		
 
+		
+				
+		vsh = new VisualNodeStroke<Integer,Number>(vv.getPickedVertexState(), graph, vv);
+		vv.getRenderContext().setVertexStrokeTransformer(vsh);
+		
+		vnsc = new VisualNodeStrokeColor(vv.getPickedVertexState());
+		//vv.getRenderContext().setVertexStrokeTransformer(vnsc);
+		//vv.
+		
+		er = new MyDefaultEdgeLaberRenderer(Color.BLUE, Color.GREEN);
+		vv.getRenderContext().setEdgeLabelRenderer(er);
 				
 		initialize();
+		
+		for(VisualNode nodes : graph.getVertices()) {
+			transparency.put(nodes, new Double(0.9));
+		}
+		
+		nnc = new VisualNodeNeighborColor(vv.getPickedVertexState());
+		vv.getRenderContext().setVertexFillPaintTransformer(nnc);
 	}
 
 

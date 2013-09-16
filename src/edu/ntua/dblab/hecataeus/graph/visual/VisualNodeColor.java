@@ -6,12 +6,7 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
 import java.awt.GradientPaint;
-import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
 
 import org.apache.commons.collections15.Transformer;
 
@@ -26,6 +21,8 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
 {
     protected PickedInfo<VisualNode> picked;
     
+    protected final static float dark_value = 0.8f;
+    protected final static float light_value = 0.2f;
     public VisualNodeColor(PickedInfo<VisualNode> pi)
     {
         this.picked = pi;
@@ -33,14 +30,17 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
    
     public Paint transform(VisualNode v)
     {
-        if (picked.isPicked(v))
+    	
+ //   	float alpha = HecataeusViewer.transparency.get(v).floatValue();
+    	float alpha = 0.7f;
+    	if (picked.isPicked(v))
         {
         	
         	Color color1 = new Color(0xeb,0xeb,0xeb);
 
         	Color color2 = new Color(0xa2,0xbd,0xd8);
         	
-        	GradientPaint gp = new GradientPaint( 0f, 0f, color1, 0f, 10f, color2 );
+        	GradientPaint gp = new GradientPaint( 0f, 0f, color1, 9f, 1f, color2 , true);
         	
             
         	return gp;
@@ -50,6 +50,9 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
         else
         {	
         	StatusType status = (v.getStatus());
+//        	Color dark = new Color(0, 0, dark_value, alpha);
+//        	Color light = new Color(0, 0, light_value, alpha);
+    //    	return new GradientPaint( 0, 0, dark, 10, 0, light, true);
         	
 /*pmanousi 	if (status==StatusType.TO_DELETE)
         		return Color.RED;
@@ -61,7 +64,7 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
         		return Color.GREEN;
         	else if (status==StatusType.TO_RENAME)
         		return Color.ORANGE;
-        	else */if (status==StatusType.PROPAGATE)
+//        	else */ if (status==StatusType.PROPAGATE)
         		return Color.RED;
         	else if (status==StatusType.BLOCKED)
         		return Color.BLACK;

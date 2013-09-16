@@ -102,7 +102,7 @@ public class Viewers {
 		// the fonts of the vertices
 		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8)));
 		//the shape of the edges
-		pr.setEdgeShapeTransformer(new EdgeShape.QuadCurve<VisualNode, VisualEdge>());
+		pr.setEdgeShapeTransformer(new EdgeShape.Line());  //quad 
 		// the labels of the Edges
 		pr.setEdgeLabelTransformer(new VisualEdgeLabel());
 		// call the setVertexPaintFunction to paint the nodes
