@@ -7,12 +7,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
+
+import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QEncoderStream;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
@@ -30,6 +34,8 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 	private List<VisualNode> queries = new ArrayList<VisualNode>();
 	private List<VisualNode> relations = new ArrayList<VisualNode>();
 	private List<VisualNode> views = new ArrayList<VisualNode>();
+	private List<VisualNode> semantix = new ArrayList<VisualNode>();
+	private List<VisualNode> wtf = new ArrayList<VisualNode>();
 	private List<VisualNode> nodes;
 	
 	Map<V, CircleVertexData> circleVertexDataMap =
@@ -54,6 +60,12 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
 				views.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_SEMANTICS){
+				semantix.add(v);
+			}
+			else{
+				wtf.add(v);
 			}
 		}
 	}
@@ -118,16 +130,24 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 	    Collections.sort((List)queries, comparator);
 	}
 	
+	public void setSematixVertexOrder(Comparator<V> comparator){
+		if(semantix == null){
+			for(VisualNode v : nodes){
+				if(v.getType() == NodeType.NODE_TYPE_SEMANTICS){
+					semantix.add(v);
+				}
+			}
+		}
+		Collections.sort((List)semantix, comparator);
+	}
     /**
      * Sets the order of the vertices in the layout according to the ordering
      * of {@code vertex_list}.
      */
-	public void setVertexOrder(List<V> vertex_list)
-	{
-	    if (!vertex_list.containsAll(getGraph().getVertices())) 
-	        throw new IllegalArgumentException("Supplied list must include " +
-	        		"all vertices of the graph");
-	    this.vertex_ordered_list = vertex_list;
+	public void setVertexOrder(List<V> vertex_list){
+		if (!vertex_list.containsAll(getGraph().getVertices())) 
+			throw new IllegalArgumentException("Supplied list must include all vertices of the graph");
+		this.vertex_ordered_list = vertex_list;
 	}
 	
 	public void reset() {
@@ -160,15 +180,23 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 
 			Collections.sort(sizes);
 			
+		
+			
+			double tempRad = 0;
 			if (relationRadius <= 0) {
 //				relationRadius = 0.45 * (height < width ? height/3 : width/3);
 //				relationRadius = 0.45 * (height < width ? height : width);
+				
 				if(relations.size() == sizes.get(0)){           // ta relations einai ta ligotera
 					relationRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				//	tempRad = relationRadius;
 				}else if(relations.size() == sizes.get(1)){     //ta relations einai ta mesaia
 					relationRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				//	relationRadius+=tempRad;
+				//	tempRad = relationRadius;
 				}else{    // ta relations einai ta perissotera
-					relationRadius = 0.45 * (height < width ? height : width);
+					relationRadius = 0.45 * (height < width ? height : width)+100;
+				//	relationRadius+=tempRad;
 				}
 			}
 			
@@ -176,12 +204,17 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 //				viewRadius = 0.45 * (height < width ? height/2 : width/2);
 //				viewRadius = 0.45 * (height < width ? height*2 : width*2);
 //				viewRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				
 				if(views.size() == sizes.get(0)){           // ta views einai ta ligotera
 					viewRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				//	tempRad = viewRadius;
 				}else if(views.size() == sizes.get(1)){     //ta views einai ta mesaia
 					viewRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				//	viewRadius+=tempRad;
+				//	tempRad = viewRadius;
 				}else{    // ta views einai ta perissotera
-					viewRadius = 0.45 * (height < width ? height : width);
+					viewRadius = 0.45 * (height < width ? height : width)+100;
+				//	viewRadius+=tempRad;
 				}
 			}
 			
@@ -189,12 +222,17 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 //				queryRadius = 0.45 * (height < width ? height : width);
 //				queryRadius = 0.45 * (height < width ? height*3 : width*3);
 //				queryRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				
 				if(queries.size() == sizes.get(0)){           // ta queries einai ta ligotera
 					queryRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				//	tempRad = queryRadius;
 				}else if(queries.size() == sizes.get(1)){     //ta queries einai ta mesaia
 					queryRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				//	queryRadius+=tempRad;
+				//	tempRad = queryRadius;
 				}else{    // ta queries einai ta perissotera
-					queryRadius = 0.45 * (height < width ? height : width);
+					queryRadius = 0.45 * (height < width ? height : width)+100;
+				//	queryRadius+=tempRad;
 				}
 			}
 			
@@ -225,6 +263,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 
 				CircleVertexData data = getCircleData(v);
 				data.setAngle(angle);
+				dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
 				j++;
 			}
 			
@@ -242,6 +281,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 
 				CircleVertexData data = getCircleData(v);
 				data.setAngle(angle);
+				dosomething(Math.cos(angle) * viewRadius + width / 2, Math.sin(angle) * viewRadius + height / 2, (VisualNode)v, 0);
 				k++;
 			}
 			
@@ -252,6 +292,8 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 			for (V v : (List<V>)queries){
 				Point2D coord = transform(v);
 				
+				
+				
 				double angle = (2 * Math.PI * z) / queries.size();
 
 				coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
@@ -259,12 +301,77 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 
 				CircleVertexData data = getCircleData(v);
 				data.setAngle(angle);
+				
+				dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
+
 				z++;
 			}
+			
 			
 		}
 	}
 
+	
+	protected void dosomething(double x, double y, VisualNode node, int mode){
+		int a = 0;
+
+		ArrayList<VisualNode> sem = new ArrayList<VisualNode>(FindSem(node));
+		
+		
+		for (V v : (List<V>)sem){
+			Point2D coord = transform(v);
+			double angle = (2 * Math.PI * a) / sem.size();
+
+			if(mode == 0){
+				coord.setLocation(Math.cos(angle) * 40 +x, Math.sin(angle) * 40+ y);
+			}
+			else{
+				coord.setLocation(Math.cos(angle) * 65 +x, Math.sin(angle) * 65+ y);
+			}
+			CircleVertexData data = getCircleData(v);
+			data.setAngle(angle);
+			dosomething(x, y, (VisualNode)v,1);
+			a++;
+	//		wtf.remove(v);
+		}
+	//	wtf.removeAll(wtf);
+	}
+	
+	protected ArrayList<VisualNode> FindSem(VisualNode node){
+		ArrayList<VisualNode> sem = new ArrayList<VisualNode>();
+		
+		List<VisualEdge> inE = new ArrayList<VisualEdge>(node._inEdges);
+		List<VisualEdge> outE = new ArrayList<VisualEdge>(node._outEdges);
+		List<VisualNode>neighbors = new ArrayList<VisualNode>();
+		
+//		for(VisualEdge edgeIndx : inE){
+//			if(edgeIndx.getFromNode()!=null){
+//				if(edgeIndx.getFromNode().getType() != NodeType.NODE_TYPE_QUERY && edgeIndx.getFromNode().getType() != NodeType.NODE_TYPE_VIEW && edgeIndx.getFromNode().getType() != NodeType.NODE_TYPE_RELATION){
+//					sem.add(edgeIndx.getFromNode());
+//				}
+//			}
+//		}
+
+		for(VisualEdge edgeIndx : outE){
+			if(edgeIndx.getToNode()!=null){
+				if(edgeIndx.getToNode().getType() != NodeType.NODE_TYPE_QUERY && edgeIndx.getToNode().getType() != NodeType.NODE_TYPE_VIEW && edgeIndx.getToNode().getType() != NodeType.NODE_TYPE_RELATION){
+					sem.add(edgeIndx.getToNode());
+				}
+			}
+		}
+		
+		return sem;
+	}
+	
+	protected double SemRadius(List<VisualNode> nodes, double r){
+//		Dimension d = getSize();
+//		double height = d.getHeight();
+//		double width = d.getWidth();
+		
+		double R = 0.45 * (r/5) * nodes.size();
+		return R;
+	}
+	
 	protected CircleVertexData getCircleData(V v) {
 		return circleVertexDataMap.get(v);
 	}

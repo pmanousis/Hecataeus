@@ -46,7 +46,8 @@ public final class VisualEdgeColor implements Transformer<VisualEdge, Paint>
 		//		e.setHighlight(false);
         		return color;
 			}
-			return Color.WHITE;
+			//return Color.WHITE;
+			return new Color(1f, 1f, 1f, 0f);
 		}
 		else{
 	        if (picked.isPicked(e))
@@ -59,9 +60,12 @@ public final class VisualEdgeColor implements Transformer<VisualEdge, Paint>
 	        	 if (status==StatusType.PROPAGATE)
 	        		return Color.RED;
 	        	else if (status==StatusType.NO_STATUS)
-	        		return Color.WHITE;
+	        	//	return Color.WHITE;
+	        	 	return new Color(1f, 1f, 1f, 0f);
 	            else 
-	            	return new Color(200,0,200);
+	            	//return new Color(200,0,200);
+	            	//return Color.WHITE;
+	            	return new Color(1f, 1f, 1f, 0f);
 	        }
 		}
     }

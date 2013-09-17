@@ -40,14 +40,17 @@ public final class VisualNodeShape extends AbstractVertexShapeTransformer<Visual
 				if (type.getCategory()== NodeCategory.MODULE)
 					return INITIAL_SIZE;
 				else if (type.getCategory()== NodeCategory.CONTAINER)
-					return INITIAL_SIZE * 4 ;
+					//return INITIAL_SIZE * 4 ;
+					return 10;
 				/***
 				 * @author pmanousi
 				 */
 				else if (type.getCategory()== NodeCategory.INOUTSCHEMA)
-					return INITIAL_SIZE / 2;
+					//return INITIAL_SIZE / 2;
+					return 10;
 				else
-					return INITIAL_SIZE/4;
+					//return INITIAL_SIZE/4;
+					return 10;
 
 			}});
 		//extends setAspectRatioTransformer for defining the custom aspect ration of nodes

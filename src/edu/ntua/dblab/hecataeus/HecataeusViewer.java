@@ -2,6 +2,7 @@ package edu.ntua.dblab.hecataeus;
 
 
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -33,6 +34,7 @@ import java.util.StringTokenizer;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -53,6 +55,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -85,6 +88,7 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
+import net.miginfocom.swing.MigLayout;
 
 public class HecataeusViewer {
 	
@@ -872,7 +876,7 @@ public class HecataeusViewer {
 		mnVisualize.addSeparator();
 		
 		JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Icons On");
-		chckbxmntmNewCheckItem.setSelected(true);
+		chckbxmntmNewCheckItem.setSelected(false);
 		chckbxmntmNewCheckItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				AbstractButton aButton = (AbstractButton) event.getSource();
@@ -892,6 +896,8 @@ public class HecataeusViewer {
 			}
 		});
 		mnVisualize.add(chckbxmntmNewCheckItem);
+		vv.getRenderContext().setVertexIconTransformer(null);
+		vv.repaint();
 		
 		JCheckBoxMenuItem chckbxmntmBigNodes = new JCheckBoxMenuItem("Big Nodes");
 		chckbxmntmBigNodes.setSelected(true);
@@ -2154,7 +2160,15 @@ public class HecataeusViewer {
 			}
 		});
 		mnHelp.add(mntmAboutHecataeus);
+		
+
+				
+	
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
+//		JPanel toolP = new JPanel();
+//		toolP.setVisible(true);
+//		toolP = createToolsPanel();
+//		frame.getContentPane().add(toolP, BorderLayout.NORTH);
 		
 		JSplitPane splitPane = new JSplitPane();
 		frame.getContentPane().add(splitPane);
@@ -2165,6 +2179,7 @@ public class HecataeusViewer {
 //		addTabbedPane();
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		tabbedPane.setBorder(BorderFactory.createTitledBorder("VISUAL"));
 //		Dimension prefferedSizeTab = Toolkit.getDefaultToolkit().getScreenSize(); 
 //		tabbedPane.setSize(new Dimension((int)prefferedSizeTab.getWidth(), (int)prefferedSizeTab.getHeight()));
 		
@@ -2183,6 +2198,7 @@ public class HecataeusViewer {
 		splitPane.setLeftComponent(tabbedPane);
 		
 		JPanel panel_1 = new JPanel();
+		
 		tabbedPane.addTab("full zoom", null, panel_1, null);
 
 		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -2194,6 +2210,7 @@ public class HecataeusViewer {
 
 		
 		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createTitledBorder("PMG"));
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
 		
 		JPanel panel_2 = new JPanel();
@@ -2204,6 +2221,17 @@ public class HecataeusViewer {
 		
 		
 	}
+	
+	private JPanel createToolsPanel()
+	  {
+	    JPanel panel = new JPanel();
+	    panel.setBorder(BorderFactory.createTitledBorder("TOOLS"));
+	    
+	    Border b1 = BorderFactory.createTitledBorder("Tools");
+	    panel.setSize(600, 10);
+	    return panel;
+	  }
+	
 	
 //	private void addTabbedPane() {
 //		// Create ClosableTabbedPane and override the tabAboutToClose
@@ -2749,7 +2777,7 @@ protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){
 
 		
 
-		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.SpringLayout, VisualLayoutType.SpringLayout);
+		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.EvaTestLayout1, VisualLayoutType.EvaTestLayout1);
 		
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane testPane = new MyPane(subNodes.get(0), vv1, Sub);

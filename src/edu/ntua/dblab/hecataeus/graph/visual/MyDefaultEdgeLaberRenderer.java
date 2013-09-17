@@ -10,7 +10,7 @@ import edu.uci.ics.jung.visualization.renderers.DefaultEdgeLabelRenderer;
 
 public class MyDefaultEdgeLaberRenderer extends DefaultEdgeLabelRenderer{
 
-	protected Color unpickedEdgeLabelColor = Color.orange;
+	protected Color unpickedEdgeLabelColor = Color.WHITE;
 	
 	public MyDefaultEdgeLaberRenderer(Color unpickedEdgeLabelColor, Color pickedEdgeLabelColor){
 		super(pickedEdgeLabelColor);
@@ -31,7 +31,7 @@ public class MyDefaultEdgeLaberRenderer extends DefaultEdgeLabelRenderer{
 		setIcon(null);
 		setBorder(noFocusBorder);
 		setValue(value);
-		setForeground(Color.orange);
+		setForeground(Color.WHITE);
 		return this;
 	}
 	

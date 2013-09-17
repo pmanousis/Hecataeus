@@ -31,13 +31,13 @@ public class VisualNodeNeighborColor implements Transformer<VisualNode, Paint>{
 
 		StatusType status = (v.getStatus());
 		NodeType type = v.getType();
-		float alpha = 0.3f;
+		float alpha = 0.2f;
 		
 		
 		if (picked.isPicked(v)){
 			Color color1 = new Color(0xeb,0xeb,0xeb);
 			Color color2 = new Color(0xa2,0xbd,0xd8);
-			GradientPaint gp = new GradientPaint( 0f, 0f, color1, 9f, 1f, color2 , true);
+			GradientPaint gp = new GradientPaint( 0f, 0f, color1, 9f, 1f, color2 , false);
 			return gp;
 		}
 		else{
@@ -66,9 +66,9 @@ public class VisualNodeNeighborColor implements Transformer<VisualNode, Paint>{
 				if (picked.isPicked(w)){
 					dark_value = 0.7f;
 					light_value = 0.6f;
-					Color dark = new Color(0, 0, dark_value, alpha);
+					Color dark = new Color(0, 1f, dark_value, alpha);
 					Color light = new Color(0, 0, light_value, alpha);
-					return new GradientPaint( 0, 0, Color.RED, 10, 0, light, true);
+					return new GradientPaint( 0, 0, Color.GRAY, 10, 0, dark, false);
 				}
 			}
 			for(VisualNode w : fromNodes){
@@ -77,8 +77,8 @@ public class VisualNodeNeighborColor implements Transformer<VisualNode, Paint>{
 					dark_value = 0.8f;
 					light_value = 0.6f;
 					Color dark = new Color(0, 0, dark_value, alpha);
-					Color light = new Color(0, 0, light_value, alpha);
-					return new GradientPaint( 0, 2, Color.ORANGE, 10, 7.6f, light, true);
+					Color light = new Color(1f, 0.3f, light_value, alpha);
+					return new GradientPaint( 0, 2, Color.YELLOW, 10, 7.6f, light, false);
 				}
 			}
 			
@@ -93,7 +93,7 @@ public class VisualNodeNeighborColor implements Transformer<VisualNode, Paint>{
             	if (v.getHasEvents())
             		return Color.PINK;
                 else if (v.getHasPolicies())
-                    return Color.YELLOW;
+                    return new Color(1f,1f,0f,0.3f);
                 else {
                 	if (type==NodeType.NODE_TYPE_RELATION)
                 		return new Color(165,42,42);
