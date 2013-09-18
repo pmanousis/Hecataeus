@@ -45,39 +45,39 @@ public class Viewers {
 	protected VisualizationViewer<VisualNode, VisualEdge> vv;
 	protected HecataeusViewer viewer;
 	
-	protected void setTr(){
-		final Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
-		locationTransformer = new Transformer<VisualNode, Point2D>() {
-			@Override
-			public Point2D transform(VisualNode node) {
-				NodeType type = (node.getType());
-				Point2D p2d;
-				if(type.getCategory() == NodeCategory.SCHEMA){
-					p2d = new Point2D.Double(prefferedSize.getWidth()-200, 100+cnt);
-					cnt++;
-					return p2d;
-				}
-				else if (type.getCategory()== NodeCategory.MODULE){
-					p2d = new Point2D.Double(prefferedSize.getWidth()-400, 100+cnt);
-					cnt++;
-					return p2d;
-				}
-				else if (type.getCategory()== NodeCategory.CONTAINER){
-					p2d = new Point2D.Double(prefferedSize.getWidth()-600, 100+cnt);
-					cnt++;
-					return p2d;
-				}
-				else if (type.getCategory()== NodeCategory.INOUTSCHEMA){
-					p2d = new Point2D.Double(prefferedSize.getWidth()-800, 100+cnt);
-					cnt++;
-					return p2d;
-				}
-				else
-					p2d = new Point2D.Double(prefferedSize.getWidth()-300, 100+cnt);
-					return p2d;
-			}
-		};
-	}
+//	protected void setTr(){
+//		final Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
+//		locationTransformer = new Transformer<VisualNode, Point2D>() {
+//			@Override
+//			public Point2D transform(VisualNode node) {
+//				NodeType type = (node.getType());
+//				Point2D p2d;
+//				if(type.getCategory() == NodeCategory.SCHEMA){
+//					p2d = new Point2D.Double(prefferedSize.getWidth()-200, 100+cnt);
+//					cnt++;
+//					return p2d;
+//				}
+//				else if (type.getCategory()== NodeCategory.MODULE){
+//					p2d = new Point2D.Double(prefferedSize.getWidth()-400, 100+cnt);
+//					cnt++;
+//					return p2d;
+//				}
+//				else if (type.getCategory()== NodeCategory.CONTAINER){
+//					p2d = new Point2D.Double(prefferedSize.getWidth()-600, 100+cnt);
+//					cnt++;
+//					return p2d;
+//				}
+//				else if (type.getCategory()== NodeCategory.INOUTSCHEMA){
+//					p2d = new Point2D.Double(prefferedSize.getWidth()-800, 100+cnt);
+//					cnt++;
+//					return p2d;
+//				}
+//				else
+//					p2d = new Point2D.Double(prefferedSize.getWidth()-300, 100+cnt);
+//					return p2d;
+//			}
+//		};
+//	}
 	
 	
 	protected VisualizationViewer<VisualNode, VisualEdge> SetViewers(Layout<VisualNode, VisualEdge> layout, HecataeusViewer viewer) {

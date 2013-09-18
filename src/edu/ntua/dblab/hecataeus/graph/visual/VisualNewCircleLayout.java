@@ -48,6 +48,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 	/**
 	 * Creates an instance for the specified graph.
 	 */
+	@SuppressWarnings("unchecked")
 	public VisualNewCircleLayout(Graph<V,E> g) {
 		super(g);
 		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
@@ -119,8 +120,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 	}
 	
 	
-	public void setQueryVertexOrder(Comparator<V> comparator)
-	{
+	public void setQueryVertexOrder(Comparator<V> comparator){
 	    if (queries == null){
 	    	for(VisualNode v : nodes){
 	    		if(v.getType() == NodeType.NODE_TYPE_QUERY)
@@ -250,35 +250,25 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 //				data.setAngle(angle);
 //				i++;
 //			}
-			
-			
+						
 			int j = 0;
 			for (V v : (List<V>)relations){
-				Point2D coord = transform(v);
-				
+				Point2D coord = transform(v);				
 				double angle = (2 * Math.PI * j) / relations.size();
-
 				coord.setLocation(Math.cos(angle) * relationRadius + width / 2,
 						Math.sin(angle) * relationRadius + height / 2);
-
 				CircleVertexData data = getCircleData(v);
 				data.setAngle(angle);
 				dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
 				j++;
 			}
-			
-			
-			
-			
+						
 			int k = 0;
 			for (V v : (List<V>)views){
-				Point2D coord = transform(v);
-				
+				Point2D coord = transform(v);				
 				double angle = (2 * Math.PI * k) / views.size();
-
 				coord.setLocation(Math.cos(angle) * viewRadius + width / 2,
 						Math.sin(angle) * viewRadius + height / 2);
-
 				CircleVertexData data = getCircleData(v);
 				data.setAngle(angle);
 				dosomething(Math.cos(angle) * viewRadius + width / 2, Math.sin(angle) * viewRadius + height / 2, (VisualNode)v, 0);
@@ -290,20 +280,13 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 			
 			int z = 0;
 			for (V v : (List<V>)queries){
-				Point2D coord = transform(v);
-				
-				
-				
+				Point2D coord = transform(v);				
 				double angle = (2 * Math.PI * z) / queries.size();
-
 				coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
 						Math.sin(angle) * queryRadius + height / 2);
-
 				CircleVertexData data = getCircleData(v);
-				data.setAngle(angle);
-				
+				data.setAngle(angle);				
 				dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
-
 				z++;
 			}
 			
@@ -316,12 +299,10 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 		int a = 0;
 
 		ArrayList<VisualNode> sem = new ArrayList<VisualNode>(FindSem(node));
-		
-		
+				
 		for (V v : (List<V>)sem){
 			Point2D coord = transform(v);
 			double angle = (2 * Math.PI * a) / sem.size();
-
 			if(mode == 0){
 				coord.setLocation(Math.cos(angle) * 40 +x, Math.sin(angle) * 40+ y);
 			}
@@ -332,9 +313,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 			data.setAngle(angle);
 			dosomething(x, y, (VisualNode)v,1);
 			a++;
-	//		wtf.remove(v);
 		}
-	//	wtf.removeAll(wtf);
 	}
 	
 	protected ArrayList<VisualNode> FindSem(VisualNode node){
