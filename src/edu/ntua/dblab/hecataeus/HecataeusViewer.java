@@ -68,6 +68,8 @@ import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.Cluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -801,23 +803,70 @@ public class HecataeusViewer {
 		JMenu mnAlgorithms = new JMenu("Algorithms");
 		
 		for (final VisualLayoutType layoutType : VisualLayoutType.values()) {
-			mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
-				public void actionPerformed(ActionEvent e) {
-					// update the top layout of the graph
-					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-					System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-					getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
-					//containerLayout.setTopLayoutType(layoutType);
-					//update the new layout's positions
-					HecataeusViewer.this.getLayoutPositions();
-					HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-					//HecataeusViewer.this.centerAt(containerLayout.getGraph().getCenter());
-					HecataeusViewer.this.zoomToWindow(activeViewer);
-				}
-			});
+			if(layoutType == VisualLayoutType.ClusteredCircleLayout){
+				JMenu mnClusteredCircleLayout = new JMenu("Clustered Circle Layout");
+				mnAlgorithms.add(mnClusteredCircleLayout);
+				
+				JMenuItem mntmQueries = new JMenuItem("Queries");
+				mntmQueries.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutQ;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmQueries);
+				
+				JMenuItem mntmViews = new JMenuItem("Views");
+				mntmViews.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmViews);
+				
+				JMenuItem mntmRelations = new JMenuItem("Relations");
+				mntmRelations.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutR;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmRelations);
+			}
+			else{
+				mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
+					public void actionPerformed(ActionEvent e) {
+						// update the top layout of the graph
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+						getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
+						//containerLayout.setTopLayoutType(layoutType);
+						//update the new layout's positions
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						//HecataeusViewer.this.centerAt(containerLayout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+			}
 		}
 		
 		mnVisualize.add(mnAlgorithms);
+		
+		
 		
 //		JMenuItem mntmStaticLayout = new JMenuItem("Static Layout");
 //		mnAlgorithms.add(mntmStaticLayout);

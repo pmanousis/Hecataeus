@@ -2,6 +2,7 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.Cluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTopologicalLayout.Orientation;
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
@@ -13,7 +14,6 @@ import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.Forest;
 
 public enum VisualLayoutType {
 	StaticLayout,
@@ -34,8 +34,12 @@ public enum VisualLayoutType {
 	EvaTestLayout1,
 	EvaCircleTestLayout,
 	EvaSpringTestLayout,
-	EvaDAGTestLayout;
-		
+	EvaDAGTestLayout,
+	ClusteredCircleLayout,
+	ClusteredCircleLayoutQ,
+	ClusteredCircleLayoutV,
+	ClusteredCircleLayoutR;
+
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
 		 *
@@ -80,6 +84,14 @@ public enum VisualLayoutType {
 				return "EvaSpringTestLayout";
 			case EvaDAGTestLayout:
 				return "EvaDagTestLayout";
+			case ClusteredCircleLayout:
+				return "Clustered Circle Layout";
+			case ClusteredCircleLayoutQ:
+				return "";
+			case ClusteredCircleLayoutV:
+				return "";
+			case ClusteredCircleLayoutR:
+				return "";
 			default:
 				return name();
 			}
@@ -155,6 +167,12 @@ public enum VisualLayoutType {
 			//	return new VisualNewSpringLayout(g);
 			case EvaDAGTestLayout:
 				return new VisualDagLayout(g);
+			case ClusteredCircleLayoutQ:
+				return new VisualCircleClusteredLayout(g, Cluster.Queries);
+			case ClusteredCircleLayoutV:
+				return new VisualCircleClusteredLayout(g, Cluster.Views);
+			case ClusteredCircleLayoutR:
+				return new VisualCircleClusteredLayout(g, Cluster.Relations);	
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

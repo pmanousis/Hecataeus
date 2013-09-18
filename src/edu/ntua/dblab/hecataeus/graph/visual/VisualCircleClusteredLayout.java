@@ -39,7 +39,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	}
 
 	private void whatever() {
-		// TODO Auto-generated method stub
+		System.out.println("WTF");
 		
 	}
 
