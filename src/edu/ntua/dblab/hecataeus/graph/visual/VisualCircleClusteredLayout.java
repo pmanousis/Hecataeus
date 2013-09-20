@@ -1,5 +1,23 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
+import java.awt.Dimension;
+import java.awt.geom.Point2D;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.map.LazyMap;
+
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNewCircleLayout.CircleVertexData;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
 public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,VisualEdge> {
@@ -13,10 +31,51 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	protected Cluster clusterType;
 	protected VisualGraph graph;
 	
+	private double radius;
+	private double relationRadius;
+	private double viewRadius;
+	private double queryRadius;
+	
+	private List<VisualNode> queries = new ArrayList<VisualNode>();
+	private List<VisualNode> relations = new ArrayList<VisualNode>();
+	private List<VisualNode> views = new ArrayList<VisualNode>();
+	private List<VisualNode> semantix = new ArrayList<VisualNode>();
+	private List<VisualNode> wtf = new ArrayList<VisualNode>();
+	private List<VisualNode> nodes;
+	
+	private int[][] dist;
+	
+	Map<VisualNode, CircleVertexData> circleVertexDataMap =
+			LazyMap.decorate(new HashMap<VisualNode,CircleVertexData>(), 
+			new Factory<CircleVertexData>() {
+				public CircleVertexData create() {
+					return new CircleVertexData();
+				}});	
+	
+	
 	public VisualCircleClusteredLayout(VisualGraph g, Cluster cluster){
 		super(g);
 		this.graph = g;
 		this.clusterType = cluster;
+		
+		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_QUERY){
+				queries.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				relations.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+				views.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_SEMANTICS){
+				semantix.add(v);
+			}
+			else{
+				wtf.add(v);
+			}
+		}
 	}
 
 	@Override
@@ -54,7 +113,177 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	}
 
 	private void clusterQueries() {
-		// TODO Auto-generated method stub
+		
+		VisualNewCircleLayout cl = new VisualNewCircleLayout(this.graph);
+		
+		Dimension d = getSize();
+		
+		if (d != null) {
+
+			double height = d.getHeight();
+			double width = d.getWidth();
+
+			List<Integer> sizes = new ArrayList<Integer>();
+			sizes.add(queries.size());
+			sizes.add(relations.size());
+			sizes.add(views.size());
+			Collections.sort(sizes);
+			
+			if (relationRadius <= 0) {
+				if(relations.size() == sizes.get(0)){           // ta relations einai ta ligotera
+					relationRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				}else if(relations.size() == sizes.get(1)){     //ta relations einai ta mesaia
+					relationRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				}else{    // ta relations einai ta perissotera
+					relationRadius = 0.45 * (height < width ? height : width)+100;
+				}
+			}
+			
+			if (viewRadius <= 0) {	
+				if(views.size() == sizes.get(0)){           // ta views einai ta ligotera
+					viewRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				}else if(views.size() == sizes.get(1)){     //ta views einai ta mesaia
+					viewRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				}else{    // ta views einai ta perissotera
+					viewRadius = 0.45 * (height < width ? height : width)+100;
+				}
+			}
+			
+			if (queryRadius <= 0) {
+				
+				if(queries.size() == sizes.get(0)){           // ta queries einai ta ligotera
+					queryRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
+				}else if(queries.size() == sizes.get(1)){     //ta queries einai ta mesaia
+					queryRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
+				}else{    // ta queries einai ta perissotera
+					queryRadius = 0.45 * (height < width ? height : width)+100;
+				}
+			}
+						
+			int j = 0;
+			for (VisualNode v : (List<VisualNode>)relations){
+				Point2D coord = transform(v);				
+				double angle = (2 * Math.PI * j) / relations.size();
+				coord.setLocation(Math.cos(angle) * relationRadius + width / 2,
+						Math.sin(angle) * relationRadius + height / 2);
+				CircleVertexData data = cl.getCircleData(v);
+				data.setAngle(angle);
+				cl.dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
+				j++;
+			}
+						
+			int k = 0;
+			for (VisualNode v : (List<VisualNode>)views){
+				Point2D coord = transform(v);				
+				double angle = (2 * Math.PI * k) / views.size();
+				coord.setLocation(Math.cos(angle) * viewRadius + width / 2,
+						Math.sin(angle) * viewRadius + height / 2);
+				CircleVertexData data = cl.getCircleData(v);
+				data.setAngle(angle);
+				cl.dosomething(Math.cos(angle) * viewRadius + width / 2, Math.sin(angle) * viewRadius + height / 2, (VisualNode)v, 0);
+				k++;
+			}
+			
+			
+			
+			
+			int z = 0;
+			for (VisualNode v : queries){
+				Point2D coord = transform(v);				
+				double angle = (2 * Math.PI * z) / queries.size();
+				coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
+						Math.sin(angle) * queryRadius + height / 2);
+				CircleVertexData data = cl.getCircleData(v);
+				data.setAngle(angle);				
+				cl.dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
+				z++;
+			}
+			
+			
+		}
+		
+		
+		dist = new int[relations.size()][queries.size()];
+		int pos = 0;
+		int j = 0;
+		for(VisualNode v : queries){
+			List<VisualEdge> outE = new ArrayList<VisualEdge>(v._outEdges);
+			for(VisualEdge e : outE){
+				if(e.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
+					VisualNode r = e.getToNode();
+					int i = 0;
+					for(VisualNode n : relations){
+						if(r.equals(n)){
+							pos = i;
+						}
+						i++;
+					}
+					dist[pos][j] = 1;
+				}
+			}
+			j++;
+		}
+		
+		for(int i = 0; i < relations.size(); i++){
+			for(int k = 0; k < queries.size(); k++){
+				if(dist[i][k] != 1){
+					dist[i][k] = 0;
+				}
+				System.out.print(dist[i][k]);
+			}
+			System.out.println();
+		}
+		
+		try {
+			 
+			String content = 	"%STRICT FORMAT \n " +
+								"% TABLES = number of tables \n" +
+								"% TableNames = list of tables \n " +
+								"% QUERIES = number of queries -- always AFTER the tables \n " +
+								"% \n" +
+								"% 0 or 1,...\n (as many lines as necessary with 0, 1, and commata-followedBy-space)\n" +
+								"% \n" +
+								"% NOTES: \n" +
+								"% all commata are followed by space obligatorily\n" +
+								"% Comments are lines starting with % followed by white space\n" +
+								"% No line starting with white space is taken into account\n" +
+								
+								"TABLES = " + relations.size() + "\n" +
+								"TableNames = " + relations.toString() + "\n"+
+								"QUERIES = "+ queries.size() + "\n\n"+
+								"% TABLES_X_QUERIES MATRIX \n";
+ 
+			
+			for(int i = 0; i < relations.size(); i++){
+				for(int k = 0; k < queries.size(); k++){
+					if(k == 0){
+						content += dist[i][k];
+					}
+					else{
+						content += ", " +dist[i][k];
+					}
+				}				
+				content += "\n";
+			}
+			
+			File file = new File("/home/eva/clusters/test.ascii");
+ 
+			// if file doesnt exist create it
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+ 
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(content);
+			bw.close();
+ 
+			System.out.println("Done");
+ 
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		
 	}
 

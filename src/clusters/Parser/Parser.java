@@ -1,0 +1,263 @@
+package clusters.Parser;
+
+import java.util.Scanner;
+import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import javax.swing.JFileChooser;
+
+import clusters.GraphConstructs.*;
+import clusters.GraphFacades.*;
+
+public class Parser extends PreparatoryEngine {
+
+	public Parser(){
+		this.tableNames = null;
+		this.adjMatrixFromInput = null;
+		this.adjMatrix = null;
+	}
+	
+	public String chooseFile(){
+		String fileName = "";
+	 	JFileChooser chooser = new JFileChooser();
+	    int returnVal = chooser.showOpenDialog(null);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	    	try {
+				fileName = chooser.getSelectedFile().getCanonicalPath();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				System.out.println("The chosen file did not work properly");
+				e.printStackTrace();
+			}
+	    			//.getName(); 
+	    	System.out.println("You chose to open this file: " + fileName);
+	    }
+		return fileName;
+	}
+	
+	/*
+	 * Method construct importObjectsDistances produces the list of objects and their distances from the available input
+	 * Input:
+	 * ---------- 
+	 * pick a filename
+	 * Future: Hecataeus' existing collections of Tables, Views, Queries
+	 * 
+	 * iNTERIM:
+	 * ----------
+	 * Detect tables, queries, views and create the appropriate facet objects
+	 * Correctly construct and parse the adjacency matrix
+	 * 
+	 * Produce (??? MUST DECIDE ???):
+	 * ----------------------
+	 * ... based on the adj. matrix, the distance matrix ...
+	 * int totalNumObjects;
+	 * private double inputObjectsDistances[totalNumObjects][totalNumObjects], POPULATED, partOf Engine 
+	 * private ArrayList<ClusterableObject> inputObjects, POPULATED, partOf Engine
+	 * ... taking care to: 
+	 * the objects inside the inputObjects must be of the correct subclass of ClusterableObject -- view, query, table
+	 * ... and possibly ...
+	 * private ArrayList<ClusterableTable> inputTables;
+	 * private ArrayList<ClusterableViews> inputViews;
+	 * private ArrayList<ClusterableQueries> inputQueries;
+	 */
+	
+	
+	/*
+	 * Breakdown of steps:
+	 * DONE one method to produce Arraylists of tables, queries views from the file; just for here.
+	 * DONE the same method that produces the arraylists of the facet objects, to be used everywhere
+	 * one method that parses and represents in m.m. the adjacency matrix
+	 * one method that computes the distance matrix 
+	 * 
+	 * one and three are for the file-specific implementation
+	 * 2 and four are generic + they are (a) part of the parser's output and (b) organically parts of the engine
+	 * 
+	 */
+
+	
+	public void parseFile(String fileName){
+		
+
+		int adjMatrixRowsCounted = 0;
+		Boolean AMCreated = false;
+				
+		Scanner inputStream = null;
+		try{
+			inputStream =
+					new Scanner(new FileInputStream(fileName));
+		}
+		catch(FileNotFoundException e)
+		{
+			System.out.println("File " + fileName + " was not found or could not be opened.");
+			System.exit(0);
+		}
+
+		while (inputStream.hasNextLine( ))
+		{
+			if ((numTables != -1)&&(numQueries != -1)&&(AMCreated == false)){
+				adjMatrixFromInput = new int[numTables][numQueries];
+				//System.out.println("AOUAOA " + numTables + " " + numQueries);
+				AMCreated = true;
+			}
+
+			String line = inputStream.nextLine( );
+			line = line.trim();
+			if (line.startsWith("%") || line.trim().isEmpty() || line.startsWith("\n")){	
+				continue;				//do nothing for comments, empty lines
+			}
+			else {
+				if (line.startsWith("TABLES")){
+					String parts[] = line.split("\\s");
+					if (parts.length != 3){
+						System.out.println("TABLES not syntaxed correctly");
+						System.exit(0);	
+					}
+					numTables = Integer.parseInt(parts[2]);
+					System.out.println(numTables);
+				}
+
+				else{ 
+					if (line.startsWith("TableNames")){
+						String dummySplit[] = line.split("=");
+						if (dummySplit.length != 2){
+							System.out.println("TableNames not syntaxed correctly");
+							System.exit(0);	
+						}
+
+						tableNames = dummySplit[1].split(",");
+						if(tableNames.length != numTables){
+							System.out.println("#TABLES and #TableName strings are not syntaxed consistently");
+							System.exit(0);	
+						}
+						for (String s: tableNames){
+							s = s.replace(",","");
+							s = s.trim();
+							System.out.println(s);	
+						}
+
+					}
+
+					else{
+						if (line.startsWith("QUERIES")){
+							String parts[] = line.split("\\s");
+							if (parts.length != 3){
+								System.out.println("QUERIES not syntaxed correctly");
+								System.exit(0);	
+							}
+							numQueries = Integer.parseInt(parts[2]);
+							System.out.println(numQueries);
+						}
+						
+						else{
+							if (AMCreated == false){
+								System.out.println("Exiting due to unexpected syntax of the file");
+								System.out.println(line);
+								System.exit(0);
+							}
+							String cells[] = line.split(",");
+							int j = 0;
+							for (String s: cells){
+								s = s.trim();
+								adjMatrixFromInput[adjMatrixRowsCounted][j] = Integer.parseInt(s);
+								j++;
+							}
+							for (int x = 0; x< numQueries; x++)
+								System.out.print(adjMatrixFromInput[adjMatrixRowsCounted][x] + "\t");
+							System.out.println();
+							adjMatrixRowsCounted++;
+						}
+						 
+					}
+				}
+			}
+		}//end while
+
+
+
+		inputStream.close( );
+
+	}
+
+	public int produceFacetedObjects(){
+		int idCounter = 0;
+		for (String s: tableNames){
+			HACTable t = new HACTable(s);
+			ClusterableTable ct = new ClusterableTable(t);
+			ct.setId(idCounter);
+			inputTables.add(ct);
+			idCounter++;
+		}
+		
+		for (int i=0; i < numQueries; i++){
+			HACQuery q = new HACQuery("Q"+idCounter);		//can try + i instead, but now it's clear
+			ClusterableQuery cq = new ClusterableQuery(q);
+			cq.setId(idCounter);
+			inputQueries.add(cq);
+			idCounter++;
+		}
+		
+		inputObjects.addAll(inputTables);
+		inputObjects.addAll(inputQueries);
+		
+		return idCounter;
+	}
+	
+	/*
+	 * THe adjMatrixFromInput has one row per table. So, it is numTables x numQueries matrix.
+	 * We need to convert it to a matrix which is numObjects x numObjects.
+	 * The numbering is as follows:
+	 * -- tables have the same numbering as in the file
+	 * -- queries have a numbering that also includes the tables. 
+	 * E.g., if we have 3 tables and 5 queries, the second query is the 5th object and has id = 4  
+	 * and a position 4 in (a) the inputObjects list and (b) the distance matrix.
+	 */
+	public void produceAdjMatrix(){
+		numObjects = numTables + numQueries;
+		adjMatrix = new int[numObjects][numObjects];
+		for (int i =0; i <numTables; i++){
+			for (int j = 0; j < numQueries; j++){
+				adjMatrix[i][j+numTables] = adjMatrixFromInput[i][j];
+				adjMatrix[j+numTables][i] = adjMatrixFromInput[i][j];	//undirected
+			}
+		}
+	
+		// The following is for reporting purposes
+		for (int i =0; i <numObjects; i++){
+			ClusterableObject co = inputObjects.get(i);
+			System.out.printf("Obj. %3s",co.getId() +"|");
+			for (int j = 0; j < numObjects; j++){
+				System.out.print(adjMatrix[i][j] + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	public void produceDistanceMatrix(DistanceFunctionEnum df){
+		distanceMatrix = new double [numObjects][numObjects];
+		NodeDistanceFunction ndf = null;
+		
+		if (df == DistanceFunctionEnum.COMMON_NEIGHBORS){
+			ndf = new CommonNeighborsDistance();
+			distanceMatrix = ndf.computeAllDistances(adjMatrix, numObjects);
+		}
+		else{
+			System.out.println("You are most welcome to build the required distance function :) ");
+			System.exit(0);
+		}
+		
+		System.out.println("\n DISTANCE MATRIX");
+		for (int i = 0; i < numObjects; i++){
+			System.out.printf("%3s",i +"| ");
+			for (int j = 0; j < numObjects; j++){
+				System.out.printf("%.2f ", distanceMatrix[i][j]);
+			}
+			System.out.println();
+				
+		}
+	}
+	
+	private String tableNames[] = null;
+	private int adjMatrix[][] = null;
+	int adjMatrixFromInput[][] = null;
+}
