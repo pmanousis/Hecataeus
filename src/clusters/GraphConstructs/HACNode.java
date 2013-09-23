@@ -1,15 +1,17 @@
 package clusters.GraphConstructs;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+
 public class HACNode {
 
 	public  HACNode(){
-		name = "NONAME";
+		name = null;
 	}
-	public  HACNode(String n){
+	public  HACNode(VisualNode n){
 		name = n;
 	}
 	
-	public String getName(){ return name; }
+	public VisualNode getName(){ return name; }
 
-	protected String name;
+	protected VisualNode name;
 }

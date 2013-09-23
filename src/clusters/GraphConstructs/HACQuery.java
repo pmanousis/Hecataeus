@@ -1,11 +1,13 @@
 package clusters.GraphConstructs;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+
 
 public class HACQuery extends HACNode{
 	public  HACQuery(){
-		name = "noname query";
+		name = null;
 	}
-	public  HACQuery(String n){
+	public  HACQuery(VisualNode n){
 		name = n;
 	}
 

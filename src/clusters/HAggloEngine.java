@@ -12,6 +12,8 @@ import java.util.Iterator;
 //import java.util.Collections;
 //import java.util.Enumeration;
 
+
+
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import clusters.GraphConstructs.HACNode;
@@ -21,16 +23,20 @@ import clusters.HACAlgorithms.HACAlgorithm;
 import clusters.HACAlgorithms.SimpleHAC_AvgLink;
 import clusters.Parser.Parser;
 import clusters.Parser.PreparatoryEngine;
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 /**
  * @author pvassil
  *
  */
 public class HAggloEngine {
-	public  HAggloEngine(){
+	private VisualGraph graph;
+	public  HAggloEngine(VisualGraph g){
 		inputObjects = new ArrayList<ClusterableObject>();
 		solutions = new ArrayList<ClusterSet>();
 		// TODO Build a factory for algo's
 		algorithm = new SimpleHAC_AvgLink();
+		this.graph = g;
 		
 		//this.testConstructor();
 	}
@@ -61,11 +67,11 @@ public class HAggloEngine {
 		inputObjects.add(new ClusterableTable(new HACTable("R4")));
 		inputObjects.add(new ClusterableTable(new HACTable("R5")));
 */
-		inputObjects.add(new ClusterableNode(new HACNode("R1")));
-		inputObjects.add(new ClusterableNode(new HACNode("R2")));
-		inputObjects.add(new ClusterableNode(new HACNode("R3")));
-		inputObjects.add(new ClusterableNode(new HACNode("R4")));
-		inputObjects.add(new ClusterableNode(new HACNode("R5")));
+//		inputObjects.add(new ClusterableNode(new HACNode("R1")));
+//		inputObjects.add(new ClusterableNode(new HACNode("R2")));
+//		inputObjects.add(new ClusterableNode(new HACNode("R3")));
+//		inputObjects.add(new ClusterableNode(new HACNode("R4")));
+//		inputObjects.add(new ClusterableNode(new HACNode("R5")));
 
 
 		
@@ -96,7 +102,7 @@ public class HAggloEngine {
 	}
 	
 	public void executeParser(){
-		Parser prsr = new Parser();
+		Parser prsr = new Parser(this.graph);
 		String fileName = prsr.chooseFile();
 		prsr.parseFile(fileName);
 		int numNodes = prsr.produceFacetedObjects();

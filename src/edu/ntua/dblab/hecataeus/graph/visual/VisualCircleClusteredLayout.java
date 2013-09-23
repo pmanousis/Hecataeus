@@ -156,6 +156,10 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		}
 		String tableNames = StringUtils.strip(relations.toString(), "[");
 		tableNames = StringUtils.strip(tableNames, "]");
+		
+		String qn = StringUtils.strip(queries.toString(), "[");
+		qn = StringUtils.strip(qn, "]");
+		
 		try {
 			 
 			String content = 	"%STRICT FORMAT \n " +
@@ -172,7 +176,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 								
 								"TABLES = " + relations.size() + "\n" +
 								"TableNames = " + tableNames + "\n"+
-								"QUERIES = "+ queries.size() + "\n\n"+
+								"QUERIES = "+ queries.size() + "\n"+
+								"QueryNames = "+ qn + "\n\n"+
 								"% TABLES_X_QUERIES MATRIX \n";
  
 			 
@@ -206,11 +211,11 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			e.printStackTrace();
 		}
 		ClusterSet cs;
-		HAggloEngine engine = new HAggloEngine(); 			   
+		HAggloEngine engine = new HAggloEngine(this.graph); 			   
 		engine.executeParser();
 		engine.buildFirstSolution();
 		//cs = new ClusterSet(engine.execute(5).getId());
-		cs = engine.execute(100);
+		cs = engine.execute(5);
 		System.out.println("EEEEEEEEEEEEEEEEEe  " + cs.getCSDescriptionString());
 		
 //		
@@ -230,29 +235,29 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 //			}
 //		}
 		
-		ArrayList<clusters.EngineConstructs.Cluster> clusters = new ArrayList<clusters.EngineConstructs.Cluster>(cs.getClusters());
-		
-		
-		ArrayList<ArrayList<VisualNode>> eva = new ArrayList<ArrayList<VisualNode>>();
-		List<VisualNode> lista = new ArrayList<VisualNode>();
-		int malakies = 0;
-		for (clusters.EngineConstructs.Cluster myCluster : clusters){
-			
-			//myCluster.cSize(clusters);
-			
-			
-			VisualNode node = getVNode(myCluster.getName(myCluster).toString());
-			System.out.println(myCluster.getName(myCluster));
-			for(VisualNode v : this.graph.getNodes()){
-				if(myCluster.getName(myCluster).toString().contains(v.getName())){
-					lista.add(v);
-				}
-			}
-			
-			
-			malakies++;
-			
-		}
+//		ArrayList<clusters.EngineConstructs.Cluster> clusters = new ArrayList<clusters.EngineConstructs.Cluster>(cs.getClusters());
+//		
+//		
+//		ArrayList<ArrayList<VisualNode>> eva = new ArrayList<ArrayList<VisualNode>>();
+//		List<VisualNode> lista = new ArrayList<VisualNode>();
+//		int malakies = 0;
+//		for (clusters.EngineConstructs.Cluster myCluster : clusters){
+//			
+//			//myCluster.cSize(clusters);
+//			
+//			
+//			VisualNode node = getVNode(myCluster.getName(myCluster).toString());
+//			System.out.println(myCluster.getName(myCluster));
+//			for(VisualNode v : this.graph.getNodes()){
+//				if(myCluster.getName(myCluster).toString().contains(v.getName())){
+//					lista.add(v);
+//				}
+//			}
+//			
+//			
+//			malakies++;
+//			
+//		}
 		
 
 		

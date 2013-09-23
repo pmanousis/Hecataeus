@@ -1,11 +1,13 @@
 package clusters.GraphConstructs;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+
 
 public class HACTable extends HACNode{
 	public  HACTable(){
-		name = "NONAME";
+		name = null;
 	}
-	public  HACTable(String n){
+	public  HACTable(VisualNode n){
 		name = n;
 	}
 

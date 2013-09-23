@@ -1,16 +1,16 @@
 package clusters.GraphFacades;
-import clusters.GraphConstructs.HACQuery;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 
 
 public class ClusterableQuery extends ClusterableObject{
-	public ClusterableQuery(HACQuery q) {
+	public ClusterableQuery(VisualNode q) {
 		theObject = q;
 	}
 	public String printClusterableObject(){
-		return "Query " + getId() + ": " + theObject.getName() + " "; 
+		return theObject.getName(); 
 	}
 	public Object getObject(){ return theObject; }
 	
 	
-	private HACQuery theObject;
+	private VisualNode theObject;
 }

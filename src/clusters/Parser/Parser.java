@@ -12,13 +12,21 @@ import clusters.GraphConstructs.HACTable;
 import clusters.GraphFacades.ClusterableObject;
 import clusters.GraphFacades.ClusterableQuery;
 import clusters.GraphFacades.ClusterableTable;
+
 import org.apache.commons.lang3.StringUtils;
+
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 public class Parser extends PreparatoryEngine {
 
-	public Parser(){
+	private VisualGraph graph;
+	
+	public Parser(VisualGraph g){
 		this.tableNames = null;
+		
 		this.adjMatrixFromInput = null;
 		this.adjMatrix = null;
+		this.graph = g;
 	}
 	
 	public String chooseFile(){
@@ -144,15 +152,36 @@ public class Parser extends PreparatoryEngine {
 
 					else{
 						if (line.startsWith("QUERIES")){
+							String dummySplit[] = line.split("=");
 							String parts[] = line.split("\\s");
 							if (parts.length != 3){
 								System.out.println("QUERIES not syntaxed correctly");
 								System.exit(0);	
 							}
+							queryNames = dummySplit[1].split(",");
+							
 							numQueries = Integer.parseInt(parts[2]);
 							System.out.println(numQueries);
 						}
-						
+						else if(line.startsWith("QueryNames")){
+							String dummySplit[] = line.split("=");
+							if (dummySplit.length != 2){
+								System.out.println("QueryNames not syntaxed correctly");
+								System.exit(0);	
+							}
+
+							queryNames = dummySplit[1].split(",");
+							
+							if(queryNames.length != numQueries){
+								System.out.println("#QUERIES and #QueryName strings are not syntaxed consistently");
+								System.exit(0);	
+							}
+							for (String s: queryNames){
+								s = s.replace(",","");
+								s = s.trim();
+								System.out.println(s);	
+							}
+						}
 						else{
 							if (AMCreated == false){
 								System.out.println("Exiting due to unexpected syntax of the file");
@@ -183,23 +212,35 @@ public class Parser extends PreparatoryEngine {
 
 	}
 
+	
+	
 	public int produceFacetedObjects(){
 		int idCounter = 0;
 		for (String s: tableNames){
-			HACTable t = new HACTable(s);
-			ClusterableTable ct = new ClusterableTable(t);
+//			HACTable t = new HACTable(s);
+//			System.out.println(s);
+			ClusterableTable ct = new ClusterableTable(graph.findVertexByName(s.trim()));
+//			System.out.println(graph.findVertexByName(s.trim()));
 			ct.setId(idCounter);
 			inputTables.add(ct);
 			idCounter++;
 		}
-		
-		for (int i=0; i < numQueries; i++){
-			HACQuery q = new HACQuery("Q"+idCounter);		//can try + i instead, but now it's clear
-			ClusterableQuery cq = new ClusterableQuery(q);
-			cq.setId(idCounter);
-			inputQueries.add(cq);
+		for (String s: queryNames){
+//			System.out.println(s);
+			ClusterableQuery ct = new ClusterableQuery(graph.findVertexByName(s.trim()));
+//			System.out.println(graph.findVertexByName(s.trim()));
+			ct.setId(idCounter);
+			inputQueries.add(ct);
 			idCounter++;
 		}
+//		for (int i=0; i < numQueries; i++){
+//			
+//			HACQuery q = new HACQuery("Q"+idCounter);		//can try + i instead, but now it's clear
+//			ClusterableQuery cq = new ClusterableQuery(q);
+//			cq.setId(idCounter);
+//			inputQueries.add(cq);
+//			idCounter++;
+//		}
 		
 		inputObjects.addAll(inputTables);
 		inputObjects.addAll(inputQueries);
@@ -261,6 +302,7 @@ public class Parser extends PreparatoryEngine {
 		}
 	}
 	
+	private String queryNames[] = null;
 	private String tableNames[] = null;
 	private int adjMatrix[][] = null;
 	int adjMatrixFromInput[][] = null;
