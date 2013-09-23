@@ -1,15 +1,5 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.collections15.Transformer;
-
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 
 public class VisualLayout /*extends VisualAggregateLayout implements Transformer<VisualNode, Point2D>*/{

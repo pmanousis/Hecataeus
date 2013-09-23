@@ -15,7 +15,7 @@ public class ClientClass {
 			   
 		engine.executeParser();
 		engine.buildFirstSolution();
-		engine.execute();
+		engine.execute(5);
 	}
 
 }

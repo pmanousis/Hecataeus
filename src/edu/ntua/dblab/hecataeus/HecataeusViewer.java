@@ -2,7 +2,6 @@ package edu.ntua.dblab.hecataeus;
 
 
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -68,8 +67,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.Cluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -90,7 +87,6 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import net.miginfocom.swing.MigLayout;
 
 public class HecataeusViewer {
 	

@@ -2,7 +2,9 @@ package clusters.Parser;
 
 import java.util.ArrayList;
 
-import clusters.GraphFacades.*;
+import clusters.GraphFacades.ClusterableObject;
+import clusters.GraphFacades.ClusterableQuery;
+import clusters.GraphFacades.ClusterableTable;
 
 public abstract class PreparatoryEngine {
 	

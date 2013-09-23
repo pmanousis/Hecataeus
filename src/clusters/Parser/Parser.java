@@ -1,15 +1,18 @@
 package clusters.Parser;
 
-import java.util.Scanner;
-import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 
-import clusters.GraphConstructs.*;
-import clusters.GraphFacades.*;
-
+import clusters.GraphConstructs.HACQuery;
+import clusters.GraphConstructs.HACTable;
+import clusters.GraphFacades.ClusterableObject;
+import clusters.GraphFacades.ClusterableQuery;
+import clusters.GraphFacades.ClusterableTable;
+import org.apache.commons.lang3.StringUtils;
 public class Parser extends PreparatoryEngine {
 
 	public Parser(){
@@ -126,6 +129,7 @@ public class Parser extends PreparatoryEngine {
 						}
 
 						tableNames = dummySplit[1].split(",");
+						
 						if(tableNames.length != numTables){
 							System.out.println("#TABLES and #TableName strings are not syntaxed consistently");
 							System.exit(0);	

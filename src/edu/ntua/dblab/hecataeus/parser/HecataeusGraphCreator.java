@@ -6,11 +6,19 @@ package edu.ntua.dblab.hecataeus.parser;
 
 import java.sql.SQLException;
 import java.util.Vector;
-import edu.ntua.dblab.hecataeus.graph.evolution.*;
+
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.hsql.*; 
+import edu.ntua.dblab.hecataeus.hsql.Constraint;
+import edu.ntua.dblab.hecataeus.hsql.Expression;
+import edu.ntua.dblab.hecataeus.hsql.Function;
+import edu.ntua.dblab.hecataeus.hsql.Select;
+import edu.ntua.dblab.hecataeus.hsql.Table;
+import edu.ntua.dblab.hecataeus.hsql.TableFilter;
 import edu.ntua.dblab.hecataeus.parser.PlainSQL.SpecificOperator;
 
 /**

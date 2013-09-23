@@ -13,8 +13,6 @@ import java.awt.geom.Point2D;
 import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.functors.ConstantTransformer;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeDrawColor;

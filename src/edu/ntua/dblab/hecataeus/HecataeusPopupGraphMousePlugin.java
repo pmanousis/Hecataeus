@@ -4,47 +4,17 @@
  */
 package edu.ntua.dblab.hecataeus;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import org.apache.commons.collections15.Factory;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
-import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
-import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
-import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.PluggableRenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;

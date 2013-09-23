@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
-import javax.swing.JOptionPane;
-
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;

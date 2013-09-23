@@ -17,9 +17,8 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
-import java.sql.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
+import java.sql.SQLException;
 
 public class Function {
 	private Channel cChannel;

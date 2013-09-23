@@ -1,17 +1,9 @@
 package edu.ntua.dblab.hecataeus;
 
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.List;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 
 @SuppressWarnings("serial")
 public class PopUpMenu extends JPopupMenu{

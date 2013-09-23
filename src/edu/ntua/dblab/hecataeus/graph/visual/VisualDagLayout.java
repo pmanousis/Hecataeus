@@ -9,7 +9,6 @@ import java.util.Map;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNewSpringLayout.SpringVertexData;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;

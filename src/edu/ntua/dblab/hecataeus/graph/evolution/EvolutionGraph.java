@@ -4,7 +4,6 @@
  */
 package edu.ntua.dblab.hecataeus.graph.evolution;
 
-import java.awt.TrayIcon.MessageType;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -21,19 +19,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
-import javax.print.attribute.standard.NumberOfInterveningJobs;
-import javax.swing.JPanel;
-
-import javax.swing.JOptionPane;
-
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.Message;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.MessageCompare;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestro;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestroRewrite;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Hypergraph;
 import edu.uci.ics.jung.graph.util.Pair;

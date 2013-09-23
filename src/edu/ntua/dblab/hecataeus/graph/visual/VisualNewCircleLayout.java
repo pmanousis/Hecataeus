@@ -7,16 +7,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.Vector;
 
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
-
-import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QEncoderStream;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;

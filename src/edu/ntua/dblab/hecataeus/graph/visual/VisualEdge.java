@@ -4,7 +4,8 @@
  */
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.*;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 
 /**
  * The class implements a visual edge of the graph

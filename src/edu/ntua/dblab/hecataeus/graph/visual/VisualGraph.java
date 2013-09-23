@@ -606,6 +606,12 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 
 	
 	
+	
+	
+	
+	
+	
+	
 	public List<VisualEdge> getInEdges(VisualNode vertex)
     {
         return new ArrayList<VisualEdge>(super.getInEdges(vertex));

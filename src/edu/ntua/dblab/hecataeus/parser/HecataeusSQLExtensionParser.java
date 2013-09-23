@@ -11,10 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-
-
-import edu.ntua.dblab.hecataeus.*;
-import edu.ntua.dblab.hecataeus.graph.evolution.*;
+import edu.ntua.dblab.hecataeus.HecataeusException;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;

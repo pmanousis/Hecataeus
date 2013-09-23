@@ -12,11 +12,6 @@ import java.util.Iterator;
 //import java.util.Collections;
 //import java.util.Enumeration;
 
-
-
-
-
-
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import clusters.GraphConstructs.HACNode;
@@ -47,8 +42,11 @@ public class HAggloEngine {
 	 * It does so in two parts: (a) by picking an appropriate algo at the constructor and 
 	 * (b) by invoking its execute function here.
 	 */
-	public void execute(){
-		algorithm.execute(inputObjects, solutions, inputObjectsDistances);
+	public ClusterSet execute(int numC){
+		ClusterSet cs;
+//		cs = new ClusterSet(algorithm.execute(inputObjects, solutions, inputObjectsDistances, numC).getId());
+		cs = algorithm.execute(inputObjects, solutions, inputObjectsDistances, numC);
+		return cs;
 	}
 	
 	/*

@@ -2,7 +2,6 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
 import java.awt.Paint;
-import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

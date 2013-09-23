@@ -3,19 +3,15 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.commons.collections15.Transformer;
 
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 
 public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {

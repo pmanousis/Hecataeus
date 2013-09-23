@@ -7,11 +7,17 @@ public class ClusterableTable extends ClusterableObject{
 		theObject = t;
 	}
 	public String printClusterableObject(){
-		return "Table " + getId() + ":" + theObject.getName() + " "; 
+		//return "Table " + getId() + ":" + theObject.getName() + " "; 
+		return theObject.getName(); 
 	}
 	public Object getObject(){ return theObject; }
 	
+	public String tableName(){
+		return theObject.getName().trim();
+	}
 	
 	private HACTable theObject;
+
+	
 	
 }

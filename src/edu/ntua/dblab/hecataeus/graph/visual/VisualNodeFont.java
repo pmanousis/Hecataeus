@@ -5,10 +5,10 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Font;
 
+import org.apache.commons.collections15.Transformer;
+
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-
-import org.apache.commons.collections15.Transformer; 
 
 
 public class VisualNodeFont implements Transformer<VisualNode, Font>{

@@ -1,8 +1,9 @@
 package clusters.EngineConstructs;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import clusters.GraphFacades.ClusterableObject;
+import clusters.GraphFacades.ClusterableTable;
 public class Cluster {
 	public Cluster(int n){
 		id = n;
@@ -28,6 +29,16 @@ public class Cluster {
 		}
 		return message;
 	}
+	
+	public ArrayList<String> getName(Cluster t){
+		ArrayList<String> names = new ArrayList<String>();
+		Iterator<ClusterableObject> it = extension.iterator();
+		while(it.hasNext()){
+			names.add(it.next().printClusterableObject());
+		}
+		return names;
+	}
+	
 	
 	// TODO put avg, min, max as parameters, compute them all and let the algo decide which one to use :)
 	public double computeDistance(Cluster c, double[][] inputObjectsDistances){
@@ -70,4 +81,5 @@ public class Cluster {
 	
 	private int id = -1;
 	private ArrayList<ClusterableObject> extension;
+	
 }

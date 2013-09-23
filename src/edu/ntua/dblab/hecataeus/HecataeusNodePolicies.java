@@ -17,8 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-
-
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicies;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;

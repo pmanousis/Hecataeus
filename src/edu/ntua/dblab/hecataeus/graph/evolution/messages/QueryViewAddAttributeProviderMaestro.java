@@ -12,10 +12,10 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
+import edu.ntua.dblab.hecataeus.graph.evolution.MetriseisRewrite;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeFactory;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeFactory;
-import edu.ntua.dblab.hecataeus.graph.evolution.MetriseisRewrite;
 
 public class QueryViewAddAttributeProviderMaestro<V extends EvolutionNode<E>,E extends EvolutionEdge> extends MaestroAbstract<V,E>
 {
