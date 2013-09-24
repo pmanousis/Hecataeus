@@ -9,7 +9,7 @@ public class ClusterableQuery extends ClusterableObject{
 	public String printClusterableObject(){
 		return theObject.getName(); 
 	}
-	public Object getObject(){ return theObject; }
+	public VisualNode getObject(){ return theObject; }
 	
 	
 	private VisualNode theObject;

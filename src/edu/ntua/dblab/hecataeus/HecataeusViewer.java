@@ -130,7 +130,7 @@ public class HecataeusViewer {
 	
 	private static final String frameTitle = "HECATAEUS";
 	// the visual component
-	protected final VisualizationViewer<VisualNode, VisualEdge> vv;
+	public static VisualizationViewer<VisualNode, VisualEdge> vv;
 	protected VisualizationViewer<VisualNode, VisualEdge> vv1;
 	public static VisualizationViewer<VisualNode, VisualEdge> vv2;
 //	protected final VisualizationViewer<VisualNode, VisualEdge> vv3;

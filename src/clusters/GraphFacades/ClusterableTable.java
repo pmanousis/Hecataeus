@@ -12,7 +12,7 @@ public class ClusterableTable extends ClusterableObject{
 	
 		return theObject.getName(); 
 	}
-	public Object getObject(){ return theObject; }
+	public VisualNode getObject(){ return theObject; }
 	
 	public String tableName(){
 		return theObject.getName().trim();

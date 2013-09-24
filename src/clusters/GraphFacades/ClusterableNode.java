@@ -1,18 +1,19 @@
 package clusters.GraphFacades;
 import clusters.GraphConstructs.HACNode;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 
 
 public class ClusterableNode extends ClusterableObject{
 	
-	public ClusterableNode(HACNode n) {
+	public ClusterableNode(VisualNode n) {
 		theObject = n;
 	}
 	public String printClusterableObject(){
 		return "Node " + getId() + ":" + theObject.getName() + " "; 
 	}
-	public Object getObject(){ return theObject; }
+	public VisualNode getObject(){ return theObject; }
 	
 	
-	private HACNode theObject;
+	private VisualNode theObject;
 	
 }

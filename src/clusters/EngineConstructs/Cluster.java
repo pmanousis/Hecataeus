@@ -1,9 +1,10 @@
 package clusters.EngineConstructs;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import clusters.GraphFacades.ClusterableObject;
-import clusters.GraphFacades.ClusterableTable;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 public class Cluster {
 	public Cluster(int n){
 		id = n;
@@ -19,6 +20,15 @@ public class Cluster {
 		extension.addAll(objectSet);
 		
 		return extension.size();
+	}
+	
+	public ArrayList<VisualNode> getNode(){
+		Iterator<ClusterableObject> it = extension.iterator();
+		ArrayList<VisualNode> nodes = new ArrayList<VisualNode>();
+		while(it.hasNext()){
+			nodes.add(it.next().getObject());
+		}
+		return nodes;
 	}
 	
 	public String printCluster(){

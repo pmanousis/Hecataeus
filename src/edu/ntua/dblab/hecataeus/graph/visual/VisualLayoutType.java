@@ -2,7 +2,7 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
 
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.Cluster;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.ClusterE;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTopologicalLayout.Orientation;
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
@@ -168,11 +168,11 @@ public enum VisualLayoutType {
 			case EvaDAGTestLayout:
 				return new VisualDagLayout(g);
 			case ClusteredCircleLayoutQ:
-				return new VisualCircleClusteredLayout(g, Cluster.Queries);
+				return new VisualCircleClusteredLayout(g, ClusterE.Queries);
 			case ClusteredCircleLayoutV:
-				return new VisualCircleClusteredLayout(g, Cluster.Views);
+				return new VisualCircleClusteredLayout(g, ClusterE.Views);
 			case ClusteredCircleLayoutR:
-				return new VisualCircleClusteredLayout(g, Cluster.Relations);	
+				return new VisualCircleClusteredLayout(g, ClusterE.Relations);	
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

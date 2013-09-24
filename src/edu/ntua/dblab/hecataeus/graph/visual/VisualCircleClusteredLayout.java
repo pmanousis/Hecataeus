@@ -1,6 +1,8 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Paint;
 import java.awt.geom.Point2D;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -8,30 +10,31 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.Transformer;
 import org.apache.commons.collections15.map.LazyMap;
 import org.apache.commons.lang3.StringUtils;
 
 import clusters.HAggloEngine;
+import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNewCircleLayout.CircleVertexData;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
 public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,VisualEdge> {
 	
-	public enum Cluster{
+	public enum ClusterE{
 		Queries,
 		Views,
 		Relations;
 	}
 	
-	protected Cluster clusterType;
+	protected ClusterE clusterType;
 	protected VisualGraph graph;
 	
 	private double radius;
@@ -46,7 +49,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	private List<VisualNode> wtf = new ArrayList<VisualNode>();
 	private List<VisualNode> nodes;
 	
-	
+	private ArrayList<ArrayList<VisualNode>> vertices;
 	
 	private List<VisualNode> cRelations = new ArrayList<VisualNode>();
 	private List<VisualNode> Relations = new ArrayList<VisualNode>();
@@ -63,7 +66,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 				}});	
 	
 	
-	public VisualCircleClusteredLayout(VisualGraph g, Cluster cluster){
+	public VisualCircleClusteredLayout(VisualGraph g, ClusterE cluster){
 		super(g);
 		this.graph = g;
 		this.clusterType = cluster;
@@ -215,167 +218,153 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		engine.executeParser();
 		engine.buildFirstSolution();
 		//cs = new ClusterSet(engine.execute(5).getId());
-		cs = engine.execute(5);
+		cs = engine.execute(100);
 		System.out.println("EEEEEEEEEEEEEEEEEe  " + cs.getCSDescriptionString());
 		
-//		
-//		int crel = 0;
-////		int size = relations.size();
-////		for(int index = 0; (relations.get(index) != null) && (index < size);) {
-//		for(VisualNode v : relations){
-////			VisualNode v = relations.get(index);
-//			if(cs.hasClusters(v)){
-//				crel++;
-//				cRelations.add(v);
-////				relations.remove(index);
-////				size--;
-//			}else{
-////				index++;
-//				Relations.add(v);
-//			}
-//		}
-		
-//		ArrayList<clusters.EngineConstructs.Cluster> clusters = new ArrayList<clusters.EngineConstructs.Cluster>(cs.getClusters());
-//		
-//		
-//		ArrayList<ArrayList<VisualNode>> eva = new ArrayList<ArrayList<VisualNode>>();
-//		List<VisualNode> lista = new ArrayList<VisualNode>();
-//		int malakies = 0;
-//		for (clusters.EngineConstructs.Cluster myCluster : clusters){
-//			
-//			//myCluster.cSize(clusters);
-//			
-//			
-//			VisualNode node = getVNode(myCluster.getName(myCluster).toString());
-//			System.out.println(myCluster.getName(myCluster));
-//			for(VisualNode v : this.graph.getNodes()){
-//				if(myCluster.getName(myCluster).toString().contains(v.getName())){
-//					lista.add(v);
-//				}
-//			}
-//			
-//			
-//			malakies++;
-//			
-//		}
-		
-
-		
-//		
-//		System.out.println(cRelations.toString());    //ta relations pou einai se cluster
-//		System.out.println(Relations.toString());
-		
-		VisualNewCircleLayout cl = new VisualNewCircleLayout(this.graph);
-		
-		Dimension d = getSize();
-		
-		if (d != null) {
-
-			double height = d.getHeight();
-			double width = d.getWidth();
-
-			List<Integer> sizes = new ArrayList<Integer>();
-			sizes.add(queries.size());
-			sizes.add(relations.size());
-			sizes.add(views.size());
-			Collections.sort(sizes);
-			
-			if(radius <= 0){
-				radius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-			}
-			
-			
-			if (relationRadius <= 0) {
-				if(relations.size() == sizes.get(0)){           // ta relations einai ta ligotera
-					relationRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				}else if(relations.size() == sizes.get(1)){     //ta relations einai ta mesaia
-					relationRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				}else{    // ta relations einai ta perissotera
-					relationRadius = 0.45 * (height < width ? height : width)+100;
-				}
-			}
-			
-			if (viewRadius <= 0) {	
-				if(views.size() == sizes.get(0)){           // ta views einai ta ligotera
-					viewRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				}else if(views.size() == sizes.get(1)){     //ta views einai ta mesaia
-					viewRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				}else{    // ta views einai ta perissotera
-					viewRadius = 0.45 * (height < width ? height : width)+100;
-				}
-			}
-			
-			if (queryRadius <= 0) {
-				
-				if(queries.size() == sizes.get(0)){           // ta queries einai ta ligotera
-					queryRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				}else if(queries.size() == sizes.get(1)){     //ta queries einai ta mesaia
-					queryRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				}else{    // ta queries einai ta perissotera
-					queryRadius = 0.45 * (height < width ? height : width)+100;
-				}
-			}
-			
-			relations.clear();
-			
-			for(VisualNode v : (List<VisualNode>)Relations){
-				relations.add(v);
-			}
-			
-			for(VisualNode v : (List<VisualNode>)cRelations){
-				relations.add(v);
-			}
-			
-			
-			int h = 0;
-			for (VisualNode v : (List<VisualNode>)relations){
-				Point2D coord = transform(v);				
-				double angle = (2 * Math.PI * h) / relations.size();
-				coord.setLocation(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2);
-				CircleVertexData data = cl.getCircleData(v);
-				data.setAngle(angle);
-				
-			//	cl.dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
-				h++;
-			}
-				
-
-			
-			
-			int k = 0;
-			for (VisualNode v : (List<VisualNode>)views){
-				Point2D coord = transform(v);				
-				double angle = (2 * Math.PI * k) / views.size();
-				coord.setLocation(Math.cos(angle) * viewRadius + width / 2,
-						Math.sin(angle) * viewRadius + height / 2);
-				CircleVertexData data = cl.getCircleData(v);
-				data.setAngle(angle);
-				cl.dosomething(Math.cos(angle) * viewRadius + width / 2, Math.sin(angle) * viewRadius + height / 2, (VisualNode)v, 0);
-				k++;
-			}
-			
-			
-			
-			
-			int z = 0;
-			for (VisualNode v : queries){
-				Point2D coord = transform(v);				
-				double angle = (2 * Math.PI * z) / queries.size();
-				coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
-						Math.sin(angle) * queryRadius + height / 2);
-				CircleVertexData data = cl.getCircleData(v);
-				data.setAngle(angle);				
-				cl.dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
-				z++;
-			}
-			
-			
+		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
+		vertices = new ArrayList<ArrayList<VisualNode>>();
+		for(Cluster cl : clusters){
+			vertices.add(cl.getNode());
 		}
 		
 		
+		System.out.println(vertices);
+		double width = 0.0;
+		double height = 0.0;
+		double myRad = 0.0;
+		Dimension d = getSize();
+		height = d.getHeight();
+		width = d.getWidth();
+		relationRadius = 0.45 * (height < width ? height/3 : width/3);
+		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
+		myRad = 0.45 * (height < width ? height/5 : width/5);
+		
+		
+		int a = 0;
+		for(ArrayList<VisualNode> lista : vertices){
+			double angle = (2 * Math.PI )/ vertices.size();
+			
+			double cx = Math.cos(angle*a) * myRad + width / 2;
+			double cy =	Math.sin(angle*a) * myRad + height/2;
+			
+			Point2D coord1 = transform(lista.get(0));
+			
+			coord1.setLocation(cx, cy);
+			int b = 0;
+			for(VisualNode v : lista){
+				if(b != 0){
+				double smallRad = 0.45 * lista.size()/3;
+				Point2D coord = transform(v);
+				double angleA = (2 * Math.PI ) / lista.size();
+				coord.setLocation(Math.cos(angleA*b)*smallRad+cx,Math.sin(angleA*b)*smallRad+cy);
+				CircleVertexData data = getCircleData(v);
+				data.setAngle(angleA);
+				}
+				System.out.println("node name " + v.getName() + " node type " + v.getType());
+				b++;
+			}
+			a++;
+		}
+			
+		
+		
+		
+		
+		
+//		int i = 0;
+//		for(VisualNode v : relations){
+//			Point2D coord = transform(v);				
+//			double angle = (2 * Math.PI * j) / relations.size();
+//			coord.setLocation(Math.cos(angle) * relationRadius + width / 2,
+//					Math.sin(angle) * relationRadius + height / 2);
+//			CircleVertexData data = getCircleData(v);
+//			data.setAngle(angle);
+////			dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
+//			j++;
+//		}
+//		
+//		int z = 0;
+//		for (VisualNode v : queries){
+//			Point2D coord = transform(v);				
+//			double angle = (2 * Math.PI * z) / queries.size();
+//			coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
+//					Math.sin(angle) * queryRadius + height / 2);
+//			CircleVertexData data = getCircleData(v);
+//			data.setAngle(angle);				
+////			dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
+//			z++;
+//		}
+		
+//		for(ArrayList<VisualNode> lista : vertices){
+//			myRad = 0.45 * (height < width ? height*lista.size() : width*lista.size());
+//			myRad = myRad/10.0;
+//			System.out.println(myRad);
+//			double center = 0.0;
+////			if(lista.size()>1){
+//				int h = 0;
+//				for (VisualNode v : (List<VisualNode>)lista){
+//					Point2D coord = transform(v);				
+//					double angle = (2 * Math.PI * h) / lista.size();
+//					coord.setLocation(Math.cos(angle) * myRad + width / 2,
+//							Math.sin(angle) * myRad + height / 2);
+//					CircleVertexData data = getCircleData(v);
+//					data.setAngle(angle);
+//					h++;
+//				}
+//				
+//				
+//				
+////			}else{
+////				myRad = 0.45 * (height < width ? height*lista.size() : width*lista.size());
+////				int metritis = 0;
+////				for(VisualNode v : lista){
+////					Point2D coord = transform(v);				
+////					double angle = (2 * Math.PI * metritis) / lista.size();
+////					coord.setLocation(Math.cos(angle) * myRad/5 + width / 2, Math.sin(angle) * myRad/5 + height / 2);
+////					CircleVertexData data = getCircleData(v);
+////					data.setAngle(angle);
+////					metritis++;
+////				}	
+////			
+////			
+////			}
+//		}
+
+
 		
 	}
 
+	protected void dosomething(double x, double y, VisualNode node, int mode){
+		int a = 0;
+
+		ArrayList<VisualNode> sem = new ArrayList<VisualNode>();
+		int i = 0;
+		for(ArrayList<VisualNode> lista : vertices){
+			System.out.println("############## " + lista);
+			if(lista.contains(node.getName())&& lista.size()>1){
+				System.out.println("!!!!!!!!!!!!!!!!!!!!!  ");
+				sem.add(lista.get(i));
+			}
+			i++;
+		}
+		
+		
+		for (VisualNode v : sem){
+			Point2D coord = transform(v);
+			double angle = (2 * Math.PI * a) / sem.size();
+			if(mode == 0){
+				coord.setLocation(Math.cos(angle) * 40 +x, Math.sin(angle) * 40+ y);
+			}
+			else{
+				coord.setLocation(Math.cos(angle) * 65 +x, Math.sin(angle) * 65+ y);
+			}
+			CircleVertexData data = getCircleData(v);
+			data.setAngle(angle);
+			dosomething(x, y, (VisualNode)v,1);
+			a++;
+		}
+	}
+	
 	
 	public VisualNode getVNode (String name){
 		for(VisualNode v : this.graph.getVertices()){
@@ -390,5 +379,27 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	public void reset() {
 		initialize();
 		
+	}
+	
+	
+	protected CircleVertexData getCircleData(VisualNode v) {
+		return circleVertexDataMap.get(v);
+	}
+
+	protected static class CircleVertexData {
+		private double angle;
+
+		protected double getAngle() {
+			return angle;
+		}
+
+		protected void setAngle(double angle) {
+			this.angle = angle;
+		}
+
+		@Override
+		public String toString() {
+			return "CircleVertexData: angle=" + angle;
+		}
 	}
 }
