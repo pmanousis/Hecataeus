@@ -21,7 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNewCircleLayout.CircleVertexData;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
 public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,VisualEdge> {
@@ -36,11 +38,15 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	protected VisualGraph graph;
 	
 	
+	public static List<VisualNode> files = new ArrayList<VisualNode>();
+	
 	private List<VisualNode> queries = new ArrayList<VisualNode>();
 	private List<VisualNode> relations = new ArrayList<VisualNode>();
 	private List<VisualNode> views = new ArrayList<VisualNode>();
 	private List<VisualNode> wtf = new ArrayList<VisualNode>();
 	private List<VisualNode> nodes;
+	
+	private ClusterSet cs;
 	
 	private ArrayList<ArrayList<VisualNode>> vertices;
 
@@ -71,6 +77,9 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
 				views.add(v);
 			}
+			else if(v.getType() == NodeType.NODE_TYPE_FILE){
+				files.add(v);
+			}
 		}
 	}
 	
@@ -78,38 +87,6 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	@Override
 	public void initialize() {
 		// TODO Auto-generated method stub
-		switch (this.clusterType) {
-		case Queries:
-			clusterQueries();
-			break;
-		case Views:
-			clusterViews();
-			break;
-		case Relations:
-			clusterRelations();
-			break;
-		default:
-			whatever();
-		}
-		
-	}
-
-	private void whatever() {
-		System.out.println("WTF");
-		
-	}
-
-	private void clusterRelations() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void clusterViews() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void clusterQueries() {
 		
 		
 		for(VisualNode v : relations){
@@ -207,11 +184,128 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		ClusterSet cs;
+		
 		HAggloEngine engine = new HAggloEngine(this.graph); 			   
 		engine.executeParser();
 		engine.buildFirstSolution();
 		cs = engine.execute(1);
+		
+		
+		switch (this.clusterType) {
+		case Queries:
+			clusterQueries();
+			break;
+		case Views:
+			clusterViews();
+			break;
+		case Relations:
+			clusterRelations();
+			break;
+		default:
+			whatever();
+		}
+		
+	}
+
+	private void whatever() {
+		System.out.println("WTF");
+		
+	}
+
+	private void clusterRelations() {
+		// TODO Auto-generated method stub
+		//omokentroi kikloi
+		
+		
+		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
+		vertices = new ArrayList<ArrayList<VisualNode>>();
+		for(Cluster cl : clusters){
+			vertices.add(cl.getNode());
+		}
+		
+//		System.out.println(vertices);
+
+		double width = 0.0;
+		double height = 0.0;
+		double myRad = 0.0;
+		Dimension d = getSize();
+		height = d.getHeight();
+		width = d.getWidth();
+//		relationRadius = 0.45 * (height < width ? height/3 : width/3);
+//		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
+		myRad = 0.45 * (height < width ? height/2 : width/2);
+
+		int a = 0;
+		for(ArrayList<VisualNode> lista : vertices){
+			
+			List<VisualNode> nodes = new ArrayList<VisualNode>();
+			Collections.sort(lista, new CustomComparator());
+			nodes.addAll(lista);
+			System.out.println(nodes);
+			
+			double angle = (2 * Math.PI )/ vertices.size();
+			
+			
+			
+			double cx = Math.cos(angle*a) * myRad;// + width / 2;
+			double cy =	Math.sin(angle*a) * myRad;// + height/2;
+			CircleVertexData data;
+	//		Point2D coord1 = transform(nodes.get(0));
+	//		coord1.setLocation(cx, cy);
+	//		data = getCircleData(nodes.get(0));
+	//		data.setAngle(angle);
+	//		System.out.println("  node   " + nodes.get(0).getType()) ;
+			int b = 0, c =0;
+			if(nodes.size() <= 15){
+				for(VisualNode v : nodes){
+					//	if(b != 0){
+							double smallRad = nodes.size()*2;
+							Point2D coord = transform(v);
+							double angleA = (2 * Math.PI ) / nodes.size();
+							
+							coord.setLocation(Math.cos(angleA*c+(cx))*smallRad + (a*nodes.size()),Math.sin(angleA*c+(cy))*smallRad +(a*nodes.size()));
+							
+							System.out.println("  node   " + v.getType()) ;
+							
+							data = getCircleData(v);
+							data.setAngle(angleA);
+					//		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v));
+							
+					//	}
+						c++;
+					}
+			}else{
+			for(VisualNode v : nodes){
+			//	if(b != 0){
+					double smallRad = a*(nodes.size()/2);
+					Point2D coord = transform(v);
+					double angleA = (2 * Math.PI ) / nodes.size();
+					
+					coord.setLocation(Math.cos(angleA*b)*smallRad,Math.sin(angleA*b)*smallRad);
+					
+					System.out.println("  node   " + v.getType()) ;
+					
+					data = getCircleData(v);
+					data.setAngle(angleA);
+			//		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v));
+					
+			//	}
+				b++;
+			}
+		}
+			a++;
+		}
+	}
+
+	private void clusterViews() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void clusterQueries() {
+		
+		
+		
 
 		
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
@@ -230,7 +324,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		width = d.getWidth();
 //		relationRadius = 0.45 * (height < width ? height/3 : width/3);
 //		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
-		myRad = 0.45 * (height < width ? height/6 : width/6);
+		myRad = 0.45 * (height < width ? height/2 : width/2);
 
 		
 		
@@ -244,6 +338,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			
 			double angle = (2 * Math.PI )/ vertices.size();
 			
+			
+			
 			double cx = Math.cos(angle*a) * myRad;// + width / 2;
 			double cy =	Math.sin(angle*a) * myRad;// + height/2;
 			CircleVertexData data;
@@ -255,7 +351,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			int b = 0;
 			for(VisualNode v : nodes){
 				if(b != 0){
-					double smallRad = 0.45 * nodes.size()/2;
+					double smallRad = 0.45 * nodes.size();
 					Point2D coord = transform(v);
 					double angleA = (2 * Math.PI ) / nodes.size();
 					if(v.getType() == NodeType.NODE_TYPE_RELATION){
@@ -268,6 +364,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 					
 					data = getCircleData(v);
 					data.setAngle(angleA);
+					HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v));
+					
 				}
 				b++;
 			}
@@ -388,8 +486,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		initialize();
 		
 	}
-	
-	
+
 	protected CircleVertexData getCircleData(VisualNode v) {
 		return circleVertexDataMap.get(v);
 	}
@@ -410,7 +507,4 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			return "CircleVertexData: angle=" + angle;
 		}
 	}
-	
-	
-
 }
