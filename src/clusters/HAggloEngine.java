@@ -7,10 +7,12 @@ package clusters;
  * 4. the algorithms that perform the clustering
  */
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 //import java.util.Collections;
 //import java.util.Enumeration;
+
 
 
 
@@ -103,13 +105,19 @@ public class HAggloEngine {
 	
 	public void executeParser(){
 		Parser prsr = new Parser(this.graph);
-		String fileName = prsr.chooseFile();
-		prsr.parseFile(fileName);
+	//	String fileName = prsr.chooseFile();
+	//	prsr.parseFile(fileName);
+		prsr.parseFile("/home/eva/clusters/test.ascii");
 		int numNodes = prsr.produceFacetedObjects();
 		System.out.println("Preprocessing gave " + numNodes + " nodes overall");
 		prsr.testPreparatoryEngine();
 		prsr.produceAdjMatrix();
-		prsr.produceDistanceMatrix(PreparatoryEngine.DistanceFunctionEnum.COMMON_NEIGHBORS);
+		try {
+			prsr.produceDistanceMatrix(PreparatoryEngine.DistanceFunctionEnum.COMMON_NEIGHBORS);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		inputObjectsDistances = prsr.getDistanceMatrix();
 		inputObjects = prsr.getInputObjects();

@@ -62,8 +62,13 @@ public class CommonNeighborsDistance extends NodeDistanceFunction {
 
 					copyJN.addAll(copyIN);			//count Union -- addAll does not insert an existing element twice
 					int countUnion =copyJN.size();
-					distanceMatrix[i][j] = 1 - ( (double) countCommon / (double) countUnion );
-					distanceMatrix[j][i] = distanceMatrix[i][j];
+					if (countUnion == 0){
+						distanceMatrix[i][j] = 1.0; distanceMatrix[j][i] = 1.0;
+					}
+					else{
+						distanceMatrix[i][j] = 1 - ( (double) countCommon / (double) countUnion );
+						distanceMatrix[j][i] = distanceMatrix[i][j];
+					}
 				}//end j
 			}//end i
 			

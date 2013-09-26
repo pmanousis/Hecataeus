@@ -94,6 +94,21 @@ public class ClusterSet {
 		return false;
 	}
 	
+	static public ClusterSet copy(ClusterSet c){
+
+		
+		ClusterSet newCluster = new ClusterSet(c.id);
+		
+		newCluster.id = c.id;
+		newCluster.clusters.addAll(c.clusters);
+		newCluster.clusterDistances = null;
+//		for(Cluster clust : c.clusters){
+//			newCluster.clusters.add(new Cluster(clust));
+//			
+//		}
+		return newCluster;
+	}
+	
 	private int id = -1;
 	private ArrayList<Cluster> clusters; 
 	private double clusterDistances[][];

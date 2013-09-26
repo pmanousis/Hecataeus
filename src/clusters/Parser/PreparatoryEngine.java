@@ -1,5 +1,6 @@
 package clusters.Parser;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import clusters.GraphFacades.ClusterableObject;
@@ -18,7 +19,7 @@ public abstract class PreparatoryEngine {
 		COMMON_NEIGHBORS, PATH, SIMRANK
 	}
 	
-	public abstract void produceDistanceMatrix(DistanceFunctionEnum F);
+	public abstract void produceDistanceMatrix(DistanceFunctionEnum F) throws IOException;
 	
 	public void testPreparatoryEngine(){
 		System.out.println("Number of Tables: " + numTables + " " + inputTables.size());

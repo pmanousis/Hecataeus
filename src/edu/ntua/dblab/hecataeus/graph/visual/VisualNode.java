@@ -112,4 +112,6 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		if (e.isPopupTrigger())
 			myListener.graphReleased(this, e);
 	}
+	
+
 }

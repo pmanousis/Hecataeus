@@ -1,22 +1,19 @@
 package clusters.Parser;
 
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 
-import clusters.GraphConstructs.HACQuery;
-import clusters.GraphConstructs.HACTable;
 import clusters.GraphFacades.ClusterableObject;
 import clusters.GraphFacades.ClusterableQuery;
 import clusters.GraphFacades.ClusterableTable;
-
-import org.apache.commons.lang3.StringUtils;
-
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 public class Parser extends PreparatoryEngine {
 
 	private VisualGraph graph;
@@ -278,7 +275,7 @@ public class Parser extends PreparatoryEngine {
 		}
 	}
 
-	public void produceDistanceMatrix(DistanceFunctionEnum df){
+	public void produceDistanceMatrix(DistanceFunctionEnum df) throws IOException{
 		distanceMatrix = new double [numObjects][numObjects];
 		NodeDistanceFunction ndf = null;
 		
@@ -291,15 +288,18 @@ public class Parser extends PreparatoryEngine {
 			System.exit(0);
 		}
 		
+		FileWriter fw = new FileWriter("/home/eva/distMatrix.ascii");
 		System.out.println("\n DISTANCE MATRIX");
+		
 		for (int i = 0; i < numObjects; i++){
-			System.out.printf("%3s",i +"| ");
+			fw.write(i +"| ");
 			for (int j = 0; j < numObjects; j++){
-				System.out.printf("%.2f ", distanceMatrix[i][j]);
+				fw.write(String.valueOf( distanceMatrix[i][j]) + " ");
 			}
-			System.out.println();
+			fw.write("\n");
 				
 		}
+		fw.close();
 	}
 	
 	private String queryNames[] = null;

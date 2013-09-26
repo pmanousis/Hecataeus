@@ -50,52 +50,56 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 				System.out.println("Cluster Distances not available");
 				System.exit(-1);
 			}
-			System.out.println("LAST SOL: " + lastSolution.getCSDescriptionString());
+//			System.out.println("LAST SOL: " + lastSolution.getCSDescriptionString());
 			
 			//compute pairwise distances & find minimum pair
-			for (int i = 0; i < numClusters - 1; i++){
+			for (int i = 0; i < numClusters - 1; i++){  // was numClusters -1
 				c1 = lastSolution.getClusters().get(i);
 				for (int j = i+1; j < numClusters; j++){
 					c2 = lastSolution.getClusters().get(j);
- 
-					currDist = c1.computeDistance(c2, inputObjectsDistances);
 
+					currDist = c1.computeDistance(c2, inputObjectsDistances);
 					copyDist[i][j] = currDist;
 					copyDist[j][i] = currDist;
+
 					//highlight the single pair with the minimum distance
 					if (currDist < minDist){
 						minPos1 = i;
 						minPos2 = j;
 						minDist = currDist;
 					}
-					else{                                 //?????????????????????????????
-						if(minPos1 < 0){
-							minPos1 = 0;
-						}
-						if(minPos2 < 0){
-							minPos2 = 0;
-						}
-					}
+					//				System.out.println(minPos1 + "      !!!!!     " + minPos2);
 				}
 				copyDist[i][i] = 0;
-			}		
-			copyDist[numClusters-1][numClusters-1] = 0;
+			}
 			
-//			for (int i = 0; i < numClusters; i++){
-//				for (int j = 0; j < numClusters; j++){
-//					System.out.printf("%.2f\t", lastSolution.getClusterDistances()[i][j]);
-//				}
-//				System.out.println("");
-//			}
+			if(minDist==1.0)
+			{
+				break;
+			}
+			
+			copyDist[numClusters-1][numClusters-1] = 0.0;
+			if(minPos1==-1||minPos2==-1)	/** what happens here? */
+			{
+				for (int i = 0; i < numClusters; i++){
+					
+					for (int j = 0; j < numClusters; j++){
+	
+						System.out.print(copyDist[i][j] + "\t");
+					}
+					System.out.println("");
+				}
+			}
 			
 			//now, merge the winner clusters	-- reuse vrbl c1 and c2
-	
+
 			c1 = lastSolution.getClusters().get(minPos1);
 			c2 = lastSolution.getClusters().get(minPos2);
 			System.out.println("MERGING clusters: " + c1.getId() + " and " + c2.getId());
 			
 			//find the maxId, to make a new Id for the new Cluster
-			int newId = -1; int maxId = -1, currId = -1; Cluster currCl;
+			int newId = -1, maxId = -1, currId = -1;
+			Cluster currCl;
 			Iterator<Cluster> itClust = lastSolution.getClusters().iterator();
 			while(itClust.hasNext()){
 				currCl = itClust.next();
@@ -122,10 +126,11 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 			newSolution.getClusters().remove(c1);
 			newSolution.getClusters().remove(c2);
 			newSolution.getClusters().add(newCluster);
-			System.out.println("NEW SOL: " + newSolution.getCSDescriptionString());
+//			System.out.println("NEW SOL: " + newSolution.getCSDescriptionString());
 			solutions.add(newSolution);
 			numClusters = newSolution.getClusters().size();
-			lastSolution = newSolution;
+//			lastSolution = newSolution;   // TODO newSolution.copy();
+			lastSolution = ClusterSet.copy(newSolution);
 			lastSolution.createDistances(numClusters);
 			minDist = 2.0; minPos1 = -1; minPos2 = -1;
 			System.out.println(numClusters);

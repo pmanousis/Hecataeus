@@ -12,6 +12,11 @@ public class Cluster {
 	}
 	
 	
+	public Cluster(Cluster c){
+		this.id = c.id;
+		this.extension = c.extension;
+	}
+	
 	public int getId(){ return id;} 
 	public ArrayList<ClusterableObject> getExtension(){return extension;}
 	
@@ -55,13 +60,17 @@ public class Cluster {
 		int posI = -1, posJ = -1;
 		int thisSize = extension.size();
 		int cSize = c.extension.size();
-		double currDist = -1, totalDist = 0;
+		double currDist = -1, totalDist = 0.0;
 		
 		for (int i = 0; i < thisSize; i++){
 			posI = extension.get(i).getId();
 			for (int j = 0; j < cSize; j++){
 				posJ = c.extension.get(j).getId();
 				currDist = inputObjectsDistances[posI][posJ];
+				if(currDist == Double.NaN){
+					System.out.println("Crashes at " + posI + " , " + posJ);
+					System.exit(-120);
+				}
 				totalDist += currDist;
 				//c2 = lastSolution.getClusters().get(j);
 				//currDist = c1.computeDistance(c2);
@@ -72,7 +81,10 @@ public class Cluster {
 				//	minPos1 = i; minPos2 = j;
 				}
 			}
-		totalDist = totalDist / (thisSize * cSize);
+		totalDist = totalDist / (double)(thisSize * cSize);	
+		
+		//	System.out.println(" totalDist  " + totalDist + "thisSizr " + thisSize + " cSize " + cSize);
+		
 		
 		return totalDist;
 	}

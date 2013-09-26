@@ -7,6 +7,8 @@ package edu.ntua.dblab.hecataeus.graph.evolution;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+
 /**
  * @author  George Papastefanatos
  */
@@ -247,5 +249,6 @@ static int counter;
 	public void setLine(int line) {								/*added by sgerag*/	
 		this._line=line;
 	}
+
 	
 }
