@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 import clusters.GraphFacades.ClusterableObject;
 import clusters.GraphFacades.ClusterableQuery;
 import clusters.GraphFacades.ClusterableTable;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 public class Parser extends PreparatoryEngine {
 
@@ -216,7 +217,7 @@ public class Parser extends PreparatoryEngine {
 		for (String s: tableNames){
 //			HACTable t = new HACTable(s);
 //			System.out.println(s);
-			ClusterableTable ct = new ClusterableTable(graph.findVertexByName(s.trim()));
+			ClusterableTable ct = new ClusterableTable(graph.findVertexByName(s.trim(),NodeType.NODE_TYPE_RELATION));
 //			System.out.println(graph.findVertexByName(s.trim()));
 			ct.setId(idCounter);
 			inputTables.add(ct);
@@ -224,7 +225,7 @@ public class Parser extends PreparatoryEngine {
 		}
 		for (String s: queryNames){
 //			System.out.println(s);
-			ClusterableQuery ct = new ClusterableQuery(graph.findVertexByName(s.trim()));
+			ClusterableQuery ct = new ClusterableQuery(graph.findVertexByName(s.trim(),NodeType.NODE_TYPE_QUERY));
 //			System.out.println(graph.findVertexByName(s.trim()));
 			ct.setId(idCounter);
 			inputQueries.add(ct);
@@ -267,7 +268,7 @@ public class Parser extends PreparatoryEngine {
 		// The following is for reporting purposes
 		for (int i =0; i <numObjects; i++){
 			ClusterableObject co = inputObjects.get(i);
-			System.out.printf("Obj. %3s",co.getId() +"|");
+//			System.out.printf("Obj. %3s",co.getId() +"|");
 			for (int j = 0; j < numObjects; j++){
 				System.out.print(adjMatrix[i][j] + " ");
 			}

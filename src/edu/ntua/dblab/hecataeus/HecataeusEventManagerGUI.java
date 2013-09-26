@@ -63,8 +63,7 @@ public class HecataeusEventManagerGUI extends JPanel
 		pickNodeBtn.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
-            {
+			public void actionPerformed(ActionEvent e){
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = viewer.getActiveViewer();
 				// obtain user input from JOptionPane input dialog
 				String nodeName = JOptionPane.showInputDialog( "The name of node to find: ");

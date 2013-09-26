@@ -481,11 +481,13 @@ public class HecataeusPolicyManagerGUI extends JPanel
 		this.eventType.clear();
 		this.eventTypeCb.removeAllItems();
 		ArrayList<edu.ntua.dblab.hecataeus.graph.evolution.EventType>temp;
+		this.epilegmenosKombos = PopUpClickListener.clickedVertex;
 		if(this.epilegmenosKombos==null)
 		{
+			System.out.println("o epilelgmenos kombos einai null");
 			return;	
 		}
-		
+		System.out.println("o epilelgmenos kombos einai " + this.epilegmenosKombos);
 		VisualNode pateras=null;			
 		for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 		{
@@ -499,7 +501,7 @@ public class HecataeusPolicyManagerGUI extends JPanel
 		}
 		
 		temp=edu.ntua.dblab.hecataeus.graph.evolution.EventType.values(this.epilegmenosKombos.getType());
-		
+
 		if(pateras != null){
 			for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 			{

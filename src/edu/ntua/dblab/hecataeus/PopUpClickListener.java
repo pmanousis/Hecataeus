@@ -61,7 +61,7 @@ public class PopUpClickListener extends MouseAdapter{
 	protected HecataeusPopupGraphMousePlugin hpgmp;
 
 	protected HecataeusViewer viewer;
-	protected VisualNode clickedVertex ;
+	public static VisualNode clickedVertex ;
 	protected VisualEdge clickedEdge ;
 	protected Set<VisualNode> pickedNodes;
 	protected PickedState<VisualNode> pickedNodeState;
@@ -140,8 +140,9 @@ public class PopUpClickListener extends MouseAdapter{
 
 				//if only 1 vertex is picked
 				if (pickedNodes.size() == 1) {
+					viewer.epilegmenosKombos = clickedVertex;
 					menu.popZoom.addActionListener(zoomToNewModuleTab());
-					menu.popSelect.add(getMenuSelectNode());
+					menu.popSelect.add(getMenuSelectNode(clickedVertex));
 					menu.popSelect.add(getMenuDeleteNode());
 					menu.popSelect.add(getMenuEditNode());
 					menu.popSelect.add(getMenuMetrics());
@@ -416,7 +417,7 @@ public class PopUpClickListener extends MouseAdapter{
 	 * @author eva
 	 */
 	
-	protected AbstractAction getMenuSelectNode(){
+	protected AbstractAction getMenuSelectNode(VisualNode v){
 		return new AbstractAction("Select Node") {
 			public void actionPerformed(ActionEvent e) {
 				/**

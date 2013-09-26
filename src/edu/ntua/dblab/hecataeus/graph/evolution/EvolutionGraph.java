@@ -149,6 +149,18 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		nodeKeys.put(node,key);
 	}
 
+	/**
+	 *  get node by its name and type, for more than one occurrences, the first is returned
+	 **/
+	public V findVertexByName(String name, NodeType nt) {
+		for (V u: this.getVertices()) {
+			if (u.getName().toUpperCase().equals(name.toUpperCase())&& u.getType()==nt) {
+				return u;
+			}
+		}
+		
+		return null;
+	}
 	
 	/**
 	 *  get node by its name, for more than one occurrences, the first is returned

@@ -35,10 +35,6 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	protected ClusterE clusterType;
 	protected VisualGraph graph;
 	
-	private double radius;
-	private double relationRadius;
-	private double viewRadius;
-	private double queryRadius;
 	
 	private List<VisualNode> queries = new ArrayList<VisualNode>();
 	private List<VisualNode> relations = new ArrayList<VisualNode>();
@@ -47,12 +43,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	private List<VisualNode> nodes;
 	
 	private ArrayList<ArrayList<VisualNode>> vertices;
-	
-	private List<VisualNode> cRelations = new ArrayList<VisualNode>();
-	private List<VisualNode> Relations = new ArrayList<VisualNode>();
-	
-	
-	
+
 	private int[][] dist;
 	
 	Map<VisualNode, CircleVertexData> circleVertexDataMap =
@@ -74,6 +65,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 				queries.add(v);
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				System.out.println("  node       "+ v.getName() +"should be RELATION   " + v.getType()) ;
 				relations.add(v);
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
@@ -124,15 +116,14 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
 			for(VisualEdge e : edges){
 				if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
-					if(!wtf.contains(v)){
+					if(wtf.contains(v)==false){
 						wtf.add(v);
 					}
 				}
 			}
 			
 		}
-		System.out.println(wtf);
-		
+		//Create distance matrix
 		dist = new int[wtf.size()][queries.size()];
 		int pos = 0;
 		int j = 0;
@@ -153,15 +144,12 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			}
 			j++;
 		}
-		
 		for(int i = 0; i < wtf.size(); i++){
 			for(int k = 0; k < queries.size(); k++){
 				if(dist[i][k] != 1){
 					dist[i][k] = 0;
 				}
-//				System.out.print(dist[i][k]);
 			}
-//			System.out.println();
 		}
 		String tableNames = StringUtils.strip(wtf.toString(), "[");
 		tableNames = StringUtils.strip(tableNames, "]");
@@ -223,7 +211,6 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		HAggloEngine engine = new HAggloEngine(this.graph); 			   
 		engine.executeParser();
 		engine.buildFirstSolution();
-		//cs = new ClusterSet(engine.execute(5).getId());
 		cs = engine.execute(1);
 
 		
@@ -241,8 +228,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		Dimension d = getSize();
 		height = d.getHeight();
 		width = d.getWidth();
-		relationRadius = 0.45 * (height < width ? height/3 : width/3);
-		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
+//		relationRadius = 0.45 * (height < width ? height/3 : width/3);
+//		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
 		myRad = 0.45 * (height < width ? height/6 : width/6);
 
 		
@@ -264,20 +251,24 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			coord1.setLocation(cx, cy);
 			data = getCircleData(nodes.get(0));
 			data.setAngle(angle);
-//			System.out.println("  node   " + lista.get(0).getName() + "    cx  " + cx + "   cy   " + cy) ;
+			System.out.println("  node   " + nodes.get(0).getType()) ;
 			int b = 0;
 			for(VisualNode v : nodes){
 				if(b != 0){
 					double smallRad = 0.45 * nodes.size()/2;
 					Point2D coord = transform(v);
 					double angleA = (2 * Math.PI ) / nodes.size();
-					coord.setLocation(Math.cos(angleA*b)*smallRad+cx,Math.sin(angleA*b)*smallRad+cy);
-//					System.out.println("  node   " + v.getName() + "    cx  " + Math.cos(angleA*b)*smallRad+cx + "   cy   " + Math.sin(angleA*b)*smallRad+cy) ;
+					if(v.getType() == NodeType.NODE_TYPE_RELATION){
+						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+					}
+					else{
+						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+					}
+					System.out.println("  node   " + v.getType()) ;
 					
 					data = getCircleData(v);
 					data.setAngle(angleA);
 				}
-				
 				b++;
 			}
 			a++;

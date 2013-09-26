@@ -13,34 +13,28 @@ SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
 SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
 SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
 SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
-/*SELECT tid FROM  taxonomy_term_antonym  WHERE tid = 0 */
-SELECT t.tid FROM  taxonomy_term_data  t INNER JOIN  taxonomy_term_hierarchy  th ON th.tid = t.tid WHERE t.vid = 0 AND th.parent = 0;
+
+SELECT t.tid FROM  taxonomy_term_data  t ,  taxonomy_term_hierarchy  th WHERE th.tid = t.tid AND t.vid = 0 AND th.parent = 0;
 SELECT name, machine_name, vid FROM  taxonomy_vocabulary ;
 SELECT machine_name FROM  taxonomy_vocabulary ;
 SELECT v.* FROM  taxonomy_vocabulary  v ORDER BY v.weight, v.name;
 SELECT vid FROM  taxonomy_vocabulary ;
-/*SELECT v.*, n.type FROM  taxonomy_vocabulary  v LEFT JOIN  taxonomy_vocabulary_node_type  n ON v.vid = n.vid ORDER BY v.weight, v.name */
-/*SELECT COUNT(*) FROM  taxonomy_term_data  td INNER JOIN  taxonomy_term_node  tn ON td.tid = tn.tid INNER JOIN  node  n ON tn.nid = n.nid LEFT JOIN  node  n2 ON tn.vid = n2.vid */
-/*SELECT v.vid, v.machine_name, n.type FROM  taxonomy_vocabulary  v INNER JOIN  taxonomy_vocabulary_node_type  n ON v.vid = n.vid */
-/*SELECT vocab_id, tid, nid, vid, type, created, sticky, is_current FROM  taxonomy_update_7005  ORDER BY n*/
+
 SELECT bundle FROM  field_config_instance  WHERE field_name = 0;
 SELECT 1 FROM  taxonomy_term_data  WHERE tid = 0 AND vid = 0 ;
---SELECT f.tid FROM  forum  f INNER JOIN  node  n ON f.vid = n.vid WHERE n.nid = 0 ORDER BY f.vid DESC;
---SELECT tid FROM  forum  WHERE nid=0 ;
+
 SELECT nid, timestamp FROM  history  WHERE uid = 0 ;
---SELECT COUNT(cid) FROM  comment  c INNER JOIN  forum_index  i ON c.nid = i.nid WHERE c.nid = 0 AND c.status = 0 ;
-SELECT cid, name, created, uid FROM  comment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
-SELECT uid, created FROM  node  WHERE nid = 0 ;
-SELECT COUNT(nid) FROM  node ;
---SELECT mlid FROM  menu_links  WHERE link_path = 'forum' AND menu_name = 'navigation' AND module = 'system' ORDER BY mlid ASC;
+
+SELECT cid, name, created, uid FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
+SELECT uid, created FROM  mynode  WHERE nid = 0 ;
+SELECT COUNT(nid) FROM  mynode ;
+
 SELECT * FROM  taxonomy_term_data  t WHERE t.vid = 0 AND t.name = 0 AND t.description = 0 ;
 SELECT t.parent FROM  taxonomy_term_hierarchy  t WHERE t.tid = 0 ;
---SELECT tid FROM  forum  WHERE nid = 0 AND vid = 0 ;
+
 SELECT name FROM  image_styles ;
 SELECT * FROM  menu_links  WHERE menu_name = 0 AND module = 0 AND link_path = 0 ;
---SELECT assoc_handle FROM  openid_association  WHERE idp_endpoint_uri = 0 ;
---SELECT * FROM  openid_association  WHERE assoc_handle = 0 _handle
---SELECT COUNT(*) FROM  openid_nonce  WHERE nonce = 0 AND idp_endpoint_uri = 0 _endpoint_uri;
+
 SELECT * FROM  authmap  WHERE module='openid' AND uid=0 ;
 SELECT authname FROM  authmap  WHERE authname = 0 ;
 SELECT authname FROM  authmap  WHERE uid = 0 AND aid = 0 AND module = 'openid';
@@ -52,93 +46,71 @@ SELECT * FROM  filter  WHERE format = 0 ;
 SELECT * FROM  cache_filter ;
 SELECT * FROM  filter  WHERE format = 0 ORDER BY weight ASC;
 SELECT MIN(weight) FROM  filter_format ;
-SELECT bid FROM  block_custom  WHERE info = 0 ;
+SELECT bid FROM  mybloc_custom  WHERE info = 0 ;
 SELECT format FROM  filter_format ;
 SELECT * FROM  filter_format ;
 SELECT format FROM  filter_format  WHERE name = 0 ;
 SELECT format FROM  filter_format ;
 SELECT data, created, expire, serialized FROM  cache_update  WHERE cid = 0 ;
---SELECT DISTINCT(bid) FROM  book ;
---SELECT * FROM  book  WHERE mlid = 0 ;
---SELECT mlid FROM  book  WHERE nid = 0 ;
---SELECT bid FROM  book  WHERE nid = 0 ;
---SELECT * FROM  book  b INNER JOIN  menu_links  ml ON b.mlid = ml.mlid WHERE b.nid IN (0 );
---SELECT b.nid FROM  menu_links  ml INNER JOIN  book  b on b.mlid = ml.mlid WHERE ml.plid = 0 ;
---SELECT * FROM  menu_links  ml INNER JOIN  book  b ON b.mlid = ml.mlid LEFT JOIN  menu_router  m ON m.path = ml.router_path WHERE ml.mlid = 0 ;
-SELECT * FROM  block  WHERE theme = 0 AND module = 0 AND delta = 0 ;
-SELECT COUNT(*) FROM  node  WHERE tnid = 0 ;
-SELECT nid FROM  node  WHERE tnid = 0 ORDER BY translate ASC, nid ASC;
-SELECT n.nid, n.title, n.type, n.changed, n.uid, u.name, l.comment_count FROM  node  n INNER JOIN  node_comment_statistics  l ON n.nid = l.nid INNER JOIN  users  u ON n.uid = u.uid WHERE n.nid IN (0 );
-SELECT MAX(nid) FROM  node ;
-SELECT MAX(nid) FROM  node ;
-SELECT nid, uid, status FROM  node  WHERE nid <= 0 ORDER BY nid DESC;
-SELECT nid, status, uid, changed FROM  node  WHERE nid = 0 ;
-SELECT changed FROM  node  WHERE nid = 0 ;
-SELECT cid, changed FROM  comment  WHERE nid = 0 AND status = 0 ORDER BY changed DESC;
-SELECT nid, status, uid, changed FROM  node  WHERE nid = 0 ;
-SELECT COUNT(*) FROM  comment  WHERE nid = 0 AND uid = 0 AND status = 0 ;
---SELECT nid, changed FROM  tracker_node  WHERE nid = 0 ;
 
+SELECT * FROM  mybloc  WHERE theme = 0 AND module = 0 AND delta = 0 ;
+SELECT COUNT(*) FROM  mynode  WHERE tnid = 0 ;
+SELECT nid FROM  mynode  WHERE tnid = 0 ORDER BY translate ASC, nid ASC;
+SELECT n.nid, n.title, n.type, n.changed, n.uid, u.name, l.mycomment_count FROM  mynode  n ,  mynode_mycomment_statistics  l ,  users  u WHERE n.nid = l.nid  AND n.uid = u.uid AND n.nid IN (0 );
+SELECT MAX(nid) FROM  mynode ;
+SELECT MAX(nid) FROM  mynode ;
+SELECT nid, uid, status FROM  mynode  WHERE nid <= 0 ORDER BY nid DESC;
+SELECT nid, status, uid, changed FROM  mynode  WHERE nid = 0 ;
+SELECT changed FROM  mynode  WHERE nid = 0 ;
+SELECT cid, changed FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY changed DESC;
+SELECT nid, status, uid, changed FROM  mynode  WHERE nid = 0 ;
+SELECT COUNT(*) FROM  mycomment  WHERE nid = 0 AND uid = 0 AND status = 0 ;
 
 SELECT COUNT(*) FROM  shortcut_set_users  WHERE set_name = 0;
 SELECT COUNT(*) FROM  shortcut_set ;
 SELECT 1 FROM  shortcut_set  WHERE title = 0;
-SELECT created FROM  node  WHERE nid = 0;
---SELECT p.nid FROM  poll  p INNER JOIN  node  n ON p.nid = n.nid WHERE (n.created + p.runtime) < 0  AND p.active = 0 AND p.runtime <> 0;
---SELECT runtime, active FROM  poll  WHERE nid = 0;
---SELECT chid FROM  poll_vote  WHERE nid = 0 AND uid = 0;
---SELECT 1 FROM  poll_vote  WHERE nid = 0 AND hostname = 0 AND uid = 0;
---SELECT chid FROM  poll_choices  c WHERE  poll_votes .chorder = c.chorder AND  poll_votes .nid = c.nid;
---SELECT cid, foo FROM  mytable  WHERE cid IN (0 );
-SELECT cid FROM  comment ;
+SELECT created FROM  mynode  WHERE nid = 0;
+
+SELECT cid FROM  mycomment ;
 SELECT 1 FROM  watchdog  WHERE message = 0 AND variables = 0;
-SELECT MAX(status) FROM  comment ; --SELECT MAX(status) FROM  comments ;
-SELECT 1 FROM  comment ;
+SELECT MAX(status) FROM  mycomment ; -- SELECT MAX(status) FROM  mycomments ;
+SELECT 1 FROM  mycomment ;
 SELECT format FROM  filter_format ;
-SELECT subject FROM  comment  WHERE cid = 0;
-SELECT COUNT(cid) FROM  comment  WHERE status = 0;
-SELECT COUNT(*) FROM  comment  WHERE nid = 0 AND status = 0 ;
-SELECT comment_count FROM  node_comment_statistics  WHERE nid = 0;
-SELECT nid, cid, last_comment_timestamp, last_comment_name, last_comment_uid, comment_count FROM  node_comment_statistics  WHERE nid IN (0 );
-SELECT cid FROM  comment  WHERE nid = 0;
-SELECT rid, permission FROM  role_permission  WHERE permission IN ('access comments');
-SELECT MAX(comment_count) FROM  node_comment_statistics ;
-SELECT comment_count FROM  node_comment_statistics  WHERE nid = 0;
-SELECT c.cid FROM  comment  c WHERE uid = 0;
-SELECT MAX(thread) FROM  comment  WHERE nid = 0;
-SELECT MAX(thread) FROM  comment  WHERE thread = ' ' AND nid = 0;
-SELECT cid FROM  comment  WHERE pid = 0;
-SELECT COUNT(cid) FROM  comment  WHERE nid = 0 AND created > 0 AND status = 0;
-SELECT COUNT(cid) FROM  comment  WHERE nid = 0 AND status = 0;
-SELECT cid, name, changed, uid FROM  comment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
-SELECT uid, created FROM  node  WHERE nid = 0;
-SELECT subject FROM  comment  WHERE cid = 0;
-SELECT subject FROM  comment  WHERE cid = 0;
-SELECT c.*, u.uid, u.name AS registered_name, u.signature, u.signature_format, u.picture, u.data FROM  comment  c INNER JOIN  users  u ON c.uid = u.uid WHERE c.cid = 0 AND c.status = 0;
---SELECT category, recipients, reply, selected FROM  contact  WHERE cid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE status = 0;
+SELECT COUNT(*) FROM  mycomment  WHERE nid = 0 AND status = 0 ;
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+SELECT nid, cid, last_mycomment_timestamp, last_mycomment_name, last_mycomment_uid, mycomment_count FROM  mynode_mycomment_statistics  WHERE nid IN (0 );
+SELECT cid FROM  mycomment  WHERE nid = 0;
+SELECT rid, permission FROM  role_permission  WHERE permission IN ('access mycomments');
+SELECT MAX(mycomment_count) FROM  mynode_mycomment_statistics ;
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+SELECT c.cid FROM  mycomment  c WHERE uid = 0;
+SELECT MAX(thread) FROM  mycomment  WHERE nid = 0;
+SELECT MAX(thread) FROM  mycomment  WHERE thread = ' ' AND nid = 0;
+SELECT cid FROM  mycomment  WHERE pid = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE nid = 0 AND created > 0 AND status = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE nid = 0 AND status = 0;
+SELECT cid, name, changed, uid FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
+SELECT uid, created FROM  mynode  WHERE nid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT c.*, u.uid, u.name AS registered_name, u.signature, u.signature_format, u.picture, u.data FROM  mycomment  c ,  users  u WHERE c.uid = u.uid AND c.cid = 0 AND c.status = 0;
+
 SELECT COUNT(*) FROM  flood ;
---SELECT category FROM  contact  WHERE cid = 0;
---SELECT cid FROM  contact ;
+
 SELECT COUNT(*) FROM  flood ;
---SELECT cid FROM  contact  WHERE selected = 1
---SELECT etid, type FROM  field_config_entity_type ;
+
 SELECT data FROM  field_config  WHERE id = 0;
 SELECT data FROM  field_config  WHERE id = 0;
-SELECT fc.type, fci.field_name, fci.entity_type, fci.bundle FROM  field_config_instance  fci INNER JOIN  field_config  fc ON fc.id = fci.field_id WHERE fc.active = 1 AND fc.storage_active = 1 AND fc.deleted = 0 AND fci.deleted = 0;
+SELECT fc.type, fci.field_name, fci.entity_type, fci.bundle FROM  field_config_instance  fci ,  field_config  fc WHERE fc.id = fci.field_id AND fc.active = 1 AND fc.storage_active = 1 AND fc.deleted = 0 AND fci.deleted = 0;
 SELECT data FROM  field_config  WHERE field_name = 0 ;
 SELECT data FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
 SELECT * FROM  field_config  WHERE field_name = 0 ;
 SELECT * FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
---SELECT * FROM  accesslog ;
---SELECT * FROM  accesslog ;
---SELECT * FROM  accesslog ;
---SELECT * FROM  accesslog ;
---SELECT * FROM  accesslog ;
---SELECT a.*, u.name FROM  accesslog  a LEFT JOIN  users  u ON a.uid = u.uid WHERE aid = 0;
---SELECT totalcount, daycount, timestamp FROM  node_counter  WHERE nid = 0;
---SELECT MAX(totalcount) FROM  node_counter ;
+
 SELECT DISTINCT(type) FROM  watchdog  ORDER BY type;
-SELECT w.*, u.name, u.uid FROM  watchdog  w INNER JOIN  users  u ON w.uid = u.uid WHERE w.wid = 0;
+SELECT w.*, u.name, u.uid FROM  watchdog  w ,  users  u WHERE w.uid = u.uid AND w.wid = 0;
 SELECT value FROM  variable  WHERE name = 0 ;
 SELECT COUNT(wid) FROM  watchdog ;
 SELECT COUNT(wid) FROM  watchdog ;
@@ -152,157 +124,51 @@ SELECT pid FROM  url_alias  WHERE alias = 0;
 SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
 SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
 SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
---SELECT t.changed FROM  tracker_node  t WHERE t.nid = (0 );
+
 SELECT MAX(fid) FROM  file_managed ;
 SELECT COUNT(uid) FROM  users ;
 SELECT uid, pass FROM  users  WHERE uid > 0 ORDER BY uid;
 SELECT COUNT(uid) FROM  users ;
 SELECT uid FROM  users  ORDER BY uid;
-SELECT timezone FROM  users  WHERE uid = 0; --SELECT timezone_name FROM  users  WHERE uid = 0;
---SELECT t.name FROM  users  u LEFT JOIN  event_timezones  t ON u.timezone_id = t.timezone WHERE u.uid = 0;
+SELECT timezone FROM  users  WHERE uid = 0; -- SELECT timezone_name FROM  users  WHERE uid = 0;
+
 SELECT format FROM  filter_format ;
 SELECT COUNT(*) FROM  users  WHERE picture <> '0';
 SELECT uid, picture FROM  users  WHERE picture <> '0' AND uid > 0 ORDER BY uid;
 SELECT COUNT(*) FROM  users  u WHERE u.picture <> 0;
-SELECT f.*, u.uid as user_uid FROM  users  u INNER JOIN  file_managed  f ON u.picture = f.fid WHERE u.picture <> 0 AND u.uid > 0 ORDER BY u.uid;
+SELECT f.*, u.uid as user_uid FROM  users  u ,  file_managed  f WHERE u.picture = f.fid AND u.picture <> 0 AND u.uid > 0 ORDER BY u.uid;
 SELECT uid FROM  authmap  WHERE authname = 0;
-SELECT r.rid, r.name, ur.uid FROM  role  r INNER JOIN  users_roles  ur ON ur.rid = r.rid WHERE ur.uid IN (0 );
+SELECT r.rid, r.name, ur.uid FROM  role  r ,  users_roles  ur WHERE ur.rid = r.rid AND ur.uid IN (0 );
 SELECT MAX(uid) FROM  users ;
 SELECT rid, permission FROM  role_permission  WHERE rid IN (0 )
 SELECT uid, name FROM  users  WHERE status <> 0 AND access <> 0 ORDER BY created DESC;
 SELECT COUNT( s.uid) FROM  sessions  s WHERE s.timestamp >= 0 AND s.uid > 0;
-SELECT u.uid, u.name, MAX(s.timestamp) AS max_timestamp FROM  users  u INNER JOIN  sessions  s ON u.uid = s.uid WHERE s.timestamp >= 0 AND s.uid > 0 GROUP BY u.uid, u.name ORDER BY max_timestamp DESC;
+SELECT u.uid, u.name, MAX(s.timestamp) AS max_timestamp FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.timestamp >= 0 AND s.uid > 0 GROUP BY u.uid, u.name ORDER BY max_timestamp DESC;
 SELECT module, authname FROM  authmap  WHERE authname = 0;
 SELECT * FROM  users  WHERE name = 0 AND status = 1;
 SELECT name FROM  role  WHERE rid = 0;
 SELECT uid, name, picture, data FROM  users  WHERE uid IN (0 );
---SELECT uid, foo FROM  my_table  WHERE uid IN (0 );
+
 SELECT COUNT(*) FROM  sessions ;
 SELECT COUNT(*) FROM  sessions  WHERE uid = 0;
 SELECT COUNT(*) FROM  sessions  WHERE uid =  0 AND sid = 0 AND timestamp = 0;
 SELECT MAX(uid) FROM  users ;
 SELECT rid FROM  users_roles  WHERE uid = 0;
---SELECT aid FROM  trigger_assignments  WHERE hook = 0 AND aid = 0;
-/*SELECT MAX(weight) FROM  trigger_assignments  WHERE hook = 0;
-SELECT aid FROM  trigger_assignments  WHERE hook = 0 AND aid = 0;
-SELECT aid FROM  actions  WHERE callback = 0 AND label = 0;
-SELECT COUNT(*) FROM  trigger_assignments  WHERE aid IN (0 )
-SELECT hook, op, aid FROM  trigger_assignments  WHERE op <> '0';
-SELECT hook, aid FROM  trigger_assignments ;
-SELECT ta.aid, a.type, a.label FROM  trigger_assignments  ta LEFT JOIN  actions  a ON ta.aid = a.aid WHERE ta.hook = 0 ORDER BY ta.weight; */
---SELECT s.source, s.context, t.translation, t.language FROM  locales_source  s LEFT JOIN  locales_target  t ON s.lid = t.lid AND t.language = WHERE s.textgroup = 'default' AND s.version = 0 AND LENGTH(s.source) < 0;
---SELECT s.lid, t.translation, s.version FROM  locales_source  s LEFT JOIN  locales_target  t ON s.lid = t.lid AND t.language = WHERE s.source = 0 AND s.context = 0 AND s.textgroup = 'default';
-/*SELECT plurals FROM  languages  WHERE language = 'fr';
-SELECT plurals FROM  languages  WHERE language = 'fr';
-SELECT plurals FROM  languages  WHERE language = 'fr';
-SELECT plurals FROM  languages  WHERE language = 'fr';
-SELECT plurals FROM  languages  WHERE language = 'fr';*/
-==SELECT min(lid) AS lid FROM  locales_source  WHERE location = 0 AND textgroup = 0;
---SELECT javascript FROM  languages  WHERE language = 0;
---SELECT * FROM  languages  WHERE language = 0;
---SELECT COUNT(*) FROM  languages  WHERE language = 0;
---SELECT language FROM  languages  WHERE domain = 0 AND language <> 0;
---SELECT language FROM  languages  WHERE prefix = 0 AND language <> 0;
---SELECT COUNT(*) AS strings, textgroup FROM  locales_source  GROUP BY textgroup
---SELECT COUNT(*) AS translation, t.language, s.textgroup FROM  locales_source  s INNER JOIN  locales_target  t ON s.lid = t.lid GROUP BY textgroup, language;
---SELECT source, context, textgroup, location FROM  locales_source  WHERE lid = 0;
---SELECT translation, language FROM  locales_target  WHERE lid = 0 AND language <> 0;
---SELECT translation FROM  locales_target  WHERE lid = 0 AND language = 0;
---SELECT lid, source FROM  locales_source  WHERE lid = 0;
---SELECT MIN(lid) AS lid, source, context FROM  locales_source  WHERE textgroup = 'default' GROUP BY source, context HAVING COUNT(*) > 1
---SELECT t.lid, t.language, t.plural, t.translation FROM  locales_source  s JOIN  locales_target  t ON s.lid = t.lid WHERE s.source = 0 AND s.context = 0 AND s.textgroup = 'default' ORDER BY lid;
---SELECT language, javascript FROM  languages ;
-/*SELECT fid, type, title, page, visibility FROM  profile_field  WHERE name = 0;
-SELECT name, title, type, weight, page FROM  profile_field  WHERE fid <> 0 AND visibility = 0 ORDER BY weight;
-SELECT name, title, type, weight, page, visibility FROM  profile_field  WHERE visibility = 0 ORDER BY category, weight;
-SELECT 1 FROM  profile_field  WHERE fid = 0 AND autocomplete = 1;
-SELECT name, title, weight, visibility FROM  profile_field  WHERE visibility IN (0 ) ORDER BY weight;
-SELECT * FROM  profile_field  WHERE visibility IN (0 ) ORDER BY weight;
-SELECT f.name, f.type, v.uid, v.value FROM  profile_field  f INNER JOIN  profile_value  v ON f.fid = v.fid WHERE uid IN (0 );
-SELECT * FROM  profile_field  WHERE visibility <> 0 ORDER BY category, weight;
-SELECT * FROM  profile_field  WHERE visibility <> 0 AND visibility <> 0 ORDER BY category, weight;
-SELECT category FROM  profile_field ;
-SELECT 1 FROM  profile_field  WHERE category = 0 AND visibility <> 0;
-SELECT title, name, type, category, fid, weight FROM  profile_field  ORDER BY category, weight;
-SELECT * FROM  profile_field  WHERE fid = 0;
-SELECT title FROM  profile_field  WHERE fid = 0;
-SELECT fid FROM  profile_field  WHERE title = 0;*/
+
+
+
 SELECT name, filename, info FROM  system  WHERE type = 'module' AND status = 1 ORDER BY weight ASC, filename ASC;
---SELECT c.title, c.cid FROM  aggregator_category_item  ci LEFT JOIN  aggregator_category  c ON ci.cid = c.cid WHERE ci.iid = 0 ORDER BY c.title;
---SELECT c.cid, c.title, ci.iid FROM  aggregator_category  c LEFT JOIN  aggregator_category_item  ci ON c.cid = ci.cid AND ci.iid = 0;
---SELECT f.fid, f.title, f.description, f.image, MAX(i.timestamp) AS last FROM  aggregator_feed  f LEFT JOIN  aggregator_item  i ON f.fid = i.fid GROUP BY f.fid, f.title, f.description, f.image ORDER BY last DESC, f.title;
---SELECT i.title, i.timestamp, i.link FROM  aggregator_item  i WHERE i.fid = 0 ORDER BY i.timestamp DESC;
---SELECT c.cid, c.title, c.description FROM  aggregator_category  c LEFT JOIN  aggregator_category_item  ci ON c.cid = ci.cid LEFT JOIN  aggregator_item  i ON ci.iid = i.iid GROUP BY c.cid, c.title, c.description;
---SELECT i.title, i.timestamp, i.link, f.title as feed_title, f.link as feed_link FROM  aggregator_category_item  ci LEFT JOIN  aggregator_item  i ON i.iid = ci.iid LEFT JOIN  aggregator_feed  f ON i.fid = f.fid WHERE ci.cid = 0 ORDER BY i.timestamp DESC;
---SELECT cid, title FROM  aggregator_category  WHERE cid = 0;
---SELECT i.*, f.title AS ftitle, f.link AS flink FROM  aggregator_category_item  c LEFT JOIN  aggregator_item  i ON c.iid = i.iid LEFT JOIN  aggregator_feed  f ON i.fid = f.fid WHERE cid = 0 ORDER BY timestamp DESC, i.iid DESC;
---SELECT i.*, f.title AS ftitle, f.link AS flink FROM  aggregator_item  i INNER JOIN  aggregator_feed  f ON i.fid = f.fid ORDER BY i.timestamp DESC, i.iid DESC;
---SELECT f.title, f.url FROM  aggregator_feed  f LEFT JOIN  aggregator_category_feed  c on f.fid = c.fid WHERE c.cid = 0 ORDER BY title;
---SELECT * FROM  aggregator_feed  ORDER BY title;
---SELECT iid, timestamp FROM  aggregator_item  WHERE fid = 0 AND guid = 0;
---SELECT iid, timestamp FROM  aggregator_item  WHERE fid = 0 AND link = 0;
---SELECT iid, timestamp FROM  aggregator_item  WHERE fid = 0 AND title = 0;
---SELECT iid FROM  aggregator_item  WHERE fid = 0;
---SELECT cid FROM  aggregator_category_feed  WHERE fid = 0;
---SELECT iid FROM  aggregator_item  WHERE fid = 0 AND timestamp < 0;
---SELECT f.fid, f.title, f.url, f.refresh, f.checked, f.link, f.description, f.hash, f.etag, f.modified, f.image, f.block, COUNT(i.iid) AS items FROM  aggregator_feed  f LEFT JOIN  aggregator_item  i ON f.fid = i.fid GROUP BY f.fid, f.title, f.url, f.refresh, f.checked, f.link, f.description, f.hash, f.etag, f.modified, f.image, f.block ORDER BY f.title
---SELECT c.cid, c.title, COUNT(ci.iid) as items FROM  aggregator_category  c LEFT JOIN  aggregator_category_item  ci ON c.cid = ci.cid GROUP BY c.cid, c.title ORDER BY title;
---SELECT c.cid, c.title, f.fid FROM  aggregator_category  c LEFT JOIN  aggregator_category_feed  f ON c.cid = f.cid AND f.fid = 0 ORDER BY title;
---SELECT title, url FROM  aggregator_feed  WHERE (title = OR url = 0 ) AND fid <> 0;
---SELECT title, url FROM  aggregator_feed  WHERE title = OR url = 0;
---SELECT cid, title FROM  aggregator_category  ORDER BY title;
---SELECT title, url FROM  aggregator_feed  WHERE title = OR url = 0;
---SELECT cid FROM  aggregator_category  WHERE title = 0 AND cid <> 0;
---SELECT cid FROM  aggregator_category  WHERE title = 0;
---SELECT 1 FROM  aggregator_category ;
---SELECT * FROM  aggregator_feed  WHERE queued = 0 AND checked + refresh < 0 AND refresh <> 0;
---SELECT cid, title FROM  aggregator_category  ORDER BY title;
---SELECT fid, title FROM  aggregator_feed  WHERE block <> 0 ORDER BY fid;
---SELECT block FROM  aggregator_category  WHERE cid = 0;
---SELECT fid, title, block FROM  aggregator_feed  WHERE block <> 0 AND fid = 0;
---SELECT * FROM  aggregator_item  WHERE fid = 0 ORDER BY timestamp DESC, iid DESC;
---SELECT cid, title, block FROM  aggregator_category  WHERE cid = 0;
---SELECT i.* FROM  aggregator_category_item  ci LEFT JOIN  aggregator_item  i ON ci.iid = i.iid WHERE ci.cid = 0 ORDER BY i.timestamp DESC, i.iid DESC;
---SELECT iid FROM  aggregator_item  WHERE fid = 0;
---SELECT * FROM  aggregator_feed  WHERE fid = 0;
---SELECT * FROM  aggregator_category  WHERE cid = 0;
---SELECT *  FROM  aggregator_feed  WHERE title = 0 AND url = 0;
-SELECT COUNT(*) FROM  node  n WHERE n.promote = 1 AND n.status = 1;
---SELECT iid FROM  aggregator_item  WHERE fid = 0;
---SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
---SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
---SELECT cid FROM  aggregator_category_feed  WHERE fid = 0;
---SELECT * FROM  aggregator_category ;
---SELECT COUNT(*) FROM  aggregator_feed  WHERE title = 0 AND url = 0;
---SELECT *  FROM  aggregator_feed  WHERE title = 0 AND url = 0;
---SELECT COUNT(*) FROM  aggregator_feed  WHERE title = 0 AND url = 0;
---SELECT * FROM  aggregator_feed  WHERE url = 0;
---SELECT timestamp FROM  aggregator_item  WHERE fid = 0;
---SELECT timestamp FROM  aggregator_item  WHERE fid = 0;
---SELECT * FROM  aggregator_category  WHERE title = 0;
+
+SELECT COUNT(*) FROM  mynode  n WHERE n.promote = 1 AND n.status = 1;
+
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
---SELECT COUNT(*) FROM  aggregator_feed ;
---SELECT COUNT(*) FROM  aggregator_feed ;
---SELECT COUNT(*) FROM  aggregator_feed ;
---SELECT COUNT(*) FROM  aggregator_feed ;
---SELECT COUNT(*) FROM  aggregator_feed ;
---SELECT f.title, f.url, f.refresh, cf.cid FROM  aggregator_feed  f LEFT JOIN  aggregator_category_feed  cf ON f.fid = cf.fid;
-/*SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
-SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
-SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
-SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
-SELECT COUNT(*) FROM  aggregator_item  WHERE fid = 0;
-SELECT guid FROM  aggregator_item  WHERE link = 0;*/
+
 SELECT 1 FROM  filter_format  WHERE name = 0;
---SELECT invalid_field FROM  invalid_table ;
---SELECT invalid_field FROM  invalid_table ;
---SELECT last_prefix FROM  simpletest_test_id  WHERE test_id = 0 ;
---SELECT test_class FROM  simpletest  WHERE test_id = 0  ORDER BY message_id DESC;
+
 SELECT name FROM  registry  WHERE type = 0 AND filename = 0;
 SELECT name, filename FROM  system ;
 SELECT name, filename FROM  system ;
---SELECT COUNT(test_id) FROM  simpletest_test_id  WHERE test_id = 0 ;
---SELECT COUNT(test_id) FROM  simpletest_test_id ;
+
 SELECT COUNT(*) FROM  role_permission  WHERE rid = 0;
 SELECT 1 FROM  system  WHERE type = 'module' AND name = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
@@ -313,25 +179,13 @@ SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
---SELECT * FROM  test  WHERE id = 0;
---SELECT * FROM  test  WHERE id = 0;
---SELECT * FROM  test  WHERE id = 0;
---SELECT * FROM  test_null  WHERE id = 0;
---SELECT * FROM  test_null  WHERE id = 0;
---SELECT * FROM  test_null  WHERE id = 0;
---SELECT * FROM  test_serialized  WHERE id = 0;
---SELECT * FROM  test_serialized  WHERE id = 0;
---SELECT * FROM  test_serialized  WHERE id = 0;
---SELECT COUNT(*) FROM  test_table2 ;
---SELECT MAX(test_serial) FROM  test_table ;
---SELECT MAX(test_serial) FROM  test_table ;
---SELECT COUNT(*) FROM  test_table ;
+
 SELECT menu_name FROM  menu_links  WHERE router_path = 'menu_name_test';
 SELECT menu_name FROM  menu_links  WHERE router_path = 'menu_name_test';
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
---SELECT * FROM  menu_router  WHERE path = 0;
+
 SELECT format, name FROM  filter_format ;
 SELECT * FROM  menu_links  WHERE link_title = 0;
 SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
@@ -339,130 +193,20 @@ SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
 SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
 SELECT aid FROM  actions  WHERE callback = 0;
 SELECT message FROM  watchdog  WHERE type = 'actions_loop_test' OR type = 'actions' ORDER BY wid;
---SELECT * FROM bananas_are_awesome;
---SELECT data FROM  module_test ;
+
 SELECT COUNT(rid) FROM  role_permission  WHERE permission = 0;
 SELECT name FROM  registry  WHERE name = 0;
 SELECT name FROM  registry  WHERE name = 0;
 SELECT hash FROM  registry_file  WHERE filename = 0;
 SELECT status FROM  system ;
-/*SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age > 0;
-SELECT name FROM  test  WHERE age > 0;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT age FROM  test  WHERE name = 0;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT * FROM  test_one_blob  WHERE id = 0;
-SELECT * FROM  test_two_blobs  WHERE id = 0;
-SELECT job FROM  test  WHERE id = 0;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT job FROM  test  WHERE id = 0;
-SELECT name FROM  test  WHERE id = 0;
-SELECT age FROM  test_null  WHERE name = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT name FROM  test  WHERE id = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT COUNT(*) FROM  test  WHERE job = 0;
-SELECT * FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT * FROM  test_one_blob  WHERE id = 0;
-SELECT * FROM  test_two_blobs  WHERE id = 0;
-SELECT COUNT(*) FROM  test_task ;
-SELECT * FROM  test_task  WHERE task = 'sleep';
-SELECT COUNT(*) FROM  test_task ;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT age FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT COUNT(*) FROM  test_people ;
-SELECT * FROM  test_people  WHERE job = 0;
-SELECT MAX(id) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test_task ;
-SELECT name FROM  test  WHERE name = 0;
-SELECT name FROM  test  WHERE age > 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0 ;
-SELECT name FROM  test  WHERE age > 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT name FROM  test  WHERE age > 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT name FROM  test  WHERE age > 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT name FROM  test  WHERE age > 0;
-SELECT age FROM  test  WHERE name = 0; */
+
 SELECT name FROM  system  ORDER BY name;
 SELECT name FROM  system  ORDER BY name;
 SELECT status FROM  system ;
 SELECT uid FROM  users ;
---SELECT CONCAT(0 1, CONCAT(name, CONCAT(0 2, CONCAT(age, 0 3)))) FROM  test  WHERE age = 0;
-/*SELECT COUNT(*) FROM  test ;
-SELECT COUNT(*) FROM  test ;
-SELECT age FROM  test  WHERE name = 0;
-SELECT name FROM  test  WHERE age = 0;
-SELECT name FROM  test  WHERE age IN (0 ) ORDER BY age
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT age FROM  test  WHERE name = 0;
-SELECT 1 FROM  test  WHERE name = 0;
-SELECT 1 FROM  test  WHERE name = 0;
-SELECT * FROM bananas_are_awesome */
-SELECT r.nid, r.vid FROM  node_revision  r , node  n WHERE n.status = 1 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
-SELECT r.nid, r.vid FROM  node_revision  r ,  node  n  WHERE n.status = 0 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
+
+SELECT r.nid, r.vid FROM  mynode_revision  r , mynode  n WHERE n.status = 1 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
+SELECT r.nid, r.vid FROM  mynode_revision  r ,  mynode  n  WHERE n.status = 0 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
 SELECT * FROM  users  WHERE uid = 0;
 SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
 SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
@@ -479,67 +223,66 @@ SELECT MAX(fid) AS fid FROM  file_managed ;
 SELECT MAX(fid) AS fid FROM  file_managed ;
 SELECT * FROM  file_managed  f WHERE f.fid = 0;
 SELECT * FROM  file_managed  f WHERE f.fid = 0;
-SELECT COUNT(*) FROM  node  WHERE status = 1
-SELECT COUNT(*) FROM  node  n ,  search_dataset  d WHERE d.type = 'node' AND d.sid = n.nid AND n.status = 1 AND d.sid IS NULL OR d.reindex <> 0;
-SELECT n.nid FROM  node  n ,  search_dataset  d WHERE d.type = 'node' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
+SELECT COUNT(*) FROM  mynode  WHERE status = 1
+SELECT COUNT(*) FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND n.status = 1 AND d.sid IS NULL OR d.reindex <> 0;
+SELECT n.nid FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
 SELECT SUM(score) FROM  search_index  WHERE word = 0;
 SELECT t.word AS realword, i.word FROM  search_total  t ,  search_index  i WHERE t.word = i.word AND i.word IS NULL;
-SELECT title, nid, vid FROM  node  WHERE nid = 0;
-SELECT nid, caption FROM  search_node_links  WHERE sid = 0 AND type = 0;
-SELECT caption FROM  search_node_links  WHERE nid = 0;
+SELECT title, nid, vid FROM  mynode  WHERE nid = 0;
+SELECT nid, caption FROM  search_mynode_links  WHERE sid = 0 AND type = 0;
+SELECT caption FROM  search_mynode_links  WHERE nid = 0;
 SELECT timestamp FROM  history  WHERE uid = 0 AND nid = 0;
-SELECT 1 FROM  node_type  WHERE type = 0;
-SELECT COUNT(*) FROM  node ;
-SELECT COUNT(*) FROM  node  n ,  search_dataset  d WHERE d.type = 'node' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0;
-SELECT vid FROM  node_revision  WHERE uid = 0;
-SELECT changed FROM  node  WHERE nid = 0;
-SELECT r.vid, r.title, r.log, r.uid, n.vid AS current_vid, r.timestamp, u.name FROM  node_revision  r, node  n, users u  WHERE n.vid = r.vid AND u.uid = r.uid AND r.nid = 0 ORDER BY r.vid DESC;
-SELECT nid FROM  node  WHERE uid = 0 AND status = 0;
-SELECT type FROM  block_node_type  WHERE module = 0 AND delta = 0;
-SELECT module, delta, type FROM  block_node_type ;
-SELECT n.nid FROM  node  n ,  search_dataset  d WHERE d.type = 'node' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
-SELECT nid FROM  node ;
-SELECT COUNT(nid) FROM  node ;
-SELECT nid FROM  node  WHERE nid > 0 ORDER BY nid ASC;
+SELECT 1 FROM  mynode_type  WHERE type = 0;
+SELECT COUNT(*) FROM  mynode ;
+SELECT COUNT(*) FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0;
+SELECT vid FROM  mynode_revision  WHERE uid = 0;
+SELECT changed FROM  mynode  WHERE nid = 0;
+SELECT r.vid, r.title, r.log, r.uid, n.vid AS current_vid, r.timestamp, u.name FROM  mynode_revision  r, mynode  n, users u  WHERE n.vid = r.vid AND u.uid = r.uid AND r.nid = 0 ORDER BY r.vid DESC;
+SELECT nid FROM  mynode  WHERE uid = 0 AND status = 0;
+SELECT type FROM  mybloc_mynode_type  WHERE module = 0 AND delta = 0;
+SELECT module, delta, type FROM  mybloc_mynode_type ;
+SELECT n.nid FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
+SELECT nid FROM  mynode ;
+SELECT COUNT(nid) FROM  mynode ;
+SELECT nid FROM  mynode  WHERE nid > 0 ORDER BY nid ASC;
 SELECT name FROM  users  WHERE uid = 0;
 SELECT COUNT(*) FROM  users ;
 SELECT name FROM  users  WHERE uid = 0;
 SELECT uid, name FROM  users  WHERE uid > 0 ORDER BY name;
 SELECT 1 FROM  users  WHERE name = 0;
-SELECT COUNT(*) FROM  node_access ;
---SELECT nid, foo FROM  mytable  WHERE nid IN(0 )
-SELECT comment_count FROM  node_comment_statistics  WHERE nid = 0;
--- subject, cid, format FROM  comment  WHERE nid = 0 AND status = 0; --SELECT subject, comment, format FROM  comment  WHERE nid = 0 AND status = 0;
---SELECT nid, foo FROM  mytable  WHERE nid IN (0 )
-SELECT COUNT(vid) FROM  node_revision  WHERE nid = 0 and vid = 0;
+SELECT COUNT(*) FROM  mynode_access ;
+
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+
+SELECT COUNT(vid) FROM  mynode_revision  WHERE nid = 0 and vid = 0;
 SELECT wid FROM  watchdog  WHERE message = 'Explicit rollback failed';
 SELECT wid FROM  watchdog  WHERE variables = 'Test exception for rollback.';
-SELECT realm, gid FROM  node_access  WHERE nid = 0;
-SELECT realm, gid FROM  node_access  WHERE nid = 0;
-SELECT realm, gid FROM  node_access  WHERE nid = 0;
-SELECT realm, gid FROM  node_access  WHERE nid = 0;
-SELECT realm, gid FROM  node_access  WHERE nid = 0;
-SELECT nid FROM  node  WHERE title = 0;
---SELECT private FROM  node_access_test  where nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT nid FROM  mynode  WHERE title = 0;
+
 SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
 SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
-SELECT MAX(nid) FROM  node ;
-SELECT 1 FROM  node_type  WHERE type = 0;
-SELECT 1 FROM  node_type  WHERE type = 0;
-SELECT disabled FROM  node_type  WHERE type = 0;
-SELECT disabled FROM  node_type  WHERE type = 0;
-SELECT disabled FROM  node_type  WHERE type = 0;
-SELECT disabled FROM  node_type  WHERE type = 0;
-SELECT bid FROM  block_custom  WHERE info = 0;
-SELECT 1 FROM  block_node_type  WHERE module = 'block' AND delta = 0;
-SELECT nid FROM  node  WHERE uid = 0 AND status = 0;
-SELECT title FROM  node  WHERE nid = 0;
-SELECT COUNT(vid) FROM  node_revision  WHERE nid = 0;
-SELECT * FROM  node_type ;
-SELECT  type FROM  node ;
+SELECT MAX(nid) FROM  mynode ;
+SELECT 1 FROM  mynode_type  WHERE type = 0;
+SELECT 1 FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT 1 FROM  mybloc_mynode_type  WHERE module = 'mybloc' AND delta = 0;
+SELECT nid FROM  mynode  WHERE uid = 0 AND status = 0;
+SELECT title FROM  mynode  WHERE nid = 0;
+SELECT COUNT(vid) FROM  mynode_revision  WHERE nid = 0;
+SELECT * FROM  mynode_type ;
+SELECT  type FROM  mynode ;
 SELECT format FROM  filter_format ;
-SELECT COUNT(*) FROM  node  WHERE type = 0;
---SELECT nid, private FROM  node_access_test  WHERE nid IN(0 );
+SELECT COUNT(*) FROM  mynode  WHERE type = 0;
+
 SELECT menu_name FROM  menu_links  WHERE menu_name = 0 ;
 SELECT * FROM  menu_links  WHERE link_title = 0;
 SELECT * FROM  menu_links  WHERE mlid = 0;
@@ -547,7 +290,7 @@ SELECT mlid FROM  menu_links  WHERE module = 'system' AND router_path = 'user/lo
 SELECT * FROM  menu_custom ;
 SELECT * FROM  menu_custom  ORDER BY title;
 SELECT COUNT(*) FROM  menu_links  WHERE menu_name = 0;
---SELECT * FROM  menu_links  ml ,  menu_router  m WHERE ml.router_path = m.path AND ml.menu_name = 0 AND ml.module = 'system' ORDER BY m.number_parts ASC;
+
 SELECT mlid FROM  menu_links  ml WHERE ml.link_path = 0;
 SELECT 1 FROM  menu_custom  WHERE menu_name = 0;
 SELECT 1 FROM  menu_links  WHERE menu_name = 0;
@@ -560,19 +303,8 @@ SELECT * FROM  menu_custom ;
 SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu';
 SELECT mlid FROM  menu_links  WHERE link_path = 0 AND menu_name = 0  AND module = 'menu' ORDER BY mlid ASC;
 SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu' AND menu_name IN (0 ) ORDER BY mlid ASC;
---SELECT * FROM  aggregator_feed  WHERE checked + refresh < 0 AND refresh <> 0;
---SELECT * FROM  mymodule_abc  WHERE abc_id = 0 ;
---SELECT menu_name FROM  menu_example  WHERE mlid = 0;
---SELECT * FROM  upload  u WHERE u.fid IN (0 )
+
 SELECT COUNT(uid) FROM  users ;
-/*SELECT * FROM  bar_types ;
-SELECT * FROM  bar_bundles';
-SELECT * FROM  bar_bundle ;*/
-
-
-
-
-
 
 SELECT info FROM  system  WHERE name = 0 AND type = 0;
 SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
@@ -593,41 +325,41 @@ SELECT data, item_id FROM  queue  q WHERE expire = 0 AND name = 0 ORDER BY creat
 SELECT rid FROM  role_permission  WHERE permission = 0;
 
 SELECT rid FROM  role_permission  WHERE permission = 0;
-SELECT theme, status, region, weight, visibility, pages FROM  block  WHERE module = 'system' AND delta = 'navigation';
+SELECT theme, status, region, weight, visibility, pages FROM  mybloc  WHERE module = 'system' AND delta = 'navigation';
 
 SELECT menu_name, mlid FROM  menu_links  WHERE link_path = 'admin/config' AND module = 'system';
 
 SELECT aid FROM  actions  WHERE parameters <> '0';
 SELECT * FROM  actions  WHERE aid = 0;
 
-SELECT bid, info FROM  block_custom  ORDER BY info
-SELECT body, format FROM  block_custom  WHERE bid = 0;
-SELECT * FROM  block_custom  WHERE bid = 0;
-SELECT  b.* FROM  block  b ,  block_role  r WHERE b.module = r.module AND b.delta = r.delta AND b.status = 1 AND b.custom <> 0 AND (r.rid IN (0 ) OR r.rid IS NULL) ORDER BY b.weight, b.module;
-SELECT 1 FROM  block  WHERE theme = 0;
-SELECT * FROM  block  WHERE theme = 0;
-SELECT * FROM  block  WHERE module = 0 AND delta = 0;
-SELECT module, delta, rid FROM  block_role ;
+SELECT bid, info FROM  mybloc_custom  ORDER BY info
+SELECT body, format FROM  mybloc_custom  WHERE bid = 0;
+SELECT * FROM  mybloc_custom  WHERE bid = 0;
+SELECT  b.* FROM  mybloc  b ,  mybloc_role  r WHERE b.module = r.module AND b.delta = r.delta AND b.status = 1 AND b.custom <> 0 AND (r.rid IN (0 ) OR r.rid IS NULL) ORDER BY b.weight, b.module;
+SELECT 1 FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE module = 0 AND delta = 0;
+SELECT module, delta, rid FROM  mybloc_role ;
 SELECT name FROM  system  WHERE type = 'theme' AND status = 1;
-SELECT bid FROM  block_custom  WHERE info = 0;
-SELECT format FROM  block_custom  WHERE bid = 0;
-SELECT 1 FROM  block_role  WHERE module = 0 AND delta = 0;
-SELECT bid FROM  block_custom  WHERE info = 0;
-SELECT bid FROM  block_custom  WHERE info = 0;
-SELECT bid FROM  block_custom  WHERE info = 0;
-SELECT bid FROM  block_custom  WHERE info = 0;
-SELECT bid FROM  block  WHERE module = 0 AND delta = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT format FROM  mybloc_custom  WHERE bid = 0;
+SELECT 1 FROM  mybloc_role  WHERE module = 0 AND delta = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc  WHERE module = 0 AND delta = 0;
 
-SELECT 1 FROM  block  WHERE theme NOT IN (0 );
-SELECT * FROM  block  WHERE theme = 0;
-SELECT * FROM  block  WHERE theme = 0;
+SELECT 1 FROM  mybloc  WHERE theme NOT IN (0 );
+SELECT * FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE theme = 0;
 
-SELECT s.name FROM  system  s ,  block  b WHERE s.name = b.theme AND s.type = 'theme' GROUP by s.name;
+SELECT s.name FROM  system  s ,  mybloc  b WHERE s.name = b.theme AND s.type = 'theme' GROUP by s.name;
 SELECT format FROM  filter_format ;
-SELECT region FROM  block  WHERE module = 0 AND delta = 0 AND theme = 0;
-SELECT rid FROM  block_role  WHERE module = 0 AND delta = 0;
-SELECT 1 FROM  block_custom  WHERE bid <> 0 AND info = 0;
-SELECT 1 FROM  block_custom  WHERE info = 0;
+SELECT region FROM  mybloc  WHERE module = 0 AND delta = 0 AND theme = 0;
+SELECT rid FROM  mybloc_role  WHERE module = 0 AND delta = 0;
+SELECT 1 FROM  mybloc_custom  WHERE bid <> 0 AND info = 0;
+SELECT 1 FROM  mybloc_custom  WHERE info = 0;
 
 SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language = 0  ORDER BY pid ASC;
 SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language IN (0 , 0 ) ORDER BY language ASC, pid ASC;
@@ -642,7 +374,7 @@ SELECT source FROM  url_alias  WHERE alias = 0 AND language IN (0 ,0 ) ORDER BY 
 SELECT name, type, status FROM  system  WHERE status = 1 AND type IN ('module');
 
 SELECT COUNT(*) FROM  users  WHERE data = 0;
---SELECT MAX(aid) FROM  actions_aid ;
+
 SELECT MAX(uid) FROM  users ;
 SELECT MAX(bid) FROM  batch ;
 SELECT name FROM  system  WHERE type = 'module' AND schema_version <> 0 ORDER BY weight ASC, name ASC;
@@ -662,10 +394,10 @@ SELECT * FROM  menu_links  WHERE mlid = 0;
 SELECT menu_name FROM  menu_links  WHERE expanded <> 0 GROUP BY menu_name;
 SELECT * FROM  menu_links  WHERE link_path = 0  AND module = 0 AND customized = 0;
 SELECT menu_name FROM  menu_links  WHERE router_path = 0  AND module = 'system';
-SELECT COUNT( nid) FROM  node ;
+SELECT COUNT( nid) FROM  mynode ;
 SELECT * FROM  system  WHERE type = 'module';
 SELECT * FROM  registry_file ;
---SELECT COUNT(*) FROM pg_proc WHERE proname = 'rand';
+
 SELECT name, schema_version FROM  system  WHERE type = 0;
 SELECT expire, value FROM  semaphore  WHERE name = 0;
 SELECT batch FROM  batch  WHERE bid = 0 AND token = 0;
@@ -675,13 +407,6 @@ SELECT u.*, s.* FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.ssid = 0
 SELECT u.*, s.* FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.sid = 0 AND s.uid = 0;
 SELECT u.*, s.* FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.sid = 0;
 SELECT r.rid, r.name FROM  role  r , users_roles  ur WHERE ur.rid = r.rid AND ur.uid = 0;
-
---SELECT lid FROM  locales_source  WHERE source = 0 AND context = 0 AND textgroup = 0;
---SELECT COUNT(lid) FROM  locales_target  WHERE lid = 0 AND language = 0;
---SELECT lid, location FROM  locales_source  WHERE source = 0 AND context = 0 AND textgroup = 'default';
---SELECT s.lid, s.source, s.context, s.location, t.translation, t.plid, t.plural FROM  locales_source  s ,  locales_target  t WHERE s.lid = t.lid AND t.language ='' AND s.textgroup = 0 ORDER BY t.plid, t.plural;
---SELECT s.lid, s.source, s.context, s.location, t.plid, t.plural FROM  locales_source  s ,  locales_target  t WHERE  s.lid = t.lid AND s.textgroup = 0 ORDER BY t.plid, t.plural;
---SELECT s.lid, s.source, s.context, t.translation FROM  locales_source  s ,  locales_target  t WHERE s.lid = t.lid AND t.language = '' AND s.location = '.js' AND s.textgroup = 0;
 
 SELECT name, filename FROM  system  WHERE status = 1;
 SELECT 1 FROM  date_format_locale  WHERE language = 0 AND type = 0;
@@ -694,11 +419,11 @@ SELECT name, value FROM  variable ;
 
 SELECT filename FROM  registry  WHERE name = 0 AND type = 0;
 
-SELECT * FROM blocked_ips WHERE iid = 0;
+SELECT * FROM mybloced_ips WHERE iid = 0;
 
-SELECT * FROM blocked_ips;
-SELECT * FROM blocked_ips WHERE ip = 0;
-SELECT 1 FROM blocked_ips WHERE ip = 0;
+SELECT * FROM mybloced_ips;
+SELECT * FROM mybloced_ips WHERE ip = 0;
+SELECT 1 FROM mybloced_ips WHERE ip = 0;
 SELECT * FROM menu_router WHERE path IN (0) ORDER BY fit DESC;
 SELECT * FROM menu_router where path =0;
 

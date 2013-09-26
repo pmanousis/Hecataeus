@@ -256,6 +256,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 				data.setAngle(angle);
 				dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
 				j++;
+				System.out.println("  node   " + ((VisualNode) v).getType()) ;
 			}
 						
 			int k = 0;
