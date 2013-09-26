@@ -1,2 +1,2 @@
-SQL: SQLS/drupalDB.ddl
+SQL: SQLS/drupalDB.ddl,SQLS/queriesWithoutExceptions.txt
 POL: POLICIES/DefaultPolicy.plc

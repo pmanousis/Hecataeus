@@ -1,0 +1,1 @@
+SELECT data, created, expire, serialized FROM  cache_update  WHERE cid = 0 ;

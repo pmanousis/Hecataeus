@@ -1,0 +1,300 @@
+SELECT nid, status, uid, changed FROM  mynode  WHERE nid = 0 ;
+SELECT changed FROM  mynode  WHERE nid = 0 ;
+SELECT cid, changed FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY changed DESC;
+SELECT nid, status, uid, changed FROM  mynode  WHERE nid = 0 ;
+SELECT COUNT(*) FROM  mycomment  WHERE nid = 0 AND uid = 0 AND status = 0 ;
+
+SELECT COUNT(*) FROM  shortcut_set_users  WHERE set_name = 0;
+SELECT COUNT(*) FROM  shortcut_set ;
+SELECT 1 FROM  shortcut_set  WHERE title = 0;
+SELECT created FROM  mynode  WHERE nid = 0;
+
+SELECT cid FROM  mycomment ;
+SELECT 1 FROM  watchdog  WHERE message = 0 AND variables = 0;
+SELECT MAX(status) FROM  mycomment ; -- SELECT MAX(status) FROM  mycomments ;
+SELECT 1 FROM  mycomment ;
+SELECT format FROM  filter_format ;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE status = 0;
+SELECT COUNT(*) FROM  mycomment  WHERE nid = 0 AND status = 0 ;
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+SELECT nid, cid, last_mycomment_timestamp, last_mycomment_name, last_mycomment_uid, mycomment_count FROM  mynode_mycomment_statistics  WHERE nid IN (0 );
+SELECT cid FROM  mycomment  WHERE nid = 0;
+SELECT rid, permission FROM  role_permission  WHERE permission IN ('access mycomments');
+SELECT MAX(mycomment_count) FROM  mynode_mycomment_statistics ;
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+SELECT c.cid FROM  mycomment  c WHERE uid = 0;
+SELECT MAX(thread) FROM  mycomment  WHERE nid = 0;
+SELECT MAX(thread) FROM  mycomment  WHERE thread = ' ' AND nid = 0;
+SELECT cid FROM  mycomment  WHERE pid = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE nid = 0 AND created > 0 AND status = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE nid = 0 AND status = 0;
+SELECT cid, name, changed, uid FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
+SELECT uid, created FROM  mynode  WHERE nid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT c.*, u.uid, u.name AS registered_name, u.signature, u.signature_format, u.picture, u.data FROM  mycomment  c ,  users  u WHERE c.uid = u.uid AND c.cid = 0 AND c.status = 0;
+
+SELECT COUNT(*) FROM  flood ;
+
+SELECT COUNT(*) FROM  flood ;
+
+SELECT data FROM  field_config  WHERE id = 0;
+SELECT data FROM  field_config  WHERE id = 0;
+SELECT fc.type, fci.field_name, fci.entity_type, fci.bundle FROM  field_config_instance  fci ,  field_config  fc WHERE fc.id = fci.field_id AND fc.active = 1 AND fc.storage_active = 1 AND fc.deleted = 0 AND fci.deleted = 0;
+SELECT data FROM  field_config  WHERE field_name = 0 ;
+SELECT data FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
+SELECT * FROM  field_config  WHERE field_name = 0 ;
+SELECT * FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
+
+SELECT DISTINCT(type) FROM  watchdog  ORDER BY type;
+SELECT w.*, u.name, u.uid FROM  watchdog  w ,  users  u WHERE w.uid = u.uid AND w.wid = 0;
+SELECT value FROM  variable  WHERE name = 0 ;
+SELECT COUNT(wid) FROM  watchdog ;
+SELECT COUNT(wid) FROM  watchdog ;
+SELECT wid FROM  watchdog  WHERE uid = 0;
+SELECT COUNT(*) FROM  watchdog ;
+SELECT COUNT(*) FROM  watchdog ;
+SELECT COUNT(*) FROM  watchdog ;
+SELECT 1 FROM  url_alias  WHERE language <> 0;
+SELECT COUNT(alias) FROM  url_alias  WHERE pid <> 0 AND alias = 0 AND language = 0;
+SELECT pid FROM  url_alias  WHERE alias = 0;
+SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
+SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
+SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
+
+SELECT MAX(fid) FROM  file_managed ;
+SELECT COUNT(uid) FROM  users ;
+SELECT uid, pass FROM  users  WHERE uid > 0 ORDER BY uid;
+SELECT COUNT(uid) FROM  users ;
+SELECT uid FROM  users  ORDER BY uid;
+SELECT timezone FROM  users  WHERE uid = 0; -- SELECT timezone_name FROM  users  WHERE uid = 0;
+
+SELECT format FROM  filter_format ;
+SELECT COUNT(*) FROM  users  WHERE picture <> '0';
+SELECT uid, picture FROM  users  WHERE picture <> '0' AND uid > 0 ORDER BY uid;
+SELECT COUNT(*) FROM  users  u WHERE u.picture <> 0;
+SELECT f.*, u.uid as user_uid FROM  users  u ,  file_managed  f WHERE u.picture = f.fid AND u.picture <> 0 AND u.uid > 0 ORDER BY u.uid;
+SELECT uid FROM  authmap  WHERE authname = 0;
+SELECT r.rid, r.name, ur.uid FROM  role  r ,  users_roles  ur WHERE ur.rid = r.rid AND ur.uid IN (0 );
+SELECT MAX(uid) FROM  users ;
+SELECT rid, permission FROM  role_permission  WHERE rid IN (0 )
+SELECT uid, name FROM  users  WHERE status <> 0 AND access <> 0 ORDER BY created DESC;
+SELECT COUNT( s.uid) FROM  sessions  s WHERE s.timestamp >= 0 AND s.uid > 0;
+SELECT u.uid, u.name, MAX(s.timestamp) AS max_timestamp FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.timestamp >= 0 AND s.uid > 0 GROUP BY u.uid, u.name ORDER BY max_timestamp DESC;
+SELECT module, authname FROM  authmap  WHERE authname = 0;
+SELECT * FROM  users  WHERE name = 0 AND status = 1;
+SELECT name FROM  role  WHERE rid = 0;
+SELECT uid, name, picture, data FROM  users  WHERE uid IN (0 );
+
+SELECT COUNT(*) FROM  sessions ;
+SELECT COUNT(*) FROM  sessions  WHERE uid = 0;
+SELECT COUNT(*) FROM  sessions  WHERE uid =  0 AND sid = 0 AND timestamp = 0;
+SELECT MAX(uid) FROM  users ;
+SELECT rid FROM  users_roles  WHERE uid = 0;
+
+
+
+SELECT name, filename, info FROM  system  WHERE type = 'module' AND status = 1 ORDER BY weight ASC, filename ASC;
+
+SELECT COUNT(*) FROM  mynode  n WHERE n.promote = 1 AND n.status = 1;
+
+SELECT * FROM  menu_links  WHERE link_path = 0 ;
+
+SELECT 1 FROM  filter_format  WHERE name = 0;
+
+SELECT name FROM  registry  WHERE type = 0 AND filename = 0;
+SELECT name, filename FROM  system ;
+SELECT name, filename FROM  system ;
+
+SELECT COUNT(*) FROM  role_permission  WHERE rid = 0;
+SELECT 1 FROM  system  WHERE type = 'module' AND name = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
+
+SELECT menu_name FROM  menu_links  WHERE router_path = 'menu_name_test';
+SELECT menu_name FROM  menu_links  WHERE router_path = 'menu_name_test';
+SELECT * FROM  menu_links  WHERE link_path = 0 ;
+SELECT * FROM  menu_links  WHERE link_path = 0 ;
+SELECT * FROM  menu_links  WHERE link_path = 0 ;
+
+SELECT format, name FROM  filter_format ;
+SELECT * FROM  menu_links  WHERE link_title = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
+SELECT aid FROM  actions  WHERE callback = 0;
+SELECT message FROM  watchdog  WHERE type = 'actions_loop_test' OR type = 'actions' ORDER BY wid;
+
+SELECT COUNT(rid) FROM  role_permission  WHERE permission = 0;
+SELECT name FROM  registry  WHERE name = 0;
+SELECT name FROM  registry  WHERE name = 0;
+SELECT hash FROM  registry_file  WHERE filename = 0;
+SELECT status FROM  system ;
+
+SELECT name FROM  system  ORDER BY name;
+SELECT name FROM  system  ORDER BY name;
+SELECT status FROM  system ;
+SELECT uid FROM  users ;
+
+SELECT r.nid, r.vid FROM  mynode_revision  r , mynode  n WHERE n.status = 1 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
+SELECT r.nid, r.vid FROM  mynode_revision  r ,  mynode  n  WHERE n.status = 0 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
+SELECT * FROM  users  WHERE uid = 0;
+SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
+SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
+SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
+SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
+SELECT COUNT(*) FROM  menu_links  WHERE link_path = 0 ;
+SELECT pass FROM  users  WHERE uid = 3
+SELECT u.access, s.timestamp FROM  users  u,  sessions  s WHERE u.uid = s.uid AND u.uid = 0 ;
+SELECT timestamp FROM  sessions  WHERE sid = 0 AND ssid = 0;
+SELECT vid FROM  taxonomy_vocabulary  WHERE module = 'forum';
+SELECT MAX(fid) AS fid FROM  file_managed ;
+SELECT MAX(fid) AS fid FROM  file_managed ;
+SELECT MAX(fid) AS fid FROM  file_managed ;
+SELECT MAX(fid) AS fid FROM  file_managed ;
+SELECT * FROM  file_managed  f WHERE f.fid = 0;
+SELECT * FROM  file_managed  f WHERE f.fid = 0;
+SELECT COUNT(*) FROM  mynode  WHERE status = 1
+SELECT COUNT(*) FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND n.status = 1 AND d.sid IS NULL OR d.reindex <> 0;
+SELECT n.nid FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
+SELECT SUM(score) FROM  search_index  WHERE word = 0;
+SELECT t.word AS realword, i.word FROM  search_total  t ,  search_index  i WHERE t.word = i.word AND i.word IS NULL;
+SELECT title, nid, vid FROM  mynode  WHERE nid = 0;
+SELECT nid, caption FROM  search_mynode_links  WHERE sid = 0 AND type = 0;
+SELECT caption FROM  search_mynode_links  WHERE nid = 0;
+SELECT timestamp FROM  history  WHERE uid = 0 AND nid = 0;
+SELECT 1 FROM  mynode_type  WHERE type = 0;
+SELECT COUNT(*) FROM  mynode ;
+SELECT COUNT(*) FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0;
+SELECT vid FROM  mynode_revision  WHERE uid = 0;
+SELECT changed FROM  mynode  WHERE nid = 0;
+SELECT r.vid, r.title, r.log, r.uid, n.vid AS current_vid, r.timestamp, u.name FROM  mynode_revision  r, mynode  n, users u  WHERE n.vid = r.vid AND u.uid = r.uid AND r.nid = 0 ORDER BY r.vid DESC;
+SELECT nid FROM  mynode  WHERE uid = 0 AND status = 0;
+SELECT type FROM  mybloc_mynode_type  WHERE module = 0 AND delta = 0;
+SELECT module, delta, type FROM  mybloc_mynode_type ;
+SELECT n.nid FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
+SELECT nid FROM  mynode ;
+SELECT COUNT(nid) FROM  mynode ;
+SELECT nid FROM  mynode  WHERE nid > 0 ORDER BY nid ASC;
+SELECT name FROM  users  WHERE uid = 0;
+SELECT COUNT(*) FROM  users ;
+SELECT name FROM  users  WHERE uid = 0;
+SELECT uid, name FROM  users  WHERE uid > 0 ORDER BY name;
+SELECT 1 FROM  users  WHERE name = 0;
+SELECT COUNT(*) FROM  mynode_access ;
+
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+
+SELECT COUNT(vid) FROM  mynode_revision  WHERE nid = 0 and vid = 0;
+SELECT wid FROM  watchdog  WHERE message = 'Explicit rollback failed';
+SELECT wid FROM  watchdog  WHERE variables = 'Test exception for rollback.';
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
+SELECT nid FROM  mynode  WHERE title = 0;
+
+SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
+SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
+SELECT MAX(nid) FROM  mynode ;
+SELECT 1 FROM  mynode_type  WHERE type = 0;
+SELECT 1 FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT disabled FROM  mynode_type  WHERE type = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT 1 FROM  mybloc_mynode_type  WHERE module = 'mybloc' AND delta = 0;
+SELECT nid FROM  mynode  WHERE uid = 0 AND status = 0;
+SELECT title FROM  mynode  WHERE nid = 0;
+SELECT COUNT(vid) FROM  mynode_revision  WHERE nid = 0;
+SELECT * FROM  mynode_type ;
+SELECT  type FROM  mynode ;
+SELECT format FROM  filter_format ;
+SELECT COUNT(*) FROM  mynode  WHERE type = 0;
+
+SELECT menu_name FROM  menu_links  WHERE menu_name = 0 ;
+SELECT * FROM  menu_links  WHERE link_title = 0;
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT mlid FROM  menu_links  WHERE module = 'system' AND router_path = 'user/logout';
+SELECT * FROM  menu_custom ;
+SELECT * FROM  menu_custom  ORDER BY title;
+SELECT COUNT(*) FROM  menu_links  WHERE menu_name = 0;
+
+SELECT mlid FROM  menu_links  ml WHERE ml.link_path = 0;
+SELECT 1 FROM  menu_custom  WHERE menu_name = 0;
+SELECT 1 FROM  menu_links  WHERE menu_name = 0;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 0;
+SELECT mlid FROM  menu_links  WHERE link_path = 0;
+SELECT mlid AS plid, menu_name FROM  menu_links  WHERE link_path = 'admin/structure/menu' AND module = 'system';
+SELECT * FROM  menu_custom ;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND plid = 0;
+SELECT * FROM  menu_custom ;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu';
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND menu_name = 0  AND module = 'menu' ORDER BY mlid ASC;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu' AND menu_name IN (0 ) ORDER BY mlid ASC;
+
+SELECT COUNT(uid) FROM  users ;
+
+SELECT info FROM  system  WHERE name = 0 AND type = 0;
+SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
+SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
+
+SELECT mlid, menu_name FROM  menu_links  ml WHERE ml.router_path = 0 AND module = 'system';
+SELECT filename, name, type, status, schema_version, weight FROM  system  WHERE type = 0;
+SELECT * FROM  system  WHERE type = 0;
+SELECT fid FROM  file_managed  WHERE status <> 0 AND timestamp < 0;
+SELECT df.dfid, df.format, df.type, df.locked FROM  date_formats  df WHERE df.dfid = 0;
+SELECT format, type, language FROM  date_format_locale ;
+SELECT dft.type, dft.title, dft.locked FROM  date_format_type  dft ORDER BY dft.title;
+SELECT df.dfid, df.format, df.type, df.locked, dfl.language FROM  date_formats  df ,  date_format_locale  dfl WHERE df.format = dfl.format AND df.type = dfl.type ORDER BY df.type, df.format;
+SELECT 1 FROM  date_format_locale  WHERE type = 0 AND language = 0;
+SELECT COUNT(item_id) FROM  queue  WHERE name = 0;
+SELECT data, item_id FROM  queue  q WHERE expire = 0 AND name = 0 ORDER BY created ASC;
+
+SELECT rid FROM  role_permission  WHERE permission = 0;
+
+SELECT rid FROM  role_permission  WHERE permission = 0;
+SELECT theme, status, region, weight, visibility, pages FROM  mybloc  WHERE module = 'system' AND delta = 'navigation';
+
+SELECT menu_name, mlid FROM  menu_links  WHERE link_path = 'admin/config' AND module = 'system';
+
+SELECT aid FROM  actions  WHERE parameters <> '0';
+SELECT * FROM  actions  WHERE aid = 0;
+
+SELECT bid, info FROM  mybloc_custom  ORDER BY info
+SELECT body, format FROM  mybloc_custom  WHERE bid = 0;
+SELECT * FROM  mybloc_custom  WHERE bid = 0;
+SELECT  b.* FROM  mybloc  b ,  mybloc_role  r WHERE b.module = r.module AND b.delta = r.delta AND b.status = 1 AND b.custom <> 0 AND (r.rid IN (0 ) OR r.rid IS NULL) ORDER BY b.weight, b.module;
+SELECT 1 FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE module = 0 AND delta = 0;
+SELECT module, delta, rid FROM  mybloc_role ;
+SELECT name FROM  system  WHERE type = 'theme' AND status = 1;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT format FROM  mybloc_custom  WHERE bid = 0;
+SELECT 1 FROM  mybloc_role  WHERE module = 0 AND delta = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc  WHERE module = 0 AND delta = 0;
+
+SELECT 1 FROM  mybloc  WHERE theme NOT IN (0 );
+SELECT * FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE theme = 0;
+
+SELECT s.name FROM  system  s ,  mybloc  b WHERE s.name = b.theme AND s.type = 'theme' GROUP by s.name;
+SELECT format FROM  filter_format ;
+SELECT region FROM  mybloc  WHERE module = 0 AND delta = 0 AND theme = 0;
+SELECT rid FROM  mybloc_role  WHERE module = 0 AND delta = 0;
+SELECT 1 FROM  mybloc_custom  WHERE bid <> 0 AND info = 0;
+SELECT 1 FROM  mybloc_custom  WHERE info = 0;
