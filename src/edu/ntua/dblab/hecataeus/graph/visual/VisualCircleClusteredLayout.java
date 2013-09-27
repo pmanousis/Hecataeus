@@ -71,7 +71,6 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 				queries.add(v);
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				System.out.println("  node       "+ v.getName() +"should be RELATION   " + v.getType()) ;
 				relations.add(v);
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
@@ -241,7 +240,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
-			System.out.println(nodes);
+//			System.out.println(nodes);
 			
 			double angle = (2 * Math.PI )/ vertices.size();
 			
@@ -265,7 +264,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 							
 							coord.setLocation(Math.cos(angleA*c+(cx))*smallRad + (a*nodes.size()),Math.sin(angleA*c+(cy))*smallRad +(a*nodes.size()));
 							
-							System.out.println("  node   " + v.getType()) ;
+//							System.out.println("  node   " + v.getType()) ;
 							
 							data = getCircleData(v);
 							data.setAngle(angleA);
@@ -283,7 +282,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 					
 					coord.setLocation(Math.cos(angleA*b)*smallRad,Math.sin(angleA*b)*smallRad);
 					
-					System.out.println("  node   " + v.getType()) ;
+//					System.out.println("  node   " + v.getType()) ;
 					
 					data = getCircleData(v);
 					data.setAngle(angleA);
@@ -324,7 +323,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		width = d.getWidth();
 //		relationRadius = 0.45 * (height < width ? height/3 : width/3);
 //		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
-		myRad = 0.45 * (height < width ? height/2 : width/2);
+		myRad = 0.45 * (height < width ? height*2 : width*2);
 
 		
 		
@@ -347,7 +346,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			coord1.setLocation(cx, cy);
 			data = getCircleData(nodes.get(0));
 			data.setAngle(angle);
-			System.out.println("  node   " + nodes.get(0).getType()) ;
+//			System.out.println("  node   " + nodes.get(0).getType()) ;
 			int b = 0;
 			for(VisualNode v : nodes){
 				if(b != 0){
@@ -360,7 +359,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 					else{
 						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 					}
-					System.out.println("  node   " + v.getType()) ;
+//					System.out.println("  node   " + v.getType()) ;
 					
 					data = getCircleData(v);
 					data.setAngle(angleA);
