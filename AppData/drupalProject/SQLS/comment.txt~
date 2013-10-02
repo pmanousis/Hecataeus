@@ -1,0 +1,21 @@
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE status = 0;
+SELECT COUNT(*) FROM  mycomment  WHERE nid = 0 AND status = 0 ;
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+SELECT nid, cid, last_mycomment_timestamp, last_mycomment_name, last_mycomment_uid, mycomment_count FROM  mynode_mycomment_statistics  WHERE nid IN (0 );
+SELECT cid FROM  mycomment  WHERE nid = 0;
+SELECT rid, permission FROM  role_permission  WHERE permission IN ('access mycomments');
+SELECT MAX(mycomment_count) FROM  mynode_mycomment_statistics ;
+SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
+SELECT c.cid FROM  mycomment  c WHERE uid = 0;
+SELECT MAX(thread) FROM  mycomment  WHERE nid = 0;
+SELECT MAX(thread) FROM  mycomment  WHERE thread = ' ' AND nid = 0;
+SELECT cid FROM  mycomment  WHERE pid = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE nid = 0 AND created > 0 AND status = 0;
+SELECT COUNT(cid) FROM  mycomment  WHERE nid = 0 AND status = 0;
+SELECT cid, name, changed, uid FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
+SELECT uid, created FROM  mynode  WHERE nid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT subject FROM  mycomment  WHERE cid = 0;
+SELECT c.*, u.uid, u.name AS registered_name, u.signature, u.signature_format, u.picture, u.data FROM  mycomment  c ,  users  u WHERE c.uid = u.uid AND c.cid = 0 AND c.status = 0;
+

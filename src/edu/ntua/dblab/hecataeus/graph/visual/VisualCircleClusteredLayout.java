@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,24 +20,32 @@ import org.apache.commons.lang3.StringUtils;
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
+
+import com.panayotis.gnuplot.JavaPlot;
+
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNewCircleLayout.CircleVertexData;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
 
 public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,VisualEdge> {
 	
 	public enum ClusterE{
 		Queries,
 		Views,
-		Relations;
+		Relations,
+		Circle;
 	}
 	
 	protected ClusterE clusterType;
 	protected VisualGraph graph;
 	
+	private static int pos = 100;
 	
-	public static List<VisualNode> files = new ArrayList<VisualNode>();
+	public static List<String> files = new ArrayList<String>();
 	
 	private List<VisualNode> queries = new ArrayList<VisualNode>();
 	private List<VisualNode> relations = new ArrayList<VisualNode>();
@@ -67,6 +74,25 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		
 		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
 		for(VisualNode v : nodes){
+			
+//			System.out.println("NAME       "+ v.getName() +"    CATEGORY   " + v.getType().getCategory());
+			if(v.getType().getCategory() == NodeCategory.MODULE ){
+				
+			
+			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
+			
+				for(VisualEdge e : edges){
+					if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
+//						System.out.println("********* NAME       "+ e.getFromNode().getName() +"    CATEGORY   " + e.getFromNode().getType().getCategory());
+						if(files.contains(e.getFromNode().getName())==false)
+						{
+							files.add(e.getFromNode().getName());
+						}
+						
+					}
+				}
+			}
+//			System.out.println(files);
 			if(v.getType() == NodeType.NODE_TYPE_QUERY){
 				queries.add(v);
 			}
@@ -75,9 +101,6 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
 				views.add(v);
-			}
-			else if(v.getType() == NodeType.NODE_TYPE_FILE){
-				files.add(v);
 			}
 		}
 	}
@@ -200,6 +223,9 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		case Relations:
 			clusterRelations();
 			break;
+		case Circle:
+			clustersOnaCircle();
+			break;
 		default:
 			whatever();
 		}
@@ -211,6 +237,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		
 	}
 
+	
 	private void clusterRelations() {
 		// TODO Auto-generated method stub
 		//omokentroi kikloi
@@ -297,16 +324,212 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	}
 
 	private void clusterViews() {
-		// TODO Auto-generated method stub
+		
+
+		
+		
 		
 	}
 
 	private void clusterQueries() {
+		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
+		vertices = new ArrayList<ArrayList<VisualNode>>();
+		for(Cluster cl : clusters){
+			vertices.add(cl.getNode());
+		}
+		ArrayList<ArrayList<VisualNode>> sortedV = new ArrayList<ArrayList<VisualNode>>();
+		Collections.sort(vertices, new ListComparator());
+		sortedV.addAll(vertices);
 		
+		double width = 0.0;
+		double height = 0.0;
+		double myRad = 0.0;
+		Dimension d = getSize();
+		height = d.getHeight();
+		width = d.getWidth();
+//		relationRadius = 0.45 * (height < width ? height/3 : width/3);
+//		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
+//		myRad = 0.45 * (height < width ? height/2 : width/2);
+
+		myRad = 1;
 		
+		ArrayList<ArrayList<ArrayList<VisualNode>>> sublistofClusters = new ArrayList<ArrayList<ArrayList<VisualNode>>>();
+		while((int) Math.pow(2, myRad)<sortedV.size())
+		{
+			ArrayList<ArrayList<VisualNode>> tmpVl=new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), (int) Math.pow(2, myRad)));
+			sublistofClusters.add(tmpVl);
+			myRad++;
+		}
+		ArrayList<ArrayList<VisualNode>> tmpVl=new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), sortedV.size()));
+		sublistofClusters.add(tmpVl);
 		
 
+		int a = 0;
+
+		double bigCircleRad = 0.0;
+		double bigClusterRad = 0.0;
+		System.out.println(sublistofClusters);
+		for(ArrayList<ArrayList<VisualNode>> listaC: sublistofClusters){
+			ArrayList<ArrayList<VisualNode>> tmp ;
+			if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
+				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)+1));
+			}
+			else{
+				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)));	
+			}
+			int bigClusterSize = tmp.get(tmp.size()-1).size();
+			
+			bigClusterRad += getClusterRadius(bigClusterSize);
+			
+			bigCircleRad = checkRad(listaC, bigClusterRad)*1.3;
+			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
+			for(ArrayList<VisualNode> lista : listaC){
+				
+				List<VisualNode> nodes = new ArrayList<VisualNode>();
+				Collections.sort(lista, new CustomComparator());
+				nodes.addAll(lista);
+				
+				double angle = (2 * Math.PI )/ listaC.size();
+				
+				double cx = Math.cos(angle*a) * bigCircleRad;// + width / 2;
+				double cy =	Math.sin(angle*a) * bigCircleRad;// + height/2;
+				CircleVertexData data;
+				Point2D coord1 = transform(nodes.get(0));
+				coord1.setLocation(cx, cy);
+				data = getCircleData(nodes.get(0));
+				data.setAngle(angle);
+	
+				int b = 0;double smallRad = 0;
+				for(VisualNode v : nodes){
+					if(b != 0){
+						smallRad = getClusterRadius(nodes.size());
+						Point2D coord = transform(v);
+						double angleA = (2 * Math.PI ) / nodes.size();
+						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+						data = getCircleData(v);
+						data.setAngle(angleA);
+			//			HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
+										
+					}
+					b++;
+				}
+				a++;
+			}
+		}
+		ScalingControl scaler = new CrossoverScalingControl();
+		scaler.scale(HecataeusViewer.vv, 1.1f, HecataeusViewer.vv.getCenter());
+		//HecataeusViewer.vv.repaint();
+	}
+
+	private double getClusterRadius(int nodes){
+		if(nodes <= 10 && nodes >=4){
+			return 5 * nodes;
+		}
+		else{
+			return 3 * nodes;
+		}
+	}
+	
+	private double checkRad(ArrayList<ArrayList<VisualNode>> SoC, double myRad){
+		double tempRad = 0;double ccircleR = 0;
+		for(ArrayList<VisualNode>listaC: SoC){
+			tempRad += getClusterRadius(listaC.size());
+		}	
+			ccircleR = 2*tempRad;
+			if(ccircleR>=2*Math.PI*myRad){
+				System.out.println("AKTINA MEGALOU KIKLOY  "+(ccircleR/2*Math.PI));
+				return (ccircleR/2*Math.PI);
+			}
+			else{
+				System.out.println("aktina megalou kiklou"+myRad);
+				return myRad;
+			}
+	}
+	
+	private void clustersOnaCircle(){
+		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
+		vertices = new ArrayList<ArrayList<VisualNode>>();
+		for(Cluster cl : clusters){
+			vertices.add(cl.getNode());
+		}
+
+
+		double width = 0.0;
+		double height = 0.0;
+		double myRad = 0.0;
+		Dimension d = getSize();
+		height = d.getHeight();
+		width = d.getWidth();
+//		relationRadius = 0.45 * (height < width ? height/3 : width/3);
+//		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
+		myRad = 0.45 * (height < width ? height*2 : width*2);
+//		double circle = 0;
+//		for(ArrayList<VisualNode> lista : vertices){
+//			List<VisualNode> nodes = new ArrayList<VisualNode>();
+//			Collections.sort(lista, new CustomComparator());
+//			nodes.addAll(lista);
+//			circle += 2*(nodes.size()*1.3);
+//			
+//		}
+//		if(circle <= 2*Math.PI*myRad){
+//			myRad = circle/(2*Math.PI);
+//		}
+		double diametros = 0;
+		int a = 0;
+		double [][] evatest = new double [vertices.size()][2];
+		for(ArrayList<VisualNode> lista : vertices){
+			List<VisualNode> nodes = new ArrayList<VisualNode>();
+			Collections.sort(lista, new CustomComparator());
+			nodes.addAll(lista);
+//			System.out.println(nodes);
+//			if(a==0){
+//				double angle = (2 * Math.PI )/vertices.size();
+//				double cx = Math.cos(angle* a) * myRad;// + width / 2;
+//				double cy =	Math.sin(angle* a) * myRad;// + height/2;
+//			}
+			
 		
+			
+			
+			diametros = 2*(nodes.size()*2);
+//			double angle = (2 * Math.PI)-((2 * Math.PI)-diametros);
+			double angle = 2*Math.pow((Math.cos((diametros/2)/myRad)), -1);
+			double cx = Math.cos(angle*a) * myRad;
+			double cy =	Math.sin(angle*a) * myRad;
+			CircleVertexData data;
+			Point2D coord1 = transform(nodes.get(0));
+			coord1.setLocation(cx, cy);
+	//		data = getCircleData(nodes.get(0));
+	//		data.setAngle(angle);
+			System.out.println(cx + "  " +cy+ " my angle  " +angle);
+			evatest[a][0] = cx;
+			evatest[a][1] = cy;
+			
+			
+//			System.out.println("  node   " + nodes.get(0).getType()) ;
+			int b = 0;
+			for(VisualNode v : nodes){
+				if(b != 0){
+					double smallRad = nodes.size()*2;
+					Point2D coord = transform(v);
+					double angleA = (2 * Math.PI ) / nodes.size();
+					coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+			//		data = getCircleData(v);
+			//		data.setAngle(angleA);
+					HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
+
+				}
+				b++;
+			}
+			a++;
+		}
+		JavaPlot p = new JavaPlot();
+        p.addPlot(evatest);
+        
+        p.plot();
+	}
+	
+	private void old(){
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
 		vertices = new ArrayList<ArrayList<VisualNode>>();
 		for(Cluster cl : clusters){
@@ -323,21 +546,21 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		width = d.getWidth();
 //		relationRadius = 0.45 * (height < width ? height/3 : width/3);
 //		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
-		myRad = 0.45 * (height < width ? height*2 : width*2);
+		myRad = 0.45 * (height < width ? height/2 : width/2);
 
 		
-		
+		int eva = 0;
 		int a = 0;
 		for(ArrayList<VisualNode> lista : vertices){
 			
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
-			System.out.println(nodes);
+//			System.out.println(nodes);
 			
 			double angle = (2 * Math.PI )/ vertices.size();
 			
-			
+			myRad = Math.exp(a+1);
 			
 			double cx = Math.cos(angle*a) * myRad;// + width / 2;
 			double cy =	Math.sin(angle*a) * myRad;// + height/2;
@@ -346,99 +569,27 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			coord1.setLocation(cx, cy);
 			data = getCircleData(nodes.get(0));
 			data.setAngle(angle);
-//			System.out.println("  node   " + nodes.get(0).getType()) ;
+			System.out.println("  node   " + nodes.get(0).getType()) ;
+			int yloc = 100;
 			int b = 0;
 			for(VisualNode v : nodes){
-				if(b != 0){
-					double smallRad = 0.45 * nodes.size();
-					Point2D coord = transform(v);
-					double angleA = (2 * Math.PI ) / nodes.size();
-					if(v.getType() == NodeType.NODE_TYPE_RELATION){
-						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-					}
-					else{
-						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-					}
-//					System.out.println("  node   " + v.getType()) ;
+				
+				double smallRad = 0.45 * nodes.size();
+				Point2D coord = transform(v);
+				double angleA = (2 * Math.PI ) / nodes.size();
+				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+
 					
-					data = getCircleData(v);
-					data.setAngle(angleA);
-					HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v));
-					
-				}
+				data = getCircleData(v);
+				data.setAngle(angleA);
+				HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
+				HecataeusViewer.vv.repaint();					
 				b++;
 			}
 			a++;
 		}
-			
-		
-		
-		
-		
-		
-//		int i = 0;
-//		for(VisualNode v : relations){
-//			Point2D coord = transform(v);				
-//			double angle = (2 * Math.PI * j) / relations.size();
-//			coord.setLocation(Math.cos(angle) * relationRadius + width / 2,
-//					Math.sin(angle) * relationRadius + height / 2);
-//			CircleVertexData data = getCircleData(v);
-//			data.setAngle(angle);
-////			dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
-//			j++;
-//		}
-//		
-//		int z = 0;
-//		for (VisualNode v : queries){
-//			Point2D coord = transform(v);				
-//			double angle = (2 * Math.PI * z) / queries.size();
-//			coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
-//					Math.sin(angle) * queryRadius + height / 2);
-//			CircleVertexData data = getCircleData(v);
-//			data.setAngle(angle);				
-////			dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
-//			z++;
-//		}
-		
-//		for(ArrayList<VisualNode> lista : vertices){
-//			myRad = 0.45 * (height < width ? height*lista.size() : width*lista.size());
-//			myRad = myRad/10.0;
-//			System.out.println(myRad);
-//			double center = 0.0;
-////			if(lista.size()>1){
-//				int h = 0;
-//				for (VisualNode v : (List<VisualNode>)lista){
-//					Point2D coord = transform(v);				
-//					double angle = (2 * Math.PI * h) / lista.size();
-//					coord.setLocation(Math.cos(angle) * myRad + width / 2,
-//							Math.sin(angle) * myRad + height / 2);
-//					CircleVertexData data = getCircleData(v);
-//					data.setAngle(angle);
-//					h++;
-//				}
-//				
-//				
-//				
-////			}else{
-////				myRad = 0.45 * (height < width ? height*lista.size() : width*lista.size());
-////				int metritis = 0;
-////				for(VisualNode v : lista){
-////					Point2D coord = transform(v);				
-////					double angle = (2 * Math.PI * metritis) / lista.size();
-////					coord.setLocation(Math.cos(angle) * myRad/5 + width / 2, Math.sin(angle) * myRad/5 + height / 2);
-////					CircleVertexData data = getCircleData(v);
-////					data.setAngle(angle);
-////					metritis++;
-////				}	
-////			
-////			
-////			}
-//		}
-
-
-		
 	}
-
+	
 //	protected void dosomething(double x, double y, VisualNode node, int mode){
 //		int a = 0;
 //

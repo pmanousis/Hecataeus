@@ -38,7 +38,8 @@ public enum VisualLayoutType {
 	ClusteredCircleLayout,
 	ClusteredCircleLayoutQ,
 	ClusteredCircleLayoutV,
-	ClusteredCircleLayoutR;
+	ClusteredCircleLayoutR,
+	ClusteredCircleLayoutC;
 
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -91,6 +92,8 @@ public enum VisualLayoutType {
 			case ClusteredCircleLayoutV:
 				return "";
 			case ClusteredCircleLayoutR:
+				return "";
+			case ClusteredCircleLayoutC:
 				return "";
 			default:
 				return name();
@@ -172,7 +175,9 @@ public enum VisualLayoutType {
 			case ClusteredCircleLayoutV:
 				return new VisualCircleClusteredLayout(g, ClusterE.Views);
 			case ClusteredCircleLayoutR:
-				return new VisualCircleClusteredLayout(g, ClusterE.Relations);	
+				return new VisualCircleClusteredLayout(g, ClusterE.Relations);
+			case ClusteredCircleLayoutC:
+				return new VisualCircleClusteredLayout(g, ClusterE.Circle);	
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

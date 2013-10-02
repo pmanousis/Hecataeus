@@ -18,5 +18,4 @@ SELECT name, machine_name, vid FROM  taxonomy_vocabulary ;
 SELECT machine_name FROM  taxonomy_vocabulary ;
 SELECT v.* FROM  taxonomy_vocabulary  v ORDER BY v.weight, v.name;
 SELECT vid FROM  taxonomy_vocabulary ;
-
 SELECT bundle FROM  field_config_instance  WHERE field_name = 0;

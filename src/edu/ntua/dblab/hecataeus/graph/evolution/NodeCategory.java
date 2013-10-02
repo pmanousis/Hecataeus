@@ -14,13 +14,12 @@ package edu.ntua.dblab.hecataeus.graph.evolution;
  */
 public enum NodeCategory {
 	CONTAINER	,
-	MODULE		,      
+	MODULE		,
 	SCHEMA		,
-/**
- * @author pmanousi
- */
-INOUTSCHEMA,
-
+	/**
+	 * @author pmanousi
+	 */
+	INOUTSCHEMA,
 	SEMANTICS	;
 	
 	

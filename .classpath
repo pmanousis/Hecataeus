@@ -23,5 +23,6 @@
 	<classpathentry kind="lib" path="/home/eva/Downloads/commons-lang3-3.1/commons-lang3-3.1-sources.jar"/>
 	<classpathentry kind="lib" path="/home/eva/Downloads/commons-lang3-3.1/commons-lang3-3.1-tests.jar"/>
 	<classpathentry kind="lib" path="/home/eva/Downloads/commons-lang3-3.1/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="/home/eva/Downloads/JavaPlot-0.4.0/dist/JavaPlot.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

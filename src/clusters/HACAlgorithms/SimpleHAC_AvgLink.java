@@ -85,9 +85,9 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 					
 					for (int j = 0; j < numClusters; j++){
 	
-						System.out.print(copyDist[i][j] + "\t");
+//						System.out.print(copyDist[i][j] + "\t");
 					}
-					System.out.println("");
+//					System.out.println("");
 				}
 			}
 			
@@ -95,7 +95,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 
 			c1 = lastSolution.getClusters().get(minPos1);
 			c2 = lastSolution.getClusters().get(minPos2);
-			System.out.println("MERGING clusters: " + c1.getId() + " and " + c2.getId());
+//			System.out.println("MERGING clusters: " + c1.getId() + " and " + c2.getId());
 			
 			//find the maxId, to make a new Id for the new Cluster
 			int newId = -1, maxId = -1, currId = -1;
@@ -133,7 +133,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 			lastSolution = ClusterSet.copy(newSolution);
 			lastSolution.createDistances(numClusters);
 			minDist = 2.0; minPos1 = -1; minPos2 = -1;
-			System.out.println(numClusters);
+//			System.out.println(numClusters);
 		}while(numClusters != endC);
 		return lastSolution;
 	}//end execute

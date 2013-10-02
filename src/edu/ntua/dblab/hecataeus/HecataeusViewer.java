@@ -841,6 +841,19 @@ public class HecataeusViewer {
 					}
 				});
 				mnClusteredCircleLayout.add(mntmRelations);
+				
+				JMenuItem mntmCoC = new JMenuItem("Clusters on a circle");
+				mntmCoC.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutC;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmCoC);
 			}
 			else{
 				mnAlgorithms.add(new AbstractAction(layoutType.toString()) {

@@ -1,0 +1,2 @@
+SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
+SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;

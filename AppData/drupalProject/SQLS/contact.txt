@@ -1,0 +1,2 @@
+SELECT COUNT(*) FROM  flood ;
+SELECT COUNT(*) FROM  flood ;

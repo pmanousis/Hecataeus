@@ -43,7 +43,7 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
         	GradientPaint gp = new GradientPaint( 0f, 0f, color1, 9f, 1f, color2 , true);
         	
             
-        	return gp;
+        	return new Color (64,224,208);
         	//return Color.cyan;
             //return (Paint) new GradientVertexRenderer<Integer, Number>( new Color(175,224,0), new Color(133,170,173), true); 
         }

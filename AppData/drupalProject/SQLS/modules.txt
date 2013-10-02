@@ -3,12 +3,10 @@ SELECT changed FROM  mynode  WHERE nid = 0 ;
 SELECT cid, changed FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY changed DESC;
 SELECT nid, status, uid, changed FROM  mynode  WHERE nid = 0 ;
 SELECT COUNT(*) FROM  mycomment  WHERE nid = 0 AND uid = 0 AND status = 0 ;
-
 SELECT COUNT(*) FROM  shortcut_set_users  WHERE set_name = 0;
 SELECT COUNT(*) FROM  shortcut_set ;
 SELECT 1 FROM  shortcut_set  WHERE title = 0;
 SELECT created FROM  mynode  WHERE nid = 0;
-
 SELECT cid FROM  mycomment ;
 SELECT 1 FROM  watchdog  WHERE message = 0 AND variables = 0;
 SELECT MAX(status) FROM  mycomment ; -- SELECT MAX(status) FROM  mycomments ;
@@ -34,11 +32,8 @@ SELECT uid, created FROM  mynode  WHERE nid = 0;
 SELECT subject FROM  mycomment  WHERE cid = 0;
 SELECT subject FROM  mycomment  WHERE cid = 0;
 SELECT c.*, u.uid, u.name AS registered_name, u.signature, u.signature_format, u.picture, u.data FROM  mycomment  c ,  users  u WHERE c.uid = u.uid AND c.cid = 0 AND c.status = 0;
-
 SELECT COUNT(*) FROM  flood ;
-
 SELECT COUNT(*) FROM  flood ;
-
 SELECT data FROM  field_config  WHERE id = 0;
 SELECT data FROM  field_config  WHERE id = 0;
 SELECT fc.type, fci.field_name, fci.entity_type, fci.bundle FROM  field_config_instance  fci ,  field_config  fc WHERE fc.id = fci.field_id AND fc.active = 1 AND fc.storage_active = 1 AND fc.deleted = 0 AND fci.deleted = 0;
@@ -46,7 +41,6 @@ SELECT data FROM  field_config  WHERE field_name = 0 ;
 SELECT data FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
 SELECT * FROM  field_config  WHERE field_name = 0 ;
 SELECT * FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
-
 SELECT DISTINCT(type) FROM  watchdog  ORDER BY type;
 SELECT w.*, u.name, u.uid FROM  watchdog  w ,  users  u WHERE w.uid = u.uid AND w.wid = 0;
 SELECT value FROM  variable  WHERE name = 0 ;
@@ -62,14 +56,12 @@ SELECT pid FROM  url_alias  WHERE alias = 0;
 SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
 SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
 SELECT * FROM  rdf_mapping  WHERE type = 0 AND bundle = 0;
-
 SELECT MAX(fid) FROM  file_managed ;
 SELECT COUNT(uid) FROM  users ;
 SELECT uid, pass FROM  users  WHERE uid > 0 ORDER BY uid;
 SELECT COUNT(uid) FROM  users ;
 SELECT uid FROM  users  ORDER BY uid;
 SELECT timezone FROM  users  WHERE uid = 0; -- SELECT timezone_name FROM  users  WHERE uid = 0;
-
 SELECT format FROM  filter_format ;
 SELECT COUNT(*) FROM  users  WHERE picture <> '0';
 SELECT uid, picture FROM  users  WHERE picture <> '0' AND uid > 0 ORDER BY uid;
@@ -86,27 +78,18 @@ SELECT module, authname FROM  authmap  WHERE authname = 0;
 SELECT * FROM  users  WHERE name = 0 AND status = 1;
 SELECT name FROM  role  WHERE rid = 0;
 SELECT uid, name, picture, data FROM  users  WHERE uid IN (0 );
-
 SELECT COUNT(*) FROM  sessions ;
 SELECT COUNT(*) FROM  sessions  WHERE uid = 0;
 SELECT COUNT(*) FROM  sessions  WHERE uid =  0 AND sid = 0 AND timestamp = 0;
 SELECT MAX(uid) FROM  users ;
 SELECT rid FROM  users_roles  WHERE uid = 0;
-
-
-
 SELECT name, filename, info FROM  system  WHERE type = 'module' AND status = 1 ORDER BY weight ASC, filename ASC;
-
 SELECT COUNT(*) FROM  mynode  n WHERE n.promote = 1 AND n.status = 1;
-
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
-
 SELECT 1 FROM  filter_format  WHERE name = 0;
-
 SELECT name FROM  registry  WHERE type = 0 AND filename = 0;
 SELECT name, filename FROM  system ;
 SELECT name, filename FROM  system ;
-
 SELECT COUNT(*) FROM  role_permission  WHERE rid = 0;
 SELECT 1 FROM  system  WHERE type = 'module' AND name = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
@@ -117,13 +100,11 @@ SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
 SELECT COUNT(*) FROM  watchdog  WHERE type = 0 AND message = 0;
-
 SELECT menu_name FROM  menu_links  WHERE router_path = 'menu_name_test';
 SELECT menu_name FROM  menu_links  WHERE router_path = 'menu_name_test';
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
 SELECT * FROM  menu_links  WHERE link_path = 0 ;
-
 SELECT format, name FROM  filter_format ;
 SELECT * FROM  menu_links  WHERE link_title = 0;
 SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
@@ -131,18 +112,15 @@ SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
 SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
 SELECT aid FROM  actions  WHERE callback = 0;
 SELECT message FROM  watchdog  WHERE type = 'actions_loop_test' OR type = 'actions' ORDER BY wid;
-
 SELECT COUNT(rid) FROM  role_permission  WHERE permission = 0;
 SELECT name FROM  registry  WHERE name = 0;
 SELECT name FROM  registry  WHERE name = 0;
 SELECT hash FROM  registry_file  WHERE filename = 0;
 SELECT status FROM  system ;
-
 SELECT name FROM  system  ORDER BY name;
 SELECT name FROM  system  ORDER BY name;
 SELECT status FROM  system ;
 SELECT uid FROM  users ;
-
 SELECT r.nid, r.vid FROM  mynode_revision  r , mynode  n WHERE n.status = 1 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
 SELECT r.nid, r.vid FROM  mynode_revision  r ,  mynode  n  WHERE n.status = 0 AND n.type <> 'poll' AND n.vid <> r.vid AND n.nid = r.nid;
 SELECT * FROM  users  WHERE uid = 0;
@@ -189,9 +167,7 @@ SELECT name FROM  users  WHERE uid = 0;
 SELECT uid, name FROM  users  WHERE uid > 0 ORDER BY name;
 SELECT 1 FROM  users  WHERE name = 0;
 SELECT COUNT(*) FROM  mynode_access ;
-
 SELECT mycomment_count FROM  mynode_mycomment_statistics  WHERE nid = 0;
-
 SELECT COUNT(vid) FROM  mynode_revision  WHERE nid = 0 and vid = 0;
 SELECT wid FROM  watchdog  WHERE message = 'Explicit rollback failed';
 SELECT wid FROM  watchdog  WHERE variables = 'Test exception for rollback.';
@@ -201,7 +177,6 @@ SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
 SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
 SELECT realm, gid FROM  mynode_access  WHERE nid = 0;
 SELECT nid FROM  mynode  WHERE title = 0;
-
 SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
 SELECT tid FROM  taxonomy_term_data  WHERE name = 0;
 SELECT MAX(nid) FROM  mynode ;
@@ -220,7 +195,6 @@ SELECT * FROM  mynode_type ;
 SELECT  type FROM  mynode ;
 SELECT format FROM  filter_format ;
 SELECT COUNT(*) FROM  mynode  WHERE type = 0;
-
 SELECT menu_name FROM  menu_links  WHERE menu_name = 0 ;
 SELECT * FROM  menu_links  WHERE link_title = 0;
 SELECT * FROM  menu_links  WHERE mlid = 0;
@@ -228,7 +202,6 @@ SELECT mlid FROM  menu_links  WHERE module = 'system' AND router_path = 'user/lo
 SELECT * FROM  menu_custom ;
 SELECT * FROM  menu_custom  ORDER BY title;
 SELECT COUNT(*) FROM  menu_links  WHERE menu_name = 0;
-
 SELECT mlid FROM  menu_links  ml WHERE ml.link_path = 0;
 SELECT 1 FROM  menu_custom  WHERE menu_name = 0;
 SELECT 1 FROM  menu_links  WHERE menu_name = 0;
@@ -241,13 +214,10 @@ SELECT * FROM  menu_custom ;
 SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu';
 SELECT mlid FROM  menu_links  WHERE link_path = 0 AND menu_name = 0  AND module = 'menu' ORDER BY mlid ASC;
 SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu' AND menu_name IN (0 ) ORDER BY mlid ASC;
-
 SELECT COUNT(uid) FROM  users ;
-
 SELECT info FROM  system  WHERE name = 0 AND type = 0;
 SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
 SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
-
 SELECT mlid, menu_name FROM  menu_links  ml WHERE ml.router_path = 0 AND module = 'system';
 SELECT filename, name, type, status, schema_version, weight FROM  system  WHERE type = 0;
 SELECT * FROM  system  WHERE type = 0;
@@ -259,17 +229,12 @@ SELECT df.dfid, df.format, df.type, df.locked, dfl.language FROM  date_formats  
 SELECT 1 FROM  date_format_locale  WHERE type = 0 AND language = 0;
 SELECT COUNT(item_id) FROM  queue  WHERE name = 0;
 SELECT data, item_id FROM  queue  q WHERE expire = 0 AND name = 0 ORDER BY created ASC;
-
 SELECT rid FROM  role_permission  WHERE permission = 0;
-
 SELECT rid FROM  role_permission  WHERE permission = 0;
 SELECT theme, status, region, weight, visibility, pages FROM  mybloc  WHERE module = 'system' AND delta = 'navigation';
-
 SELECT menu_name, mlid FROM  menu_links  WHERE link_path = 'admin/config' AND module = 'system';
-
 SELECT aid FROM  actions  WHERE parameters <> '0';
 SELECT * FROM  actions  WHERE aid = 0;
-
 SELECT bid, info FROM  mybloc_custom  ORDER BY info
 SELECT body, format FROM  mybloc_custom  WHERE bid = 0;
 SELECT * FROM  mybloc_custom  WHERE bid = 0;
@@ -287,11 +252,9 @@ SELECT bid FROM  mybloc_custom  WHERE info = 0;
 SELECT bid FROM  mybloc_custom  WHERE info = 0;
 SELECT bid FROM  mybloc_custom  WHERE info = 0;
 SELECT bid FROM  mybloc  WHERE module = 0 AND delta = 0;
-
 SELECT 1 FROM  mybloc  WHERE theme NOT IN (0 );
 SELECT * FROM  mybloc  WHERE theme = 0;
 SELECT * FROM  mybloc  WHERE theme = 0;
-
 SELECT s.name FROM  system  s ,  mybloc  b WHERE s.name = b.theme AND s.type = 'theme' GROUP by s.name;
 SELECT format FROM  filter_format ;
 SELECT region FROM  mybloc  WHERE module = 0 AND delta = 0 AND theme = 0;

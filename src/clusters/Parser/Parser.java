@@ -193,9 +193,9 @@ public class Parser extends PreparatoryEngine {
 								adjMatrixFromInput[adjMatrixRowsCounted][j] = Integer.parseInt(s);
 								j++;
 							}
-							for (int x = 0; x< numQueries; x++)
-								System.out.print(adjMatrixFromInput[adjMatrixRowsCounted][x] + "\t");
-							System.out.println();
+//							for (int x = 0; x< numQueries; x++)
+//								System.out.print(adjMatrixFromInput[adjMatrixRowsCounted][x] + "\t");
+//							System.out.println();
 							adjMatrixRowsCounted++;
 						}
 						 
@@ -270,9 +270,9 @@ public class Parser extends PreparatoryEngine {
 			ClusterableObject co = inputObjects.get(i);
 //			System.out.printf("Obj. %3s",co.getId() +"|");
 			for (int j = 0; j < numObjects; j++){
-				System.out.print(adjMatrix[i][j] + " ");
+//				System.out.print(adjMatrix[i][j] + " ");
 			}
-			System.out.println();
+//			System.out.println();
 		}
 	}
 
@@ -289,18 +289,18 @@ public class Parser extends PreparatoryEngine {
 			System.exit(0);
 		}
 		
-		FileWriter fw = new FileWriter("/home/eva/distMatrix.ascii");
-		System.out.println("\n DISTANCE MATRIX");
+//		FileWriter fw = new FileWriter("/home/eva/distMatrix.ascii");
+//		System.out.println("\n DISTANCE MATRIX");
 		
-		for (int i = 0; i < numObjects; i++){
-			fw.write(i +"| ");
-			for (int j = 0; j < numObjects; j++){
-				fw.write(String.valueOf( distanceMatrix[i][j]) + " ");
-			}
-			fw.write("\n");
-				
-		}
-		fw.close();
+//		for (int i = 0; i < numObjects; i++){
+//			fw.write(i +"| ");
+//			for (int j = 0; j < numObjects; j++){
+//				fw.write(String.valueOf( distanceMatrix[i][j]) + " ");
+//			}
+//			fw.write("\n");
+//				
+//		}
+//		fw.close();
 	}
 	
 	private String queryNames[] = null;

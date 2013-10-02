@@ -25,7 +25,7 @@ public abstract class PreparatoryEngine {
 		System.out.println("Number of Tables: " + numTables + " " + inputTables.size());
 		System.out.println("Number of Queries: " + numQueries + " " + inputQueries.size());
 		for(ClusterableObject co: inputObjects){
-			System.out.println(co.printClusterableObject());
+//			System.out.println(co.printClusterableObject());
 		}
 	}
 	

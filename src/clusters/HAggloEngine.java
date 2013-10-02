@@ -99,7 +99,7 @@ public class HAggloEngine {
 	public void printResultsConsole(){
 		Iterator<ClusterSet> it = solutions.iterator();
 		while(it.hasNext()){
-			System.out.println(it.next().getCSDescriptionString());
+//			System.out.println(it.next().getCSDescriptionString());
 		}
 	}
 	
