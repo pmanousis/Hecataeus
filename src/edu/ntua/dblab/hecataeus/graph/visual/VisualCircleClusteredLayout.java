@@ -447,17 +447,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			}
 	}
 	
-	private double getSmallRad(List<VisualNode> komboi)
-	{
-//		if(komboi.size()<15){
-//			return(komboi.size()*4);
-//		}else{
-//			return(komboi.size()*1.5);
-//		}
-//return(Math.log((komboi.size()+1)));
-		//return(Math.sqrt(1/komboi.size()+1));
-		//return(komboi.size()*Math.log(1/komboi.size()));
-		
+	private double getSmallRad(List<VisualNode> komboi){
 		return(Math.log(komboi.size()*komboi.size()*komboi.size())+2*komboi.size());
 	}
 	
@@ -482,8 +472,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		myRad = RAD/Math.PI;
 		double diametros = 0;
 		int a = 0;double angle = 0.0, sum = 0.0;
-		for(ArrayList<VisualNode> lista : V)
-		{
+		for(ArrayList<VisualNode> lista : V){
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
