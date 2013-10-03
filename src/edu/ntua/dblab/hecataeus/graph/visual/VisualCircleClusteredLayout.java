@@ -24,6 +24,7 @@ import clusters.EngineConstructs.ClusterSet;
 import com.panayotis.gnuplot.JavaPlot;
 
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
+import edu.ntua.dblab.hecataeus.MyPane;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
@@ -462,7 +463,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		width = d.getWidth();
 //		relationRadius = 0.45 * (height < width ? height/3 : width/3);
 //		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
-		myRad = 0.45 * (height < width ? height*2 : width*2);
+		myRad = (height < width ? height : width);
+		
 //		double circle = 0;
 //		for(ArrayList<VisualNode> lista : vertices){
 //			List<VisualNode> nodes = new ArrayList<VisualNode>();
@@ -475,7 +477,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 //			myRad = circle/(2*Math.PI);
 //		}
 		double diametros = 0;
-		int a = 0;
+		int a = 0;double angle = 0.0, sum = 0.0,lastAngle = 0.0;
 		double [][] evatest = new double [vertices.size()][2];
 		for(ArrayList<VisualNode> lista : vertices){
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
@@ -493,19 +495,24 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			
 			diametros = 2*(nodes.size()*2);
 //			double angle = (2 * Math.PI)-((2 * Math.PI)-diametros);
-			double angle = 2*Math.pow((Math.cos((diametros/2)/myRad)), -1);
-			double cx = Math.cos(angle*a) * myRad;
-			double cy =	Math.sin(angle*a) * myRad;
+	//		double angle = 2*(Math.asin((diametros/2)/myRad));
+			System.out.println("R: "+myRad+" r: "+diametros/2+" x((2R^2-r^2)/2R): "+(2*myRad*myRad - diametros/2*diametros/2)/(2*myRad)+" f/2 version 1: "+ (Math.acos( ( (2*myRad*myRad - diametros/2*diametros/2)/(2*myRad*myRad ) ) * Math.PI/180))   +" f/2 version 2: "+ (Math.acos( ( (2*myRad*myRad - diametros/2*diametros/2)/(2*myRad*myRad ) ) )) );
+			angle = (Math.acos( ( (2*myRad*myRad - diametros/2*diametros/2)/(2*myRad*myRad ) ) * Math.PI/180));
+			angle*= 360/Math.PI;
+			lastAngle += angle*2;
+			//angle = 2* (Math.acos((2*myRad*myRad - (diametros/2)*(diametros/2))/2*myRad*myRad));
+			double cx = Math.cos(angle+lastAngle) * myRad;
+			double cy =	Math.sin(angle+lastAngle) * myRad;
 			CircleVertexData data;
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx, cy);
 	//		data = getCircleData(nodes.get(0));
 	//		data.setAngle(angle);
-			System.out.println(cx + "  " +cy+ " my angle  " +angle);
+			System.out.println(cx + "  " +cy+ " my angle  " +angle  + "   diametros   " + diametros+" possition: "+ (angle+lastAngle));
 			evatest[a][0] = cx;
 			evatest[a][1] = cy;
 			
-			
+			sum+=angle;
 //			System.out.println("  node   " + nodes.get(0).getType()) ;
 			int b = 0;
 			for(VisualNode v : nodes){
@@ -523,10 +530,11 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			}
 			a++;
 		}
-		JavaPlot p = new JavaPlot();
-        p.addPlot(evatest);
-        
-        p.plot();
+		System.out.println("LOGIKA 360       " + sum);
+//		JavaPlot p = new JavaPlot();
+//        p.addPlot(evatest);
+//        
+//        p.plot();
 	}
 	
 	private void old(){
