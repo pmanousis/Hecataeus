@@ -1,2 +1,0 @@
-SQL: SQLS/drupalDB.ddl,SQLS/aggregator.txt,SQLS/block.txt,SQLS/comment.txt,SQLS/contact.txt,SQLS/dashboard.txt,SQLS/dblog.txt,SQLS/field.txt,SQLS/file.txt,SQLS/filter.txt,SQLS/forum.txt,SQLS/help.txt,SQLS/image.txt,SQLS/includes.txt,SQLS/menu.txt,SQLS/modules.txt,SQLS/node.txt,SQLS/openid.txt,SQLS/path.txt,SQLS/php.txt,SQLS/rdf.txt,SQLS/search.txt,SQLS/simpletest.txt,SQLS/system.txt,SQLS/taxonomy.txt,SQLS/toolbars.txt,SQLS/translation.txt,SQLS/trigger.txt,SQLS/update.txt,SQLS/user.txt,
-POL: POLICIES/DefaultPolicy.plc

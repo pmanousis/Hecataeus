@@ -449,13 +449,16 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	
 	private double getSmallRad(List<VisualNode> komboi)
 	{
-		if(komboi.size()<15){
-			return(komboi.size()*4);
-		}else{
-			return(komboi.size()*1.5);
-		}
-
+//		if(komboi.size()<15){
+//			return(komboi.size()*4);
+//		}else{
+//			return(komboi.size()*1.5);
+//		}
+//return(Math.log((komboi.size()+1)));
+		//return(Math.sqrt(1/komboi.size()+1));
 		//return(komboi.size()*Math.log(1/komboi.size()));
+		
+		return(Math.log(komboi.size()*komboi.size()*komboi.size())+2*komboi.size());
 	}
 	
 	private void clustersOnaCircle(){
@@ -485,8 +488,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
 			diametros = 2*getSmallRad(nodes);
-			angle = (Math.acos(  (2*myRad*myRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*myRad*myRad )))*2;
-			double cx = Math.cos(sum+angle/2) * myRad*1.8;
+			angle = (Math.acos(  (2*myRad*myRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*myRad*myRad )))*2;   // 0.94 is used simulate strait lines to curves
+			double cx = Math.cos(sum+angle/2) * myRad*1.8;// 1.8 is used for white space borders
 			double cy =	Math.sin(sum+angle/2) * myRad*1.8;
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx, cy);
