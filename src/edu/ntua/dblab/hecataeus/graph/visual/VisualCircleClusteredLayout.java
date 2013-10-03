@@ -447,94 +447,65 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			}
 	}
 	
+	private double getSmallRad(List<VisualNode> komboi)
+	{
+		if(komboi.size()<15){
+			return(komboi.size()*4);
+		}else{
+			return(komboi.size()*1.5);
+		}
+
+		//return(komboi.size()*Math.log(1/komboi.size()));
+	}
+	
 	private void clustersOnaCircle(){
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
 		vertices = new ArrayList<ArrayList<VisualNode>>();
+		ArrayList<ArrayList<VisualNode>> V = new ArrayList<ArrayList<VisualNode>>();
 		for(Cluster cl : clusters){
 			vertices.add(cl.getNode());
+			Collections.shuffle(vertices);
+			V.addAll(vertices);
+			
 		}
-
-
-		double width = 0.0;
-		double height = 0.0;
 		double myRad = 0.0;
-		Dimension d = getSize();
-		height = d.getHeight();
-		width = d.getWidth();
-//		relationRadius = 0.45 * (height < width ? height/3 : width/3);
-//		queryRadius = 0.45 * (height < width ? queries.size()/3 : queries.size()/3);
-		myRad = (height < width ? height : width);
-		
-//		double circle = 0;
-//		for(ArrayList<VisualNode> lista : vertices){
-//			List<VisualNode> nodes = new ArrayList<VisualNode>();
-//			Collections.sort(lista, new CustomComparator());
-//			nodes.addAll(lista);
-//			circle += 2*(nodes.size()*1.3);
-//			
-//		}
-//		if(circle <= 2*Math.PI*myRad){
-//			myRad = circle/(2*Math.PI);
-//		}
-		double diametros = 0;
-		int a = 0;double angle = 0.0, sum = 0.0,lastAngle = 0.0;
-		double [][] evatest = new double [vertices.size()][2];
+		double RAD = 0;
 		for(ArrayList<VisualNode> lista : vertices){
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
-//			System.out.println(nodes);
-//			if(a==0){
-//				double angle = (2 * Math.PI )/vertices.size();
-//				double cx = Math.cos(angle* a) * myRad;// + width / 2;
-//				double cy =	Math.sin(angle* a) * myRad;// + height/2;
-//			}
-			
-		
-			
-			
-			diametros = 2*(nodes.size()*2);
-//			double angle = (2 * Math.PI)-((2 * Math.PI)-diametros);
-	//		double angle = 2*(Math.asin((diametros/2)/myRad));
-			System.out.println("R: "+myRad+" r: "+diametros/2+" x((2R^2-r^2)/2R): "+(2*myRad*myRad - diametros/2*diametros/2)/(2*myRad)+" f/2 version 1: "+ (Math.acos( ( (2*myRad*myRad - diametros/2*diametros/2)/(2*myRad*myRad ) ) * Math.PI/180))   +" f/2 version 2: "+ (Math.acos( ( (2*myRad*myRad - diametros/2*diametros/2)/(2*myRad*myRad ) ) )) );
-			angle = (Math.acos( ( (2*myRad*myRad - diametros/2*diametros/2)/(2*myRad*myRad ) ) * Math.PI/180));
-			angle*= 360/Math.PI;
-			lastAngle += angle*2;
-			//angle = 2* (Math.acos((2*myRad*myRad - (diametros/2)*(diametros/2))/2*myRad*myRad));
-			double cx = Math.cos(angle+lastAngle) * myRad;
-			double cy =	Math.sin(angle+lastAngle) * myRad;
-			CircleVertexData data;
+			RAD += getSmallRad(nodes);
+		}
+		myRad = RAD/Math.PI;
+		double diametros = 0;
+		int a = 0;double angle = 0.0, sum = 0.0;
+		for(ArrayList<VisualNode> lista : V)
+		{
+			List<VisualNode> nodes = new ArrayList<VisualNode>();
+			Collections.sort(lista, new CustomComparator());
+			nodes.addAll(lista);
+			diametros = 2*getSmallRad(nodes);
+			angle = (Math.acos(  (2*myRad*myRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*myRad*myRad )))*2;
+			double cx = Math.cos(sum+angle/2) * myRad*1.8;
+			double cy =	Math.sin(sum+angle/2) * myRad*1.8;
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx, cy);
-	//		data = getCircleData(nodes.get(0));
-	//		data.setAngle(angle);
-			System.out.println(cx + "  " +cy+ " my angle  " +angle  + "   diametros   " + diametros+" possition: "+ (angle+lastAngle));
-			evatest[a][0] = cx;
-			evatest[a][1] = cy;
-			
+			System.out.println("myRad: "+myRad+" cx: "+cx + " cy: " +cy+ " my angle: " +angle  + " diametros: " + diametros+" possition: "+ sum);
 			sum+=angle;
-//			System.out.println("  node   " + nodes.get(0).getType()) ;
 			int b = 0;
 			for(VisualNode v : nodes){
 				if(b != 0){
-					double smallRad = nodes.size()*2;
+					double smallRad = getSmallRad(nodes);
 					Point2D coord = transform(v);
 					double angleA = (2 * Math.PI ) / nodes.size();
 					coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-			//		data = getCircleData(v);
-			//		data.setAngle(angleA);
 					HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
-
 				}
 				b++;
 			}
 			a++;
 		}
-		System.out.println("LOGIKA 360       " + sum);
-//		JavaPlot p = new JavaPlot();
-//        p.addPlot(evatest);
-//        
-//        p.plot();
+		System.out.println("LOGIKA 2*Math.Pi: "+Math.PI*2+" and it is: " + sum);
 	}
 	
 	private void old(){

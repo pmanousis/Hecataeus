@@ -371,7 +371,7 @@ public class HecataeusViewer {
 					this.graphs.add(graph);
 					//TODO theloun allages edw
 					//pass the location of the vertices to the layout of the graph
-					HecataeusViewer.this.setLayout(VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
+					HecataeusViewer.this.setLayout(VisualLayoutType.ClusteredCircleLayoutC, VisualLayoutType.ClusteredCircleLayoutC);
 			//		layout = new VisualLayout(graph);
 					
 					
@@ -407,7 +407,7 @@ public class HecataeusViewer {
 //
 //						tabbedPane.setTabComponentAt(countOpenTabs, test);
 //						
-						HecataeusViewer.this.setLayout(VisualLayoutType.Top2DownTopologicalLayout, VisualLayoutType.Top2DownTopologicalLayout);
+						HecataeusViewer.this.setLayout(VisualLayoutType.ClusteredCircleLayoutC, VisualLayoutType.ClusteredCircleLayoutC);
 						
 					///	layout = new VisualLayout(graph);
 					}
