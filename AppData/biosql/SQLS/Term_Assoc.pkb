@@ -1,0 +1,2 @@
+--SELECT t.* FROM SG_TERM_ASSOC t;
+--SELECT SG_Sequence_TrmA.nextval INTO pk FROM DUAL;

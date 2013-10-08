@@ -1,0 +1,3 @@
+SELECT t.* FROM BIOENTRY t;
+SELECT t.* FROM BIOENTRY t;
+--SELECT SG_Sequence.nextval INTO pk FROM DUAL;

@@ -1,0 +1,5 @@
+--~ SELECT SEQUENCE.nextval INTO :new.Oid FROM DUAL;
+--~ SELECT SG_SEQUENCE.nextval INTO :new.Oid FROM DUAL;
+--~ SELECT * FROM SG_Term_Assoc;
+--~ SELECT SG_SEQUENCE_TRMA.nextval INTO :new.Oid FROM DUAL;
+--~ SELECT SG_SEQUENCE_TRMA.nextval INTO :new.Oid FROM DUAL;

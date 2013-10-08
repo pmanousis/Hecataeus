@@ -1,0 +1,2 @@
+SELECT t.* FROM TAXON_NAME t;
+SELECT t.Name FROM Taxon_Name t;

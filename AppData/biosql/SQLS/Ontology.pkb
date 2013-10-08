@@ -1,0 +1,2 @@
+SELECT t.* FROM ONTOLOGY t;
+--SELECT SG_Sequence.nextval INTO pk FROM DUAL;
