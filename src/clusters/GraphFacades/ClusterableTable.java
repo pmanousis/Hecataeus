@@ -20,6 +20,4 @@ public class ClusterableTable extends ClusterableObject{
 	
 	private VisualNode theObject;
 
-	
-	
 }

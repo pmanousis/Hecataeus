@@ -17,20 +17,21 @@ import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 import org.apache.commons.lang3.StringUtils;
 
+import cern.colt.matrix.impl.SparseDoubleMatrix2D;
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
-
-import com.panayotis.gnuplot.JavaPlot;
-
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.MyPane;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
+
+
+
+
 
 public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,VisualEdge> {
 	
@@ -58,7 +59,12 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 	
 	private ArrayList<ArrayList<VisualNode>> vertices;
 
-	private int[][] dist;
+	private int[][] distRQ;private int[][] distRV;private int[][] distVQ;
+	
+	private String content;
+	
+	private VisualGraph testG = new VisualGraph();
+	
 	
 	Map<VisualNode, CircleVertexData> circleVertexDataMap =
 			LazyMap.decorate(new HashMap<VisualNode,CircleVertexData>(), 
@@ -104,6 +110,32 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 				views.add(v);
 			}
 		}
+		
+		for(VisualNode r : relations){
+			for(int i =0; i < r.getInEdges().size(); i++){
+				if(r.getInEdges().get(i).getType()== EdgeType.EDGE_TYPE_USES)
+				{
+					if(testG.containsVertex(r)==false)
+					{
+						testG.addVertex(r);
+					}
+				}
+			}
+		}
+		System.out.println("125 Relations: "+testG.getVertices());
+		for(VisualNode q: queries)
+		{
+			testG.addVertex(q);
+		}
+		System.out.println("130 Relations + Queries: "+testG.getVertices());
+		for(VisualNode v:views)
+		{
+			if(testG.containsVertex(v)==false)
+			{
+				testG.addVertex(v);
+			}
+		}
+		System.out.println("138 line, testG vertices: "+testG.getVertices());
 	}
 	
 
@@ -115,7 +147,8 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 		for(VisualNode v : relations){
 			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
 			for(VisualEdge e : edges){
-				if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
+		//		if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
+				if(e.getType() == EdgeType.EDGE_TYPE_USES){
 					if(wtf.contains(v)==false){
 						wtf.add(v);
 					}
@@ -123,43 +156,48 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			}
 			
 		}
-		//Create distance matrix
-		dist = new int[wtf.size()][queries.size()];
-		int pos = 0;
-		int j = 0;
-		for(VisualNode v : queries){
-			List<VisualEdge> outE = new ArrayList<VisualEdge>(v._outEdges);
-			for(VisualEdge e : outE){
-				if(e.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
-					VisualNode r = e.getToNode();
-					int i = 0;
-					for(VisualNode n : wtf){
-						if(r.equals(n)){
-							pos = i;
-						}
-						i++;
-					}
-					dist[pos][j] = 1;
-				}
+		
+		
+		System.out.println(edu.uci.ics.jung.algorithms.matrix.GraphMatrixOperations.graphToSparseMatrix(testG));
+		
+		SparseDoubleMatrix2D adjMatrixofSubgraph = edu.uci.ics.jung.algorithms.matrix.GraphMatrixOperations.graphToSparseMatrix(testG);
+
+		String eva = " \n";
+		
+		System.out.println("RELATIONS   " +  wtf.size() + "  VIEWS   "+ views.size() + "  QUERIES   " + queries.size());
+		
+		
+		System.out.println("RELATIONS   " +  wtf);
+		
+		System.out.println("  VIEWS   "+ views);
+		
+		System.out.println("  QUERIES   " + queries);
+		
+		
+		for(int i = 0; i < wtf.size()+views.size()+queries.size(); i++){
+			for(int j = 0; j < wtf.size()+views.size()+queries.size(); j++){
+				eva += (int)adjMatrixofSubgraph.get(i, j) + ",";
 			}
-			j++;
+			eva = eva.substring(0, eva.length()-1);
+			eva += "\n";
 		}
-		for(int i = 0; i < wtf.size(); i++){
-			for(int k = 0; k < queries.size(); k++){
-				if(dist[i][k] != 1){
-					dist[i][k] = 0;
-				}
-			}
-		}
+		
+		
+//		distRQ = createDistanceMatix(wtf, queries, NodeType.NODE_TYPE_RELATION);     // Distance relations - queries
+//		
+//		if(views.size()>0){
+//			distRV = createDistanceMatix(wtf, views, NodeType.NODE_TYPE_RELATION);     // Distance relations - views
+//			distVQ = createDistanceMatix(views, queries, NodeType.NODE_TYPE_VIEW);     // Distance views - queries
+//		}
 		String tableNames = StringUtils.strip(wtf.toString(), "[");
 		tableNames = StringUtils.strip(tableNames, "]");
-		
+		String viewNames = StringUtils.strip(views.toString(), "[]");
 		String qn = StringUtils.strip(queries.toString(), "[");
 		qn = StringUtils.strip(qn, "]");
 		
 		try {
 			 
-			String content = 	"%STRICT FORMAT \n " +
+			content = 	"%STRICT FORMAT \n " +
 								"% TABLES = number of tables \n" +
 								"% TableNames = list of tables \n " +
 								"% QUERIES = number of queries -- always AFTER the tables \n " +
@@ -173,22 +211,41 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 								
 								"TABLES = " + wtf.size() + "\n" +
 								"TableNames = " + tableNames + "\n"+
+								"VIEWS = " + views.size() + "\n" +
+								"ViewNames = " + viewNames + "\n"+
 								"QUERIES = "+ queries.size() + "\n"+
 								"QueryNames = "+ qn + "\n\n"+
-								"% TABLES_X_QUERIES MATRIX \n";
+								"% TABLES_X_QUERIES MATRIX \n"+
  
-			 
-			for(int i = 0; i < wtf.size(); i++){
-				for(int k = 0; k < queries.size(); k++){
-					if(k == 0){
-						content += dist[i][k];
-					}
-					else{
-						content += ", " +dist[i][k];
-					}
-				}				
-				content += "\n";
-			}
+								eva;
+								
+//								addDMtoString(distRQ, wtf, queries);
+//								if(views.size()>0){
+//			
+//									content += "% \nTABLES_X_VIEWS MATRIX \n";
+//									
+//									addDMtoString(distRV, wtf, views);
+//									
+//									content += "% \nVIEWS_X_QUERIES MATRIX \n";
+//									
+//									addDMtoString(distVQ, views, queries);
+//									
+//								}
+								
+			
+			
+//			 
+//			for(int i = 0; i < wtf.size(); i++){
+//				for(int k = 0; k < queries.size(); k++){
+//					if(k == 0){
+//						content += dist[i][k];
+//					}
+//					else{
+//						content += ", " +dist[i][k];
+//					}
+//				}				
+//				content += "\n";
+//			}
 			
 			File file = new File("/home/eva/clusters/test.ascii");
  
@@ -482,7 +539,7 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 			double cy =	Math.sin(sum+angle/2) * myRad*1.8;
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx, cy);
-			System.out.println("myRad: "+myRad+" cx: "+cx + " cy: " +cy+ " my angle: " +angle  + " diametros: " + diametros+" possition: "+ sum);
+			System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
 			sum+=angle;
 			int b = 0;
 			for(VisualNode v : nodes){
@@ -601,6 +658,61 @@ public class VisualCircleClusteredLayout extends AbstractLayout<VisualNode,Visua
 //		}
 //		return null;
 //	}
+	
+	
+	
+	
+	
+	protected int[][] createDistanceMatix(List<VisualNode> rows, List<VisualNode> cols, NodeType toNodeType){
+		int[][] dist;
+		
+		dist = new int[rows.size()][cols.size()];
+		int pos = 0;
+		int j = 0;
+		for(VisualNode v : cols){
+			List<VisualEdge> outE = new ArrayList<VisualEdge>(v._outEdges);
+			for(VisualEdge e : outE){
+				if(e.getToNode().getType() == toNodeType){     //
+					VisualNode r = e.getToNode();
+					int i = 0;
+					for(VisualNode n : rows){
+						if(r.equals(n)){
+							pos = i;
+						}
+						i++;
+					}
+					dist[pos][j] = 1;
+				}
+			}
+			j++;
+		}
+		for(int i = 0; i < rows.size(); i++){
+			for(int k = 0; k < cols.size(); k++){
+				if(dist[i][k] != 1){
+					dist[i][k] = 0;
+				}
+			}
+		}
+		
+		
+		return dist;
+	}
+	
+	
+	public void addDMtoString(int[][] dist, List<VisualNode> rows, List<VisualNode> cols){
+		for(int i = 0; i < rows.size(); i++){
+			for(int k = 0; k < cols.size(); k++){
+				if(k == 0){
+					content += dist[i][k];
+				}
+				else{
+					content += ", " +dist[i][k];
+				}
+			}				
+			content += "\n";
+		}
+		
+	}
 	
 	@Override
 	public void reset() {

@@ -23,6 +23,18 @@ public class CustomComparator implements Comparator<VisualNode> {
     	{
     		return 1;
     	}
+    	if(o1.getType() == NodeType.NODE_TYPE_RELATION && o2.getType() == NodeType.NODE_TYPE_VIEW){
+    		return -1;
+    	}
+    	if(o1.getType() == NodeType.NODE_TYPE_VIEW && o2.getType() == NodeType.NODE_TYPE_QUERY){
+    		return -1;
+    	}
+    	if(o1.getType() == NodeType.NODE_TYPE_VIEW && o2.getType() == NodeType.NODE_TYPE_RELATION){
+    		return 1;
+    	}
+    	if(o1.getType() == NodeType.NODE_TYPE_QUERY && o2.getType() == NodeType.NODE_TYPE_VIEW){
+    		return 1;
+    	}
     	return 0;
     }
 }

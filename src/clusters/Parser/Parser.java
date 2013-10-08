@@ -23,6 +23,9 @@ public class Parser extends PreparatoryEngine {
 		this.tableNames = null;
 		
 		this.adjMatrixFromInput = null;
+		
+
+		
 		this.adjMatrix = null;
 		this.graph = g;
 	}
@@ -86,11 +89,11 @@ public class Parser extends PreparatoryEngine {
 
 	
 	public void parseFile(String fileName){
-		
 
-		int adjMatrixRowsCounted = 0;
+
+		int adjMatrixRowsCounted = 0;int adjMatrixRowsCountedTV = 0;int adjMatrixRowsCountedVQ = 0;
 		Boolean AMCreated = false;
-				
+
 		Scanner inputStream = null;
 		try{
 			inputStream =
@@ -105,7 +108,9 @@ public class Parser extends PreparatoryEngine {
 		while (inputStream.hasNextLine( ))
 		{
 			if ((numTables != -1)&&(numQueries != -1)&&(AMCreated == false)){
-				adjMatrixFromInput = new int[numTables][numQueries];
+				adjMatrixFromInput = new int[numTables+numViews+numQueries][numTables+numViews+numQueries];
+
+				
 				//System.out.println("AOUAOA " + numTables + " " + numQueries);
 				AMCreated = true;
 			}
@@ -135,7 +140,7 @@ public class Parser extends PreparatoryEngine {
 						}
 
 						tableNames = dummySplit[1].split(",");
-						
+
 						if(tableNames.length != numTables){
 							System.out.println("#TABLES and #TableName strings are not syntaxed consistently");
 							System.exit(0);	
@@ -148,67 +153,100 @@ public class Parser extends PreparatoryEngine {
 
 					}
 
-					else{
-						if (line.startsWith("QUERIES")){
-							String dummySplit[] = line.split("=");
-							String parts[] = line.split("\\s");
-							if (parts.length != 3){
-								System.out.println("QUERIES not syntaxed correctly");
-								System.exit(0);	
+						else{
+							if(line.startsWith("VIEWS")){
+								String dummySplit[] = line.split("=");
+								String parts[] = line.split("\\s");
+								if (parts.length != 3){
+									System.out.println("VIEWS not syntaxed correctly");
+									System.exit(0);	
+								}
+								viewNames = dummySplit[1].split(",");
+
+								numViews = Integer.parseInt(parts[2]);
+								System.out.println(numViews);
 							}
-							queryNames = dummySplit[1].split(",");
 							
-							numQueries = Integer.parseInt(parts[2]);
-							System.out.println(numQueries);
-						}
-						else if(line.startsWith("QueryNames")){
-							String dummySplit[] = line.split("=");
-							if (dummySplit.length != 2){
-								System.out.println("QueryNames not syntaxed correctly");
-								System.exit(0);	
+							else if(line.startsWith("ViewNames")){
+								String dummySplit[] = line.split("=");
+								if (dummySplit.length != 2){
+									System.out.println("ViewNames not syntaxed correctly");
+									System.exit(0);	
+								}
+
+								viewNames = dummySplit[1].split(",");
+
+								if(viewNames.length != numViews){
+									System.out.println("#Views and #ViewName strings are not syntaxed consistently");
+									System.exit(0);	
+								}
+								for (String s: viewNames){
+									s = s.replace(",","");
+									s = s.trim();
+									System.out.println(s);	
+								}
+							}
+							
+							else if (line.startsWith("QUERIES")){
+								String dummySplit[] = line.split("=");
+								String parts[] = line.split("\\s");
+								if (parts.length != 3){
+									System.out.println("QUERIES not syntaxed correctly");
+									System.exit(0);	
+								}
+								queryNames = dummySplit[1].split(",");
+
+								numQueries = Integer.parseInt(parts[2]);
+								System.out.println(numQueries);
+							}
+							else if(line.startsWith("QueryNames")){
+								String dummySplit[] = line.split("=");
+								if (dummySplit.length != 2){
+									System.out.println("QueryNames not syntaxed correctly");
+									System.exit(0);	
+								}
+
+								queryNames = dummySplit[1].split(",");
+
+								if(queryNames.length != numQueries){
+									System.out.println("#QUERIES and #QueryName strings are not syntaxed consistently");
+									System.exit(0);	
+								}
+								for (String s: queryNames){
+									s = s.replace(",","");
+									s = s.trim();
+									System.out.println(s);	
+								}
+							}
+							else{
+								if (AMCreated == false){
+									System.out.println("Exiting due to unexpected syntax of the file");
+									System.out.println(line);
+									System.exit(0);
+								}
+								String cells[] = line.split(",");
+								int j = 0;
+								for (String s: cells){
+									s = s.trim();
+									adjMatrixFromInput[adjMatrixRowsCounted][j] = Integer.parseInt(s);
+									j++;
+								}
+								//							for (int x = 0; x< numQueries; x++)
+								//								System.out.print(adjMatrixFromInput[adjMatrixRowsCounted][x] + "\t");
+								//							System.out.println();
+								adjMatrixRowsCounted++;
 							}
 
-							queryNames = dummySplit[1].split(",");
-							
-							if(queryNames.length != numQueries){
-								System.out.println("#QUERIES and #QueryName strings are not syntaxed consistently");
-								System.exit(0);	
-							}
-							for (String s: queryNames){
-								s = s.replace(",","");
-								s = s.trim();
-								System.out.println(s);	
-							}
 						}
-						else{
-							if (AMCreated == false){
-								System.out.println("Exiting due to unexpected syntax of the file");
-								System.out.println(line);
-								System.exit(0);
-							}
-							String cells[] = line.split(",");
-							int j = 0;
-							for (String s: cells){
-								s = s.trim();
-								adjMatrixFromInput[adjMatrixRowsCounted][j] = Integer.parseInt(s);
-								j++;
-							}
-//							for (int x = 0; x< numQueries; x++)
-//								System.out.print(adjMatrixFromInput[adjMatrixRowsCounted][x] + "\t");
-//							System.out.println();
-							adjMatrixRowsCounted++;
-						}
-						 
 					}
 				}
-			}
-		}//end while
+			}//end while
 
 
 
-		inputStream.close( );
+			inputStream.close( );
 
-	}
+		}
 
 	
 	
@@ -242,6 +280,7 @@ public class Parser extends PreparatoryEngine {
 		
 		inputObjects.addAll(inputTables);
 		inputObjects.addAll(inputQueries);
+		inputObjects.addAll(inputViews);
 		
 		return idCounter;
 	}
@@ -256,24 +295,48 @@ public class Parser extends PreparatoryEngine {
 	 * and a position 4 in (a) the inputObjects list and (b) the distance matrix.
 	 */
 	public void produceAdjMatrix(){
-		numObjects = numTables + numQueries;
+//		numObjects = numR + numC;
+//		adjMatrix = new int[numObjects][numObjects];
+//		
+//		for (int i =0; i <numR; i++){
+//			for (int j = 0; j < numC; j++){
+//				adjMatrix[i][j+numR] = adjMfI[i][j];
+//				adjMatrix[j+numR][i] = adjMfI[i][j];	//undirected
+//			}
+//		}
+		
+		numObjects = numTables + numQueries + numViews;
 		adjMatrix = new int[numObjects][numObjects];
-		for (int i =0; i <numTables; i++){
-			for (int j = 0; j < numQueries; j++){
-				adjMatrix[i][j+numTables] = adjMatrixFromInput[i][j];
-				adjMatrix[j+numTables][i] = adjMatrixFromInput[i][j];	//undirected
-			}
-		}
-	
-		// The following is for reporting purposes
-		for (int i =0; i <numObjects; i++){
-			ClusterableObject co = inputObjects.get(i);
-//			System.out.printf("Obj. %3s",co.getId() +"|");
-			for (int j = 0; j < numObjects; j++){
-//				System.out.print(adjMatrix[i][j] + " ");
-			}
-//			System.out.println();
-		}
+		adjMatrix = adjMatrixFromInput;
+		/****************** i eva ta ekane comment ***************/
+//		for (int i =0; i <numTables; i++){
+//			for (int j = 0; j < numQueries; j++){
+//					adjMatrix[i][j+numTables] = adjMatrixFromInput[i][j];
+//					adjMatrix[j+numTables][i] = adjMatrixFromInput[i][j];	//undirected
+//				}
+//		}
+//		
+		
+		
+		
+//		numObjects = numTables + numQueries;
+//		adjMatrix = new int[numObjects][numObjects];
+//		for (int i =0; i <numTables; i++){
+//			for (int j = 0; j < numQueries; j++){
+//				adjMatrix[i][j+numTables] = adjMatrixFromInput[i][j];
+//				adjMatrix[j+numTables][i] = adjMatrixFromInput[i][j];	//undirected
+//			}
+//		}
+//	
+//		// The following is for reporting purposes
+//		for (int i =0; i <numObjects; i++){
+//			ClusterableObject co = inputObjects.get(i);
+////			System.out.printf("Obj. %3s",co.getId() +"|");
+//			for (int j = 0; j < numObjects; j++){
+////				System.out.print(adjMatrix[i][j] + " ");
+//			}
+////			System.out.println();
+//		}
 	}
 
 	public void produceDistanceMatrix(DistanceFunctionEnum df) throws IOException{
@@ -302,7 +365,7 @@ public class Parser extends PreparatoryEngine {
 //		}
 //		fw.close();
 	}
-	
+	private String viewNames[] = null;
 	private String queryNames[] = null;
 	private String tableNames[] = null;
 	private int adjMatrix[][] = null;
