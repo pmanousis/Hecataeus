@@ -2,8 +2,8 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
@@ -36,7 +36,8 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 		this.setSize(this.graph.getSize());
 		this.topLayoutType = topLayoutType;
 		this.subLayoutType = subLayoutType;
-		this.subGraphs = new HashMap<VisualNode, VisualGraph>();
+//		this.subGraphs = new HashMap<VisualNode, VisualGraph>();
+		this.subGraphs = new TreeMap<VisualNode, VisualGraph>();
 	}
 	
 	/***

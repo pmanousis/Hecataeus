@@ -13,6 +13,7 @@ import javax.swing.JFileChooser;
 import clusters.GraphFacades.ClusterableObject;
 import clusters.GraphFacades.ClusterableQuery;
 import clusters.GraphFacades.ClusterableTable;
+import clusters.GraphFacades.ClusterableView;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 public class Parser extends PreparatoryEngine {
@@ -170,20 +171,21 @@ public class Parser extends PreparatoryEngine {
 							else if(line.startsWith("ViewNames")){
 								String dummySplit[] = line.split("=");
 								if (dummySplit.length != 2){
-									System.out.println("ViewNames not syntaxed correctly");
-									System.exit(0);	
+									System.out.println("ViewNames not syntaxed correctly  den exei views alla den peirazei");
+									//System.exit(0);	
 								}
-
-								viewNames = dummySplit[1].split(",");
-
-								if(viewNames.length != numViews){
-									System.out.println("#Views and #ViewName strings are not syntaxed consistently");
-									System.exit(0);	
-								}
-								for (String s: viewNames){
-									s = s.replace(",","");
-									s = s.trim();
-									System.out.println(s);	
+								else{
+									viewNames = dummySplit[1].split(",");
+	
+									if(viewNames.length != numViews){
+										System.out.println("#Views and #ViewName strings are not syntaxed consistently  den exei views alla den peirazei");
+										//System.exit(0);	
+									}
+									for (String s: viewNames){
+										s = s.replace(",","");
+										s = s.trim();
+										System.out.println(s);	
+									}
 								}
 							}
 							
@@ -269,6 +271,19 @@ public class Parser extends PreparatoryEngine {
 			inputQueries.add(ct);
 			idCounter++;
 		}
+		
+		if(numViews != 0){
+		for (String s: viewNames){
+//			System.out.println(s);
+			ClusterableView ct = new ClusterableView(graph.findVertexByName(s.trim(),NodeType.NODE_TYPE_VIEW));
+//			System.out.println(graph.findVertexByName(s.trim()));
+			ct.setId(idCounter);
+			inputViews.add(ct);
+			idCounter++;
+		}
+		}
+		
+		
 //		for (int i=0; i < numQueries; i++){
 //			
 //			HACQuery q = new HACQuery("Q"+idCounter);		//can try + i instead, but now it's clear
@@ -308,6 +323,7 @@ public class Parser extends PreparatoryEngine {
 		numObjects = numTables + numQueries + numViews;
 		adjMatrix = new int[numObjects][numObjects];
 		adjMatrix = adjMatrixFromInput;
+		System.out.println(adjMatrix);
 		/****************** i eva ta ekane comment ***************/
 //		for (int i =0; i <numTables; i++){
 //			for (int j = 0; j < numQueries; j++){
