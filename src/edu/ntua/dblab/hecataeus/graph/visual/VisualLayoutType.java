@@ -42,7 +42,9 @@ public enum VisualLayoutType {
 	ClusteredCircleLayoutC,
 	GridEvaLayout,
 	ClustersonaCircleLayout,
-	CirclingClusterLayout;
+	CirclingClusterLayout,
+	DebianCircleLayout,
+	HalfCircleLayout;
 
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -104,6 +106,10 @@ public enum VisualLayoutType {
 				return "Clusters on a Circle";
 			case CirclingClusterLayout:
 				return "Clusters in Circles";
+			case DebianCircleLayout:
+				return "Spiral";
+			case HalfCircleLayout:
+				return "Half Cilcle";
 			default:
 				return name();
 			}
@@ -193,6 +199,10 @@ public enum VisualLayoutType {
 				return new VisualClustersOnACircleLayout(g);
 			case CirclingClusterLayout:
 				return new VisualCirclingClustersLayout(g);
+			case DebianCircleLayout:
+				return new VisualDebianCircleLayout(g);
+			case HalfCircleLayout:
+				return new VisualHalfCircleClusters(g);
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
