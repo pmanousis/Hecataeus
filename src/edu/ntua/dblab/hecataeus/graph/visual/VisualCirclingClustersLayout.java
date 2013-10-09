@@ -1,6 +1,5 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -146,15 +145,13 @@ public class VisualCirclingClustersLayout extends AbstractLayout<VisualNode, Vis
 		for(ArrayList<VisualNode>listaC: SoC){
 			tempRad += getSmallRad(listaC);
 		}	
-			ccircleR = 2*tempRad;
-			if(ccircleR>=2*Math.PI*myRad){
-				System.out.println("AKTINA MEGALOU KIKLOY  "+(ccircleR/2*Math.PI));
-				return (ccircleR/2*Math.PI);
-			}
-			else{
-				System.out.println("aktina megalou kiklou"+myRad);
-				return myRad;
-			}
+		ccircleR = 2*tempRad;
+		if(ccircleR>=2*Math.PI*myRad){
+			return (ccircleR/2*Math.PI);
+		}
+		else{
+			return myRad;
+		}
 	}
 	
 	

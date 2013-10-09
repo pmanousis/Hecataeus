@@ -161,7 +161,7 @@ public class VisualClustersOnACircleLayout extends AbstractLayout<VisualNode, Vi
 		myRad = RAD/Math.PI;
 		double diametros = 0;
 		int a = 0;double angle = 0.0, sum = 0.0;
-		
+		// only if clustering algo won't produce more than one clusters
 		if(clusters.size() < 2){
 			Dimension d = getSize();
 			double height = d.getHeight();
@@ -191,9 +191,7 @@ public class VisualClustersOnACircleLayout extends AbstractLayout<VisualNode, Vi
 				coord1.setLocation(cx + m, cy);
 				System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
 				sum+=angle;
-				
 				circles(nodes, cx, cy);
-
 				a++;
 			}
 		}
@@ -203,12 +201,10 @@ public class VisualClustersOnACircleLayout extends AbstractLayout<VisualNode, Vi
 	@Override
 	public void initialize() {
 		HAggloEngine engine = new HAggloEngine(this.graph);
-		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);
-		
+		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
 		cs = engine.execute(1);
-		
 		clustersOnaCircle();
 	}
 
