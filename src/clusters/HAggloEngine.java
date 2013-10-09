@@ -12,21 +12,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 //import java.util.Collections;
 //import java.util.Enumeration;
-
-
-
+import java.util.List;
 
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
-import clusters.GraphConstructs.HACNode;
-import clusters.GraphFacades.ClusterableNode;
 import clusters.GraphFacades.ClusterableObject;
 import clusters.HACAlgorithms.HACAlgorithm;
 import clusters.HACAlgorithms.SimpleHAC_AvgLink;
 import clusters.Parser.Parser;
 import clusters.Parser.PreparatoryEngine;
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 /**
  * @author pvassil
  *
@@ -103,15 +99,15 @@ public class HAggloEngine {
 		}
 	}
 	
-	public void executeParser(){
+	public void executeParser(List<VisualNode> relations, List<VisualNode> queries, List<VisualNode> views, int[][] adjM){
 		Parser prsr = new Parser(this.graph);
 	//	String fileName = prsr.chooseFile();
 	//	prsr.parseFile(fileName);
-		prsr.parseFile("/home/eva/clusters/test.ascii");
+		prsr.parseFile("/home/eva/clusters/test.ascii", relations, queries, views);
 		int numNodes = prsr.produceFacetedObjects();
 		System.out.println("Preprocessing gave " + numNodes + " nodes overall");
 		prsr.testPreparatoryEngine();
-		prsr.produceAdjMatrix();
+		prsr.produceAdjMatrix(adjM);
 		try {
 			prsr.produceDistanceMatrix(PreparatoryEngine.DistanceFunctionEnum.COMMON_NEIGHBORS);
 		} catch (IOException e) {
