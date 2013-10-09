@@ -13,105 +13,38 @@ import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNewCircleLayout.CircleVertexData;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
-public class VisualCirclingClustersLayout extends AbstractLayout<VisualNode, VisualEdge>{
+public class VisualCirclingClustersLayout extends VisualCircleLayout{
 
 	
 	protected VisualGraph graph;
-	private List<VisualNode> nodes;
-	private List<VisualNode> queries = new ArrayList<VisualNode>();
-	private List<VisualNode> relations = new ArrayList<VisualNode>();
-	private List<VisualNode> views = new ArrayList<VisualNode>();
+
+	private List<VisualNode> queries;
+	private List<VisualNode> relations;
+	private List<VisualNode> views;
 	private ClusterSet cs;
 	
 	
-	protected List<String> files = new ArrayList<String>();
-	private List<VisualNode> RQV = new ArrayList<VisualNode>();
-	
+	protected List<String> files;
+	private List<VisualNode> RQV;
+	protected VisualCircleLayout vcl;
 	
 	protected VisualCirclingClustersLayout(VisualGraph g) {
 		super(g);
 		this.graph = g;
 		
-
-		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
-		for(VisualNode v : nodes){
-			
-			if(v.getType().getCategory() == NodeCategory.MODULE ){
-				
-				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
-				for(VisualEdge e : edges){
-					if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
-						if(files.contains(e.getFromNode().getName())==false){
-							files.add(e.getFromNode().getName());
-						}
-						
-					}
-				}
-			}
-			if(v.getType() == NodeType.NODE_TYPE_QUERY){
-				queries.add(v);
-			}
-			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
-				for(VisualEdge e : edges){
-					if(e.getType() == EdgeType.EDGE_TYPE_USES){
-						if(relations.contains(v)==false){
-							relations.add(v);
-						}
-					}
-				}
-			}
-			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
-				views.add(v);
-			}
-		}
+		vcl = new VisualCircleLayout(this.graph);
 		
+		queries = new ArrayList<VisualNode>(vcl.queries);
+		relations = new ArrayList<VisualNode>(vcl.relations);
+		views = new ArrayList<VisualNode>(vcl.views);
 		
-		for(VisualNode r : relations){
-			for(int i =0; i < r.getInEdges().size(); i++){
-				if(r.getInEdges().get(i).getType()== EdgeType.EDGE_TYPE_USES){
-					if(RQV.contains(r) == false){
-						RQV.add(r);
-					}
-				}
-			}
-		}
-
-		for(VisualNode q: queries){
-			RQV.add(q);
-		}
-
-		for(VisualNode v:views){
-			if(RQV.contains(v)==false){
-				RQV.add(v);
-			}
-		}
-		
-		VisualFileColor vfc = new VisualFileColor();
-		vfc.setFileNames(files);
+		RQV = new ArrayList<VisualNode>(vcl.RQV);
+		files = new ArrayList<String>(vcl.files);
 		
 	}
 
-	private double getSmallRad(List<VisualNode> komboi){
-		return(Math.log(komboi.size()*komboi.size()*komboi.size())+2*komboi.size());
-	}
-	
-	
-	
-	private ArrayList<VisualNode> relationsInCluster(List<VisualNode> nodes){
-		ArrayList<VisualNode> relations = new ArrayList<VisualNode>();
-		for(VisualNode v : nodes){
-			if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				relations.add(v);
-			}
-		}
-		return relations;
-	}
-	
-	
 	private void circles(List<VisualNode> nodes, double cx, double cy){
 		int b = 0;
 		for(VisualNode v : nodes){
@@ -207,7 +140,6 @@ public class VisualCirclingClustersLayout extends AbstractLayout<VisualNode, Vis
 				
 				double cx = Math.cos(angle*a) * bigCircleRad;// + width / 2;
 				double cy =	Math.sin(angle*a) * bigCircleRad;// + height/2;
-				CircleVertexData data;
 				Point2D coord1 = transform(nodes.get(0));
 				coord1.setLocation(cx, cy);
 				circles(nodes, cx, cy);

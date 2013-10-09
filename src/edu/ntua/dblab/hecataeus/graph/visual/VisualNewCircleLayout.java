@@ -17,34 +17,28 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 
-public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
+public class VisualNewCircleLayout extends AbstractLayout<VisualNode,VisualEdge> {
 
 	private double radius;
 	private double relationRadius;
 	private double viewRadius;
 	private double queryRadius;
+	private double width;
+	private double height;
 	
-	private List<V> vertex_ordered_list;
+	private List<VisualNode> vertex_ordered_list;
 	
 	private List<VisualNode> queries = new ArrayList<VisualNode>();
 	private List<VisualNode> relations = new ArrayList<VisualNode>();
 	private List<VisualNode> views = new ArrayList<VisualNode>();
-	private List<VisualNode> semantix = new ArrayList<VisualNode>();
-	private List<VisualNode> wtf = new ArrayList<VisualNode>();
+	private List<VisualNode> vertices = new ArrayList<VisualNode>();
 	private List<VisualNode> nodes;
-	
-	Map<V, CircleVertexData> circleVertexDataMap =
-			LazyMap.decorate(new HashMap<V,CircleVertexData>(), 
-			new Factory<CircleVertexData>() {
-				public CircleVertexData create() {
-					return new CircleVertexData();
-				}});	
 	
 	/**
 	 * Creates an instance for the specified graph.
 	 */
 	@SuppressWarnings("unchecked")
-	public VisualNewCircleLayout(Graph<V,E> g) {
+	public VisualNewCircleLayout(VisualGraph g) {
 		super(g);
 		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
 		for(VisualNode v : nodes){
@@ -57,11 +51,8 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
 				views.add(v);
 			}
-			else if(v.getType() == NodeType.NODE_TYPE_SEMANTICS){
-				semantix.add(v);
-			}
 			else{
-				wtf.add(v);
+				vertices.add(v);
 			}
 		}
 	}
@@ -75,71 +66,46 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 
 	/**
 	 * Sets the radius of the circle.  Must be called before
-	 * {@code initialize()} is called.
 	 */
 	public void setRadius(double radius) {
 		this.radius = radius;
 	}
 
-	/**
-	 * Sets the order of the vertices in the layout according to the ordering
-	 * specified by {@code comparator}.
-	 */
-//	public void setVertexOrder(Comparator<V> comparator)
-//	{
-//	    if (vertex_ordered_list == null)
-//	        vertex_ordered_list = new ArrayList<V>(getGraph().getVertices());
-//	    Collections.sort(vertex_ordered_list, comparator);
-//	}
 
-	
-	public void setRelationVertexOrder(Comparator<V> comparator){
-	    if (relations == null){
-	    	for(VisualNode v : nodes){
-	    		if(v.getType() == NodeType.NODE_TYPE_RELATION)
-					relations.add(v);
-	    	}
-	    }
-	    Collections.sort((List)relations, comparator);
-	}
-	
-	
-	public void setViewVertexOrder(Comparator<V> comparator){
-	    if (views == null){
-	    	for(VisualNode v : nodes){
-	    		if(v.getType() == NodeType.NODE_TYPE_VIEW)
-					views.add(v);
-	    	}
-	    }
-	    Collections.sort((List)views, comparator);
-	}
-	
-	
-	public void setQueryVertexOrder(Comparator<V> comparator){
-	    if (queries == null){
-	    	for(VisualNode v : nodes){
-	    		if(v.getType() == NodeType.NODE_TYPE_QUERY)
-					queries.add(v);
-	    	}
-	    }
-	    Collections.sort((List)queries, comparator);
-	}
-	
-	public void setSematixVertexOrder(Comparator<V> comparator){
-		if(semantix == null){
+	public void setRelationVertexOrder(Comparator<VisualNode> comparator){
+		if (relations == null){
 			for(VisualNode v : nodes){
-				if(v.getType() == NodeType.NODE_TYPE_SEMANTICS){
-					semantix.add(v);
-				}
+				if(v.getType() == NodeType.NODE_TYPE_RELATION)
+					relations.add(v);
 			}
 		}
-		Collections.sort((List)semantix, comparator);
+		Collections.sort((List)relations, comparator);
 	}
-    /**
-     * Sets the order of the vertices in the layout according to the ordering
-     * of {@code vertex_list}.
-     */
-	public void setVertexOrder(List<V> vertex_list){
+	
+	
+	public void setViewVertexOrder(Comparator<VisualNode> comparator){
+		if (views == null){
+			for(VisualNode v : nodes){
+				if(v.getType() == NodeType.NODE_TYPE_VIEW)
+					views.add(v);
+			}
+		}
+		Collections.sort((List)views, comparator);
+	}
+	
+	
+	public void setQueryVertexOrder(Comparator<VisualNode> comparator){
+		if (queries == null){
+			for(VisualNode v : nodes){
+				if(v.getType() == NodeType.NODE_TYPE_QUERY)
+					queries.add(v);
+			}
+		}
+		Collections.sort((List)queries, comparator);
+	}
+	
+	
+	public void setVertexOrder(List<VisualNode> vertex_list){
 		if (!vertex_list.containsAll(getGraph().getVertices())) 
 			throw new IllegalArgumentException("Supplied list must include all vertices of the graph");
 		this.vertex_ordered_list = vertex_list;
@@ -149,24 +115,12 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 		initialize();
 	}
 
-	public void initialize() 
-	{
+	public void initialize() {
 		Dimension d = getSize();
 		
 		if (d != null) {
-//			if (vertex_ordered_list == null) 
-//				setVertexOrder(new ArrayList<V>(getGraph().getVertices()));
-
-			double height = d.getHeight();
-			double width = d.getWidth();
-
-			
-//			if (radius <= 0) {
-//				radius = 0.45 * (height < width ? height : width);
-//			}
-			double max = 0;
-			double medium = 0;
-			double small = 0;
+			height = d.getHeight();
+			width = d.getWidth();
 
 			List<Integer> sizes = new ArrayList<Integer>();
 			sizes.add(queries.size());
@@ -231,72 +185,31 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 				}
 			}
 			
-			
-//			int i = 0;
-//			for (V v : vertex_ordered_list){
-//				Point2D coord = transform(v);
-//				
-//				double angle = (2 * Math.PI * i) / vertex_ordered_list.size();
-//
-//				coord.setLocation(Math.cos(angle) * radius + width / 2,
-//						Math.sin(angle) * radius + height / 2);
-//
-//				CircleVertexData data = getCircleData(v);
-//				data.setAngle(angle);
-//				i++;
-//			}
-						
-			int j = 0;
-			for (V v : (List<V>)relations){
-				Point2D coord = transform(v);				
-				double angle = (2 * Math.PI * j) / relations.size();
-				coord.setLocation(Math.cos(angle) * relationRadius + width / 2,
-						Math.sin(angle) * relationRadius + height / 2);
-				CircleVertexData data = getCircleData(v);
-				data.setAngle(angle);
-				dosomething(Math.cos(angle) * relationRadius + width / 2, Math.sin(angle) * relationRadius + height / 2, (VisualNode)v, 0);
-				j++;
-				System.out.println("  node   " + ((VisualNode) v).getType()) ;
-			}
-						
-			int k = 0;
-			for (V v : (List<V>)views){
-				Point2D coord = transform(v);				
-				double angle = (2 * Math.PI * k) / views.size();
-				coord.setLocation(Math.cos(angle) * viewRadius + width / 2,
-						Math.sin(angle) * viewRadius + height / 2);
-				CircleVertexData data = getCircleData(v);
-				data.setAngle(angle);
-				dosomething(Math.cos(angle) * viewRadius + width / 2, Math.sin(angle) * viewRadius + height / 2, (VisualNode)v, 0);
-				k++;
-			}
-			
-			
-			
-			
-			int z = 0;
-			for (V v : (List<V>)queries){
-				Point2D coord = transform(v);				
-				double angle = (2 * Math.PI * z) / queries.size();
-				coord.setLocation(Math.cos(angle) * queryRadius + width / 2,
-						Math.sin(angle) * queryRadius + height / 2);
-				CircleVertexData data = getCircleData(v);
-				data.setAngle(angle);				
-				dosomething(Math.cos(angle) * queryRadius + width / 2, Math.sin(angle) * queryRadius + height / 2, (VisualNode)v, 0);
-				z++;
-			}
-			
+			drawCircles(relations, relationRadius);
+			drawCircles(views, viewRadius);
+			drawCircles(queries, queryRadius);
 			
 		}
 	}
-
 	
+	protected void drawCircles(List<VisualNode> nodes, double radius){
+		int cnt = 0;
+		for(VisualNode n :  nodes){
+			Point2D coord = transform(n);
+			double angle = (2*Math.PI*cnt)/nodes.size();
+			coord.setLocation(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2);
+			dosomething(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2, n, 0);
+			cnt++;
+		}
+		
+	}
+
 	protected void dosomething(double x, double y, VisualNode node, int mode){
 		int a = 0;
 
 		ArrayList<VisualNode> sem = new ArrayList<VisualNode>(FindSem(node));
 				
-		for (V v : (List<V>)sem){
+		for (VisualNode v : sem){
 			Point2D coord = transform(v);
 			double angle = (2 * Math.PI * a) / sem.size();
 			if(mode == 0){
@@ -305,8 +218,6 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 			else{
 				coord.setLocation(Math.cos(angle) * 65 +x, Math.sin(angle) * 65+ y);
 			}
-			CircleVertexData data = getCircleData(v);
-			data.setAngle(angle);
 			dosomething(x, y, (VisualNode)v,1);
 			a++;
 		}
@@ -314,18 +225,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 	
 	protected ArrayList<VisualNode> FindSem(VisualNode node){
 		ArrayList<VisualNode> sem = new ArrayList<VisualNode>();
-		
-		List<VisualEdge> inE = new ArrayList<VisualEdge>(node._inEdges);
 		List<VisualEdge> outE = new ArrayList<VisualEdge>(node._outEdges);
-		List<VisualNode>neighbors = new ArrayList<VisualNode>();
-		
-//		for(VisualEdge edgeIndx : inE){
-//			if(edgeIndx.getFromNode()!=null){
-//				if(edgeIndx.getFromNode().getType() != NodeType.NODE_TYPE_QUERY && edgeIndx.getFromNode().getType() != NodeType.NODE_TYPE_VIEW && edgeIndx.getFromNode().getType() != NodeType.NODE_TYPE_RELATION){
-//					sem.add(edgeIndx.getFromNode());
-//				}
-//			}
-//		}
 
 		for(VisualEdge edgeIndx : outE){
 			if(edgeIndx.getToNode()!=null){
@@ -339,32 +239,7 @@ public class VisualNewCircleLayout <V, E> extends AbstractLayout<V,E> {
 	}
 	
 	protected double SemRadius(List<VisualNode> nodes, double r){
-//		Dimension d = getSize();
-//		double height = d.getHeight();
-//		double width = d.getWidth();
-		
 		double R = 0.45 * (r/5) * nodes.size();
 		return R;
-	}
-	
-	protected CircleVertexData getCircleData(V v) {
-		return circleVertexDataMap.get(v);
-	}
-
-	protected static class CircleVertexData {
-		private double angle;
-
-		protected double getAngle() {
-			return angle;
-		}
-
-		protected void setAngle(double angle) {
-			this.angle = angle;
-		}
-
-		@Override
-		public String toString() {
-			return "CircleVertexData: angle=" + angle;
-		}
 	}
 }
