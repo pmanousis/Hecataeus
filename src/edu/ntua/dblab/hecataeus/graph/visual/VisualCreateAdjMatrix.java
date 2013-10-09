@@ -36,13 +36,6 @@ public class VisualCreateAdjMatrix {
 				}
 			}
 		}
-		for(int i = 0; i < this.RQV.size(); i++){
-			for(int j = 0; j < this.RQV.size(); j++){
-				if(adj[i][j] != 1){
-					adj[i][j] = 0;
-				}
-			}
-		}
 		System.out.println("----- done !!----------");
 		return adj;
 	}
