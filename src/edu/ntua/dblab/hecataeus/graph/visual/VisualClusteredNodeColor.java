@@ -86,8 +86,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 					}
 				}
 				if(node.getType() != NodeType.NODE_TYPE_RELATION){
-					
-					int col = VisualCircleClusteredLayout.files.indexOf(file.getName());
+					VisualFileColor vfs = new VisualFileColor();
+					int col = vfs.getFileNames().indexOf(file.getName());
 					//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
 					
 					 if(col == -1){
