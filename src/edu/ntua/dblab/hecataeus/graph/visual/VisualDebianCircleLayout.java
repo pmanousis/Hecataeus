@@ -77,30 +77,18 @@ public class VisualDebianCircleLayout extends VisualCircleLayout{
 		for(Cluster cl : clusters){
 			vertices.add(cl.getNode());
 		}
-		double myRad = 10.0;
+		Collections.sort(vertices,new ListComparator());
+		double myRad = getSmallRad(vertices.get(vertices.size()-1))*2.1;
 		//taksinomei tin lista --> prwta ta relations meta ta upoloipa k briskei aktina
-		for(ArrayList<VisualNode> lista : vertices){
-			List<VisualNode> nodes = new ArrayList<VisualNode>();
-			Collections.sort(lista, new CustomComparator());
-			nodes.addAll(lista);
-		}
 		
-		int a = 0;double angle = 0.0;
+		double angle = 0.0;
+		double sum=0;
+		angle = (2 * Math.PI)/ vertices.size();
 		for(ArrayList<VisualNode> lista : vertices){
-			List<VisualNode> nodes = new ArrayList<VisualNode>();
-			Collections.sort(lista, new CustomComparator());
-			nodes.addAll(lista);
-			angle = (2 * Math.PI)/ lista.size();
-
-			
-			double cx = Math.cos(angle) * myRad+lista.size() ;
-			double cy = Math.sin(angle) * myRad+lista.size();
-
-			System.out.println("   angle  "+ angle + "  cx  " + cx + "   cy  " +cy);
-			circles(nodes, cx, cy);
-			
-			myRad+=getSmallRad(lista)*2.5;
-			a++;
+			sum+=angle;
+			double cx = Math.cos(angle+sum) * (angle+sum) * myRad ;
+			double cy = Math.sin(angle+sum) * (angle+sum) * myRad;
+			circles(lista, cx, cy);
 		}
 	}
 	
