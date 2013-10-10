@@ -44,7 +44,8 @@ public enum VisualLayoutType {
 	ClustersonaCircleLayout,
 	CirclingClusterLayout,
 	DebianCircleLayout,
-	HalfCircleLayout;
+	HalfCircleLayout,
+	StarLayout;
 
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -110,6 +111,8 @@ public enum VisualLayoutType {
 				return "Spiral";
 			case HalfCircleLayout:
 				return "Half Cilcle";
+			case StarLayout:
+				return "Star Layout";
 			default:
 				return name();
 			}
@@ -203,6 +206,8 @@ public enum VisualLayoutType {
 				return new VisualDebianCircleLayout(g);
 			case HalfCircleLayout:
 				return new VisualHalfCircleClusters(g);
+			case StarLayout:
+				return new VisualStarLayout(g);
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
