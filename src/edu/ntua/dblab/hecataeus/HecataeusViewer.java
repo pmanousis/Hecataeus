@@ -799,63 +799,67 @@ public class HecataeusViewer {
 		JMenu mnAlgorithms = new JMenu("Algorithms");
 		
 		for (final VisualLayoutType layoutType : VisualLayoutType.values()) {
-			if(layoutType == VisualLayoutType.ClusteredCircleLayout){
-				JMenu mnClusteredCircleLayout = new JMenu("Clustered Circle Layout");
-				mnAlgorithms.add(mnClusteredCircleLayout);
-				
-				JMenuItem mntmQueries = new JMenuItem("Queries");
-				mntmQueries.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutQ;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmQueries);
-				
-				JMenuItem mntmViews = new JMenuItem("Views");
-				mntmViews.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmViews);
-				
-				JMenuItem mntmRelations = new JMenuItem("Relations");
-				mntmRelations.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutR;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmRelations);
-				
-				JMenuItem mntmCoC = new JMenuItem("Clusters on a circle");
-				mntmCoC.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutC;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmCoC);
-			}
-			else{
+//			if(layoutType == VisualLayoutType.ClusteredCircleLayout){
+//				JMenu mnClusteredCircleLayout = new JMenu("Clustered Circle Layout");
+//				mnAlgorithms.add(mnClusteredCircleLayout);
+//				
+//				JMenuItem mntmQueries = new JMenuItem("Queries");
+//				mntmQueries.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutQ;
+//						getLayout(activeViewer).setTopLayoutType(layoutType);
+//						HecataeusViewer.this.getLayoutPositions();
+//						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+//						HecataeusViewer.this.zoomToWindow(activeViewer);
+//					}
+//				});
+//				mnClusteredCircleLayout.add(mntmQueries);
+//				
+//				JMenuItem mntmViews = new JMenuItem("Views");
+//				mntmViews.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
+//						getLayout(activeViewer).setTopLayoutType(layoutType);
+//						HecataeusViewer.this.getLayoutPositions();
+//						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+//						HecataeusViewer.this.zoomToWindow(activeViewer);
+//					}
+//				});
+//				mnClusteredCircleLayout.add(mntmViews);
+//				
+//				JMenuItem mntmRelations = new JMenuItem("Relations");
+//				mntmRelations.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutR;
+//						getLayout(activeViewer).setTopLayoutType(layoutType);
+//						HecataeusViewer.this.getLayoutPositions();
+////						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+////						HecataeusViewer.this.zoomToWindow(activeViewer);
+//						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+//						zoomToWindow(activeViewer);
+//					}
+//				});
+//				mnClusteredCircleLayout.add(mntmRelations);
+//				
+//				JMenuItem mntmCoC = new JMenuItem("Clusters on a circle");
+//				mntmCoC.addActionListener(new ActionListener() {
+//					public void actionPerformed(ActionEvent e) {
+//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutC;
+//						getLayout(activeViewer).setTopLayoutType(layoutType);
+//						HecataeusViewer.this.getLayoutPositions();
+////						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+////						HecataeusViewer.this.zoomToWindow(activeViewer);
+//						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+//						zoomToWindow(activeViewer);
+//					}
+//				});
+//				mnClusteredCircleLayout.add(mntmCoC);
+//			}
+//			else{
 				mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
 					public void actionPerformed(ActionEvent e) {
 						// update the top layout of the graph
@@ -865,12 +869,14 @@ public class HecataeusViewer {
 						//containerLayout.setTopLayoutType(layoutType);
 						//update the new layout's positions
 						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+//						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
 						//HecataeusViewer.this.centerAt(containerLayout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
+						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+						zoomToWindow(activeViewer);
+//						HecataeusViewer.this.zoomToWindow(activeViewer);
 					}
 				});
-			}
+		//	}
 		}
 		
 		mnVisualize.add(mnAlgorithms);
@@ -2542,7 +2548,7 @@ public class HecataeusViewer {
 	
 	
 	public void zoomToWindow(VisualizationViewer<VisualNode, VisualEdge> currentViewer){
-		final VisualizationViewer<VisualNode, VisualEdge> activeViewer;//TODO na briskw ton active viewer
+		final VisualizationViewer<VisualNode, VisualEdge> activeViewer;
 		
 		activeViewer = currentViewer;
 		
@@ -2555,16 +2561,15 @@ public class HecataeusViewer {
 					{
 					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException ex) {
-					}
+//					try {
+//						Thread.sleep(100);
+//					} catch (InterruptedException ex) {
+//					}
 				}
 			}
 		}
-		System.out.println("ACTIVE TAB  " + getActiveTab());
 		tabbedPane.setComponentAt(getActiveTab(),new GraphZoomScrollPane(currentViewer));
-//		tabbedPane.add(new GraphZoomScrollPane(currentViewer));
+		//tabbedPane.add(new GraphZoomScrollPane(currentViewer));
 	}
 
 	

@@ -98,7 +98,7 @@ public class Viewers {
 
 		vv.getRenderContext().setEdgeStrokeTransformer(new ConstantTransformer(new BasicStroke(0.1f)));
 		// the fonts of the vertices
-		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8)));
+		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 11)));
 		//the shape of the edges
 		pr.setEdgeShapeTransformer(new EdgeShape.Line());  //quad 
 		// the labels of the Edges
