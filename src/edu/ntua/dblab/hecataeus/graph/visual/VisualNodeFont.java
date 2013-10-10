@@ -24,7 +24,7 @@ public class VisualNodeFont implements Transformer<VisualNode, Font>{
 
 		if (type.getCategory()== NodeCategory.MODULE
 				||type.getCategory()== NodeCategory.CONTAINER)
-			return new Font(font.getFamily(), Font.BOLD ,font.getSize()*3);
+			return new Font(font.getFamily(), Font.PLAIN ,font.getSize());
 		else
 			return font;
 	}
