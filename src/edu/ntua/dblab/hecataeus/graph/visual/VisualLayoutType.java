@@ -47,7 +47,8 @@ public enum VisualLayoutType {
 	CirclingClusterLayout,
 	DebianCircleLayout,
 	HalfCircleLayout,
-	StarLayout;
+	StarLayout,
+	PizzaSliceLayout;
 
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -115,6 +116,8 @@ public enum VisualLayoutType {
 				return "Half Cilcle";
 			case StarLayout:
 				return "Star Layout";
+			case PizzaSliceLayout:
+				return "Pizza Slice Cluster Layout";
 			default:
 				return name();
 			}
@@ -201,20 +204,23 @@ public enum VisualLayoutType {
 			case GridEvaLayout:
 				return new VisualGridEvaLayout(g);
 			case ClustersonaCircleLayout:
-				HecataeusInputDialog d1 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				HecataeusInputDialog d1 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualClustersOnACircleLayout(g, d1.getC());
 			case CirclingClusterLayout:
-				HecataeusInputDialog d2 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				HecataeusInputDialog d2 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualCirclingClustersLayout(g, d2.getC());
 			case DebianCircleLayout:
-				HecataeusInputDialog d3 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				HecataeusInputDialog d3 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualDebianCircleLayout(g, d3.getC());
 			case HalfCircleLayout:
-				HecataeusInputDialog d4 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				HecataeusInputDialog d4 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualHalfCircleClusters(g, d4.getC());
 			case StarLayout:
-				HecataeusInputDialog d5 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				HecataeusInputDialog d5 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualStarLayout(g, d5.getC());
+			case PizzaSliceLayout:
+				HecataeusInputDialog d6 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
+				return new VisualPizzaSliceClusterLayout(g, d6.getC());
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
