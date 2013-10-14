@@ -16,7 +16,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
  * 1. we start with a set of input objects 
  * 2. We start with the first solution, where each object is a cluster, already inside the solutions collection
  */
-	public ClusterSet execute(ArrayList<ClusterableObject> inputObjects, ArrayList<ClusterSet> solutions, double[][] inputObjectsDistances, int numC){
+	public ClusterSet execute(ArrayList<ClusterableObject> inputObjects, ArrayList<ClusterSet> solutions, double[][] inputObjectsDistances, double end){
 		int numObjects = inputObjects.size();
 		int numClusterSets = solutions.size(); 
 		int numClusters = numObjects;
@@ -35,12 +35,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 		 * 4. reduce numClust by the number of merges 
 		 */
 		
-		if(numC == 0){
-			endC = 1;
-		}
-		else{
-			endC = numC;
-		}
+		
 		
 		do{
 			
@@ -73,7 +68,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 				copyDist[i][i] = 0;
 			}
 			
-			if(minDist==1.0)
+			if(minDist==end)
 			{
 				break;
 			}
@@ -134,7 +129,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 			lastSolution.createDistances(numClusters);
 			minDist = 2.0; minPos1 = -1; minPos2 = -1;
 //			System.out.println(numClusters);
-		}while(numClusters != endC);
+		}while(numClusters != 1);
 		return lastSolution;
 	}//end execute
 }

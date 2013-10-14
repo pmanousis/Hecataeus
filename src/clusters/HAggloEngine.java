@@ -46,10 +46,10 @@ public class HAggloEngine {
 	 * It does so in two parts: (a) by picking an appropriate algo at the constructor and 
 	 * (b) by invoking its execute function here.
 	 */
-	public ClusterSet execute(int numC){
+	public ClusterSet execute(double end){
 		ClusterSet cs;
 //		cs = new ClusterSet(algorithm.execute(inputObjects, solutions, inputObjectsDistances, numC).getId());
-		cs = algorithm.execute(inputObjects, solutions, inputObjectsDistances, numC);
+		cs = algorithm.execute(inputObjects, solutions, inputObjectsDistances, end);
 		return cs;
 	}
 	

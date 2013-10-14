@@ -6,5 +6,5 @@ import clusters.GraphFacades.ClusterableObject;
 
 
 public abstract class HACAlgorithm {
-	public abstract ClusterSet execute(ArrayList<ClusterableObject> inputObjects, ArrayList<ClusterSet> solutions, double [][] inputObjectsDistances, int numC);
+	public abstract ClusterSet execute(ArrayList<ClusterableObject> inputObjects, ArrayList<ClusterSet> solutions, double [][] inputObjectsDistances, double numC);
 }
