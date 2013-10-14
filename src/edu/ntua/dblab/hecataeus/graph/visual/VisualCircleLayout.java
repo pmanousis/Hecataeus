@@ -25,7 +25,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected List<VisualNode> RQV = new ArrayList<VisualNode>();
 	
 	
-	protected VisualCircleLayout(VisualGraph g) {
+	public VisualCircleLayout(VisualGraph g) {
 		super(g);
 		this.graph = g;
 		
@@ -105,6 +105,15 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		return relations;
 	}
 	
+	
+	public List<String> getFileNames(){
+		if(files!=null){
+			return files;
+		}
+		else{
+			return null;
+		}
+	}
 	
 	@Override
 	public void initialize() {

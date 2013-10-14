@@ -91,11 +91,11 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 					//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
 					
 					 if(col == -1){
-						 System.out.println("WTF");
+						 System.out.println("WTF = what a terible failure");
 						 this.color = -1;
 					 }
 					 else{
-						this.color = col+1; 
+						this.color = (col+1)%31; 
 					 }
 				}
 				else{
@@ -104,6 +104,7 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			}
 		}
 		switch (this.color){
+			case 0: return new Color(16, 78, 139);
 			case 1: return new Color(255,102,102);
 			case 2: return new Color(255,178,102);
 			case 3: return new Color(178,255,102);
@@ -139,7 +140,7 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			
 			
 			
-			case 100: return Color.RED;
+			case 100: return new Color (255,62, 150);
 			
 			default : return new Color(0,0,0);
 		}

@@ -13,7 +13,8 @@ import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 public class VisualHalfCircleClusters extends VisualCircleLayout{
-
+	
+	protected double endC;
 	protected VisualGraph graph;
 	private List<VisualNode> queries;
 	private List<VisualNode> relations;
@@ -26,9 +27,10 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 	
 	protected VisualCircleLayout vcl;
 	
-	protected VisualHalfCircleClusters(VisualGraph g) {
+	protected VisualHalfCircleClusters(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
+		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
 		
 		queries = new ArrayList<VisualNode>(vcl.queries);
@@ -151,7 +153,7 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
-		cs = engine.execute(1);
+		cs = engine.execute(endC);
 		halfCircles();
 		
 	}

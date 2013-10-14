@@ -2,6 +2,8 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
 
+import edu.ntua.dblab.hecataeus.HecataeusInputDialog;
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.ClusterE;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTopologicalLayout.Orientation;
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
@@ -199,15 +201,20 @@ public enum VisualLayoutType {
 			case GridEvaLayout:
 				return new VisualGridEvaLayout(g);
 			case ClustersonaCircleLayout:
-				return new VisualClustersOnACircleLayout(g);
+				HecataeusInputDialog d1 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				return new VisualClustersOnACircleLayout(g, d1.getC());
 			case CirclingClusterLayout:
-				return new VisualCirclingClustersLayout(g);
+				HecataeusInputDialog d2 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				return new VisualCirclingClustersLayout(g, d2.getC());
 			case DebianCircleLayout:
-				return new VisualDebianCircleLayout(g);
+				HecataeusInputDialog d3 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				return new VisualDebianCircleLayout(g, d3.getC());
 			case HalfCircleLayout:
-				return new VisualHalfCircleClusters(g);
+				HecataeusInputDialog d4 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				return new VisualHalfCircleClusters(g, d4.getC());
 			case StarLayout:
-				return new VisualStarLayout(g);
+				HecataeusInputDialog d5 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "testt");
+				return new VisualStarLayout(g, d5.getC());
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

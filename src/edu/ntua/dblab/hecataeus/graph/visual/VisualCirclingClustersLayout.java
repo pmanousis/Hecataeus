@@ -19,7 +19,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 
 	
 	protected VisualGraph graph;
-
+	protected double endC;
 	private List<VisualNode> queries;
 	private List<VisualNode> relations;
 	private List<VisualNode> views;
@@ -30,10 +30,10 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 	private List<VisualNode> RQV;
 	protected VisualCircleLayout vcl;
 	
-	protected VisualCirclingClustersLayout(VisualGraph g) {
+	protected VisualCirclingClustersLayout(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
-		
+		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
 		
 		queries = new ArrayList<VisualNode>(vcl.queries);
@@ -159,7 +159,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
-		cs = engine.execute(1);
+		cs = engine.execute(endC);
 		
 		CirclingCusters();
 		

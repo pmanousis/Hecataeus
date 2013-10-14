@@ -11,7 +11,7 @@ import clusters.EngineConstructs.ClusterSet;
 
 public class VisualStarLayout extends VisualCircleLayout{
 
-
+	protected double endC;
 	protected VisualGraph graph;
 	private List<VisualNode> queries;
 	private List<VisualNode> relations;
@@ -24,9 +24,10 @@ public class VisualStarLayout extends VisualCircleLayout{
 	
 	protected VisualCircleLayout vcl;
 	
-	protected VisualStarLayout(VisualGraph g) {
+	protected VisualStarLayout(VisualGraph g,  double endC) {
 		super(g);
 		this.graph = g;
+		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
 		this.queries = new ArrayList<VisualNode>(vcl.queries);
 		this.relations = new ArrayList<VisualNode>(vcl.relations);
@@ -127,7 +128,7 @@ public class VisualStarLayout extends VisualCircleLayout{
 		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
-		cs = engine.execute(1);
+		cs = engine.execute(endC);
 		star();
 	}
 

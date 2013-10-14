@@ -17,7 +17,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	
-	
+	protected double endC;
 	protected VisualGraph graph;
 	private List<VisualNode> queries;
 	private List<VisualNode> relations;
@@ -30,9 +30,10 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	
 	protected VisualCircleLayout vcl;
 	
-	public VisualClustersOnACircleLayout(VisualGraph g) {
+	public VisualClustersOnACircleLayout(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
+		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
 		
 		queries = new ArrayList<VisualNode>(vcl.queries);
@@ -89,6 +90,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		//taksinomei tin lista --> prwta ta relations meta ta upoloipa k briskei aktina
 		for(ArrayList<VisualNode> lista : vertices){
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
+			System.out.println(lista);
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
 			RAD += getSmallRad(nodes);
@@ -139,7 +141,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
-		cs = engine.execute(1);
+		cs = engine.execute(endC);
 		clustersOnaCircle();
 	}
 
