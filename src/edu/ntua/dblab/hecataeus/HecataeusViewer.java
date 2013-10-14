@@ -34,7 +34,7 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -43,12 +43,14 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JScrollBar;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
@@ -59,6 +61,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
@@ -67,6 +70,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -118,7 +122,7 @@ public class HecataeusViewer {
 	
 	protected JTabbedPane sourceTabbedPane;
 	protected int sourceTabbedPaneIndex;
-	public JFrame frame;
+	public static JFrame frame;
 	public static boolean nodeSize;
 	public static HecataeusViewer myViewer;
 	// the scale object for zoom capabilities 
@@ -148,6 +152,10 @@ public class HecataeusViewer {
 	protected VisualNodeNeighborColor nnc;
 	protected VisualEdgeColor ec;
 	
+	
+	public JList<String> fileColorList;
+	private DefaultListModel<String> listModel;
+	private JPanel panel_3;
 	
 	protected final static Object TRANSPARENCY = "transparency";
 	public static Map<VisualNode,Number> transparency = new HashMap<VisualNode,Number>();
@@ -276,7 +284,12 @@ public class HecataeusViewer {
 
 
 	
-	
+	/*
+	 * 
+	 * mipos to update managers prepei na kanei update k ta 2 panes???????????????????
+	 * 
+	 * 
+	 */
 	
 	public void updateManagers()
 	{
@@ -349,6 +362,7 @@ public class HecataeusViewer {
 //		if ((chooser.showSaveDialog(frame)) == JFileChooser.OPEN_DIALOG) {
 			
 		FileDialog fd=new FileDialog((Dialog)null, "Select the project you want to open.", FileDialog.LOAD);
+		fd.setDirectory(projectConf.curPath);
 		fd.setVisible(true);
 		if(fd.getFile()!=null)
 		{
@@ -417,6 +431,17 @@ public class HecataeusViewer {
 				}
 			}
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
+			VisualCircleLayout vcl = new VisualCircleLayout(this.graph);
+			
+			
+			
+			List<String> files = new ArrayList<String>(vcl.getFileNames());
+			listModel.removeAllElements();
+			for(String f : files){
+				listModel.addElement(f);
+			}
+			fileColorList.setCellRenderer(new cellColor());
+			panel_3.repaint();
 			policyManagerGui.UPDATE();
 			//TODO theloun allages edw
 			//get new layout's positions
@@ -588,20 +613,7 @@ public class HecataeusViewer {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	/**
 	 * Initialize the contents of the frame.
 	 */
@@ -609,9 +621,16 @@ public class HecataeusViewer {
 		frame = new JFrame();
 		frame.setTitle("HECATAEUS");
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setSize(new Dimension((int)prefferedSize.getWidth(),(int)prefferedSize.getHeight()));
+		frame.setSize(new Dimension(2004, 1053));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
+	//	frame.getContentPane().setLayout(new MigLayout("wrap", "[1889.00]", "[999.00]"));
+		frame.getContentPane().setLayout(new MigLayout("", "[pref!][][grow,fill]", "[984.00]15[]"));
+//		MigLayout layout = new MigLayout(
+//				 "", // Layout Constraints
+//				 "[grow][][grow]", // Column constraints
+//				 "[][shrink 0]"); 
+		frame.setSize(prefferedSize);
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
 		
@@ -799,128 +818,81 @@ public class HecataeusViewer {
 		JMenu mnAlgorithms = new JMenu("Algorithms");
 		
 		for (final VisualLayoutType layoutType : VisualLayoutType.values()) {
-//			if(layoutType == VisualLayoutType.ClusteredCircleLayout){
-//				JMenu mnClusteredCircleLayout = new JMenu("Clustered Circle Layout");
-//				mnAlgorithms.add(mnClusteredCircleLayout);
-//				
-//				JMenuItem mntmQueries = new JMenuItem("Queries");
-//				mntmQueries.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutQ;
-//						getLayout(activeViewer).setTopLayoutType(layoutType);
-//						HecataeusViewer.this.getLayoutPositions();
-//						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-//						HecataeusViewer.this.zoomToWindow(activeViewer);
-//					}
-//				});
-//				mnClusteredCircleLayout.add(mntmQueries);
-//				
-//				JMenuItem mntmViews = new JMenuItem("Views");
-//				mntmViews.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
-//						getLayout(activeViewer).setTopLayoutType(layoutType);
-//						HecataeusViewer.this.getLayoutPositions();
-//						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-//						HecataeusViewer.this.zoomToWindow(activeViewer);
-//					}
-//				});
-//				mnClusteredCircleLayout.add(mntmViews);
-//				
-//				JMenuItem mntmRelations = new JMenuItem("Relations");
-//				mntmRelations.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutR;
-//						getLayout(activeViewer).setTopLayoutType(layoutType);
-//						HecataeusViewer.this.getLayoutPositions();
-////						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-////						HecataeusViewer.this.zoomToWindow(activeViewer);
-//						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-//						zoomToWindow(activeViewer);
-//					}
-//				});
-//				mnClusteredCircleLayout.add(mntmRelations);
-//				
-//				JMenuItem mntmCoC = new JMenuItem("Clusters on a circle");
-//				mntmCoC.addActionListener(new ActionListener() {
-//					public void actionPerformed(ActionEvent e) {
-//						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-//						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutC;
-//						getLayout(activeViewer).setTopLayoutType(layoutType);
-//						HecataeusViewer.this.getLayoutPositions();
-////						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-////						HecataeusViewer.this.zoomToWindow(activeViewer);
-//						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-//						zoomToWindow(activeViewer);
-//					}
-//				});
-//				mnClusteredCircleLayout.add(mntmCoC);
-//			}
-//			else{
+			if(layoutType == VisualLayoutType.ClusteredCircleLayout){
+				JMenu mnClusteredCircleLayout = new JMenu("Clustered Circle Layout");
+				mnAlgorithms.add(mnClusteredCircleLayout);
+				
+				JMenuItem mntmQueries = new JMenuItem("Queries");
+				mntmQueries.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutQ;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmQueries);
+				
+				JMenuItem mntmViews = new JMenuItem("Views");
+				mntmViews.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
+						HecataeusViewer.this.zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmViews);
+				
+				JMenuItem mntmRelations = new JMenuItem("Relations");
+				mntmRelations.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutR;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+						zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmRelations);
+				
+				JMenuItem mntmCoC = new JMenuItem("Clusters on a circle");
+				mntmCoC.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutC;
+						getLayout(activeViewer).setTopLayoutType(layoutType);
+						HecataeusViewer.this.getLayoutPositions();
+						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+						zoomToWindow(activeViewer);
+					}
+				});
+				mnClusteredCircleLayout.add(mntmCoC);
+			}
+			else{
 				mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
 					public void actionPerformed(ActionEvent e) {
 						// update the top layout of the graph
 						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
 						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
 						getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
-						//containerLayout.setTopLayoutType(layoutType);
-						//update the new layout's positions
 						HecataeusViewer.this.getLayoutPositions();
-//						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						//HecataeusViewer.this.centerAt(containerLayout.getGraph().getCenter());
 						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 						zoomToWindow(activeViewer);
-//						HecataeusViewer.this.zoomToWindow(activeViewer);
 					}
 				});
-		//	}
+			}
 		}
 		
 		mnVisualize.add(mnAlgorithms);
 		
 		
-		
-//		JMenuItem mntmStaticLayout = new JMenuItem("Static Layout");
-//		mnAlgorithms.add(mntmStaticLayout);
-//		
-//		JMenuItem mntmCircleLayout = new JMenuItem("Circle Layout");
-//		mnAlgorithms.add(mntmCircleLayout);
-//		
-//		JMenuItem mntmBalloonLayout = new JMenuItem("Balloon Layout");
-//		mnAlgorithms.add(mntmBalloonLayout);
-//		
-//		JMenuItem mntmRightToLeft = new JMenuItem("Right To Left Topological Layout");
-//		mnAlgorithms.add(mntmRightToLeft);
-//		
-//		JRadioButtonMenuItem rdbtnmntmTopDownTopological = new JRadioButtonMenuItem("Top Down Topological Layout");
-//		mnAlgorithms.add(rdbtnmntmTopDownTopological);
-//		
-//		JMenuItem mntmLeftToRight = new JMenuItem("Left To Right Topological Layout");
-//		mnAlgorithms.add(mntmLeftToRight);
-//		
-//		JRadioButtonMenuItem rdbtnmntmLeftToRight = new JRadioButtonMenuItem("Left To Right Topological Layout (Inverse)");
-//		mnAlgorithms.add(rdbtnmntmLeftToRight);
-//		
-//		JMenuItem mntmBottomUpTopological = new JMenuItem("Bottom Up Topological Layout");
-//		mnAlgorithms.add(mntmBottomUpTopological);
-//		
-//		JMenuItem mntmRadialTreeLayout = new JMenuItem("Radial Tree Layout");
-//		mnAlgorithms.add(mntmRadialTreeLayout);
-//		
-//		JMenuItem mntmKkLayout = new JMenuItem("KK Layout");
-//		mnAlgorithms.add(mntmKkLayout);
-//		
-//		JMenuItem mntmFrLayout = new JMenuItem("FR Layout");
-//		mnAlgorithms.add(mntmFrLayout);
-//		
-//		JMenuItem mntmIsomLayout = new JMenuItem("ISOM Layout");
-//		mnAlgorithms.add(mntmIsomLayout);
-//		
-//		JMenuItem mntmSpringLayout = new JMenuItem("Spring Layout");
-//		mnAlgorithms.add(mntmSpringLayout);
+
 		
 		mnAlgorithms.addSeparator();
 		
@@ -2225,18 +2197,35 @@ public class HecataeusViewer {
 		});
 		mnHelp.add(mntmAboutHecataeus);
 		
+		panel_3 = new JPanel();
+		panel_3.setBorder(BorderFactory.createTitledBorder("Colors"));
+		listModel = new DefaultListModel<String>();
+//		listModel.addElement("eva");
+		
+		fileColorList = new JList<String>(listModel);
+
+		JScrollBar bara = new JScrollBar();
+		panel_3.add(fileColorList, bara);
+		frame.getContentPane().add(panel_3, "cell 0 0,growy");
+		
+		
+		
+		
+
+		//panel_3.setLayout(new MigLayout("", "[]", "[]"));
+		
 
 				
-	
-		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
+	//EVA
+//		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
 //		JPanel toolP = new JPanel();
 //		toolP.setVisible(true);
 //		toolP = createToolsPanel();
 //		frame.getContentPane().add(toolP, BorderLayout.NORTH);
 		
 		JSplitPane splitPane = new JSplitPane();
-		frame.getContentPane().add(splitPane);
-		
+		frame.getContentPane().add(splitPane, "cell 2 0,growy");
+
 		splitPane.setOneTouchExpandable(true);
 		
 		
@@ -2249,7 +2238,6 @@ public class HecataeusViewer {
 		
 		
 		//tabbedPane.setTabComponentAt(0,new ButtonTabComponent(tabbedPane));
-		
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
 		
 		tabbedPane.addChangeListener(new ChangeListener() {
@@ -2900,12 +2888,16 @@ protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){
 	}
 	
 	
-	
+	public static JFrame getHecFrame(){
+		return frame;
+	}
 	
 	
 	public List<VisualGraph> getGraphs(){
 		return this.graphs;
 	}
+	
+	
 	
 	
 	
