@@ -2,23 +2,17 @@ package edu.ntua.dblab.hecataeus;
 
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Hashtable;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.JButton;
-
-import org.apache.commons.collections15.Transformer;
-
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.geom.Point2D;
 
 
 
@@ -83,16 +77,11 @@ public class HecataeusInputDialog extends JDialog{
 		btnOk.setBounds(269, 179, 117, 30);
 		content.add(btnOk);
 		
-		JLabel lblDen = new JLabel("0 - den kanei clusters  1 - ola ta clusters einai ksena");
+		JLabel lblDen = new JLabel("0 - den kanei clusters 1 - ola ta clusters einai ksena");
 		lblDen.setBounds(12, 36, 374, 30);
 		content.add(lblDen);
 		this.setLocationRelativeTo(owner);
 		this.setVisible(true);
-		
-		
-		
-		
-		
 	}
 	
 	public double getC(){
