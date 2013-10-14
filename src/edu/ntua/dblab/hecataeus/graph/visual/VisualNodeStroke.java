@@ -32,7 +32,7 @@ public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 	protected Stroke mediumOut = new BasicStroke(2f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 1.0f, dashing, 0f);
 	
 	
- 	protected Stroke light = new BasicStroke(1);
+ 	protected Stroke light = new BasicStroke(0);
  	protected VisualGraph graph;
  	protected Collection<VisualNode> neighbors;
  	
@@ -53,39 +53,6 @@ public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 		}
 		if (picked.isPicked(v)){
 			System.out.println("PICKED  " + v.toString());
-		
-			
-			
-			
-//			Collection<VisualNode> toNodes = new ArrayList<VisualNode>();
-//			Collection<VisualNode> fromNodes = new ArrayList<VisualNode>();
-//			
-//			List<VisualEdge> inE = new ArrayList<VisualEdge>(v._inEdges);
-//			List<VisualEdge> outE = new ArrayList<VisualEdge>(v._outEdges);
-//			neighbors = new ArrayList<VisualNode>();
-//			for(VisualEdge edgeIndx : inE){
-//				if(edgeIndx.getFromNode()!=null){
-//					System.out.println("WTF " + edgeIndx.getFromNode().toString());
-//				fromNodes.add(edgeIndx.getFromNode());
-//				neighbors.add(edgeIndx.getFromNode());
-//				}
-//			}
-//			for(VisualEdge edgeIndx : outE){
-//				if(edgeIndx.getToNode()!=null){
-//				toNodes.add(edgeIndx.getToNode());
-//				neighbors.add(edgeIndx.getToNode());
-//				}
-//			}	
-
-//			for(VisualNode w : neighbors){
-//				System.out.println("NEIGHBORS  " + w.toString());
-//				if (w.getVisible()){
-//					System.out.println("NEIGHBORS VISIBLE  " + w.toString());
-//					return heavy;
-//				}
-//			}
-			
-			
 			return heavy;
 		}
 		else{
@@ -110,34 +77,13 @@ public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 				neighbors.add(edgeIndx.getToNode());
 				}
 			}	
-			
-	//		for(VisualNode w : neighbors){
 			for(VisualNode w : toNodes){
-//				System.out.println("NEIGHBORS  " + w.toString());
 				if (picked.isPicked(w)){
-	///				System.out.println("NEIGHBORS VISIBLE  " + w.toString());
-	//				System.out.println("EDGE!!!!!  " + w._inEdges.get(i).getName());
-	//				w._inEdges.get(i).setHighlight(true);
-					
-			//		viewer.getRenderContext().setEdgeFillPaintTransformer(new VisualEdgeColor(w._inEdges.get(i), Color.MAGENTA));
-//					viewer.getRenderContext().setEdgeDrawPaintTransformer(new VisualEdgeColor(w._inEdges.get(i), Color.MAGENTA));
-//					i++;
-//					if(i>=w._inEdges.size()){
-//						i = 0;
-//					}
-					
-		//			viewer.getRenderContext().setVertexFillPaintTransformer(new VisualNodeNeighborColor(w));
-					
 					return mediumIn;
 				}
 			}
 			for(VisualNode w : fromNodes){
-//				System.out.println("NEIGHBORS  " + w.toString());
 				if (picked.isPicked(w)){
-//					if(w.getVisible()){
-//						System.out.println("VISIBLE     NEIGHBORS  " + w.toString());
-//						viewer.getRenderContext().setVertexFillPaintTransformer(new VisualNodeNeighborColor(w));
-//					}
 					return mediumOut;
 				}
 			}
