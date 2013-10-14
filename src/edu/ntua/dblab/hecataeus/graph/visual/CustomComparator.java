@@ -7,7 +7,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 public class CustomComparator implements Comparator<VisualNode> {
     @Override
     public int compare(VisualNode o1, VisualNode o2) {
-    	
+    	System.out.println("node naem  " + o1.getName()   +  "  node type  " + o1.getType()   + "   node 2 name  " + o2.getName()  + "   type   " + o2.getType());
     	if(o1.getType() == NodeType.NODE_TYPE_RELATION && o2.getType() == NodeType.NODE_TYPE_QUERY){
     		return -1;
     	}
@@ -17,11 +17,11 @@ public class CustomComparator implements Comparator<VisualNode> {
     	}
     	if(o1.getType() == NodeType.NODE_TYPE_RELATION && o2.getType()== NodeType.NODE_TYPE_RELATION)
     	{
-    		return -1;
+    		return 0;
     	}
     	if(o1.getType()== NodeType.NODE_TYPE_QUERY && o2.getType() == NodeType.NODE_TYPE_QUERY)
     	{
-    		return 1;
+    		return 0;
     	}
     	if(o1.getType() == NodeType.NODE_TYPE_RELATION && o2.getType() == NodeType.NODE_TYPE_VIEW){
     		return -1;
