@@ -34,6 +34,10 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
  */
 public final class HecataeusNodePolicies extends JDialog {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected JTextArea jTextArea;
 	protected JComboBox comboBoxEventType;
 	protected JComboBox comboBoxEventNodeParent;

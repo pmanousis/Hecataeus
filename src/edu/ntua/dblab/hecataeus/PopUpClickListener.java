@@ -423,11 +423,9 @@ public class PopUpClickListener extends MouseAdapter{
 				/**
 				 * @author pmanousi
 				 */
-				System.out.println("SELECT NODE    " + clickedVertex.getName() );
+				System.out.println("SELECTED NODE    " + clickedVertex.getName() );
 				viewer.epilegmenosKombos = clickedVertex;
 				viewer.updateManagers();
-//				viewer.epilegmenosKombos = clickedVertex;
-//				viewer.updateManagers();
 				
 			}
 		};
