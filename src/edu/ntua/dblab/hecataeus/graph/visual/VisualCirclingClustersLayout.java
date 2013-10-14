@@ -98,14 +98,11 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		Collections.sort(vertices, new ListComparator());
 		sortedV.addAll(vertices);
 		
-		double myRad = 0.0;
-
-
-		myRad = 1;
+		double myRad = 1.0;
 		
 		ArrayList<ArrayList<ArrayList<VisualNode>>> sublistofClusters = new ArrayList<ArrayList<ArrayList<VisualNode>>>();
 		while((int) Math.pow(2, myRad)<sortedV.size()){
-			ArrayList<ArrayList<VisualNode>> tmpVl=new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), (int) Math.pow(2, myRad)));
+			ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), (int) Math.pow(2, myRad)));
 			sublistofClusters.add(tmpVl);
 			myRad++;
 		}
@@ -128,25 +125,39 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 			}
 
 			bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
-			bigCircleRad = checkRad(listaC, bigClusterRad)*1.3;
+			bigCircleRad = bigClusterRad/4*Math.PI;
+			
+		//	bigCircleRad = checkRad(listaC, bigClusterRad)*1.3;
 			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
+			
+			
+			
+			double angle = 0.0, sum = 0.0;
 			for(ArrayList<VisualNode> lista : listaC){
-				
 				List<VisualNode> nodes = new ArrayList<VisualNode>();
 				Collections.sort(lista, new CustomComparator());
 				nodes.addAll(lista);
 				
-				double angle = (2 * Math.PI )/ listaC.size();
+//				double angle = (2 * Math.PI )/ listaC.size();
+//				
+//				double cx = Math.cos(angle*a) * bigCircleRad;// + width / 2;
+//				double cy =	Math.sin(angle*a) * bigCircleRad;// + height/2;
+//				Point2D coord1 = transform(nodes.get(0));
+//				coord1.setLocation(cx, cy);
+//				circles(nodes, cx, cy);
+//				a++;
 				
-				double cx = Math.cos(angle*a) * bigCircleRad;// + width / 2;
-				double cy =	Math.sin(angle*a) * bigCircleRad;// + height/2;
-				Point2D coord1 = transform(nodes.get(0));
-				coord1.setLocation(cx, cy);
+
+				angle = (Math.acos((2*bigCircleRad*bigCircleRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*bigCircleRad*bigCircleRad )))*2;   // 0.94 is used simulate strait lines to curves
+				double cx = Math.cos(sum+angle/2) * bigCircleRad*1.8;// 1.8 is used for white space borders
+				double cy =	Math.sin(sum+angle/2) * bigCircleRad*1.8;
+				int m = 0;
+				sum+=angle;
 				circles(nodes, cx, cy);
 				a++;
+				
 			}
 		}
-		
 		HecataeusViewer.vv.repaint();
 	}
 	
