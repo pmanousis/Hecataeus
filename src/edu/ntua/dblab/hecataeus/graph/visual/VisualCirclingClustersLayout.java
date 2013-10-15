@@ -115,6 +115,11 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		double bigCircleRad = 0.0;
 		double bigClusterRad = 0.0;
 		System.out.println(sublistofClusters);
+		
+
+		
+		
+		
 		for(ArrayList<ArrayList<VisualNode>> listaC: sublistofClusters){
 			ArrayList<ArrayList<VisualNode>> tmp ;
 			if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
@@ -125,8 +130,8 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 			}
 
 			bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
-			bigCircleRad = bigClusterRad/4*Math.PI;
-			
+			bigCircleRad = (bigClusterRad)*1.2;
+		//	bigCircleRad = bigClusterRad;
 		//	bigCircleRad = checkRad(listaC, bigClusterRad)*1.3;
 			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
 			
@@ -139,24 +144,24 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 				nodes.addAll(lista);
 				
 //				double angle = (2 * Math.PI )/ listaC.size();
-//				
 //				double cx = Math.cos(angle*a) * bigCircleRad;// + width / 2;
 //				double cy =	Math.sin(angle*a) * bigCircleRad;// + height/2;
-//				Point2D coord1 = transform(nodes.get(0));
-//				coord1.setLocation(cx, cy);
-//				circles(nodes, cx, cy);
-//				a++;
+
 				
 
-				angle = (Math.acos((2*bigCircleRad*bigCircleRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*bigCircleRad*bigCircleRad )))*2;   // 0.94 is used simulate strait lines to curves
-				double cx = Math.cos(sum+angle/2) * bigCircleRad*1.8;// 1.8 is used for white space borders
-				double cy =	Math.sin(sum+angle/2) * bigCircleRad*1.8;
+				angle = (Math.acos((Math.pow(bigCircleRad, 2) - Math.pow(getSmallRad(nodes), 2)*0.94)/(Math.pow(bigCircleRad, 2))))*2*Math.PI;   // 0.94 is used simulate strait lines to curves
+				
+				double cx = Math.cos(angle/2+sum) * bigCircleRad*1.8;// 1.8 is used for white space borders
+				
+				double cy =	Math.sin(angle/2+sum) * bigCircleRad*1.8;
+				System.out.println("ANGLEEE   " + angle/2+sum);
 				int m = 0;
 				sum+=angle;
 				circles(nodes, cx, cy);
 				a++;
 				
 			}
+			System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}
 		HecataeusViewer.vv.repaint();
 	}
