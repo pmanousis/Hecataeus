@@ -7,7 +7,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
 
-class cellColor extends DefaultListCellRenderer {  
+class HecataeusjListCellColor extends DefaultListCellRenderer {  
 
 
 	public Component getListCellRendererComponent( JList list, Object value, int index, boolean isSelected, boolean cellHasFocus ) {  
@@ -32,20 +32,21 @@ class cellColor extends DefaultListCellRenderer {
 			case 15: c.setBackground(new Color(0,128,255));break;
 			case 16: c.setBackground(new Color(255,153,51));break;
 			case 17: c.setBackground(new Color(255,192,203));break;
-			case 18: c.setBackground(new Color(255,192,203));break;
-			case 19: c.setBackground(new Color(255,192,203));break;
-			case 20: c.setBackground(new Color(127,255,212));break;
-			case 21: c.setBackground(new Color(127,255,212));break;
-			case 22: c.setBackground(new Color(127,255,212));break;
-			case 23: c.setBackground(new Color(127,255,212));break;
-			case 24: c.setBackground(new Color(127,255,212));break;
+			case 18: c.setBackground(new Color(198, 226, 255));break;
+			case 19: c.setBackground(new Color(30, 199,	40));break;
+			case 20: c.setBackground(new Color(0, 201, 87));break;
+			case 21: c.setBackground(new Color(188, 238, 104));break;
+			case 22: c.setBackground(new Color(238, 230,133));break;
+			case 23: c.setBackground(new Color(0, 206, 209));break;
+			case 24: c.setBackground(new Color(61, 145, 64));break;
 			case 25: c.setBackground(new Color(127,255,212));break;
 			case 26: c.setBackground(new Color(0,0,128));break;
 			case 27: c.setBackground(new Color(147,112,219));break;
 			case 28: c.setBackground(new Color(255,250,205));break;
-			case 29: c.setBackground(new Color(188,143,143));break;
-			case 30: c.setBackground(new Color(188,143,143));break;
-			case 31: c.setBackground(new Color(188,143,143));break;
+			case 29: c.setBackground(new Color(113,198,113));break;
+			case 30: c.setBackground(new Color(139,131,120));break;
+			case 31: c.setBackground(new Color(224,102,255));break;
+			
 			default : c.setBackground(new Color(255,255,255));
 		}
 		return c;
