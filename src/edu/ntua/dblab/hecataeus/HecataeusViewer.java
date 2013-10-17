@@ -50,7 +50,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
@@ -440,7 +440,7 @@ public class HecataeusViewer {
 			for(String f : files){
 				listModel.addElement(f);
 			}
-			fileColorList.setCellRenderer(new cellColor());
+			fileColorList.setCellRenderer(new HecataeusjListCellColor());
 			panel_3.repaint();
 			policyManagerGui.UPDATE();
 			//TODO theloun allages edw
@@ -2201,27 +2201,17 @@ public class HecataeusViewer {
 		panel_3.setBorder(BorderFactory.createTitledBorder("Colors"));
 		listModel = new DefaultListModel<String>();
 //		listModel.addElement("eva");
-		
+		JScrollPane listScrollPane = new JScrollPane();
 		fileColorList = new JList<String>(listModel);
+		fileColorList.setBackground(UIManager.getColor("background"));
+		fileColorList.setVisibleRowCount(57);
+		fileColorList.setValueIsAdjusting(true);
+		listScrollPane.setViewportView(fileColorList);
 
-		JScrollBar bara = new JScrollBar();
-		panel_3.add(fileColorList, bara);
+		panel_3.add(listScrollPane);
 		frame.getContentPane().add(panel_3, "cell 0 0,growy");
 		
 		
-		
-		
-
-		//panel_3.setLayout(new MigLayout("", "[]", "[]"));
-		
-
-				
-	//EVA
-//		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.X_AXIS));
-//		JPanel toolP = new JPanel();
-//		toolP.setVisible(true);
-//		toolP = createToolsPanel();
-//		frame.getContentPane().add(toolP, BorderLayout.NORTH);
 		
 		JSplitPane splitPane = new JSplitPane();
 		frame.getContentPane().add(splitPane, "cell 2 0,growy");
@@ -2229,15 +2219,9 @@ public class HecataeusViewer {
 		splitPane.setOneTouchExpandable(true);
 		
 		
-//		addTabbedPane();
-		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		tabbedPane.setBorder(BorderFactory.createTitledBorder("VISUAL"));
-//		Dimension prefferedSizeTab = Toolkit.getDefaultToolkit().getScreenSize(); 
-//		tabbedPane.setSize(new Dimension((int)prefferedSizeTab.getWidth(), (int)prefferedSizeTab.getHeight()));
-		
-		
-		//tabbedPane.setTabComponentAt(0,new ButtonTabComponent(tabbedPane));
+		tabbedPane.setBorder(BorderFactory.createTitledBorder("Visual"));
+
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
 		
 		tabbedPane.addChangeListener(new ChangeListener() {
