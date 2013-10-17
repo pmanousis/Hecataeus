@@ -13,14 +13,11 @@ import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
@@ -39,8 +36,6 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -58,15 +53,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -78,11 +70,11 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
@@ -97,13 +89,10 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
-import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 
 public class HecataeusViewer {
@@ -253,7 +242,7 @@ public class HecataeusViewer {
 		// the layout
 		layout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		
-		
+		layout.setSize(prefferedSize);
 //		subLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		//the visualization viewer
 		
@@ -902,23 +891,40 @@ public class HecataeusViewer {
 					public void actionPerformed(ActionEvent e) {
 						// update the top layout of the graph
 						if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
+							
+							VisualEdgeBetweennessClustering.south = new JPanel();
+//							VisualEdgeBetweennessClustering.south = new SLPanel();
+//							VisualEdgeBetweennessClustering.south.setTweenManager(SLAnimator.createTweenManager());
+							
+							frame.getContentPane().add(VisualEdgeBetweennessClustering.south, BorderLayout.SOUTH);
+							frame.validate();
+							frame.repaint();
 							final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
 							System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
 							getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
 							HecataeusViewer.this.getLayoutPositions();
-							Point2D c = new Point(0, 0);
+							Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+							Point2D c = new Point((int)d.getWidth()/4, (int)d.getHeight()/4);
 							centerAt(c);
 							zoomToWindow(activeViewer);
 						}
 						else{
-							VisualEdgeBetweennessClustering.south.setVisible(false);
-							//	frame.remove(VisualEdgeBetweennessClustering.south);
-								frame.repaint();
+							vv.setGraphLayout(layout);
+							if(VisualEdgeBetweennessClustering.south!=null){
+								frame.remove(VisualEdgeBetweennessClustering.south);
+							}
+							frame.repaint();
+							
 							final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
 							System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-							getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
+							
+							getLayout(activeViewer).setTopLayoutType(layoutType);  
+							
 							HecataeusViewer.this.getLayoutPositions();
-							centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+							//centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+							Point2D c = new Point(0, 0);
+							centerAt(c);
+							vv.repaint();
 							zoomToWindow(activeViewer);
 						}
 					}
