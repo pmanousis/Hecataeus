@@ -1,32 +1,31 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Paint;
 import java.awt.geom.Point2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.functors.ConstantTransformer;
 import org.apache.commons.collections15.map.LazyMap;
-import org.apache.commons.lang3.StringUtils;
 
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
+import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
+import edu.uci.ics.jung.algorithms.layout.CircleLayout;
+import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseMultigraph;
 
 
 
@@ -60,6 +59,16 @@ public class VisualCircleClusteredLayout extends VisualCircleLayout {
 	private ArrayList<ArrayList<VisualNode>> vertices;
 
 	protected VisualCircleLayout vcl;
+
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	Map<VisualNode,Paint> vertexPaints =
+			LazyMap.<VisualNode,Paint>decorate(new HashMap<VisualNode,Paint>(),
+					new ConstantTransformer(Color.white));
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		Map<VisualEdge,Paint> edgePaints =
+		LazyMap.<VisualEdge,Paint>decorate(new HashMap<VisualEdge,Paint>(),
+				new ConstantTransformer(Color.blue));
 
 	
 	public VisualCircleClusteredLayout(VisualGraph g, ClusterE cluster){
@@ -171,18 +180,106 @@ public class VisualCircleClusteredLayout extends VisualCircleLayout {
 	}
 
 	private void clusterViews() {
+		
+		ClusteringDemo cd = new ClusteringDemo(this.graph);
+		
+		
 	}
 
+	
+	public final Color[] similarColors =
+		{
+			new Color(216, 134, 134),
+			new Color(135, 137, 211),
+			new Color(134, 206, 189),
+			new Color(206, 176, 134),
+			new Color(194, 204, 134),
+			new Color(145, 214, 134),
+			new Color(133, 178, 209),
+			new Color(103, 148, 255),
+			new Color(60, 220, 220),
+			new Color(30, 250, 100)
+		};
 	private void clusterQueries() {
 		
+
+		clusterAndRecolor(5, similarColors, true);
+			
+	//	colorCluster(queries, Color c)
 		
-		
-		
-		
+//		groupCluster(AggregateLayout<Number,Number> layout, Set<Number> vertices)
+				
 	}
 
+	public void clusterAndRecolor(int numEdgesToRemove, Color[] colors, boolean groupClusters) {
+	
+		Graph<VisualNode, VisualEdge> g = this.graph;
+		AggregateLayout<VisualNode, VisualEdge> l = new AggregateLayout<VisualNode, VisualEdge>(new CircleLayout<VisualNode, VisualEdge>(g));
+	
+		EdgeBetweennessClusterer<VisualNode,VisualEdge> clusterer = new EdgeBetweennessClusterer<VisualNode,VisualEdge>(numEdgesToRemove);
+		
+		Set<Set<VisualNode>> clusterSet = clusterer.transform(g);
+		
+		List<VisualEdge> edges = clusterer.getEdgesRemoved();
+		
+		List<VisualNode> RQ = new ArrayList<VisualNode>();
+		RQ.addAll(queries);
+		RQ.addAll(relations);
+		
+		int i = 0;
+	
+	//	for (Iterator<Set<VisualNode>> cIt = clusterSet.iterator(); cIt.hasNext();) {
+		for(VisualNode node :  RQ){
+			Iterator<VisualNode> cIt = RQ.iterator();
+			cIt.hasNext();
+			VisualNode vertices = cIt.next();
+			Color c = colors[i % colors.length];
+	
+			colorCluster(vertices, c);
+			if(groupClusters == true) {
+				groupCluster(l, RQ);
+			}
+			i++;
+		}
+		
+		
+
+		
+		for (VisualEdge e : g.getEdges()) {
+	
+			if (edges.contains(e)) {
+				edgePaints.put(e, Color.lightGray);
+			} else {
+				edgePaints.put(e, Color.black);
+			}
+		}
+	
+	}
 	
 	
+	private void colorCluster(VisualNode v, Color c) {
+		//for (VisualNode v : vertices) {
+			vertexPaints.put(v, c);
+		//}
+	}
+
+	private void groupCluster(AggregateLayout<VisualNode,VisualEdge> layout, List<VisualNode> vertices) {
+		if(vertices.size() < this.graph.getVertexCount()) {
+			Point2D center = layout.transform(vertices.iterator().next());
+			Graph<VisualNode,VisualEdge> subGraph = SparseMultigraph.<VisualNode,VisualEdge>getFactory().create();
+			for(VisualNode v : vertices) {
+				subGraph.addVertex(v);
+			}
+			System.out.println(subGraph.getVertices());
+			Layout<VisualNode,VisualEdge> subLayout = new CircleLayout<VisualNode,VisualEdge>(subGraph);
+			subLayout.setInitializer(HecataeusViewer.vv.getGraphLayout());
+			subLayout.setSize(new Dimension(40,40));
+
+			layout.put(subLayout,center);
+			HecataeusViewer.vv.setGraphLayout(subLayout);
+			HecataeusViewer.vv.repaint();
+		}
+	}
 	private double checkRad(ArrayList<ArrayList<VisualNode>> SoC, double myRad){
 		double tempRad = 0;double ccircleR = 0;
 		for(ArrayList<VisualNode>listaC: SoC){
