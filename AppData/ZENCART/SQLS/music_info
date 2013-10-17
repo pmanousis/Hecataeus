@@ -1,0 +1,7 @@
+select * from PRODUCT_MUSIC_EXTRA;
+select * from RECORD_ARTISTS;
+select * from RECORD_ARTISTS_INFO;
+select * from RECORD_COMPANY;
+select * from RECORD_COMPANY_INFO;
+select * from MUSIC_GENRE ;
+
