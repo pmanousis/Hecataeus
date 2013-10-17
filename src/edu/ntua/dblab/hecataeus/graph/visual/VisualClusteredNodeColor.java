@@ -87,16 +87,21 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 				}
 				if(node.getType() != NodeType.NODE_TYPE_RELATION){
 					VisualFileColor vfs = new VisualFileColor();
-					int col = vfs.getFileNames().indexOf(file.getName());
-					//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
-					
-					 if(col == -1){
-						 System.out.println("WTF = what a terible failure");
-						 this.color = -1;
-					 }
-					 else{
-						this.color = (col+1)%31; 
-					 }
+					if(vfs.getFileNames()!=null){
+						int col = vfs.getFileNames().indexOf(file.getName());
+						//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
+						
+						 if(col == -1){
+							 System.out.println("WTF = what a terible failure");
+							 this.color = -1;
+						 }
+						 else{
+							this.color = (col+1)%31; 
+						 }
+					}
+					else{
+						this.color = 0; 
+					}
 				}
 				else{
 					this.color = 100;
@@ -122,20 +127,20 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			case 15: return new Color(0,128,255);
 			case 16: return new Color(255,153,51);
 			case 17: return new Color(255,192,203);
-			case 18: return new Color(255,192,203);
-			case 19: return new Color(255,192,203);
-			case 20: return new Color(127,255,212);
-			case 21: return new Color(127,255,212);
-			case 22: return new Color(127,255,212);
-			case 23: return new Color(127,255,212);
-			case 24: return new Color(127,255,212);
+			case 18: return new Color(198, 226, 255);
+			case 19: return new Color(30, 199,	40);
+			case 20: return new Color(0, 201, 87);
+			case 21: return new Color(188, 238, 104);
+			case 22: return new Color(238, 230,133);
+			case 23: return new Color(0, 206, 209);
+			case 24: return new Color(61, 145, 64);
 			case 25: return new Color(127,255,212);
 			case 26: return new Color(0,0,128);
 			case 27: return new Color(147,112,219);
 			case 28: return new Color(255,250,205);
-			case 29: return new Color(188,143,143);
-			case 30: return new Color(188,143,143);
-			case 31: return new Color(188,143,143);
+			case 29: return new Color(113,198,113);
+			case 30: return new Color(139,131,120);
+			case 31: return new Color(224,102,255);
 			
 			
 			

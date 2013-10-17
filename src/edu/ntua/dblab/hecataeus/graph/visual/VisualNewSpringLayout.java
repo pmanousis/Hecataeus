@@ -24,7 +24,7 @@ public class VisualNewSpringLayout<V,E> extends AbstractLayout<V,E> implements I
 	protected double stretch = 0.70;
     protected Transformer<E, Integer> lengthFunction;
     protected int repulsion_range_sq = 100 * 100;
-    protected double force_multiplier = 1.0 / 3.0;
+    protected double force_multiplier = 2;
 
     protected Map<V, SpringVertexData> springVertexData =
     	LazyMap.decorate(new HashMap<V, SpringVertexData>(),
@@ -60,9 +60,6 @@ public class VisualNewSpringLayout<V,E> extends AbstractLayout<V,E> implements I
         return stretch;
     }
 
-    /**
-     * Sets the dimensions of the available space for layout to {@code size}.
-     */
 	@Override
 	public void setSize(Dimension size) {
 		if(initialized == false)
@@ -70,69 +67,33 @@ public class VisualNewSpringLayout<V,E> extends AbstractLayout<V,E> implements I
 		super.setSize(size);
 	}
 
-    /**
-     * <p>Sets the stretch parameter for this instance.  This value
-     * specifies how much the degrees of an edge's incident vertices
-     * should influence how easily the endpoints of that edge
-     * can move (that is, that edge's tendency to change its length).</p>
-     *
-     * <p>The default value is 0.70.  Positive values less than 1 cause
-     * high-degree vertices to move less than low-degree vertices, and
-     * values > 1 cause high-degree vertices to move more than
-     * low-degree vertices.  Negative values will have unpredictable
-     * and inconsistent results.</p>
-     * @param stretch
-     */
     public void setStretch(double stretch) {
         this.stretch = stretch;
     }
-
-    /**
-     * Returns the current value for the node repulsion range.
-     * @see #setRepulsionRange(int)
-     */
     public int getRepulsionRange() {
         return (int)(Math.sqrt(repulsion_range_sq));
     }
 
-    /**
-     * Sets the node repulsion range (in drawing area units) for this instance.
-     * Outside this range, nodes do not repel each other.  The default value
-     * is 100.  Negative values are treated as their positive equivalents.
-     * @param range
-     */
     public void setRepulsionRange(int range) {
         this.repulsion_range_sq = range * range;
     }
-
-    /**
-     * Returns the current value for the edge length force multiplier.
-     * @see #setForceMultiplier(double)
-     */
     public double getForceMultiplier() {
         return force_multiplier;
     }
 
-    /**
-     * Sets the force multiplier for this instance.  This value is used to
-     * specify how strongly an edge "wants" to be its default length
-     * (higher values indicate a greater attraction for the default length),
-     * which affects how much its endpoints move at each timestep.
-     * The default value is 1/3.  A value of 0 turns off any attempt by the
-     * layout to cause edges to conform to the default length.  Negative
-     * values cause long edges to get longer and short edges to get shorter; use
-     * at your own risk.
-     */
+
     public void setForceMultiplier(double force) {
         this.force_multiplier = force;
     }
 
     public void initialize() {
+    	 step();
+    
+    	
+     	
+    	
     }
 
-    /**
-     * Relaxation step. Moves all nodes a smidge.
-     */
     public void step() {
     	try {
     		for(V v : getGraph().getVertices()) {
@@ -286,9 +247,6 @@ public class VisualNewSpringLayout<V,E> extends AbstractLayout<V,E> implements I
     }
 
 
-    /**
-     * Used for changing the size of the layout in response to a component's size.
-     */
     public class SpringDimensionChecker extends ComponentAdapter {
         @Override
         public void componentResized(ComponentEvent e) {
@@ -296,23 +254,15 @@ public class VisualNewSpringLayout<V,E> extends AbstractLayout<V,E> implements I
         }
     }
 
-    /**
-     * This one is an incremental visualization
-     */
     public boolean isIncremental() {
         return true;
     }
 
-    /**
-     * For now, we pretend it never finishes.
-     */
     public boolean done() {
         return false;
     }
 
-    /**
-     * No effect.
-     */
 	public void reset() {
+		initialize();
 	}
 }

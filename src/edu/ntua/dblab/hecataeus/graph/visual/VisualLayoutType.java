@@ -190,7 +190,7 @@ public enum VisualLayoutType {
 			case EvaCircleTestLayout:
 				return new VisualNewCircleLayout(g);
 			case EvaSpringTestLayout:
-			//	return new VisualNewSpringLayout(g);
+				return new VisualNewSpringLayout<VisualNode, VisualEdge>(g);
 			case EvaDAGTestLayout:
 				return new VisualDagLayout(g);
 			case ClusteredCircleLayoutQ:
