@@ -81,6 +81,17 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		edgeKeys.put(Edge, ++EvolutionGraph._KeyGenerator);
 		// add edge to incoming edges of ToNode
 		V fromNode = (V) Edge.getFromNode();
+		if(fromNode==null||fromNode.getOutEdges()==null)
+		{
+			if(fromNode==null)
+			{
+				System.out.println("fromNode=NULL!!! on edge: "+ Edge.getName()+" to node:"+Edge.getToNode());
+			}
+			else
+			{
+				System.out.println("86 line: "+fromNode.getName());
+			}
+		}
 		if (!fromNode.getOutEdges().contains(Edge))
 			fromNode.getOutEdges().add(Edge);
 		// add edge to outgoing edges of FromNode
