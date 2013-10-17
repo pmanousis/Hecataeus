@@ -14,6 +14,7 @@ import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -77,7 +78,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
-import edu.ntua.dblab.hecataeus.graph.visual.ClusteringDemo;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
@@ -175,21 +176,9 @@ public class HecataeusViewer {
 	
 	public static  List<VisualGraph> graphs;
 	
+	public static int selectionAlg = 0;
 	
 	
-	
-	public final static  Color[] similarColors = {
-                new Color(216, 134, 134),
-                new Color(135, 137, 211),
-                new Color(134, 206, 189),
-                new Color(206, 176, 134),
-                new Color(194, 204, 134),
-                new Color(145, 214, 134),
-                new Color(133, 178, 209),
-                new Color(103, 148, 255),
-                new Color(60, 220, 220),
-                new Color(30, 250, 100)
-        };
 	
 	/**
 	 * Launch the application.
@@ -868,102 +857,8 @@ public class HecataeusViewer {
 				JMenuItem mntmViews = new JMenuItem("Views");
 				mntmViews.addActionListener(new ActionListener() {
 					
-					
-					
-					public void actionPerformed(ActionEvent e) {                  //!!!!!!!!!!!!!!!!!!!     MONO GIA AYTO TO LAYOUT
-						
-
-//				        //add restart button
-//				        JButton scramble = new JButton("Restart");
-//				        scramble.addActionListener(new ActionListener() {
-//				                public void actionPerformed(ActionEvent arg0) {
-//				                        Layout layout = vv.getGraphLayout();
-//				                        layout.initialize();
-//				                        Relaxer relaxer = vv.getModel().getRelaxer();
-//				                        if(relaxer != null) {
-//				                                relaxer.stop();
-//				                                relaxer.prerelax();
-//				                                relaxer.relax();
-//				                        }
-//				                }
-//
-//				        });
-//				       // contentPane.add(scramble);
-//				        
-//				        DefaultModalGraphMouse gm = new DefaultModalGraphMouse();
-//				        vv.setGraphMouse(gm);
-//				        
-//				        final JToggleButton groupVertices = new JToggleButton("Group Clusters");
-//
-//				        //Create slider to adjust the number of edges to remove when clustering
-//				        final JSlider edgeBetweennessSlider = new JSlider(JSlider.HORIZONTAL);
-//				        edgeBetweennessSlider.setBackground(Color.WHITE);
-//				        edgeBetweennessSlider.setPreferredSize(new Dimension(210, 50));
-//				        edgeBetweennessSlider.setPaintTicks(true);
-//				        edgeBetweennessSlider.setMaximum(graph.getEdgeCount());
-//				        edgeBetweennessSlider.setMinimum(0);
-//				        edgeBetweennessSlider.setValue(0);
-//				        edgeBetweennessSlider.setMajorTickSpacing(10);
-//				        edgeBetweennessSlider.setPaintLabels(true);
-//				        edgeBetweennessSlider.setPaintTicks(true);
-//
-////				        edgeBetweennessSlider.setBorder(BorderFactory.createLineBorder(Color.black));
-//				        //TO DO: edgeBetweennessSlider.add(new JLabel("Node Size (PageRank With Priors):"));
-//				        //I also want the slider value to appear
-//				        final JPanel eastControls = new JPanel();
-//				        eastControls.setOpaque(true);
-//				        eastControls.setLayout(new BoxLayout(eastControls, BoxLayout.Y_AXIS));
-//				        eastControls.add(Box.createVerticalGlue());
-//				        eastControls.add(edgeBetweennessSlider);
-//
-//				        final String COMMANDSTRING = "Edges removed for clusters: ";
-//				        final String eastSize = COMMANDSTRING + edgeBetweennessSlider.getValue();
-//				        
-//				        final TitledBorder sliderBorder = BorderFactory.createTitledBorder(eastSize);
-//				        eastControls.setBorder(sliderBorder);
-//				        //eastControls.add(eastSize);
-//				        eastControls.add(Box.createVerticalGlue());
-//				        
-//				        groupVertices.addItemListener(new ItemListener() {
-//	                        public void itemStateChanged(ItemEvent e) {
-//	                                        ClusteringDemo.clusterAndRecolor(layout, edgeBetweennessSlider.getValue(), 
-//	                                                        similarColors, e.getStateChange() == ItemEvent.SELECTED);
-//	                                        vv.repaint();
-//	                        }});
-//
-//
-//				        ClusteringDemo.clusterAndRecolor(layout, 0, similarColors, groupVertices.isSelected());
-//
-//
-//	                edgeBetweennessSlider.addChangeListener(new ChangeListener() {
-//                        public void stateChanged(ChangeEvent e) {
-//                                JSlider source = (JSlider) e.getSource();
-//                                if (!source.getValueIsAdjusting()) {
-//                                        int numEdgesToRemove = source.getValue();
-//                                        ClusteringDemo.clusterAndRecolor(layout, numEdgesToRemove, similarColors,
-//                                                        groupVertices.isSelected());
-//                                        sliderBorder.setTitle(
-//                                                COMMANDSTRING + edgeBetweennessSlider.getValue());
-//                                        eastControls.repaint();
-//                                        vv.validate();
-//                                        vv.repaint();
-//                                }
-//                        }
-//                });
-//
-//						
-//						JPanel south = new JPanel();
-//				        JPanel grid = new JPanel(new GridLayout(2,1));
-//				        grid.add(scramble);
-//				        grid.add(groupVertices);
-//				        south.add(grid);
-//				        south.add(eastControls);
-//				        JPanel p = new JPanel();
-//				        p.setBorder(BorderFactory.createTitledBorder("Mouse Mode"));
-//				        p.add(gm.getModeComboBox());
-//				        south.add(p);
-//				        frame.getContentPane().add(south, BorderLayout.SOUTH);
-						
+					public void actionPerformed(ActionEvent e) {
+						selectionAlg++;
 						
 						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
 						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
@@ -971,6 +866,7 @@ public class HecataeusViewer {
 						HecataeusViewer.this.getLayoutPositions();
 						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
 						HecataeusViewer.this.zoomToWindow(activeViewer);
+						frame.repaint();
 					}
 				});
 				mnClusteredCircleLayout.add(mntmViews);
@@ -1005,12 +901,26 @@ public class HecataeusViewer {
 				mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
 					public void actionPerformed(ActionEvent e) {
 						// update the top layout of the graph
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-						getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
-						HecataeusViewer.this.getLayoutPositions();
-						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-						zoomToWindow(activeViewer);
+						if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
+							final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+							System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+							getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
+							HecataeusViewer.this.getLayoutPositions();
+							Point2D c = new Point(0, 0);
+							centerAt(c);
+							zoomToWindow(activeViewer);
+						}
+						else{
+							VisualEdgeBetweennessClustering.south.setVisible(false);
+							//	frame.remove(VisualEdgeBetweennessClustering.south);
+								frame.repaint();
+							final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+							System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+							getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
+							HecataeusViewer.this.getLayoutPositions();
+							centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+							zoomToWindow(activeViewer);
+						}
 					}
 				});
 			}

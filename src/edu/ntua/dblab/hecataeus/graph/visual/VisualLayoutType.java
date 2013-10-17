@@ -48,7 +48,8 @@ public enum VisualLayoutType {
 	DebianCircleLayout,
 	HalfCircleLayout,
 	StarLayout,
-	PizzaSliceLayout;
+	PizzaSliceLayout,
+	EdgeBetweennessClustering;
 
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -118,6 +119,8 @@ public enum VisualLayoutType {
 				return "Star Layout";
 			case PizzaSliceLayout:
 				return "Pizza Slice Cluster Layout";
+			case EdgeBetweennessClustering:
+				return "Edge Betweenness Clustering";
 			default:
 				return name();
 			}
@@ -221,6 +224,8 @@ public enum VisualLayoutType {
 			case PizzaSliceLayout:
 				HecataeusInputDialog d6 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualPizzaSliceClusterLayout(g, d6.getC());
+			case EdgeBetweennessClustering:
+				return new VisualEdgeBetweennessClustering(g);
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

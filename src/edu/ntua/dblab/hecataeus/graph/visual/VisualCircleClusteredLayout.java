@@ -181,7 +181,7 @@ public class VisualCircleClusteredLayout extends VisualCircleLayout {
 
 	private void clusterViews() {
 		
-		ClusteringDemo cd = new ClusteringDemo(this.graph);
+		VisualEdgeBetweennessClustering cd = new VisualEdgeBetweennessClustering(this.graph);
 		
 		
 	}
