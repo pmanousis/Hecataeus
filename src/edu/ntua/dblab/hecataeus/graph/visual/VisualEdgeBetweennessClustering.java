@@ -48,18 +48,18 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 
 	public static JPanel south = null;
 	
-	public final  Color[] similarColors = {
-		new Color(216, 134, 134),
-		new Color(135, 137, 211),
-		new Color(134, 206, 189),
-		new Color(206, 176, 134),
-		new Color(194, 204, 134),
-		new Color(145, 214, 134),
-		new Color(133, 178, 209),
-		new Color(103, 148, 255),
-		new Color(60, 220, 220),
-		new Color(30, 250, 100)
-	};
+//	public final  Color[] similarColors = {
+//		new Color(216, 134, 134),
+//		new Color(135, 137, 211),
+//		new Color(134, 206, 189),
+//		new Color(206, 176, 134),
+//		new Color(194, 204, 134),
+//		new Color(145, 214, 134),
+//		new Color(133, 178, 209),
+//		new Color(103, 148, 255),
+//		new Color(60, 220, 220),
+//		new Color(30, 250, 100)
+//	};
 
 	private VisualGraph graph;
 	
@@ -129,6 +129,7 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		final AggregateLayout<VisualNode, VisualEdge> layout = new AggregateLayout<VisualNode, VisualEdge>(new VisualClustersOnACircleLayout((VisualGraph)graph, 1));
 		
 		HecataeusViewer.vv.setGraphLayout(layout);
+		// i use the same transformers used on other layouts
 //		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(MapTransformer.<VisualNode,Paint>getInstance(vertexPaints));
 		
 		HecataeusViewer.vv.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
@@ -179,19 +180,19 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		
 		groupVertices.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
-			clusterAndRecolor(layout, edgeBetweennessSlider.getValue(), similarColors, e.getStateChange() == ItemEvent.SELECTED);
+			cluster(layout, edgeBetweennessSlider.getValue(), e.getStateChange() == ItemEvent.SELECTED);
 			HecataeusViewer.vv.repaint();
 		}});
 		
 		
-		clusterAndRecolor(layout, 0, similarColors, groupVertices.isSelected());
+		cluster(layout, 0, groupVertices.isSelected());
 		
 		edgeBetweennessSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				JSlider source = (JSlider) e.getSource();
 				if (!source.getValueIsAdjusting()) {
 					int numEdgesToRemove = source.getValue();
-					clusterAndRecolor(layout, numEdgesToRemove, similarColors,
+					cluster(layout, numEdgesToRemove,
 					groupVertices.isSelected());
 					sliderBorder.setTitle(
 					COMMANDSTRING + edgeBetweennessSlider.getValue());
@@ -212,7 +213,7 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		
 	}
 	
-	public static void clusterAndRecolor(AggregateLayout<VisualNode,VisualEdge> layout, int numEdgesToRemove, Color[] colors, boolean groupClusters) {
+	public static void cluster(AggregateLayout<VisualNode,VisualEdge> layout, int numEdgesToRemove, boolean groupClusters) {
 		
 		Graph<VisualNode,VisualEdge> g = layout.getGraph();
 		layout.removeAll();
@@ -226,7 +227,7 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		for (Iterator<Set<VisualNode>> cIt = clusterSet.iterator(); cIt.hasNext();) {
 		
 			Set<VisualNode> vertices = cIt.next();
-			Color c = colors[i % colors.length];
+//			Color c = colors[i % colors.length];
 			
 //			colorCluster(vertices, c);
 			if(groupClusters == true) {
