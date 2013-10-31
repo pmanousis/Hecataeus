@@ -16,9 +16,9 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected VisualGraph graph;
 	
 	private List<VisualNode> nodes;
-	protected List<VisualNode> queries = new ArrayList<VisualNode>();
-	protected List<VisualNode> relations = new ArrayList<VisualNode>();
-	protected List<VisualNode> views = new ArrayList<VisualNode>();
+	private List<VisualNode> queries = new ArrayList<VisualNode>();
+	private List<VisualNode> relations = new ArrayList<VisualNode>();
+	private List<VisualNode> views = new ArrayList<VisualNode>();
 	
 	
 	protected List<String> files = new ArrayList<String>();
@@ -45,25 +45,25 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 				}
 			}
 			if(v.getType() == NodeType.NODE_TYPE_QUERY){
-				queries.add(v);
+				getQueries().add(v);
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
 				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
 				for(VisualEdge e : edges){
 					if(e.getType() == EdgeType.EDGE_TYPE_USES){
-						if(relations.contains(v)==false){
-							relations.add(v);
+						if(getRelations().contains(v)==false){
+							getRelations().add(v);
 						}
 					}
 				}
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
-				views.add(v);
+				getViews().add(v);
 			}
 		}
 		
 		
-		for(VisualNode r : relations){
+		for(VisualNode r : getRelations()){
 			for(int i =0; i < r.getInEdges().size(); i++){
 				if(r.getInEdges().get(i).getType()== EdgeType.EDGE_TYPE_USES){
 					if(RQV.contains(r) == false){
@@ -73,11 +73,11 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			}
 		}
 
-		for(VisualNode q: queries){
+		for(VisualNode q: getQueries()){
 			RQV.add(q);
 		}
 
-		for(VisualNode v:views){
+		for(VisualNode v:getViews()){
 			if(RQV.contains(v)==false){
 				RQV.add(v);
 			}
@@ -121,6 +121,36 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 
 	@Override
 	public void reset() {
+	}
+
+
+	public List<VisualNode> getRelations() {
+		return relations;
+	}
+
+
+	public void setRelations(List<VisualNode> relations) {
+		this.relations = relations;
+	}
+
+
+	public List<VisualNode> getQueries() {
+		return queries;
+	}
+
+
+	public void setQueries(List<VisualNode> queries) {
+		this.queries = queries;
+	}
+
+
+	public List<VisualNode> getViews() {
+		return views;
+	}
+
+
+	public void setViews(List<VisualNode> views) {
+		this.views = views;
 	}
 
 }

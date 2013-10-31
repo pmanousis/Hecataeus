@@ -33,9 +33,9 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
 		
-		queries = new ArrayList<VisualNode>(vcl.queries);
-		relations = new ArrayList<VisualNode>(vcl.relations);
-		views = new ArrayList<VisualNode>(vcl.views);
+		queries = new ArrayList<VisualNode>(vcl.getQueries());
+		relations = new ArrayList<VisualNode>(vcl.getRelations());
+		views = new ArrayList<VisualNode>(vcl.getViews());
 		
 		RQV = new ArrayList<VisualNode>(vcl.RQV);
 		files = new ArrayList<String>(vcl.files);

@@ -29,9 +29,9 @@ public class VisualStarLayout extends VisualCircleLayout{
 		this.graph = g;
 		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
-		this.queries = new ArrayList<VisualNode>(vcl.queries);
-		this.relations = new ArrayList<VisualNode>(vcl.relations);
-		this.views = new ArrayList<VisualNode>(vcl.views);
+		this.queries = new ArrayList<VisualNode>(vcl.getQueries());
+		this.relations = new ArrayList<VisualNode>(vcl.getRelations());
+		this.views = new ArrayList<VisualNode>(vcl.getViews());
 		
 		this.files = new ArrayList<String>(vcl.files);
 		this.RQV = new ArrayList<VisualNode>(vcl.RQV);
@@ -71,54 +71,41 @@ public class VisualStarLayout extends VisualCircleLayout{
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx + m, cy);
 			System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
+			drawclusters(nodes, cx, cy, 2*bigClusterRad, sum+angle/2 , myRad*1.8);
 			sum+=angle;
-			double angleS = (Math.PI) / V.get(V.size()-1).size();
-			drawclusters(nodes, cx, cy, 2*bigClusterRad, sum+angle/2, angleS);
 			a++;
 		}
 		
 	}
 	
-	private void drawclusters(List<VisualNode> nodes, double cx, double cy, double bcr, double angle , double angleS){
+	private void drawclusters(List<VisualNode> nodes, double cx, double cy, double bcr, double angle, double rad){
 		int b = 0;
-	//	double angleS = (Math.PI) / nodes.size();
+		double angleS = angle;
 		
 		for(int i = 1; i < nodes.size(); i++){
-			double circleCenterX, circleCenterY;
-			//if(cx<0 && cy>0){
-				circleCenterX =  cx + bcr*Math.cos(angle);
-				circleCenterY = cy + bcr*Math.sin(angle);
-				
-//			}else if(cx < 0 && cy < 0){
-//				circleCenterX =  cx;
-//				circleCenterY = cy - bcr;
-//			}else if(cx > 0 && cy < 0){
-//				circleCenterX =  cx;
-//				circleCenterY = cy - bcr;
-//			}else {
-//				circleCenterX =  cx + bcr;
-//				circleCenterY = cy;
-//			}
 			
-			double x = circleCenterX+(Math.cos(angleS*b)*bcr);
-			double y = circleCenterY+(Math.sin(angleS*b)*bcr);
+			rad += getSmallRad(nodes);
+			cx = Math.cos(angleS) * rad;// 1.8 is used for white space borders
+			cy = Math.sin(angleS) * rad;
 			
+			angleS+=angleFunc(i, nodes.size());
 			
-//			double x = cx+Math.cos(angle)*nodes.size(); 
-//			double y = cy+Math.sin(angle)*10*nodes.size();
-			
-			
-			
-			
-//			double x = cx+(2*getSmallRad(nodes)*Math.pow(Math.sin(angle), 2));
-//			double y = cy+(2*getSmallRad(nodes)*Math.pow(Math.cos(angle), 2)*Math.tan(angle));
-//			cx = x; cy = y;
-			Point2D coord = transform(nodes.get(i));
-			coord.setLocation(x, y);
-			
-			System.out.println( "   x:    " +x + " y: " +y+ " my angle: " +angle );
+			Point2D coord1 = transform(nodes.get(i));
+			coord1.setLocation(cx, cy);
+
 			b++;
 		}
+	}
+	
+	private double angleFunc(int i, int j){
+		double nAngle;
+		if(i < j/2){
+			nAngle = Math.toRadians(5);
+		}
+		else{
+			nAngle = Math.toRadians(5)*(-1);
+		}
+		return nAngle;
 	}
 	
 	
