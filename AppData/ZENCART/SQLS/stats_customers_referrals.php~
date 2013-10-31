@@ -1,0 +1,3 @@
+./admin/stats_customers_referrals.php:  $customers_referral_query = "select distinct customers_referral from " . TABLE_CUSTOMERS . " where customers_referral != ''";
+./admin/stats_customers_referrals.php:    $orders_total_query = "select * from " . TABLE_ORDERS_TOTAL . " where orders_id='" . $current_orders_id . "'";
+

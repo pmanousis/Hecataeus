@@ -1,0 +1,7 @@
+./includes/modules/pages/product_music_info/main_template_vars_product_type.php:    $sql = "select * from " . TABLE_PRODUCT_MUSIC_EXTRA . "
+./includes/modules/pages/product_music_info/main_template_vars_product_type.php:    $sql = "select * from " . TABLE_RECORD_ARTISTS . "
+./includes/modules/pages/product_music_info/main_template_vars_product_type.php:    $sql = "select * from " . TABLE_RECORD_ARTISTS_INFO . "
+./includes/modules/pages/product_music_info/main_template_vars_product_type.php:    $sql = "select * from " . TABLE_RECORD_COMPANY . "
+./includes/modules/pages/product_music_info/main_template_vars_product_type.php:    $sql = "select * from " . TABLE_RECORD_COMPANY_INFO . "
+./includes/modules/pages/product_music_info/main_template_vars_product_type.php:    $sql = "select * from " . TABLE_MUSIC_GENRE . "
+

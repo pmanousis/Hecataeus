@@ -1,0 +1,3 @@
+./admin/tax_classes.php:        $sql = "select tax_class_id from " . TABLE_TAX_RATES . " where tax_class_id='" . $tax_class_id . "'";
+./admin/tax_classes.php:  $classes_query_raw = "select tax_class_id, tax_class_title, tax_class_description, last_modified, date_added from " . TABLE_TAX_CLASS . " order by tax_class_title";
+

@@ -1,0 +1,2 @@
+SQL: SQLS/evaCreate.sql, SQLS/admin_access.php, SQLS/banner_manager.php,SQLS/cache.php,SQLS/categories.php, SQLS/categories_tabs.php,SQLS/category_product_listing.php
+POL: POLICIES/DefaultPolicy.plc

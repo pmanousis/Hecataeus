@@ -1,0 +1,3 @@
+
+./admin/includes/functions/extra_functions/add_cookie_path_switch.php:  $sql = "SELECT configuration_group_id FROM " . TABLE_CONFIGURATION_GROUP . " 
+

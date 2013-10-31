@@ -1,0 +1,5 @@
+./includes/templates/template_default/popup_coupon_help/tpl_main_page.php:  $sql = "select * from " . TABLE_COUPONS . " where coupon_id = :couponID:";
+./includes/templates/template_default/popup_coupon_help/tpl_main_page.php:  $sql = "select * from " . TABLE_COUPONS_DESCRIPTION . " where coupon_id = :couponID: and language_id = :langID:";
+./includes/templates/template_default/popup_coupon_help/tpl_main_page.php:  $sql = "select * from " . TABLE_COUPON_RESTRICT . "  where coupon_id=:couponID: and category_id !='0'";
+./includes/templates/template_default/popup_coupon_help/tpl_main_page.php:      $sql = "select * from " . TABLE_COUPON_RESTRICT . "  where coupon_id=:couponID: and product_id !='0'";
+

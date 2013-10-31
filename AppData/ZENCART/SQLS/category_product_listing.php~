@@ -1,0 +1,2 @@
+./admin/includes/modules/category_product_listing.php:  $sql = "select ptc.product_type_id, pt.type_name from " . TABLE_PRODUCT_TYPES_TO_CATEGORY . " ptc, " . TABLE_PRODUCT_TYPES . " pt
+

@@ -1,0 +1,5 @@
+
+./includes/counter.php:$counter_query = "select startdate, counter, session_counter from " . TABLE_COUNTER_HISTORY . " where startdate='" . $date_now . "'";
+./includes/counter.php:$sql = "SELECT * FROM "  . TABLE_COUNTER_HISTORY . " WHERE startdate = '" .  $date_now . "' AND counter = 1 AND session_counter = 1 LIMIT 1";
+./includes/counter.php:$counter_query = "select startdate, counter from " . TABLE_COUNTER;
+

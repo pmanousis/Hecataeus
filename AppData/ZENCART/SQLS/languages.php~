@@ -1,0 +1,2 @@
+./admin/languages.php:  $languages_query_raw = "select languages_id, name, code, image, directory, sort_order from " . TABLE_LANGUAGES . " order by sort_order";
+

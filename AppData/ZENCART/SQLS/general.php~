@@ -1,0 +1,10 @@
+
+./admin/includes/functions/general.php:    // delete from salemaker - sale_categories_selected
+./admin/includes/functions/general.php:      $zp_sql = "select * from " . TABLE_PRODUCT_TYPES_TO_CATEGORY . "
+./admin/includes/functions/general.php:    $customer_address_book_count_query = "SELECT c.*, ab.* from " .
+./admin/includes/functions/general.php:    $orders_comments_query = "SELECT osh.comments from " .
+./zc_install/includes/functions/general.php:    $sql = "select configuration_title from " . DB_PREFIX . "configuration where configuration_key='".$key."'";
+./zc_install/includes/functions/general.php:    $sql = "select configuration_title from " . DB_PREFIX . "product_type_layout where configuration_key='".$key."'";
+./zc_install/includes/functions/general.php:    $sql = "select configuration_group_title from " . DB_PREFIX . "configuration_group where configuration_group_title='".$title."'";
+./zc_install/includes/functions/general.php:    $sql = "select configuration_group_title from " . DB_PREFIX . "configuration_group where configuration_group_id='".$id."'";
+

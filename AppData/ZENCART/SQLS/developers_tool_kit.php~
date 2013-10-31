@@ -1,0 +1,5 @@
+./admin/developers_tool_kit.php:      $sql = "select * from " . TABLE_CONFIGURATION . " where configuration_key=:zcconfigkey:";
+./admin/developers_tool_kit.php:        $sql = "select * from " . TABLE_PRODUCT_TYPE_LAYOUT . " where configuration_key=:zcconfigkey:";
+./admin/developers_tool_kit.php:      $sql = "select * from " . TABLE_CONFIGURATION . " where configuration_key=:zcconfigkey:";
+./admin/developers_tool_kit.php:        $sql = "select * from " . TABLE_PRODUCT_TYPE_LAYOUT . " where configuration_key=:zcconfigkey:";
+

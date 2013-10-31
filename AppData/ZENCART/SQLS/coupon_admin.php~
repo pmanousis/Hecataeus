@@ -1,0 +1,7 @@
+./admin/coupon_admin.php:      $sql = "SELECT * from " . TABLE_COUPONS . " where coupon_code = :coupon_copy:";
+./admin/coupon_admin.php:      $sql = "SELECT * from " . TABLE_COUPONS . " where coupon_id='" . $_GET['cid'] . "'";
+./admin/coupon_admin.php:          $sql = "SELECT * from " . TABLE_COUPONS_DESCRIPTION . " where coupon_id='" . $_GET['cid'] . "'";
+./admin/coupon_admin.php:      $sql = "SELECT * from " . TABLE_COUPON_RESTRICT . " where coupon_id='" . $_GET['cid'] . "'";
+./admin/coupon_admin.php:    $cc_query_raw = "select * from " . TABLE_COUPON_REDEEM_TRACK . " where coupon_id = '" . $_GET['cid'] . "'";
+./admin/coupon_admin.php:      $cc_query_raw = "select coupon_id, coupon_code, coupon_amount, coupon_type, coupon_start_date,coupon_expire_date,uses_per_user,uses_per_coupon,restrict_to_products, restrict_to_categories, date_created,date_modified, coupon_active, coupon_zone_restriction from " . TABLE_COUPONS . " where coupon_type != 'G'";
+

@@ -1,0 +1,4 @@
+./admin/product_types.php:  $sql = "select type_name from " . TABLE_PRODUCT_TYPES . "
+./admin/product_types.php:  $product_types_query_raw = "select * from " . TABLE_PRODUCT_TYPES;
+./admin/product_types.php:       $sql = "select type_id, type_name from " . TABLE_PRODUCT_TYPES;
+

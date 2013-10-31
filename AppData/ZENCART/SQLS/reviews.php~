@@ -1,0 +1,2 @@
+./admin/reviews.php://    $reviews_query_raw = "select reviews_id, products_id, date_added, last_modified, reviews_rating, status from " . TABLE_REVIEWS . " order by date_added DESC";
+
