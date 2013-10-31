@@ -956,93 +956,93 @@ public class HecataeusViewer {
 		});
 		mnAlgorithms.add(mntmRevert);
 		
-		JMenuItem mntmWeb = new JMenuItem("web");
-		mntmWeb.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				VisualCircleLayout vcl = new VisualCircleLayout(graph);
-				List<VisualNode> relations = new ArrayList<VisualNode>(vcl.getRelations());
-				System.out.println(relations);
-				List<VisualNode> queries = new ArrayList<VisualNode>(vcl.getQueries());
-				List<VisualNode> views = new ArrayList<VisualNode>(vcl.getViews());
-
-				try {
-					File file = new File("/home/eva/newTest1/data1.json");
-					FileWriter fw = new FileWriter(file.getAbsoluteFile());
-					BufferedWriter bw = new BufferedWriter(fw);
-					
-					String content = "[";
-					
-					for(VisualNode r : relations){
-						content += "{" + "\"name\":\"" + r.getName() + "\"" + ",\"imports\":\n";
-						List<VisualEdge> inEdges = new ArrayList<VisualEdge>(r._inEdges);
-						
-						for(VisualEdge edge : inEdges){
-							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-								content+="[";
-								break;
-							}
-						}
-						for(VisualEdge edge : inEdges){
-							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-								//content+=edge.getFromNode().getName()+"," ;
-								
-								content+="\" "+edge.getFromNode().getName() +"\""+"," ;
-							}
-						}
-						content=content.substring(0,content.length()-1);
-						content+="]},";
-					}
-					content=content.substring(0,content.length()-1);
-					content+="]";
-					
-//					String content = "{\n";
-//					content+="\"name\":\"eva\""+",\n";
-//					content+="\"children\": [\n \t{\n";
+//		JMenuItem mntmWeb = new JMenuItem("web");
+//		mntmWeb.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				VisualCircleLayout vcl = new VisualCircleLayout(graph);
+//				List<VisualNode> relations = new ArrayList<VisualNode>(vcl.getRelations());
+//				System.out.println(relations);
+//				List<VisualNode> queries = new ArrayList<VisualNode>(vcl.getQueries());
+//				List<VisualNode> views = new ArrayList<VisualNode>(vcl.getViews());
+//
+//				try {
+//					File file = new File("/home/eva/newTest1/data1.json");
 //					FileWriter fw = new FileWriter(file.getAbsoluteFile());
 //					BufferedWriter bw = new BufferedWriter(fw);
 //					
+//					String content = "[";
+//					
 //					for(VisualNode r : relations){
-//						content+="\"name\":\""+ r.getName()+"\""+",\n";
+//						content += "{" + "\"name\":\"" + r.getName() + "\"" + ",\"imports\":\n";
 //						List<VisualEdge> inEdges = new ArrayList<VisualEdge>(r._inEdges);
 //						
 //						for(VisualEdge edge : inEdges){
 //							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-//								content+="\"children\": [\n";
+//								content+="[";
 //								break;
 //							}
 //						}
-//						
 //						for(VisualEdge edge : inEdges){
 //							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-//							//	content+="\"children\": [\n {";
-//								content+="{"+"\"name\":\""+ edge.getFromNode().getName()+"\""+"}," ;
-////								if(edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-////									List<VisualEdge> inViewEdges = new ArrayList<VisualEdge>(edge.getFromNode()._inEdges);
-////									for(VisualEdge vEdge :  inViewEdges){
-////										if(vEdge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-////											content+="\"children\": [\n {";
-////											content+="\"name\":\""+ vEdge.getFromNode().getName()+"\""+",\n" ;
-////										}
-////									}
-////									
-////								}
+//								//content+=edge.getFromNode().getName()+"," ;
+//								
+//								content+="\" "+edge.getFromNode().getName() +"\""+"," ;
 //							}
 //						}
-//						content=content.substring(0, content.length()-1);
-//						content+= "\n]\n},{";
-//						
+//						content=content.substring(0,content.length()-1);
+//						content+="]},";
 //					}
-//					content=content.substring(0, content.length()-2);
+//					content=content.substring(0,content.length()-1);
+//					content+="]";
 //					
-//					content+= "\n]\n}";
-					bw.write(content);
-					bw.close();
-				} catch (IOException fileE) {
-					fileE.printStackTrace();
-				}
-			}
-		});
-		mnAlgorithms.add(mntmWeb);
+////					String content = "{\n";
+////					content+="\"name\":\"eva\""+",\n";
+////					content+="\"children\": [\n \t{\n";
+////					FileWriter fw = new FileWriter(file.getAbsoluteFile());
+////					BufferedWriter bw = new BufferedWriter(fw);
+////					
+////					for(VisualNode r : relations){
+////						content+="\"name\":\""+ r.getName()+"\""+",\n";
+////						List<VisualEdge> inEdges = new ArrayList<VisualEdge>(r._inEdges);
+////						
+////						for(VisualEdge edge : inEdges){
+////							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
+////								content+="\"children\": [\n";
+////								break;
+////							}
+////						}
+////						
+////						for(VisualEdge edge : inEdges){
+////							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
+////							//	content+="\"children\": [\n {";
+////								content+="{"+"\"name\":\""+ edge.getFromNode().getName()+"\""+"}," ;
+//////								if(edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
+//////									List<VisualEdge> inViewEdges = new ArrayList<VisualEdge>(edge.getFromNode()._inEdges);
+//////									for(VisualEdge vEdge :  inViewEdges){
+//////										if(vEdge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
+//////											content+="\"children\": [\n {";
+//////											content+="\"name\":\""+ vEdge.getFromNode().getName()+"\""+",\n" ;
+//////										}
+//////									}
+//////									
+//////								}
+////							}
+////						}
+////						content=content.substring(0, content.length()-1);
+////						content+= "\n]\n},{";
+////						
+////					}
+////					content=content.substring(0, content.length()-2);
+////					
+////					content+= "\n]\n}";
+//					bw.write(content);
+//					bw.close();
+//				} catch (IOException fileE) {
+//					fileE.printStackTrace();
+//				}
+//			}
+//		});
+//		mnAlgorithms.add(mntmWeb);
 		
 		mnVisualize.addSeparator();
 		
@@ -2726,6 +2726,7 @@ public class HecataeusViewer {
 	protected void setLayout(VisualLayoutType topLayoutType, VisualLayoutType subLayoutType) {
 		
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
+		final VisualLayoutType layoutType = VisualLayoutType.EvaCircleTestLayout;
 		//create the logical graph with only module, schema and semantics nodes
 		List<VisualNode> logicalNodes= graph.getVertices(NodeCategory.MODULE);
 		logicalNodes.addAll(graph.getVertices(NodeCategory.SCHEMA));
@@ -2740,50 +2741,14 @@ public class HecataeusViewer {
 		layout.setGraph(logicalGraph);
 		//create the top layout graph
 		
-		final Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
+		/**
+		 * @author evakont	
+		 */		
+		getLayout(activeViewer).setTopLayoutType(layoutType);
+		HecataeusViewer.this.getLayoutPositions();
+		centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+		zoomToWindow(activeViewer);
 
-		Point2D p2d;
-		for(VisualNode node : graph.getVertices()){
-			NodeType type = (node.getType());
-			if(type.getCategory() == NodeCategory.SCHEMA){
-				p2d = new Point2D.Double(prefferedSize.getWidth()-1000, 100+cnt);
-				cnt+=40;
-				node.setLocation(p2d);
-				layout.setLocation(node, p2d);
-			}
-			else if (type.getCategory()== NodeCategory.MODULE){
-				p2d = new Point2D.Double(prefferedSize.getWidth()-200, 100+cnt2);
-				cnt2+=100;
-				node.setLocation(p2d);layout.setLocation(node, p2d);
-			}
-			else if (type.getCategory()== NodeCategory.CONTAINER){
-				p2d = new Point2D.Double(prefferedSize.getWidth()-600, 100+cnt3);
-				cnt3+=40;
-				node.setLocation(p2d);layout.setLocation(node, p2d);
-			}
-			else if (type.getCategory()== NodeCategory.INOUTSCHEMA){
-				p2d = new Point2D.Double(prefferedSize.getWidth()-800, 100+cnt4);
-				cnt4+=40;
-				node.setLocation(p2d);layout.setLocation(node, p2d);
-			}
-			else if (node.getHasPolicies()){
-				p2d = new Point2D.Double(prefferedSize.getWidth()-1000, 100+cnt5);
-				cnt5+=40;
-				node.setLocation(p2d);layout.setLocation(node, p2d);
-			}
-			else if (type.getCategory()== NodeCategory.SEMANTICS){
-				p2d = new Point2D.Double(prefferedSize.getWidth()-1000, 100+cnt5);
-				cnt5+=40;
-				node.setLocation(p2d);layout.setLocation(node, p2d);
-			}
-			else{
-				p2d = new Point2D.Double(prefferedSize.getWidth()-300, 100+cnt);
-				node.setLocation(p2d);layout.setLocation(node, p2d);
-			}
-		}
-		
-		
-		
 		List<VisualNode> topLogicalNodes= logicalGraph.getVertices(NodeCategory.MODULE);
 		VisualGraph topLogicalGraph= logicalGraph.toGraph(topLogicalNodes);
 
