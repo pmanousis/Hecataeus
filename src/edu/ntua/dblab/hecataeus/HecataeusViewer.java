@@ -1580,19 +1580,89 @@ public class HecataeusViewer {
 		JMenu mnCount = new JMenu("Count");
 		mnMetsics.add(mnCount);
 		
-		JMenuItem mntmNodes = new JMenuItem("Nodes");
-		mntmNodes.addActionListener(new ActionListener() {
+		JMenu mnNodes = new JMenu("Nodes");
+		
+		JMenuItem mntmAll = new JMenuItem("All");
+		mntmAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.this.getActiveViewer().getGraphLayout().getGraph(); 
+				int countR = 0, countV = 0, countQ = 0;
+				for (VisualNode v : activeGraph.getVertices()) {
+					if (v.getVisible() && v.getType() == NodeType.NODE_TYPE_RELATION)
+						countR++;
+					if (v.getVisible() && v.getType() == NodeType.NODE_TYPE_VIEW)
+						countV++;
+					if (v.getVisible() && v.getType() == NodeType.NODE_TYPE_QUERY)
+						countQ++;
+				}
+				int sum = countR + countV + countQ;
+				String message = "Relations: " +countR +"\nViews: " + countV +"\nQueries: "+ countQ +"\nSum: " + sum;
+				JOptionPane.showMessageDialog(content, message);
+			}
+		});
+		
+		mnNodes.add(mntmAll);
+		
+		
+		JMenuItem mntmRelations = new JMenuItem("Relations");
+		mntmRelations.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.this.getActiveViewer().getGraphLayout().getGraph(); 
 				int countNodes = 0;
 				for (VisualNode v : activeGraph.getVertices()) {
-					if (v.getVisible())
+					if (v.getVisible() && v.getType() == NodeType.NODE_TYPE_RELATION)
 						countNodes++;
 				}
 				JOptionPane.showMessageDialog(content, countNodes);
 			}
 		});
-		mnCount.add(mntmNodes);
+		
+		mnNodes.add(mntmRelations);
+		
+		JMenuItem mntmViews = new JMenuItem("Views");
+		
+		mntmViews.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.this.getActiveViewer().getGraphLayout().getGraph(); 
+				int countNodes = 0;
+				for (VisualNode v : activeGraph.getVertices()) {
+					if (v.getVisible() && v.getType() == NodeType.NODE_TYPE_VIEW)
+						countNodes++;
+				}
+				JOptionPane.showMessageDialog(content, countNodes);
+			}
+		});
+		mnNodes.add(mntmViews);
+		
+		JMenuItem mntmQueries = new JMenuItem("Queries");
+		mntmQueries.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.this.getActiveViewer().getGraphLayout().getGraph(); 
+				int countNodes = 0;
+				for (VisualNode v : activeGraph.getVertices()) {
+					if (v.getVisible() && v.getType() == NodeType.NODE_TYPE_QUERY)
+						countNodes++;
+				}
+				JOptionPane.showMessageDialog(content, countNodes);
+			}
+		});
+		mnNodes.add(mntmQueries);
+		
+		
+		
+//		JMenuItem mntmNodes = new JMenuItem("Nodes");
+//		mntmNodes.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.this.getActiveViewer().getGraphLayout().getGraph(); 
+//				int countNodes = 0;
+//				for (VisualNode v : activeGraph.getVertices()) {
+//					if (v.getVisible())
+//						countNodes++;
+//				}
+//				JOptionPane.showMessageDialog(content, countNodes);
+//			}
+//		});
+		mnCount.add(mnNodes);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Policies");
 		mntmNewMenuItem.addActionListener(new ActionListener() {
