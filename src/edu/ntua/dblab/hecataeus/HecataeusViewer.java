@@ -2726,7 +2726,7 @@ public class HecataeusViewer {
 	protected void setLayout(VisualLayoutType topLayoutType, VisualLayoutType subLayoutType) {
 		
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-		final VisualLayoutType layoutType = VisualLayoutType.EvaCircleTestLayout;
+		final VisualLayoutType layoutType = VisualLayoutType.ConcentricCircleLayout;
 		//create the logical graph with only module, schema and semantics nodes
 		List<VisualNode> logicalNodes= graph.getVertices(NodeCategory.MODULE);
 		logicalNodes.addAll(graph.getVertices(NodeCategory.SCHEMA));
@@ -2757,36 +2757,36 @@ public class HecataeusViewer {
 		//set the module-level layout
 	//	layout.setTopLayoutType(topLayoutType);
 		//create the sub graphs
-		for (VisualNode topNode : topLogicalNodes) {
-			List<VisualNode> subGraphNodes = logicalGraph.getModule(topNode);
-			subGraphNodes.remove(topNode);
-			VisualGraph subGraph =  logicalGraph.toGraph(subGraphNodes);
-	
-
-	//		layout.setSubLayoutGraph(topNode, subGraph);
-		}
+//		for (VisualNode topNode : topLogicalNodes) {
+//			List<VisualNode> subGraphNodes = logicalGraph.getModule(topNode);
+//			subGraphNodes.remove(topNode);
+//			VisualGraph subGraph =  logicalGraph.toGraph(subGraphNodes);
+//	
+//
+//	//		layout.setSubLayoutGraph(topNode, subGraph);
+//		}
 		//set the low-level layout
 	//	layout.setSubLayoutType(subLayoutType);
 		
 		//create the physical graph with only container and module nodes
-		List<VisualNode> physicalNodes= graph.getVertices(NodeCategory.CONTAINER);
-		physicalNodes.addAll(graph.getVertices(NodeCategory.MODULE));
-		VisualGraph physicalGraph= graph.toGraph(physicalNodes);
+//		List<VisualNode> physicalNodes= graph.getVertices(NodeCategory.CONTAINER);
+//		physicalNodes.addAll(graph.getVertices(NodeCategory.MODULE));
+//		VisualGraph physicalGraph= graph.toGraph(physicalNodes);
 		// pass the graph to the layout 
 		//containerLayout.setGraph(physicalGraph);
 		//create the top layout graph
-		List<VisualNode> topPhysicalNodes= physicalGraph.getVertices(NodeCategory.CONTAINER);
-		VisualGraph topPhysicalGraph= physicalGraph.toGraph(topPhysicalNodes);
+//		List<VisualNode> topPhysicalNodes= physicalGraph.getVertices(NodeCategory.CONTAINER);
+//		VisualGraph topPhysicalGraph= physicalGraph.toGraph(topPhysicalNodes);
 		//containerLayout.setTopLayoutGraph(topPhysicalGraph);
 		//set the module-level layout
 		//containerLayout.setTopLayoutType(topLayoutType);
 		//create the sub graphs
-		for (VisualNode topNode : topPhysicalNodes) {
-			List<VisualNode> subGraphNodes = physicalGraph.getModule(topNode);
-			subGraphNodes.remove(topNode);
-			VisualGraph subGraph =  physicalGraph.toGraph(subGraphNodes);
-			//containerLayout.setSubLayoutGraph(topNode, subGraph);
-		}
+//		for (VisualNode topNode : topPhysicalNodes) {
+//			List<VisualNode> subGraphNodes = physicalGraph.getModule(topNode);
+//			subGraphNodes.remove(topNode);
+//			VisualGraph subGraph =  physicalGraph.toGraph(subGraphNodes);
+//			//containerLayout.setSubLayoutGraph(topNode, subGraph);
+//		}
 		//set the low-level layout
 		//containerLayout.setSubLayoutType(subLayoutType);
 

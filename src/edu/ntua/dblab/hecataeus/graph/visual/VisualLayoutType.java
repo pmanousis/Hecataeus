@@ -34,7 +34,7 @@ public enum VisualLayoutType {
 	EvaTestLayout,
 	AnOtherEvaTestLayout,
 	EvaTestLayout1,
-	EvaCircleTestLayout,
+	ConcentricCircleLayout,
 	EvaSpringTestLayout,
 	EvaDAGTestLayout,
 	ClusteredCircleLayout,
@@ -89,8 +89,8 @@ public enum VisualLayoutType {
 				return "AnOtherEvaTestLayout";
 			case EvaTestLayout1:
 				return "EvaTestLayout1";
-			case EvaCircleTestLayout:
-				return "EvaCircleTestLayout";
+			case ConcentricCircleLayout:
+				return "ConcentricCircleLayout";
 			case EvaSpringTestLayout:
 				return "EvaSpringTestLayout";
 			case EvaDAGTestLayout:
@@ -190,8 +190,8 @@ public enum VisualLayoutType {
 				return new VisualTopologicalLayout(g, Orientation.evaTest1);
 			case EvaTestLayout1:
 				return new VisualTopologicalLayout(g, Orientation.evaTest2);
-			case EvaCircleTestLayout:
-				return new VisualNewCircleLayout(g);
+			case ConcentricCircleLayout:
+				return new VisualConcentricCircleLayout(g);
 			case EvaSpringTestLayout:
 				return new VisualNewSpringLayout<VisualNode, VisualEdge>(g);
 			case EvaDAGTestLayout:

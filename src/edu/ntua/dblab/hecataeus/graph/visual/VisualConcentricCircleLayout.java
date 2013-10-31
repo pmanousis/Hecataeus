@@ -13,11 +13,12 @@ import java.util.Map;
 import org.apache.commons.collections15.Factory;
 import org.apache.commons.collections15.map.LazyMap;
 
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 
-public class VisualNewCircleLayout extends AbstractLayout<VisualNode,VisualEdge> {
+public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,VisualEdge> {
 
 	private double radius;
 	private double relationRadius;
@@ -38,7 +39,7 @@ public class VisualNewCircleLayout extends AbstractLayout<VisualNode,VisualEdge>
 	 * Creates an instance for the specified graph.
 	 */
 	@SuppressWarnings("unchecked")
-	public VisualNewCircleLayout(VisualGraph g) {
+	public VisualConcentricCircleLayout(VisualGraph g) {
 		super(g);
 		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
 		for(VisualNode v : nodes){
@@ -200,6 +201,8 @@ public class VisualNewCircleLayout extends AbstractLayout<VisualNode,VisualEdge>
 			coord.setLocation(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2);
 			dosomething(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2, n, 0);
 			cnt++;
+			HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(n, HecataeusViewer.vv.getPickedVertexState()));
+			HecataeusViewer.vv.repaint();
 		}
 		
 	}
