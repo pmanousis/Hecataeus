@@ -21,9 +21,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -68,6 +66,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
@@ -98,6 +97,7 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.subLayout.GraphCollapser;
 
 public class HecataeusViewer {
 	
@@ -127,8 +127,8 @@ public class HecataeusViewer {
 	
 	//private ClosableTabbedPane tabbedPane;
 	
-	protected JTabbedPane sourceTabbedPane;
-	protected int sourceTabbedPaneIndex;
+	protected static JTabbedPane sourceTabbedPane;
+	protected static int sourceTabbedPaneIndex;
 	public static JFrame frame;
 	public static boolean nodeSize;
 	public static HecataeusViewer myViewer;
@@ -147,7 +147,7 @@ public class HecataeusViewer {
 //	protected final VisualizationViewer<VisualNode, VisualEdge> vv3;
 	public static VisualizationViewer<VisualNode, VisualEdge> vveva;
 	
-	protected List<VisualizationViewer<VisualNode, VisualEdge>> viewers;
+	protected static List<VisualizationViewer<VisualNode, VisualEdge>> viewers;
 	
 	private static final String frameIconUrl = "resources/hecataeusIcon.png";
 	protected Viewers VisualizationViewer;
@@ -2795,23 +2795,22 @@ public class HecataeusViewer {
 //		VisualGraph containerGraph= graph.toGraph(physicalNodes);
 //		for (VisualNode node1: containerGraph.getVertices()) {
 //			for (VisualNode node2: containerGraph.getVertices()) {
-//				if (!node1.equals(node2)
-//						&&graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
+//				if (!node1.equals(node2) && graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
 //					VisualEdge newEdge = new VisualEdge("from",EdgeType.EDGE_TYPE_FROM, node1, node2); 
 //					containerGraph.addEdge(newEdge);
 //				}				
 //			}
 //		}
-				 
+//				
 //		GraphCollapser collapser = new GraphCollapser(graph);
-		// pass the graph to the layout 
-//		VisualGraph g = collapser.collapse(graph, containerGraph);
+//	//	 pass the graph to the layout 
+//		VisualGraph g = (VisualGraph) collapser.collapse(graph, containerGraph);
 //		containerLayout.setGraph(graph);
-		//set the module-level layout
+//	//	set the module-level layout
 //		containerLayout.setTopLayoutType(containerLayout.getTopLayoutType());
-		//set the low-level layout
+//	//	set the low-level layout
 //		containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
-		
+//		
 		VisualNodeVisible showAll = (VisualNodeVisible)  vv.getRenderContext().getVertexIncludePredicate();
 		showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.MODULE);
 
@@ -2895,7 +2894,7 @@ public class HecataeusViewer {
 		thread.start();
 	}
 	
-	public VisualizationViewer<VisualNode, VisualEdge> getActiveViewer(){
+	public static VisualizationViewer<VisualNode, VisualEdge> getActiveViewer(){
 		
 		String tabName = sourceTabbedPane.getTitleAt(getActiveTab());
 		sourceTabbedPane.getComponentAt(getActiveTab());
@@ -2913,7 +2912,7 @@ public class HecataeusViewer {
 //			//return vvContainer;
 	}
 	
-	public int getActiveTab(){
+	public static int getActiveTab(){
 		return sourceTabbedPaneIndex;
 	}
 	
@@ -2925,39 +2924,23 @@ public class HecataeusViewer {
 		}
 	}
 	
-@SuppressWarnings("unused")
+
 protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
 		
 		Point2D p;String name = null;
-		Shape r = vv.getBounds();
-		
+		Shape r = vv.getBounds();		
 		VisualGraph Sub = sub;
 		this.graphs.add(Sub);
 		
-//		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.SpringLayout, VisualLayoutType.SpringLayout);
 		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-		
-		
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
-
 		Sub.setViewerToGraph(vv1);
-		
-//		Point2D vvcenter = vv1.getCenter();
-//		for(int i=0; i < Sub.getVertices().size(); i++){
-////			subLayout.setLocation(subNodes.get(i), vvcenter);	
-//			
-//			vv1.getRenderer().setVertexRenderer((Vertex<VisualNode, VisualEdge>) subNodes.get(i));
-//		//	vv1.getRenderer().setVertexRenderer(new GradientVertexRenderer<Integer, Number>( new Color(175,224,228), new Color(133,170,173), true));
-//		}
-
-		
-
-		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.EvaTestLayout1, VisualLayoutType.EvaTestLayout1);
+		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
 		
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane testPane = new MyPane(subNodes.get(0), vv1, Sub);
 		vv1.setGraphLayout(subLayout);
-		
+		vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 		String onoma="";
 		onoma+=subNodes.get(0).getName();
 		for(int i=1;i<subNodes.size();i++)
@@ -2971,44 +2954,24 @@ protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){
 		viewers.add(vv1);
 		tabbedPane.addTab(onoma, null, testPane, "Displays the logical dependencies between modules");
 		
-		
+		VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
+		System.out.println("viewer  " + activeViewer.getName());
 
 		countOpenTabs++;		
 		tabbedPane.setSelectedIndex(countOpenTabs);
 		tabbedPane.setTabComponentAt(countOpenTabs,new ButtonTabComponent(tabbedPane));
 		
-		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
+		activeViewer = this.getActiveViewer();
 		System.out.println("viewer  " + activeViewer.getName());
-//		Sub.setViewerToGraph(vv1);
-//		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-//		vv1 = VisualizationViewer.SetViewers(subLayout);
+
 		vv1.repaint();
-		
-
-
 	}
 	
 
 	protected void zoomToTab(VisualGraph subGraph){
-		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
-		Point2D p;String name = null;
-		Shape r = activeViewer.getBounds();
-		Point2D vvcenter = activeViewer.getCenter();
-		VisualNode myNode = null;
-		for(VisualNode jungNode: subGraph.getVertices()){
-			System.out.println("o selected kombos " + jungNode.getName());
-			name = jungNode.getName();
-			if (jungNode.getVisible()) {
-				myNode = jungNode;
-			}
-		}		
-		myNode.setVisible(true);
-		subLayout = new VisualAggregateLayout(subGraph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-		subLayout.setLocation(myNode, subGraph.getCenter());
-//		vv1 = VisualizationViewer.SetViewers(subLayout);		
-//		vv1.setGraphLayout(subLayout);
+		List<VisualNode> subNodes = new ArrayList<VisualNode>(subGraph.getVertices());
 		
-		tabbedPane.addTab(name, null, new GraphZoomScrollPane(vv), "Displays the logical dependencies between modules");
+		zoomToModuleTab(subNodes, subGraph);
 	}
 	
 	
@@ -3020,22 +2983,7 @@ protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){
 	public List<VisualGraph> getGraphs(){
 		return this.graphs;
 	}
-	
-	
-	
-	
-	
-//	/*
-//	 * 
-//	 * evaaaaaa
-//	 * 
-//	 */
-	
 
-	
-	
-	
-	
 	/**
 	 * Class for choosing a node of the graph
 	 * @author gpapas
