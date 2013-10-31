@@ -23,7 +23,7 @@ public class VisualNodeStrokeColor implements Transformer<VisualNode, Paint>{
 	@Override
 	public Paint transform(VisualNode v) {
 		if (picked.isPicked(v)){
-			System.out.println("PICKED  " + v.toString());
+//			System.out.println("PICKED  " + v.toString());
 
 			
 			

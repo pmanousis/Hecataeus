@@ -52,7 +52,7 @@ public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 			mediumOut = new BasicStroke(3f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 2.0f, dashing, 0f);
 		}
 		if (picked.isPicked(v)){
-			System.out.println("PICKED  " + v.toString());
+//			System.out.println("PICKED  " + v.toString());
 			return heavy;
 		}
 		else{

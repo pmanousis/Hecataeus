@@ -54,8 +54,8 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 				Point2D coord = transform(v);
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-				HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
-				HecataeusViewer.vv.repaint();
+				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+				HecataeusViewer.getActiveViewer().repaint();
 			}else{
 				double smallRad = getSmallRad(nodes);
 				Point2D coord = transform(v);
@@ -66,8 +66,8 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 					angleA = (2 * Math.PI ) / nodes.size();
 				}
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-				HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
-				HecataeusViewer.vv.repaint();
+				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+				HecataeusViewer.getActiveViewer().repaint();
 			}
 			b++;
 		}
@@ -151,7 +151,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 			}
 			System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}
-		HecataeusViewer.vv.repaint();
+		HecataeusViewer.getActiveViewer().repaint();
 	}
 	
 	

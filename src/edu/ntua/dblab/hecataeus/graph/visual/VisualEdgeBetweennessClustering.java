@@ -117,11 +117,11 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		
 		final AggregateLayout<VisualNode, VisualEdge> layout = new AggregateLayout<VisualNode, VisualEdge>(new VisualClustersOnACircleLayout((VisualGraph)graph, 1));
 		
-		HecataeusViewer.vv.setGraphLayout(layout);
+		HecataeusViewer.getActiveViewer().setGraphLayout(layout);
 		// i use the same transformers used on other layouts
 //		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(MapTransformer.<VisualNode,Paint>getInstance(vertexPaints));
 		
-		HecataeusViewer.vv.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
+		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 
 //		HecataeusViewer.vv.getRenderContext().setEdgeDrawPaintTransformer(MapTransformer.<VisualEdge,Paint>getInstance(edgePaints));
 		
@@ -170,7 +170,7 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		groupVertices.addItemListener(new ItemListener() {
 		public void itemStateChanged(ItemEvent e) {
 			cluster(layout, edgeBetweennessSlider.getValue(), e.getStateChange() == ItemEvent.SELECTED);
-			HecataeusViewer.vv.repaint();
+			HecataeusViewer.getActiveViewer().repaint();
 		}});
 		
 		
@@ -186,8 +186,8 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 					sliderBorder.setTitle(
 					COMMANDSTRING + edgeBetweennessSlider.getValue());
 					eastControls.repaint();
-					HecataeusViewer.vv.validate();
-					HecataeusViewer.vv.repaint();
+					HecataeusViewer.getActiveViewer().validate();
+					HecataeusViewer.getActiveViewer().repaint();
 				}
 			}
 		});
@@ -248,11 +248,11 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 				subGraph.addVertex(v);
 			}
 			Layout<VisualNode,VisualEdge> subLayout =  new CircleLayout<VisualNode,VisualEdge>(subGraph);
-			subLayout.setInitializer(HecataeusViewer.vv.getGraphLayout());
+			subLayout.setInitializer(HecataeusViewer.getActiveViewer().getGraphLayout());
 			subLayout.setSize(new Dimension(40,40));
 			
 			layout.put(subLayout,center);
-			HecataeusViewer.vv.repaint();
+			HecataeusViewer.getActiveViewer().repaint();
 		}
 	}
 }
