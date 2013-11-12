@@ -4,12 +4,15 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Paint;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
@@ -22,14 +25,17 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.apache.commons.collections15.functors.ConstantTransformer;
+import org.apache.commons.collections15.functors.MapTransformer;
+import org.apache.commons.collections15.map.LazyMap;
+
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
-import edu.uci.ics.jung.algorithms.layout.CircleLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseMultigraph;
 
 
 @SuppressWarnings("serial")
@@ -37,34 +43,35 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 
 	public static JPanel south = null;
 	
-//	public final  Color[] similarColors = {
-//		new Color(216, 134, 134),
-//		new Color(135, 137, 211),
-//		new Color(134, 206, 189),
-//		new Color(206, 176, 134),
-//		new Color(194, 204, 134),
-//		new Color(145, 214, 134),
-//		new Color(133, 178, 209),
-//		new Color(103, 148, 255),
-//		new Color(60, 220, 220),
-//		new Color(30, 250, 100)
-//	};
+	public final static  Color[] similarColors = {
+		new Color(216, 134, 134),
+		new Color(135, 137, 211),
+		new Color(134, 206, 189),
+		new Color(206, 176, 134),
+		new Color(194, 204, 134),
+		new Color(145, 214, 134),
+		new Color(133, 178, 209),
+		new Color(103, 148, 255),
+		new Color(60, 220, 220),
+		new Color(30, 250, 100)
+	};
 
 	private VisualGraph graph;
 	
 	private VisualGraph RQ;
 
 	protected VisualCircleLayout vcl;
-//	
-//		@SuppressWarnings({ "unchecked", "rawtypes" })
-//	static Map<VisualNode,Paint> vertexPaints = LazyMap.<VisualNode,Paint>decorate(new HashMap<VisualNode,Paint>(), new ConstantTransformer(Color.white));
-//		@SuppressWarnings({ "unchecked", "rawtypes" })
-//	static Map<VisualEdge,Paint> edgePaints = LazyMap.<VisualEdge,Paint>decorate(new HashMap<VisualEdge,Paint>(), new ConstantTransformer(Color.blue));
+	private double endC;
+	
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+	static Map<VisualNode,Paint> vertexPaints = LazyMap.<VisualNode,Paint>decorate(new HashMap<VisualNode,Paint>(), new ConstantTransformer(Color.white));
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+	static Map<VisualEdge,Paint> edgePaints = LazyMap.<VisualEdge,Paint>decorate(new HashMap<VisualEdge,Paint>(), new ConstantTransformer(Color.blue));
 
-	public VisualEdgeBetweennessClustering(VisualGraph g) {
+	public VisualEdgeBetweennessClustering(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
-		
+		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
 		List<VisualNode> queries = new ArrayList<VisualNode>();
 		List<VisualNode> relations = new ArrayList<VisualNode>();
@@ -115,11 +122,11 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!! EDGE BETWEENNESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		final Graph<VisualNode, VisualEdge> graph = this.RQ;
 		
-		final AggregateLayout<VisualNode, VisualEdge> layout = new AggregateLayout<VisualNode, VisualEdge>(new VisualClustersOnACircleLayout((VisualGraph)graph, 1));
+		final AggregateLayout<VisualNode, VisualEdge> layout = new AggregateLayout<VisualNode, VisualEdge>(new VisualClustersOnACircleLayout((VisualGraph)graph, endC));
 		
 		HecataeusViewer.getActiveViewer().setGraphLayout(layout);
 		// i use the same transformers used on other layouts
-//		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(MapTransformer.<VisualNode,Paint>getInstance(vertexPaints));
+		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(MapTransformer.<VisualNode,Paint>getInstance(vertexPaints));
 		
 		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 
@@ -181,10 +188,8 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 				JSlider source = (JSlider) e.getSource();
 				if (!source.getValueIsAdjusting()) {
 					int numEdgesToRemove = source.getValue();
-					cluster(layout, numEdgesToRemove,
-					groupVertices.isSelected());
-					sliderBorder.setTitle(
-					COMMANDSTRING + edgeBetweennessSlider.getValue());
+					cluster(layout, numEdgesToRemove, groupVertices.isSelected());
+					sliderBorder.setTitle(COMMANDSTRING + edgeBetweennessSlider.getValue());
 					eastControls.repaint();
 					HecataeusViewer.getActiveViewer().validate();
 					HecataeusViewer.getActiveViewer().repaint();
@@ -212,13 +217,13 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		List<VisualEdge> edges = clusterer.getEdgesRemoved();
 		
 		int i = 0;
-		//Set the colors of each node so that each cluster's vertices have the same color
+		//Clusters have same color
 		for (Iterator<Set<VisualNode>> cIt = clusterSet.iterator(); cIt.hasNext();) {
 		
 			Set<VisualNode> vertices = cIt.next();
-//			Color c = colors[i % colors.length];
+			Color c = similarColors[i % similarColors.length];
 			
-//			colorCluster(vertices, c);
+			colorCluster(vertices, c);
 			if(groupClusters == true) {
 				groupCluster(layout, vertices);
 			}
@@ -234,24 +239,25 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 //		}
 	}
 	
-//	private static void colorCluster(Set<VisualNode> vertices, Color c) {
-//		for (VisualNode v : vertices) {
-//			vertexPaints.put(v, c);
-//		}
-//	}
+	private static void colorCluster(Set<VisualNode> vertices, Color c) {
+		for (VisualNode v : vertices) {
+			vertexPaints.put(v, c);
+		}
+	}
 	
 	private static void groupCluster(AggregateLayout<VisualNode,VisualEdge> layout, Set<VisualNode> vertices) {
 		if(vertices.size() < layout.getGraph().getVertexCount()) {
 			Point2D center = layout.transform(vertices.iterator().next());
-			Graph<VisualNode,VisualEdge> subGraph = SparseMultigraph.<VisualNode,VisualEdge>getFactory().create();
+			Graph<VisualNode,VisualEdge> subGraph = DirectedSparseGraph.<VisualNode,VisualEdge>getFactory().create();
 			for(VisualNode v : vertices) {
 				subGraph.addVertex(v);
 			}
-			Layout<VisualNode,VisualEdge> subLayout =  new CircleLayout<VisualNode,VisualEdge>(subGraph);
+			Layout<VisualNode,VisualEdge> subLayout =  new VisualCirclesLayout(subGraph);
 			subLayout.setInitializer(HecataeusViewer.getActiveViewer().getGraphLayout());
 			subLayout.setSize(new Dimension(40,40));
 			
 			layout.put(subLayout,center);
+			HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(MapTransformer.<VisualNode,Paint>getInstance(vertexPaints));
 			HecataeusViewer.getActiveViewer().repaint();
 		}
 	}

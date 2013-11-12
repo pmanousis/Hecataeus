@@ -465,9 +465,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
 		else
 			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
-		/*
-		 * @param location = the current location of the graph
-		 */
+		
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		double rx = 0;
 		//use a list to add/remove nodes from the graph for layout reasons
@@ -491,6 +489,8 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			}
 		}
 
+		
+		
 		
 		double prevx = graph.getCenter().getX()+900;
 		for(VisualNode q : queries){
@@ -544,11 +544,6 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			System.out.println(viewNode.getName()+ "!!!!  loc "+  location);
 			rx = graph.getCenter().getX()+500-j;
 		}
-		
-	
-		
-
-		
 		for(VisualNode r : relations){
 			System.out.println("+++++ "+r.getName());
 			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
@@ -564,8 +559,6 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		}
 	}
 	
-	
-
 	
 	private void testTest(){
 		

@@ -49,7 +49,7 @@ public class Viewers {
 		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
 		vv = new VisualizationViewer<VisualNode, VisualEdge>(layout);
-		vv.setSize(new Dimension((int)prefferedSize.getWidth()-800,(int)prefferedSize.getHeight()-300));
+		vv.setSize(new Dimension((int)prefferedSize.getWidth()/2,(int)prefferedSize.getHeight()/2));
 		vv.setBackground(Color.white);
 		vv.setPickSupport(new LayoutLensShapePickSupport<VisualNode, VisualEdge>(vv));
 		

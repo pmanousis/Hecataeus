@@ -105,7 +105,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 			newId = maxId + 1;
 
 			//copy the c1 to the new cluster
-			Cluster newCluster = new Cluster(newId);
+			Cluster newCluster = new Cluster(newId,-1);
 			newCluster.setExtension(c1.getExtension()); 
 			//merge with the other
 			newCluster.mergeClusters(c2);	
@@ -120,6 +120,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 			//Kill the two old ones and add the new one from the new solution
 			newSolution.getClusters().remove(c1);
 			newSolution.getClusters().remove(c2);
+			newCluster.setPosition(newSolution.getClusters().size());
 			newSolution.getClusters().add(newCluster);
 //			System.out.println("NEW SOL: " + newSolution.getCSDescriptionString());
 			solutions.add(newSolution);

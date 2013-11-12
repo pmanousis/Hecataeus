@@ -193,7 +193,7 @@ public enum VisualLayoutType {
 			case ConcentricCircleLayout:
 				return new VisualConcentricCircleLayout(g);
 			case EvaSpringTestLayout:
-				return new VisualNewSpringLayout<VisualNode, VisualEdge>(g);
+				return new VisualNewSpringLayout(g);
 			case EvaDAGTestLayout:
 				return new VisualDagLayout(g);
 			case ClusteredCircleLayoutQ:
@@ -225,7 +225,8 @@ public enum VisualLayoutType {
 				HecataeusInputDialog d6 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualPizzaSliceClusterLayout(g, d6.getC());
 			case EdgeBetweennessClustering:
-				return new VisualEdgeBetweennessClustering(g);
+				HecataeusInputDialog d7 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
+				return new VisualEdgeBetweennessClustering(g, d7.getC());
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

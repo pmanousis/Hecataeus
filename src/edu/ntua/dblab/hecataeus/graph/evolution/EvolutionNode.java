@@ -26,6 +26,7 @@ static int counter;
 	public List<E> _outEdges = null;
 	public List<E> _inEdges = null;
 	private StatusType _status = StatusType.NO_STATUS;
+	
 
 	public EvolutionNode() {
 		// just create the node and set afterwards its properties

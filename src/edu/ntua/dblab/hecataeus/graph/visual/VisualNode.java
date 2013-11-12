@@ -5,6 +5,7 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
 	private VisualizationViewer<VisualNode, VisualEdge> Viewer;
+	
+	private Color nodeColor;
+	
 	//private VisualGraph myGraph;
 	//the corresponding EvolutionNode object
 //	private EvolutionNode hecataeusEvolutionNode = null;
@@ -39,6 +43,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
 		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
+		
 //		this.myGraph = graph;
 	}
 	
@@ -50,6 +55,13 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		return this.location;
 	}
 	
+	public void setNodeColor(Color c){
+		this.nodeColor = c;
+	}
+	
+	public Color getNodeColor(VisualNode v){
+		return this.nodeColor;
+	}
 	public VisualNode(String name, NodeType type) {
 		super(name, type);
 		this.location = new Point2D.Double();

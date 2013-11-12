@@ -181,11 +181,92 @@ public class VisualCircleClusteredLayout extends VisualCircleLayout {
 
 	private void clusterViews() {
 		
-		VisualEdgeBetweennessClustering cd = new VisualEdgeBetweennessClustering(this.graph);
+	//	VisualEdgeBetweennessClustering cd = new VisualEdgeBetweennessClustering(this.graph);
 		
 		
 	}
+	private void circles(List<VisualNode> nodes, double cx, double cy, double myRad, ArrayList<ArrayList<VisualNode>> V){
+		int b = 0;
+		double sum = 0;
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				List<VisualNode> group = new ArrayList<VisualNode>();
+				
+				double smallRad = 2*getSmallRad(relationsInCluster(nodes));
+				
+				Point2D coord = transform(v);
+				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
+				double rx, ry;
+				rx = Math.cos(angleA*b)*smallRad+(cx);
+				ry = Math.sin(angleA*b)*smallRad+(cy);
+				coord.setLocation(rx,ry);
+//				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+//				HecataeusViewer.getActiveViewer().repaint();
+				
+				List<VisualEdge> edges = new ArrayList<VisualEdge>(v.getInEdges());
+				
+				
+				for(VisualEdge e : edges){
+					if(e.getFromNode().getType() == NodeType.NODE_TYPE_VIEW || e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
+						group.add(e.getFromNode());
+					}
+				}
+				double angle = (2 * Math.PI) / V.size();
+				double groupRad = getSmallRad(group);
+				
+				drawclusters(group, rx, ry, 2*groupRad, sum+angle/2 , groupRad*1.8, cx, cy);
+				sum+=angle;
+				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+				HecataeusViewer.getActiveViewer().repaint();
+			}	
+//			}else{
+//				double smallRad = getSmallRad(nodes);
+//				Point2D coord = transform(v);
+//				double angleA = 0.0;
+//				if(relationsInCluster(nodes).size() > 1){
+//					angleA = (2 * Math.PI ) / (nodes.size()-relationsInCluster(nodes).size());
+//				}else{
+//					angleA = (2 * Math.PI ) / nodes.size();
+//				}
+//				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+//				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+//				HecataeusViewer.getActiveViewer().repaint();
+//			}
+			b++;
+		}
+		
+	}
+	
+	private void drawclusters(List<VisualNode> nodes, double cx, double cy, double bcr, double angle, double rad, double clx, double cly){
+		int b = 0;
+		double angleS = angle;
+		double CX=cx, CY=cy;
+		for(int i = 1; i < nodes.size(); i++){
+			
+			rad += getSmallRad(nodes);
+			cx = CX+Math.cos(angleS) * rad;// 1.8 is used for white space borders
+			cy = CY+Math.sin(angleS) * rad;
+			
+			angleS+=angleFunc(i, nodes.size());
+			
+			Point2D coord1 = transform(nodes.get(i));
+			coord1.setLocation(cx, cy);
 
+			b++;
+		}
+	}
+	
+	private double angleFunc(int i, int j){
+		double nAngle;
+		if(i < j/2){
+			nAngle = Math.toRadians(5);
+		}
+		else{
+			nAngle = Math.toRadians(5)*(-1);
+		}
+		return nAngle;
+	}
+	
 	
 	public final Color[] similarColors =
 		{
@@ -200,14 +281,66 @@ public class VisualCircleClusteredLayout extends VisualCircleLayout {
 			new Color(60, 220, 220),
 			new Color(30, 250, 100)
 		};
+	
+	
+	
 	private void clusterQueries() {
 		
-
-		clusterAndRecolor(5, similarColors, true);
+		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
+		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();       //lista me ta clusters 
+		ArrayList<ArrayList<VisualNode>> V = new ArrayList<ArrayList<VisualNode>>();   // tin xrisimopoio gia na anakatevw tin vertices gia na min einai olla ta megala cluster mazi
+		for(Cluster cl : clusters){
+			vertices.add(cl.getNode());
+			Collections.shuffle(vertices);
+		}
+		V.addAll(vertices);
+		double myRad = 0.0;
+		double RAD = 0;
+		//taksinomei tin lista --> prwta ta relations meta ta upoloipa k briskei aktina
+		for(ArrayList<VisualNode> lista : vertices){
+			List<VisualNode> nodes = new ArrayList<VisualNode>();
+			System.out.println(lista);
+			Collections.sort(lista, new CustomComparator());
+			nodes.addAll(lista);
+			RAD += getSmallRad(nodes);
+		}
+		myRad = RAD/Math.PI;
+		double diametros = 0;
+		int a = 0;double angle = 0.0, sum = 0.0;
+		// only if clustering algo won't produce more than one clusters
+		if(clusters.size() < 2){
+			Dimension d = getSize();
+			double height = d.getHeight();
+			double width = d.getWidth();
 			
-	//	colorCluster(queries, Color c)
-		
-//		groupCluster(AggregateLayout<Number,Number> layout, Set<Number> vertices)
+			//for(ArrayList<VisualNode> lista : V){
+				int k = 0;
+				for(VisualNode v : V.get(0)){
+					Point2D coord = transform(v);				
+					double angle1 = (2 * Math.PI) / V.get(0).size();
+					coord.setLocation(Math.cos(angle1*k) * myRad + width / 2, Math.sin(angle1*k) * myRad + height / 2);k++;
+				}
+				
+			//}
+		}
+		else{
+			for(ArrayList<VisualNode> lista : V){
+				List<VisualNode> nodes = new ArrayList<VisualNode>();
+				Collections.sort(lista, new CustomComparator());
+				nodes.addAll(lista);
+				diametros = 2*getSmallRad(nodes);
+				angle = (Math.acos(  (2*myRad*myRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*myRad*myRad )))*2;   // 0.94 is used simulate strait lines to curves
+				double cx = Math.cos(sum+angle/2) * myRad*1.8;// 1.8 is used for white space borders
+				double cy =	Math.sin(sum+angle/2) * myRad*1.8;
+				int m = 0;
+				Point2D coord1 = transform(nodes.get(0));
+				coord1.setLocation(cx + m, cy);
+				System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
+				sum+=angle;
+				circles(nodes, cx, cy, myRad, V);
+				a++;
+			}
+		}
 				
 	}
 
@@ -298,7 +431,7 @@ public class VisualCircleClusteredLayout extends VisualCircleLayout {
 	
 
 	
-	private void circles(List<VisualNode> nodes, double cx, double cy){
+	private void circles1(List<VisualNode> nodes, double cx, double cy){
 		int b = 0;
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_RELATION){

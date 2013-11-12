@@ -17,17 +17,20 @@ import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.algorithms.scoring.BarycenterScorer;
+import edu.uci.ics.jung.algorithms.scoring.BetweennessCentrality;
+import edu.uci.ics.jung.algorithms.shortestpath.Distance;
+import edu.uci.ics.jung.graph.Hypergraph;
 
 public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,VisualEdge> {
 
-	private double radius;
 	private double relationRadius;
 	private double viewRadius;
 	private double queryRadius;
 	private double width;
 	private double height;
 	
-	private List<VisualNode> vertex_ordered_list;
+	private Graph graph;
 	
 	private List<VisualNode> queries = new ArrayList<VisualNode>();
 	private List<VisualNode> relations = new ArrayList<VisualNode>();
@@ -37,11 +40,14 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 	
 	/**
 	 * Creates an instance for the specified graph.
+	 * gets querries, views, relations from graph
 	 */
 	@SuppressWarnings("unchecked")
-	public VisualConcentricCircleLayout(VisualGraph g) {
+	public VisualConcentricCircleLayout(Graph g) {
 		super(g);
+		this.graph = g;
 		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
+	//	scorer();
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_QUERY){
 				queries.add(v);
@@ -59,20 +65,44 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 	}
 
 	/**
-	 * Returns the radius of the circle.
+	 * Returns the radius of the relation circle.
 	 */
-	public double getRadius() {
-		return radius;
+	public double getRelationRadius() {
+		return relationRadius;
 	}
 
 	/**
-	 * Sets the radius of the circle.  Must be called before
+	 * Returns the radius of the view circle.
 	 */
-	public void setRadius(double radius) {
-		this.radius = radius;
+	public double getViewRadius() {
+		return viewRadius;
+	}
+	/**
+	 * Returns the radius of the query circle.
+	 */
+	public double getQueryRadius() {
+		return queryRadius;
 	}
 
 
+	public void scorer(){
+
+		BetweennessCentrality beetwc = new BetweennessCentrality(graph);
+		
+		//BarycenterScorer bc = new BarycenterScorer((Graph)graph);
+		Double[] dist = null;
+		int i = 0;
+		for(Object v : graph.getVertices()){
+			//dist[i] = bc.getVertexScore(v);
+			beetwc.getVertexScore(v);
+			VisualNode vn = (VisualNode)v; 
+			beetwc.getEdgeScore(vn._inEdges.get(0));
+			//System.out.println(dist);
+			i++;
+		}
+		
+	}
+	
 	public void setRelationVertexOrder(Comparator<VisualNode> comparator){
 		if (relations == null){
 			for(VisualNode v : nodes){
@@ -106,12 +136,6 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 	}
 	
 	
-	public void setVertexOrder(List<VisualNode> vertex_list){
-		if (!vertex_list.containsAll(getGraph().getVertices())) 
-			throw new IllegalArgumentException("Supplied list must include all vertices of the graph");
-		this.vertex_ordered_list = vertex_list;
-	}
-	
 	public void reset() {
 		initialize();
 	}
@@ -130,7 +154,11 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 
 			Collections.sort(sizes);
 			
-		
+			/*
+			 * 
+			 * calculate every radius
+			 * 
+			 */
 			
 			double tempRad = 0;
 			if (relationRadius <= 0) {
@@ -190,8 +218,18 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 			drawCircles(views, viewRadius);
 			drawCircles(queries, queryRadius);
 			
+			
+
 		}
 	}
+	
+	/**
+	 * 
+	 * @param nodes
+	 * @param radius
+	 * calulate postions on a cicle for each node
+	 * 
+	 */
 	
 	protected void drawCircles(List<VisualNode> nodes, double radius){
 		int cnt = 0;
@@ -199,6 +237,7 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 			Point2D coord = transform(n);
 			double angle = (2*Math.PI*cnt)/nodes.size();
 			coord.setLocation(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2);
+			n.setLocation(coord);
 			dosomething(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2, n, 0);
 			cnt++;
 			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(n, HecataeusViewer.getActiveViewer().getPickedVertexState()));
@@ -207,6 +246,16 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 		
 	}
 
+	/**
+	 * 
+	 * 
+	 * @param x  x coordinate of inner circle
+	 * @param y  y coord of inner circle
+	 * @param node
+	 * @param mode
+	 */
+	
+	
 	protected void dosomething(double x, double y, VisualNode node, int mode){
 		int a = 0;
 
@@ -216,9 +265,11 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 			Point2D coord = transform(v);
 			double angle = (2 * Math.PI * a) / sem.size();
 			if(mode == 0){
+				v.setLocation(coord);
 				coord.setLocation(Math.cos(angle) * 40 +x, Math.sin(angle) * 40+ y);
 			}
 			else{
+				v.setLocation(coord);
 				coord.setLocation(Math.cos(angle) * 65 +x, Math.sin(angle) * 65+ y);
 			}
 			dosomething(x, y, (VisualNode)v,1);

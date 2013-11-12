@@ -228,13 +228,16 @@ public class PopUpClickListener extends MouseAdapter{
 	
 	protected AbstractAction collapser(){
 		return new AbstractAction("Collapse Nodes") {
-			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();
+			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 
 		
 			public void actionPerformed(ActionEvent e) {
 				VisualLayoutType layoutType = VisualLayoutType.ConcentricCircleLayout;
 				containerLayout = new VisualAggregateLayout(graph, layoutType, layoutType);
 				if(pickedNodes.size() > 2) {
+					VisualGraph gr = (VisualGraph) layout.getGraph();
+					
+					
 					
 					List<VisualNode> physicalNodes = graph.getVertices(NodeCategory.CONTAINER);
 					VisualGraph containerGraph= graph.toGraph(physicalNodes);
@@ -256,6 +259,16 @@ public class PopUpClickListener extends MouseAdapter{
 				//	set the low-level layout
 					containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
 				
+					
+					gr = (VisualGraph) containerLayout.getGraph();
+					// first update location of top - level node
+					for (VisualNode node: containerLayout.getDelegate().getGraph().getVertices()) {
+						layout.setLocation(node, gr.getLocation(node));
+					}
+					 //then update locations of all other nodes
+					for (VisualNode node: gr.getVertices()) {
+						containerLayout.setLocation(node, gr.getLocation(node));
+					}
 				}
 				
 			}
@@ -264,83 +277,7 @@ public class PopUpClickListener extends MouseAdapter{
 			
 		};
 	}
-	
-	
-	
-//	public void collapse(VisualGraph inGraph, VisualGraph clusterGraph) {
-//		if(clusterGraph.getVertexCount() > 2) {
-//			
-//			List<VisualNode> physicalNodes = graph.getVertices(NodeCategory.CONTAINER);
-//			VisualGraph containerGraph= graph.toGraph(physicalNodes);
-//			for (VisualNode node1: containerGraph.getVertices()) {
-//				for (VisualNode node2: containerGraph.getVertices()) {
-//					if (!node1.equals(node2) && graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
-//						VisualEdge newEdge = new VisualEdge("from",EdgeType.EDGE_TYPE_FROM, node1, node2); 
-//						containerGraph.addEdge(newEdge);
-//					}				
-//				}
-//			}
-//					
-//			GraphCollapser collapser = new GraphCollapser(graph);
-//		//	 pass the graph to the layout 
-//			VisualGraph g = (VisualGraph) collapser.collapse(graph, containerGraph);
-//			containerLayout.setGraph(graph);
-//		//	set the module-level layout
-//			containerLayout.setTopLayoutType(containerLayout.getTopLayoutType());
-//		//	set the low-level layout
-//			containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
-//			
-//			VisualNodeVisible showAll = (VisualNodeVisible)  vv.getRenderContext().getVertexIncludePredicate();
-//			showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.MODULE);
-//		
-//		}
-////		
-////		VisualGraph graphos = inGraph;
-//////		try {
-//////			graphos = createGraph();
-//////		} catch(Exception ex) {
-//////			ex.printStackTrace();
-//////		}
-////		Collection cluster = clusterGraph.getVertices();
-////		
-////		// add all vertices in the delegate, unless the vertex is in the cluster
-////		for(VisualNode v : inGraph.getVertices()) {
-////			if(cluster.contains(v) == false) {
-////				graphos.addVertex(v);
-////			}
-////		}
-////		// add the clusterGraph as a vertex
-//////		graphos.addVertex(clusterGraph);
-////		
-////		
-////		//add all edges from the inGraph, unless both endpoints of
-////		// the edge are in the cluster
-////		for(VisualEdge e : inGraph.getEdges()) {
-////			Pair endpoints = inGraph.getEndpoints(e);
-////			// don't add edges whose endpoints are both in the cluster
-////			if(cluster.containsAll(endpoints) == false) {
-////		
-////				if(cluster.contains(endpoints.getFirst())) {
-////					graphos.addEdge(e, clusterGraph.getVertices().get(0), inGraph.getVertices().get(0), inGraph.getEdgeType(e));
-////			//		graphos.addEdge(e, clusterGraph, endpoints.getSecond(), inGraph.getEdgeType(e));
-////		
-////				} else if(cluster.contains(endpoints.getSecond())) {
-////					graphos.addEdge(e, clusterGraph.getVertices().get(0), inGraph.getVertices().get(0), inGraph.getEdgeType(e));
-////
-////		//			graphos.addEdge(e, endpoints.getFirst(), clusterGraph, inGraph.getEdgeType(e));
-////		
-////				} else {
-////					graphos.addEdge(e, clusterGraph.getVertices().get(0), inGraph.getVertices().get(0), inGraph.getEdgeType(e));
-////
-////		//			graphos.addEdge(e,endpoints.getFirst(), endpoints.getSecond(), inGraph.getEdgeType(e));
-////				}
-////			}
-////		}
-////		return graphos;
-//}
-//	
-	
-	
+
 	class ClusterVertexShapeFunction<V> extends EllipseVertexShapeTransformer<V> {
 
 		ClusterVertexShapeFunction() {

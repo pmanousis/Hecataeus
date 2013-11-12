@@ -10,7 +10,7 @@ public class ClusterSet {
 
 	public ClusterSet(int clustId){
 		id = clustId;
-		clusters = new ArrayList<Cluster>(); 
+		clusters = new ArrayList<Cluster>();
 
 	}
 	public int getId() {return id;}
@@ -30,7 +30,9 @@ public class ClusterSet {
 		return clusterDistances;
 	}
 	
-	public double[][] getClusterDistances(){ return clusterDistances;}
+	public double[][] getClusterDistances(){ 
+		return clusterDistances;
+		}
 	
 	public String getCSDescriptionString(){
 		String message = "ClusterSet: " + id + "\n";
@@ -108,6 +110,7 @@ public class ClusterSet {
 //		}
 		return newCluster;
 	}
+	
 	
 	private int id = -1;
 	private ArrayList<Cluster> clusters; 

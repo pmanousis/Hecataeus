@@ -70,6 +70,7 @@ public class VisualStarLayout extends VisualCircleLayout{
 			int m = 0;
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx + m, cy);
+			lista.get(0).setLocation(coord1);
 			System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
 			drawclusters(nodes, cx, cy, 2*bigClusterRad, sum+angle/2 , myRad*1.8);
 			sum+=angle;
@@ -91,6 +92,7 @@ public class VisualStarLayout extends VisualCircleLayout{
 			angleS+=angleFunc(i, nodes.size());
 			
 			Point2D coord1 = transform(nodes.get(i));
+			nodes.get(i).setLocation(coord1);
 			coord1.setLocation(cx, cy);
 
 			b++;

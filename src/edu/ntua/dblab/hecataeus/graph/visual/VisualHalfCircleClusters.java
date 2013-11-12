@@ -51,6 +51,7 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 				Point2D coord = transform(v);
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+				v.setLocation(coord);
 				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 				HecataeusViewer.getActiveViewer().repaint();
 			}else{
@@ -66,8 +67,10 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 					}
 					if(cnt%4 == 0){
 						double rad = smallRad+nodes.size()/3;
+						v.setLocation(coord);
 						coord.setLocation(Math.cos(angleA*b)*rad+(cx),Math.sin(angleA*b)*rad+(cy));
 					}else{
+						v.setLocation(coord);
 						coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 					}
 				}
@@ -77,6 +80,7 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 					}else{
 						angleA = (2 * Math.PI ) / nodes.size();
 					}
+					v.setLocation(coord);
 					coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 				}
 				
@@ -121,6 +125,7 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 				for(VisualNode v : V.get(0)){
 					Point2D coord = transform(v);				
 					double angle1 = (2 * Math.PI) / V.get(0).size();
+					v.setLocation(coord);
 					coord.setLocation(Math.cos(angle1*k) * myRad + width / 2, Math.sin(angle1*k) * myRad + height / 2);k++;
 				}
 				
@@ -138,6 +143,7 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 				int m = 0;
 				Point2D coord1 = transform(nodes.get(0));
 				coord1.setLocation(cx + m, cy);
+				lista.get(0).setLocation(coord1);
 				System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
 				sum+=angle;
 				circles(nodes, cx, cy);

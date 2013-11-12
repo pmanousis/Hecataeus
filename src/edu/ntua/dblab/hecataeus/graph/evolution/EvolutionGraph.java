@@ -41,13 +41,14 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	
 	protected Map<V, Integer> nodeKeys;
 	protected Map<E, Integer> edgeKeys;
-
+	protected Map<VisualGraph, Integer> graphkMap;
 	//used by function initializeChange() to increase the SID(Session ID) by one
 	static int SIDGenerator = 0;
 
 	public EvolutionGraph() {
 		nodeKeys = new HashMap<V, Integer>();
 		edgeKeys = new HashMap<E, Integer>();
+		graphkMap = new HashMap<VisualGraph, Integer>();
 	}
 		
 	/**
@@ -62,8 +63,8 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	}
 
 	public boolean addVertexEVA(VisualGraph g) {
-		Hypergraph hg = g;
-		hg.addVertex(g);
+		graphkMap.put(g, ++EvolutionGraph._KeyGenerator);
+		
 		return true;
 	}
 		
@@ -73,6 +74,39 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	public boolean addEdge(E Edge, V fromNode, V toNode) {
 		return this.addEdge(Edge);		
 	}
+	
+	public boolean addEdgeEVA(E Edge, V fromNode, VisualGraph toGraph){
+		return this.addEdgeEVA(Edge);
+	}
+	
+	public boolean addEdgeEVA1(E Edge, VisualGraph fromgrGraph, V toNode){
+		return this.addEdgeEVA(Edge);
+	}
+	
+	public boolean addEdgeEVA(E Edge){
+		edgeKeys.put(Edge, ++EvolutionGraph._KeyGenerator);
+		// add edge to incoming edges of ToNode
+		V fromNode = (V) Edge.getFromNode();
+		if(fromNode==null||fromNode.getOutEdges()==null)
+		{
+			if(fromNode==null)
+			{
+				System.out.println("fromNode=NULL!!! on edge: "+ Edge.getName()+" to node:"+Edge.getToNode());
+			}
+			else
+			{
+				System.out.println("86 line: "+fromNode.getName());
+			}
+		}
+		if (!fromNode.getOutEdges().contains(Edge))
+			fromNode.getOutEdges().add(Edge);
+		// add edge to outgoing edges of FromNode
+		V toNode = (V) Edge.getToNode();
+		if (!toNode.getInEdges().contains(Edge))
+			toNode.getInEdges().add(Edge);
+		return super.addEdge(Edge, fromNode, toNode);
+	}
+	
 	
 	/**
 	 * adds edge by HecataeusEdge

@@ -57,20 +57,6 @@ public class HAggloEngine {
 	 * Introduced to provide a quick example without parsing
 	 */
 	public void testConstructor(){
-/*		
- * Still: this worked too!!
- * 		inputObjects.add(new ClusterableTable(new HACTable("R1")));
-		inputObjects.add(new ClusterableTable(new HACTable("R2")));
-		inputObjects.add(new ClusterableTable(new HACTable("R3")));
-		inputObjects.add(new ClusterableTable(new HACTable("R4")));
-		inputObjects.add(new ClusterableTable(new HACTable("R5")));
-*/
-//		inputObjects.add(new ClusterableNode(new HACNode("R1")));
-//		inputObjects.add(new ClusterableNode(new HACNode("R2")));
-//		inputObjects.add(new ClusterableNode(new HACNode("R3")));
-//		inputObjects.add(new ClusterableNode(new HACNode("R4")));
-//		inputObjects.add(new ClusterableNode(new HACNode("R5")));
-
 
 		
 		ClusterSet orgSolution = new ClusterSet(0);
@@ -80,7 +66,7 @@ public class HAggloEngine {
 			ClusterableObject co = it.next();
 			
 			co.setId(clustId);
-			Cluster c = new Cluster(clustId);
+			Cluster c = new Cluster(clustId, clustId);
 			
 			c.getExtension().add(co);
 			orgSolution.getClusters().add(c);
@@ -128,7 +114,7 @@ public class HAggloEngine {
 			ClusterableObject co = it.next();
 			
 			co.setId(clustId);
-			Cluster c = new Cluster(clustId);
+			Cluster c = new Cluster(clustId, clustId);
 			
 			c.getExtension().add(co);
 			orgSolution.getClusters().add(c);

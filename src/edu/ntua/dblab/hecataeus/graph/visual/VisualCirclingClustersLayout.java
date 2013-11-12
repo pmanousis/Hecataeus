@@ -50,10 +50,11 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_RELATION){
 				
-				double smallRad = getSmallRad(relationsInCluster(nodes));
+				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
 				Point2D coord = transform(v);
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+				v.setLocation(coord);
 				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 				HecataeusViewer.getActiveViewer().repaint();
 			}else{
@@ -66,6 +67,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 					angleA = (2 * Math.PI ) / nodes.size();
 				}
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+				v.setLocation(coord);
 				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 				HecataeusViewer.getActiveViewer().repaint();
 			}

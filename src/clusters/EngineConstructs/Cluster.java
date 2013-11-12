@@ -6,7 +6,8 @@ import java.util.List;
 import clusters.GraphFacades.ClusterableObject;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 public class Cluster {
-	public Cluster(int n){
+	public Cluster(int n, int pos){
+		position = pos;
 		id = n;
 		extension  = new ArrayList<ClusterableObject>(); 
 	}
@@ -18,6 +19,12 @@ public class Cluster {
 	}
 	
 	public int getId(){ return id;} 
+	public int getPos(){
+		return position;
+	}
+	public void setPosition (int pos){
+		this.position = pos;
+	}
 	public ArrayList<ClusterableObject> getExtension(){return extension;}
 	
 	public int setExtension(ArrayList<ClusterableObject> objectSet){
@@ -101,6 +108,8 @@ public class Cluster {
 		extension.addAll(c.extension);
 	}
 	
+	
+	private int position = -1;
 	private int id = -1;
 	private ArrayList<ClusterableObject> extension;
 	
