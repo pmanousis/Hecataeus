@@ -95,8 +95,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		if(endC != 1){
 			SortedArrayList sl = new SortedArrayList();
 			Clusters = new ArrayList<Cluster>(sl.insertSorted(cs.getClusters(), distances));
-
-			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 //			VisualGraph clusterGraph = new VisualGraph();
 //			
 //			for(Cluster cl : Clusters){
