@@ -19,7 +19,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	private List<VisualNode> relations;
 	private List<VisualNode> views;
 	private ClusterSet cs;
-	
+	private static int clusterId = 0;
 	
 	protected List<String> files;
 	private List<VisualNode> RQV;
@@ -42,9 +42,12 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 
 	private void circles(List<VisualNode> nodes, double cx, double cy){
 		int b = 0;
+		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
+		ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
+		ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				
+				rc.add(v);
 				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
 				Point2D coord = transform(v);
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
@@ -53,6 +56,12 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 				HecataeusViewer.getActiveViewer().repaint();
 			}else{
+				if(v.getType() == NodeType.NODE_TYPE_QUERY){
+					qc.add(v);
+				}
+				else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+					vc.add(v);
+				}
 				double smallRad = getSmallRad(nodes);
 				Point2D coord = transform(v);
 				double angleA = 0.0;
@@ -68,6 +77,9 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 			}
 			b++;
 		}
+		clusterId++;
+		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
+		cluster.printInClusterEdges();
 		
 	}
 	
@@ -95,57 +107,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		if(endC != 1){
 			SortedArrayList sl = new SortedArrayList();
 			Clusters = new ArrayList<Cluster>(sl.insertSorted(cs.getClusters(), distances));
-//			VisualGraph clusterGraph = new VisualGraph();
-//			
-//			for(Cluster cl : Clusters){
-//				for(VisualNode node : cl.getNode()){
-//					clusterGraph.addVertex(node);
-//					for(VisualEdge edge : node.getInEdges()){
-//						clusterGraph.addEdge(edge);
-//					}
-//					for(VisualEdge edge : node.getOutEdges()){
-//						clusterGraph.addEdge(edge);
-//					}
-//				}
-//				
-//			}
-//			VisualBicomponentClusterer bClusterer = new VisualBicomponentClusterer();
-//			Set<Set<VisualNode>> clusterSet = bClusterer.transform(this.graph);
-			
-//			System.out.println("eva");
-			
-			
-//			System.out.println(clusterSet.toString());
-		//	Clusters.clear();
-			
-//			for (Iterator<Set<VisualNode>> cIt = clusterSet.iterator(); cIt.hasNext();) {
-//			
-//				Set<VisualNode> sv = cIt.next();
-//				ArrayList<VisualNode> temp = new ArrayList<VisualNode>();
-//				
-//				for (Iterator<VisualNode> vIt = sv.iterator(); vIt.hasNext();) {
-//					VisualNode eva = vIt.next();
-//					
-//					temp.add(eva);
-//				}
-//				
-//				xa.add(temp);
-//				
-//			}
-			
-//			System.out.println(xa.toString());
-			
-//			for (Iterator<Set<VisualNode>> cIt = clusterSet.iterator(); cIt.hasNext();) {
-//				
-//				Set<VisualNode> vertices = cIt.next();
-//				for(VisualNode vIt : vertices){
-//					
-//					findBiconnectedComponents((UndirectedGraph<VisualNode, VisualEdge>) clusterGraph ,vIt ,clusterSet);
-//				}
-//					
-//				
-//				//findBiconnectedComponents(UndirectedGraph<V,E> g, V v, Set<Set<V>> bicomponents)
-//			}
 			
 		}
 		else{

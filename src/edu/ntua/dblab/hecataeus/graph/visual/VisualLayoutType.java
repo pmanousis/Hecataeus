@@ -45,6 +45,8 @@ public enum VisualLayoutType {
 	GridEvaLayout,
 	ClustersonaCircleLayout,
 	CirclingClusterLayout,
+	CirclingClusterLayoutV2,
+	CirclingClusterLayoutV3,
 	DebianCircleLayout,
 	HalfCircleLayout,
 	StarLayout,
@@ -110,7 +112,11 @@ public enum VisualLayoutType {
 			case ClustersonaCircleLayout:
 				return "Clusters on a Circle";
 			case CirclingClusterLayout:
-				return "Clusters in Circles";
+				return "Clusters on Concentric Circle Segments";
+			case CirclingClusterLayoutV2:
+				return "Clusters on Concentric Circle Segments V2";
+			case CirclingClusterLayoutV3:
+				return "Clusters on Concentric Circle Segments V3";
 			case DebianCircleLayout:
 				return "Spiral";
 			case HalfCircleLayout:
@@ -227,6 +233,12 @@ public enum VisualLayoutType {
 			case EdgeBetweennessClustering:
 				HecataeusInputDialog d7 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
 				return new VisualEdgeBetweennessClustering(g, d7.getC());
+			case CirclingClusterLayoutV2:
+				HecataeusInputDialog d8 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
+				return new VisualCirclingClustersLayoutV2(g, d8.getC());
+			case CirclingClusterLayoutV3:
+				HecataeusInputDialog d9 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Condition");
+				return new VisualCirclingClustersLayoutV3(g, d9.getC());
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

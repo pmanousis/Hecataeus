@@ -2,7 +2,6 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -10,10 +9,7 @@ import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
 public class VisualCirclingClustersLayout extends VisualCircleLayout{
 
@@ -24,7 +20,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 	private List<VisualNode> relations;
 	private List<VisualNode> views;
 	private ClusterSet cs;
-	
+	private static int clusterId = 0;
 	
 	protected List<String> files;
 	private List<VisualNode> RQV;
@@ -47,9 +43,12 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 
 	private void circles(List<VisualNode> nodes, double cx, double cy){
 		int b = 0;
+		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
+		ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
+		ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				
+				rc.add(v);
 				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
 				Point2D coord = transform(v);
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
@@ -58,6 +57,12 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 				HecataeusViewer.getActiveViewer().repaint();
 			}else{
+				if(v.getType() == NodeType.NODE_TYPE_QUERY){
+					qc.add(v);
+				}
+				else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+					vc.add(v);
+				}
 				double smallRad = getSmallRad(nodes);
 				Point2D coord = transform(v);
 				double angleA = 0.0;
@@ -73,6 +78,9 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 			}
 			b++;
 		}
+		clusterId++;
+		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
+		cluster.printInClusterEdges();
 	}
 	
 	private double checkRad(ArrayList<ArrayList<VisualNode>> SoC, double myRad){
@@ -112,13 +120,13 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		sublistofClusters.add(tmpVl);
 		
 
-		int a = 0;
+		
 
 		double bigCircleRad = 0.0;
 		double bigClusterRad = 0.0;
 		System.out.println(sublistofClusters);
 		
-
+		
 		for(ArrayList<ArrayList<VisualNode>> listaC: sublistofClusters){
 			ArrayList<ArrayList<VisualNode>> tmp ;
 			if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
@@ -135,23 +143,25 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 			
 			
 			double angle = 0.0, sum = 0.0;
+			int a = 0;
 			for(ArrayList<VisualNode> lista : listaC){
 				List<VisualNode> nodes = new ArrayList<VisualNode>();
 				Collections.sort(lista, new CustomComparator());
 				nodes.addAll(lista);
-				angle = (Math.acos((Math.pow(bigCircleRad, 2) - Math.pow(getSmallRad(nodes), 2)*0.94)/(Math.pow(bigCircleRad, 2))))*2*Math.PI;   // 0.94 is used simulate strait lines to curves
+				//correct angle
+				angle = (2*Math.PI*a)/listaC.size();
+				double cx = Math.cos(angle) * bigCircleRad*1.8;// 1.8 is used for white space borders
 				
-				double cx = Math.cos(angle/2+sum) * bigCircleRad*1.8;// 1.8 is used for white space borders
-				
-				double cy =	Math.sin(angle/2+sum) * bigCircleRad*1.8;
-				System.out.println("ANGLEEE   " + angle/2+sum);
+				double cy =	Math.sin(angle) * bigCircleRad*1.8;
+				System.out.println("ANGLEEE   " + angle);
 				int m = 0;
+				a++;
 				sum+=angle;
 				circles(nodes, cx, cy);
-				a++;
+				
 				
 			}
-			System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
+			//System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}
 		HecataeusViewer.getActiveViewer().repaint();
 	}

@@ -25,10 +25,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +52,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
@@ -66,7 +63,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
@@ -79,6 +75,7 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraphEdgeCrossings;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
@@ -91,13 +88,11 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
-import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.subLayout.GraphCollapser;
 
 
 public class HecataeusViewer {
@@ -1778,7 +1773,18 @@ public class HecataeusViewer {
 		});
 		mnCount.add(mntmEvents_1);
 		
-		JMenuItem mntmOutpoutForModule = new JMenuItem("Outpout For Module Nodes");
+		JMenuItem mntmGraphEdgeCrossings = new JMenuItem("Total Graph Crossings");
+		mntmGraphEdgeCrossings.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message = "Total edge crossings : ";
+				VisualGraphEdgeCrossings vgec = new VisualGraphEdgeCrossings(graph);
+				int crossings = vgec.getGraphEdgeCrossings();
+				JOptionPane.showMessageDialog(frame, message + crossings, "Edge Crossings", JOptionPane.INFORMATION_MESSAGE );
+			}
+		});
+		mnMetsics.add(mntmGraphEdgeCrossings);
+		
+		JMenuItem mntmOutpoutForModule = new JMenuItem("Output For Module Nodes");
 		mntmOutpoutForModule.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();

@@ -19,7 +19,7 @@ import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
  */
 public final class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> implements Transformer<VisualNode,Shape> {
 	
-	private static int INITIAL_SIZE = 60; // itan 60 alliws 4
+	private static int INITIAL_SIZE = 21; // itan 60 alliws 4
 	
 	public VisualNodeShape() {
 		//extends setSizeTransformer for defining the custom size of nodes  
@@ -28,7 +28,7 @@ public final class VisualNodeShape extends AbstractVertexShapeTransformer<Visual
 				NodeType type = (v.getType());
 				int allEdges;
 				if(HecataeusViewer.nodeSize){
-					INITIAL_SIZE = 60;
+					INITIAL_SIZE = 21;   //60
 				}
 				else{
 					INITIAL_SIZE = 4;
