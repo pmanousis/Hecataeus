@@ -223,7 +223,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 			r.setLocation(coord);
 			r.setNodeAngle(sAngle-(qAngle/2));
 			System.out.println("set node angle    " + (sAngle-(qAngle/2)));
-			System.out.println("get node angle " + r.getNodeAngle());
+			System.out.println("get node angle name"+ r.getName() + "   angle  "+ r.getNodeAngle());
 
 
 			
@@ -238,7 +238,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 			
 			ArrayList<VisualEdge> edgesToR = new ArrayList<VisualEdge>();
 			ArrayList<VisualNode> myR = new ArrayList<VisualNode>();
-			for(VisualEdge myEdge : edgesToR){
+			for(VisualEdge myEdge : v.getOutEdges()){
 				if(myEdge.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
 					myR.add(myEdge.getToNode());
 				}
@@ -246,8 +246,9 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 			double myAngle = 0.0;
 			for(VisualNode rel : myR){
 				myAngle += rel.getNodeAngle();
+				System.out.println("rel name  "+ rel.getName() +"  angle  "+  rel.getNodeAngle());
 			}
-			System.out.println("rel rad  " + myAngle);
+			
 			myAngle = myAngle/2;
 			
 			Point2D coord = transform(v);
