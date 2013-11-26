@@ -112,6 +112,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 				else{//ta relation einai grey
 					this.color = 100;
 				}
+			}if(node.getType() == NodeType.NODE_TYPE_CLUSTER){
+				this.color = 200;
 			}
 		}
 		switch (this.color){
@@ -152,6 +154,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			
 			
 			case 100: return new Color (96,96,96);
+			
+			case 200:  return new Color (0,0,0);
 			
 			default : return new Color(0,0,0);
 		}

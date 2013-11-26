@@ -137,7 +137,7 @@ public class PopUpClickListener extends MouseAdapter{
 					
 					menu.popZoom.addActionListener(zoomToNewModuleTab());
 					
-					menu.popCollapse.addActionListener(collapser());
+//					menu.popCollapse.addActionListener(collapser());
 				}
 
 				//if only 1 vertex is picked
@@ -224,59 +224,59 @@ public class PopUpClickListener extends MouseAdapter{
 	 * @author eva
 	 */
 	
-	
-	
-	protected AbstractAction collapser(){
-		return new AbstractAction("Collapse Nodes") {
-			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-
-		
-			public void actionPerformed(ActionEvent e) {
-				VisualLayoutType layoutType = VisualLayoutType.ConcentricCircleLayout;
-				containerLayout = new VisualAggregateLayout(graph, layoutType, layoutType);
-				if(pickedNodes.size() > 2) {
-					VisualGraph gr = (VisualGraph) layout.getGraph();
-					
-					
-					
-					List<VisualNode> physicalNodes = graph.getVertices(NodeCategory.CONTAINER);
-					VisualGraph containerGraph= graph.toGraph(physicalNodes);
-					for (VisualNode node1: containerGraph.getVertices()) {
-						for (VisualNode node2: containerGraph.getVertices()) {
-							if (!node1.equals(node2) && graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
-								VisualEdge newEdge = new VisualEdge("from",EdgeType.EDGE_TYPE_FROM, node1, node2); 
-								containerGraph.addEdge(newEdge);
-							}				
-						}
-					}
-							
-					GraphCollapser collapser = new GraphCollapser(graph);
-				//	 pass the graph to the layout 
-					VisualGraph g = (VisualGraph) collapser.collapse(graph, containerGraph);
-					containerLayout.setGraph(g);
-				//	set the module-level layout
-					containerLayout.setTopLayoutType(containerLayout.getTopLayoutType());
-				//	set the low-level layout
-					containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
-				
-					
-					gr = (VisualGraph) containerLayout.getGraph();
-					// first update location of top - level node
-					for (VisualNode node: containerLayout.getDelegate().getGraph().getVertices()) {
-						layout.setLocation(node, gr.getLocation(node));
-					}
-					 //then update locations of all other nodes
-					for (VisualNode node: gr.getVertices()) {
-						containerLayout.setLocation(node, gr.getLocation(node));
-					}
-				}
-				
-			}
-			
-			
-			
-		};
-	}
+//	
+//	
+//	protected AbstractAction collapser(){
+//		return new AbstractAction("Collapse Nodes") {
+//			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+//
+//		
+//			public void actionPerformed(ActionEvent e) {
+//				VisualLayoutType layoutType = VisualLayoutType.ConcentricCircleLayout;
+//				containerLayout = new VisualAggregateLayout(graph, layoutType, layoutType);
+//				if(pickedNodes.size() > 2) {
+//					VisualGraph gr = (VisualGraph) layout.getGraph();
+//					
+//					
+//					
+//					List<VisualNode> physicalNodes = graph.getVertices(NodeCategory.CONTAINER);
+//					VisualGraph containerGraph= graph.toGraph(physicalNodes);
+//					for (VisualNode node1: containerGraph.getVertices()) {
+//						for (VisualNode node2: containerGraph.getVertices()) {
+//							if (!node1.equals(node2) && graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
+//								VisualEdge newEdge = new VisualEdge("from",EdgeType.EDGE_TYPE_FROM, node1, node2); 
+//								containerGraph.addEdge(newEdge);
+//							}				
+//						}
+//					}
+//							
+//					GraphCollapser collapser = new GraphCollapser(graph);
+//				//	 pass the graph to the layout 
+//					VisualGraph g = (VisualGraph) collapser.collapse(graph, containerGraph);
+//					containerLayout.setGraph(g);
+//				//	set the module-level layout
+//					containerLayout.setTopLayoutType(containerLayout.getTopLayoutType());
+//				//	set the low-level layout
+//					containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
+//				
+//					
+//					gr = (VisualGraph) containerLayout.getGraph();
+//					// first update location of top - level node
+//					for (VisualNode node: containerLayout.getDelegate().getGraph().getVertices()) {
+//						layout.setLocation(node, gr.getLocation(node));
+//					}
+//					 //then update locations of all other nodes
+//					for (VisualNode node: gr.getVertices()) {
+//						containerLayout.setLocation(node, gr.getLocation(node));
+//					}
+//				}
+//				
+//			}
+//			
+//			
+//			
+//		};
+//	}
 
 	class ClusterVertexShapeFunction<V> extends EllipseVertexShapeTransformer<V> {
 

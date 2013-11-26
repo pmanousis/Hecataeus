@@ -76,7 +76,7 @@ public class Viewers {
 		// call the setEdgePaintFunction to paint the edges
 		pr.setEdgeFillPaintTransformer( new VisualEdgeColor(vv.getPickedEdgeState()));
 		// call the setVertexShapeFunction to set the shape of the nodes
-		pr.setVertexShapeTransformer(new VisualNodeShape());
+		pr.setVertexShapeTransformer(new VisualNodeShape(0));
 		// call the setNodeVisible to set the shape of the nodes according to
 		pr.setVertexIncludePredicate(new VisualNodeVisible());
 		pr.setVertexIconTransformer(new VisualNodeIcon());

@@ -93,7 +93,7 @@ public class VisualCirclingClustersLayoutV3 extends VisualCircleLayout{
 		Collections.sort(vertices, new ListComparator());
 		sortedV.addAll(vertices);
 
-		System.out.println(sortedV);
+//		System.out.println(sortedV);
 		
 		double myRad = 1.0;
 		
@@ -128,7 +128,7 @@ public class VisualCirclingClustersLayoutV3 extends VisualCircleLayout{
 			tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(0));
 			bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
 			bigCircleRad = prevRad+ bigClusterRad*1.2;
-			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
+//			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
 			
 			
 			
@@ -145,7 +145,7 @@ public class VisualCirclingClustersLayoutV3 extends VisualCircleLayout{
 				double cx = Math.cos(angle) * bigCircleRad*1.8;// 1.8 is used for white space borders
 				
 				double cy =	Math.sin(angle) * bigCircleRad*1.8;
-				System.out.println("ANGLEEE   " + angle);
+//				System.out.println("ANGLEEE   " + angle);
 				int m = 0;
 				a++;
 				sum+=angle;

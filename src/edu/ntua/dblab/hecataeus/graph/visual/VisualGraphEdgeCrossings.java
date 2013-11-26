@@ -4,11 +4,14 @@ import java.awt.geom.Line2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class VisualGraphEdgeCrossings {
 
 	protected VisualGraph graph;
+	protected int numberOfEdges;
 	
 	public VisualGraphEdgeCrossings(VisualGraph g){
 		this.graph = g;
@@ -47,9 +50,10 @@ public class VisualGraphEdgeCrossings {
 				}
 			}
 		}
-		
+		int num = 0;
 		for(int i = 0; i < myEdges.size(); i++){
 			Line2D line1 = new Line2D.Double(myEdges.get(i).getFirstPoint(), myEdges.get(i).getSecondPoint());
+			
 			for(int j = 0; j < myEdges.size(); j++){
 				if(j==i){
 					continue;
@@ -59,12 +63,18 @@ public class VisualGraphEdgeCrossings {
 				if(result && (myEdges.get(i).getSecondPoint()!= myEdges.get(j).getSecondPoint()) && (myEdges.get(i).getFirstPoint()!= myEdges.get(j).getFirstPoint())){
 					crossings++;
 				}
-				
+				num++;
 			}
 		}
 		
-		System.out.println("TOTAL EDGE CROSSINGS :: " + crossings);
-		
-		return crossings;
+		System.out.println("TOTAL EDGE CROSSINGS :: " + crossings/2);
+		numberOfEdges = num/2;
+		return crossings/2;
+	}
+	
+	
+	public int getNumberOfEdges(){
+		this.numberOfEdges = this.graph.getEdges(edu.ntua.dblab.hecataeus.graph.evolution.EdgeType.EDGE_TYPE_USES).size();	
+		return this.numberOfEdges;
 	}
 }

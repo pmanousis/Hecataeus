@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -88,6 +89,9 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
+import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.graph.util.TreeUtils;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -106,9 +110,10 @@ public class HecataeusViewer {
 	private static int cnt4 = 0;
 	private static int cnt5 = 0;
 	private static int cnt6 = 0;
+	private static Forest<VisualNode,VisualEdge> evaGraph;
 	// the visual graph object
 /**@author pmanousi Needed for topologicalTravel so became public. */
-	public VisualGraph graph;
+	public static VisualGraph graph;
 //	public VisualSubGraph grafos;
 	public Viewers viewer;
 	
@@ -1055,11 +1060,11 @@ public class HecataeusViewer {
 				boolean selected = aButton.getModel().isSelected();
 				if (selected) {
 					nodeSize = true;
-					new VisualNodeShape();
+					new VisualNodeShape(0);
 					getActiveViewer().repaint();
 				}else{
 					nodeSize = false;
-					new VisualNodeShape();
+					new VisualNodeShape(0);
 					getActiveViewer().repaint();
 				}
 			}
@@ -1074,9 +1079,36 @@ public class HecataeusViewer {
 		JMenuItem mntmColorCollapse = new JMenuItem("color list");
 		mntmColorCollapse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				evaGraph = new DelegateForest<VisualNode,VisualEdge>();
 				
-
-				
+				for(VisualNode v : graph.getVertices()){
+					if(v.getType() == NodeType.NODE_TYPE_RELATION){
+						evaGraph.addVertex(v);
+						for(VisualEdge ak : v.getInEdges()){
+							if(ak.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
+								if(!evaGraph.containsEdge(ak)){
+									evaGraph.addEdge(ak, v, ak.getFromNode());
+								}
+								
+							}
+						}
+					}
+					else if(v.getType() == NodeType.NODE_TYPE_QUERY){
+						evaGraph.addVertex(v);
+						for(VisualEdge ak : v.getOutEdges()){
+							if(ak.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
+								if(!evaGraph.containsEdge(ak)){
+									evaGraph.addEdge(ak, v, ak.getToNode());
+								}
+							}
+						}
+					}
+				}
+				System.out.println(evaGraph);
+				Collection<VisualNode> roots = TreeUtils.getRoots((Forest<VisualNode, VisualEdge>) evaGraph);
+				System.out.println(roots);
+				System.out.println(roots.size());
+				System.out.println(evaGraph.getVertexCount());
 				
 				
 //				VisualNode eva = new VisualNode("eva", NodeType.NODE_TYPE_VIEW);
@@ -1779,7 +1811,12 @@ public class HecataeusViewer {
 				String message = "Total edge crossings : ";
 				VisualGraphEdgeCrossings vgec = new VisualGraphEdgeCrossings(graph);
 				int crossings = vgec.getGraphEdgeCrossings();
-				JOptionPane.showMessageDialog(frame, message + crossings, "Edge Crossings", JOptionPane.INFORMATION_MESSAGE );
+				message += crossings;
+				
+				int edgeNum = vgec.getNumberOfEdges();
+				message += " \nTotal number of edges ";
+				message += edgeNum;
+				JOptionPane.showMessageDialog(frame, message, "Edge Crossings", JOptionPane.INFORMATION_MESSAGE );
 			}
 		});
 		mnMetsics.add(mntmGraphEdgeCrossings);
@@ -3116,7 +3153,7 @@ protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane testPane = new MyPane(subNodes.get(0), vv1, Sub);
 		vv1.setGraphLayout(subLayout);
-		vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
+		vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape(0));
 		String onoma="";
 		onoma+=subNodes.get(0).getName();
 		for(int i=1;i<subNodes.size();i++)

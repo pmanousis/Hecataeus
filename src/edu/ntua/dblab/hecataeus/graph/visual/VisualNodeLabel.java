@@ -9,8 +9,8 @@ public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
      */
     public String transform(VisualNode v) {
     	switch (v.getType()) {
-    	case NODE_TYPE_RELATION:
-    		return v.getName();
+    	//case NODE_TYPE_RELATION:
+    	//	return v.getName();
     	//default: return(v.toString()); 
     	default: return(""); 
     	}

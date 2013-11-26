@@ -60,7 +60,7 @@ public class VisualCluster {
 		ArrayList<MyPair> myEdges = new ArrayList<MyPair>();
 		
 		
-		System.out.println("Cluster id " + this.id);
+	//	System.out.println("Cluster id " + this.id);
 		int arrCnt = 0;
 		// edge :  query to relation
 //		System.out.println("Edge ;  query to relation");
@@ -138,8 +138,12 @@ public class VisualCluster {
 			}
 		}
 		
-		System.out.println("CLUSTER   " + this.id + "   EDGE CROSSings  " + (this.edgeCrossCluster/2));
+		System.out.println((this.edgeCrossCluster/2));
 	}
 	
+	public int getInterClusterCrossings(){
+		
+		return this.edgeCrossCluster/2;
+	}
 	
 }

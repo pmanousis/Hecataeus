@@ -1,6 +1,7 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +11,7 @@ import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 
@@ -80,21 +82,20 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		}
 		clusterId++;
 		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
+		VisualNode clusterNode = new VisualNode("TEST"+clusterId,NodeType.NODE_TYPE_CLUSTER);
+		
+//		Point2D cluLoc = transform(clusterNode);
+//		cluLoc.setLocation(cx,cy);
+//		clusterNode.setLocation(cluLoc);
+//		
+//		clusterNode.setVisible(true);
+//		HecataeusViewer.layout.getGraph().addVertex(clusterNode);
+//		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(clusterNode, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+//		HecataeusViewer.getActiveViewer().setVertexToolTipTransformer(new VisualNodeToolTips());
+//		int tralala = (int)getSmallRad(nodes);
+//		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape(tralala*10));
+//		HecataeusViewer.getActiveViewer().repaint();
 		cluster.printInClusterEdges();
-	}
-	
-	private double checkRad(ArrayList<ArrayList<VisualNode>> SoC, double myRad){
-		double tempRad = 0;double ccircleR = 0;
-		for(ArrayList<VisualNode>listaC: SoC){
-			tempRad += getSmallRad(listaC);
-		}	
-		ccircleR = 2*tempRad;
-		if(ccircleR>=2*Math.PI*myRad){
-			return (ccircleR/2*Math.PI);
-		}
-		else{
-			return myRad;
-		}
 	}
 	
 	
@@ -109,7 +110,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		sortedV.addAll(vertices);
 		//new
 		Collections.sort(sortedV,new ReverseListComparator());
-		System.out.println(sortedV);
+//		System.out.println(sortedV);
 		
 		double myRad = 1.0;
 		
@@ -137,14 +138,14 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		
 		
 
-		System.out.println(sublistofClusters);
+//		System.out.println(sublistofClusters);
 //new!!
 	//	Collections.reverse(sublistofClusters);
 		
 
 		double bigCircleRad = 0.0;
 		double bigClusterRad = 0.0;
-		System.out.println(sublistofClusters);
+//		System.out.println(sublistofClusters);
 		double biggestClusterRad = getSmallRad(sublistofClusters.get(0).get(0));
 		int diam = 0;
 		double prevRad =0.0;
@@ -175,7 +176,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 			
 			
 			diam++;
-			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
+//			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
 			
 			
 			
@@ -192,7 +193,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 				double cx = Math.cos(angle) * bigCircleRad*1.8;// 1.8 is used for white space borders
 				
 				double cy =	Math.sin(angle) * bigCircleRad*1.8;
-				System.out.println("ANGLEEE   " + angle);
+//				System.out.println("ANGLEEE   " + angle);
 				int m = 0;
 				a++;
 				sum+=angle;

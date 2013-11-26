@@ -16,6 +16,7 @@ import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.Forest;
 
 public enum VisualLayoutType {
 	StaticLayout,
@@ -51,7 +52,8 @@ public enum VisualLayoutType {
 	HalfCircleLayout,
 	StarLayout,
 	PizzaSliceLayout,
-	EdgeBetweennessClustering;
+	EdgeBetweennessClustering,
+	Radial;
 
 		/**
 		 * Converts from the enum representation of a type to the corresponding String representation
@@ -127,6 +129,8 @@ public enum VisualLayoutType {
 				return "Pizza Slice Cluster Layout";
 			case EdgeBetweennessClustering:
 				return "Edge Betweenness Clustering";
+			case Radial:
+				return "Radial";
 			default:
 				return name();
 			}
@@ -178,6 +182,8 @@ public enum VisualLayoutType {
 				return new CircleLayout<VisualNode, VisualEdge>(g);
 			case BalloonLayout: 
 				return new BalloonLayout<VisualNode, VisualEdge>(new DelegateForest<VisualNode, VisualEdge>(g));
+			case Radial:
+				return new RadialTreeLayout<VisualNode, VisualEdge>(new DelegateForest<VisualNode, VisualEdge>(g));
 			case Right2LeftTopologicalLayout: 
 				return new VisualTopologicalLayout(g, Orientation.RIGHT2LEFT);
 			case Top2DownTopologicalLayout : 

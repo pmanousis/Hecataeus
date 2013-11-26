@@ -25,7 +25,7 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
  */
 public class VisualNode extends EvolutionNode<VisualEdge>{
 
-	
+	private double angle;
 	private Point2D location;
 	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
@@ -43,7 +43,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
 		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
-		
+		this.angle = 0.0;
 //		this.myGraph = graph;
 	}
 	
@@ -62,11 +62,20 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	public Color getNodeColor(VisualNode v){
 		return this.nodeColor;
 	}
+	
+	public void setNodeAngle(double a){
+		this.angle = a;
+	}
+	public double getNodeAngle(){
+		return this.angle;
+	}
+	
 	public VisualNode(String name, NodeType type) {
 		super(name, type);
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
 		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
+		this.angle = 0.0;
 //		this.myGraph = graph;
 	}
 	

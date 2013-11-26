@@ -90,7 +90,9 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected double getSmallRad(List<VisualNode> komboi){
 		return(Math.log(komboi.size()*komboi.size()*komboi.size())+2*komboi.size());
 	}
-	
+	protected double getQuery(int numOfNodes){
+		return(Math.log(numOfNodes*numOfNodes*numOfNodes)+2*numOfNodes);
+	}
 	
 	
 	protected ArrayList<VisualNode> relationsInCluster(List<VisualNode> nodes){
@@ -103,6 +105,15 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		return relations;
 	}
 	
+	protected ArrayList<VisualNode> queriesInCluster(List<VisualNode> nodes){
+		ArrayList<VisualNode> queries = new ArrayList<VisualNode>();
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_QUERY){
+				queries.add(v);
+			}
+		}
+		return queries;
+	}
 	
 	public List<String> getFileNames(){
 		if(files!=null){
