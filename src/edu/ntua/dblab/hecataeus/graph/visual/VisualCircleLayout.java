@@ -90,7 +90,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected double getSmallRad(List<VisualNode> komboi){
 		return(Math.log(komboi.size()*komboi.size()*komboi.size())+2*komboi.size());
 	}
-	protected double getQuery(int numOfNodes){
+	protected double getQueryRad(int numOfNodes){
 		return(Math.log(numOfNodes*numOfNodes*numOfNodes)+2*numOfNodes);
 	}
 	
@@ -99,9 +99,11 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		ArrayList<VisualNode> relations = new ArrayList<VisualNode>();
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				
 				relations.add(v);
 			}
 		}
+		
 		return relations;
 	}
 	

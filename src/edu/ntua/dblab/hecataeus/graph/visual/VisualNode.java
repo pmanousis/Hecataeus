@@ -44,6 +44,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.lastChildLocation = new Point2D.Double();
 		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
 		this.angle = 0.0;
+		this.nodeColor = new Color(255,255,255);
 //		this.myGraph = graph;
 	}
 	
