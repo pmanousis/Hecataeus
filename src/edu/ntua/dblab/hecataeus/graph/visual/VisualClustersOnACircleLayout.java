@@ -164,9 +164,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
                 rc.clear();
                 rc.addAll(sortedR);
         }
-        
-        
-        
+ 
         double relationRad = 1.9*getSmallRad(rc);
         double qRad = getQueryRad(nodes.size() - rc.size()- vc.size());
         int Q = singleQinCl;//nodes.size() - rc.size();
