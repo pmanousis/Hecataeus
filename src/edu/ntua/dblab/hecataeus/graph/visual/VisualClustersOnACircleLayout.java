@@ -168,7 +168,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
         
         
         double relationRad = 1.9*getSmallRad(rc);
-//        double relationAngle = (2 * Math.PI ) / rc.size();
         double qRad = getQueryRad(nodes.size() - rc.size()- vc.size());
         int Q = singleQinCl;//nodes.size() - rc.size();
         double qAngle = 0;
@@ -190,10 +189,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
                                 if(cnt==1){ //&&e.getFromNode().getType() != NodeType.NODE_TYPE_VIEW){
                                         queriesforR.add(q);
                                 }
-//                                if(e.getFromNode().getType() == NodeType.NODE_TYPE_VIEW)
-//                                {
-//                                	viewsforR.add(q);
-//                                }
                                 else{
                                         jq.add(q);
                                 }
@@ -203,31 +198,22 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
                 System.out.println("  rel name " + r.getName() + "  my q  " + queriesforR);
                 
                 qAngle = placeQueries(queriesforR, cx, cy, qRad, qAngle, Q);
-                placeViews(vc, relationRad, qRad, cx, cy);
+                
 
 	                Point2D coord = transform(r);
 	                sAngle += qAngle;
 	                double rx = 0;
 	                double ry = 0;
-//	                if(cx < 0){
-//	                	rx = Math.cos((-1)*(sAngle-(qAngle/2)))*relationRad+(cx);
-//	 	                ry = Math.sin((sAngle-(qAngle/2)))*relationRad+(cy);
-//	                }else{
 	                rx = Math.cos(sAngle-(qAngle/2))*relationRad+(cx);
 	                ry = Math.sin(sAngle-(qAngle/2))*relationRad+(cy);
-//	                }
 	                coord.setLocation(rx, ry);
 	                r.setLocation(coord);
 	                r.setNodeAngle(sAngle-(qAngle/2));
-	//                System.out.println("set node angle    " + (sAngle-(qAngle/2)));
-	//                System.out.println("get node angle name"+ r.getName() + "   angle  "+ r.getNodeAngle());
-
- //               }
                 
                 HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(r, HecataeusViewer.getActiveViewer().getPickedVertexState()));
                 HecataeusViewer.getActiveViewer().repaint();
         }
-		
+        placeViews(vc, relationRad, qRad, cx, cy);
 		double jqRad = qRad + 40;
 		//double jqAngle = (2 * Math.PI ) / jq.size();
 		double c = 0;
