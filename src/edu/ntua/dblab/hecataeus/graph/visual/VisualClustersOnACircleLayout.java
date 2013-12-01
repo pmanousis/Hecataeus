@@ -33,7 +33,8 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	protected List<String> files;
 	private List<VisualNode> RQV;
 	
-	
+//	private static double sumAngle=0;
+//	private ArrayList<VisualNode> jq = new ArrayList<VisualNode>();
 	
 	protected VisualCircleLayout vcl;
 	
@@ -56,7 +57,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	
 	
 	
-	private Map sortByComparator(Map unsortedMap) {
+	private Map<ArrayList<VisualNode>, Integer> sortByComparator(Map<ArrayList<VisualNode>, Integer> unsortedMap) {
 		List list = new LinkedList(unsortedMap.entrySet());
 		Collections.sort(list, new Comparator() {
 		public int compare(Object o1, Object o2) {
@@ -104,8 +105,8 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
         ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
         rc.addAll(relationsInCluster(nodes));
         System.out.println("   to RC   " + rc);
+       
         ArrayList<VisualNode> jq = new ArrayList<VisualNode>();
-        
         Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>();
         
         for(VisualNode n : nodes){
@@ -167,13 +168,12 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
  
         double relationRad = 1.9*getSmallRad(rc);
         double qRad = getQueryRad(nodes.size() - rc.size()- vc.size());
-        int Q = singleQinCl;//nodes.size() - rc.size();
+        int Q = singleQinCl;
         double qAngle = 0;
         double sAngle = 0;
         for(VisualNode r : rc){
                 
                 ArrayList<VisualNode> queriesforR = new ArrayList<VisualNode>();
-//                ArrayList<VisualNode> viewsforR = new ArrayList<VisualNode>();
                 for(VisualEdge e : r.getInEdges()){
                         if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY ){
                                 VisualNode q = e.getFromNode();
@@ -197,7 +197,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
                 
                 qAngle = placeQueries(queriesforR, cx, cy, qRad, qAngle, Q);
                 
-
+//                placeRelation(r, qAngle, relationRad, cx, cy);
 	                Point2D coord = transform(r);
 	                sAngle += qAngle;
 	                double rx = 0;
@@ -250,6 +250,45 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		
 	}
 	
+//    private void placeRelation(VisualNode relationNode, double qAngle, double relationRad, double cx, double cy){
+//    	Point2D coord = transform(relationNode);
+//        sumAngle += qAngle;
+//        double rx = 0;
+//        double ry = 0;
+//        rx = Math.cos(sumAngle-(qAngle/2))*relationRad+(cx);
+//        ry = Math.sin(sumAngle-(qAngle/2))*relationRad+(cy);
+//        coord.setLocation(rx, ry);
+//        relationNode.setLocation(coord);
+//        relationNode.setNodeAngle(sumAngle-(qAngle/2));
+//    
+//        HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(relationNode, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+//        HecataeusViewer.getActiveViewer().repaint();
+//    }
+    
+//    private ArrayList<VisualNode>getQueriesforR(VisualNode relationNode){
+//    	ArrayList<VisualNode> queriesforR = new ArrayList<VisualNode>();
+//    	for(VisualEdge e : relationNode.getInEdges()){
+//            if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY ){
+//                    VisualNode q = e.getFromNode();
+//                    ArrayList<VisualEdge> qEdges = new ArrayList<VisualEdge>(q.getOutEdges());
+//                    int cnt = 0;
+//                    for(VisualEdge ed : qEdges){
+//                            if(ed.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
+//                                    cnt++;
+//                            }
+//                    }
+//                    if(cnt==1){ //&&e.getFromNode().getType() != NodeType.NODE_TYPE_VIEW){
+//                            queriesforR.add(q);
+//                    }
+//                    else{
+//                            jq.add(q);
+//                    }
+//                    
+//            }
+//    	}
+//    	return queriesforR;
+//    }
+    
 	private double placeQueries(ArrayList<VisualNode> queriesforR,  double cx, double cy, double qRad, double qAngle, int Q) {
 		
 		double sAngle = 0.0;
