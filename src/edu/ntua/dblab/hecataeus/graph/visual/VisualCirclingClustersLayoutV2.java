@@ -4,7 +4,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
@@ -27,7 +29,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 	protected List<String> files;
 	private List<VisualNode> RQV;
 	protected VisualCircleLayout vcl;
-	
+	private double edgelenngthforGraph = 0;
 	protected VisualCirclingClustersLayoutV2(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
@@ -43,61 +45,100 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		
 	}
 
-	private void circles(List<VisualNode> nodes, double cx, double cy){
-		int b = 0;
-		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
-		ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
-		ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
-		for(VisualNode v : nodes){
-			if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				rc.add(v);
-				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
-				Point2D coord = transform(v);
-				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
-				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-				v.setLocation(coord);
-				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-				HecataeusViewer.getActiveViewer().repaint();
-			}else{
-				if(v.getType() == NodeType.NODE_TYPE_QUERY){
-					qc.add(v);
-				}
-				else if(v.getType() == NodeType.NODE_TYPE_VIEW){
-					vc.add(v);
-				}
-				double smallRad = getSmallRad(nodes);
-				Point2D coord = transform(v);
-				double angleA = 0.0;
-				if(relationsInCluster(nodes).size() > 1){
-					angleA = (2 * Math.PI ) / (nodes.size()-relationsInCluster(nodes).size());
-				}else{
-					angleA = (2 * Math.PI ) / nodes.size();
-				}
-				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-				v.setLocation(coord);
-				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-				HecataeusViewer.getActiveViewer().repaint();
-			}
-			b++;
-		}
-		clusterId++;
-		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
-		VisualNode clusterNode = new VisualNode("TEST"+clusterId,NodeType.NODE_TYPE_CLUSTER);
-		
-//		Point2D cluLoc = transform(clusterNode);
-//		cluLoc.setLocation(cx,cy);
-//		clusterNode.setLocation(cluLoc);
+//	private void circles(List<VisualNode> nodes, double cx, double cy){
+//		int b = 0;
+//		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
+//		ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
+//		ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
+//		for(VisualNode v : nodes){
+//			if(v.getType() == NodeType.NODE_TYPE_RELATION){
+//				rc.add(v);
+//				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
+//				Point2D coord = transform(v);
+//				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
+//				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+//				v.setLocation(coord);
+//				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+//				HecataeusViewer.getActiveViewer().repaint();
+//			}else{
+//				if(v.getType() == NodeType.NODE_TYPE_QUERY){
+//					qc.add(v);
+//				}
+//				else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+//					vc.add(v);
+//				}
+//				double smallRad = getSmallRad(nodes);
+//				Point2D coord = transform(v);
+//				double angleA = 0.0;
+//				if(relationsInCluster(nodes).size() > 1){
+//					angleA = (2 * Math.PI ) / (nodes.size()-relationsInCluster(nodes).size());
+//				}else{
+//					angleA = (2 * Math.PI ) / nodes.size();
+//				}
+//				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+//				v.setLocation(coord);
+//				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+//				HecataeusViewer.getActiveViewer().repaint();
+//			}
+//			b++;
+//		}
+//		clusterId++;
+//		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
+//		VisualNode clusterNode = new VisualNode("TEST"+clusterId,NodeType.NODE_TYPE_CLUSTER);
 //		
-//		clusterNode.setVisible(true);
-//		HecataeusViewer.layout.getGraph().addVertex(clusterNode);
-//		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(clusterNode, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-//		HecataeusViewer.getActiveViewer().setVertexToolTipTransformer(new VisualNodeToolTips());
-//		int tralala = (int)getSmallRad(nodes);
-//		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape(tralala*10));
-//		HecataeusViewer.getActiveViewer().repaint();
-		cluster.printInClusterEdges();
-	}
+////		Point2D cluLoc = transform(clusterNode);
+////		cluLoc.setLocation(cx,cy);
+////		clusterNode.setLocation(cluLoc);
+////		
+////		clusterNode.setVisible(true);
+////		HecataeusViewer.layout.getGraph().addVertex(clusterNode);
+////		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(clusterNode, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+////		HecataeusViewer.getActiveViewer().setVertexToolTipTransformer(new VisualNodeToolTips());
+////		int tralala = (int)getSmallRad(nodes);
+////		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape(tralala*10));
+////		HecataeusViewer.getActiveViewer().repaint();
+//		cluster.printInClusterEdges();
+//	}
 	
+	private void circles(List<VisualNode> nodes, double cx, double cy){
+        int b = 0, relwithoutQ = 0;
+        ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
+        ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
+        ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
+        
+        
+        
+        rc.addAll(relationsInCluster(nodes));
+        qc.addAll(queriesInCluster(nodes));
+        vc.addAll(viewsInCluster(nodes));
+        
+        int singleQinCl = nodes.size() - rc.size() - outQ(nodes).size() - vc.size();
+        Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>(getRSimilarity(qc));
+        if(relationsInCluster(nodes).size()>4){
+        	Map<ArrayList<VisualNode>, Integer> sorted = sortByComparator(set);
+            ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>(getSortedArray(sorted, rc));
+            rc.clear();
+            rc.addAll(sortedR);
+        }
+ 
+        double relationRad = 1.9*getSmallRad(rc);
+        double qRad = getQueryRad(nodes.size() - rc.size()- vc.size());
+        int Q = singleQinCl;
+        double qAngle = 0;
+        double sAngle = 0;
+        for(VisualNode r : rc){
+        	ArrayList<VisualNode> queriesforR = new ArrayList<VisualNode>(getQueriesforR(r));
+        	qAngle = placeQueries(queriesforR, cx, cy, qRad, qAngle, Q);
+        	sAngle += qAngle;
+        	placeRelation(r, qAngle, sAngle, relationRad, cx, cy);
+        }
+        placeViews(vc, relationRad, qRad, cx, cy);
+        placeOutQueries(nodes, qRad, cx, cy);
+		clusterId++;
+		VisualCluster cluster = new VisualCluster(qRad, rc, vc, qc, cx, cy, clusterId);
+		cluster.printInClusterEdges();
+		edgelenngthforGraph += cluster.getLineLength();
+	}
 	
 	protected void CirclingCusters(){
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
@@ -169,7 +210,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 			//	bigCircleRad = 2*bigClusterRad+2*biggestClusterRad;
 				bigCircleRad = prevRad+ bigClusterRad*2;
 			}else{
-				bigClusterRad += getSmallRad(tmp.get(0));
+				bigClusterRad += getSmallRad(tmp.get(0)) + getSmallRad(tmp.get(1));
 				bigCircleRad = (bigClusterRad)*1.2;// white space between circle layers
 			}
 			prevRad = bigCircleRad;

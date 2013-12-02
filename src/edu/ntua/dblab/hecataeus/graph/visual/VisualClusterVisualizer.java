@@ -1,10 +1,16 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class VisualClusterVisualizer {
 
-	public abstract Point2D DrawClusterCircle(List<VisualNode> nodes, double cx, double cy);
+	public abstract double getSmallRad(List<VisualNode> komboi);
+	public abstract double getQueryRad(int numOfNodes);
+	public abstract ArrayList<VisualNode> relationsInCluster(List<VisualNode> nodes);
+	public abstract ArrayList<VisualNode> queriesInCluster(List<VisualNode> nodes);
+	public abstract ArrayList<VisualNode> viewsInCluster(List<VisualNode> nodes);
+	public abstract List<String> getFileNames();
+	public abstract List<VisualNode> getRelations();
 	
 }

@@ -73,6 +73,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -86,6 +87,7 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStrokeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
@@ -1816,10 +1818,30 @@ public class HecataeusViewer {
 				int edgeNum = vgec.getNumberOfEdges();
 				message += " \nTotal number of edges ";
 				message += edgeNum;
+				
+				message += "\n----------------------\n";
+				double avgEL = vgec.getAvgEdgeLength();
+				message += "Average Edge Length : "+avgEL ;
+				
+				
+				
 				JOptionPane.showMessageDialog(frame, message, "Edge Crossings", JOptionPane.INFORMATION_MESSAGE );
 			}
 		});
 		mnMetsics.add(mntmGraphEdgeCrossings);
+		
+		JMenuItem mntmGraphEdgeData = new JMenuItem("Graph Cluster Data");
+		mntmGraphEdgeData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message = "Cluster ID: \t Cluster Rad: \t Cluster edge crossings \t Cluster Line Length  \n";
+				
+				VisualTotalClusters vtc = new VisualTotalClusters();
+				message += vtc.getClustersData();
+				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Cluster Metrics", message);
+				
+			}
+		});
+		mnMetsics.add(mntmGraphEdgeData);
 		
 		JMenuItem mntmOutpoutForModule = new JMenuItem("Output For Module Nodes");
 		mntmOutpoutForModule.addActionListener(new ActionListener() {

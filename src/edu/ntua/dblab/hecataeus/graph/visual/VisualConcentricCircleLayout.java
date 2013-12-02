@@ -231,6 +231,8 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 	 * 
 	 */
 	
+	
+	
 	protected void drawCircles(List<VisualNode> nodes, double radius){
 		int cnt = 0;
 		for(VisualNode n :  nodes){

@@ -5,6 +5,9 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
+
 public class VisualCluster {
 
 	private double rad;
@@ -14,6 +17,7 @@ public class VisualCluster {
 	private double cx;
 	private double cy;
 	private int id;
+	private double lineLenght = 0;
 	
 	private int edgeCrossCluster = 0;
 	
@@ -55,26 +59,21 @@ public class VisualCluster {
 		
 	}
 	
+	protected int getClusterId(){
+		return this.id;
+	}
+	
 	protected void printInClusterEdges(){
 
 		ArrayList<MyPair> myEdges = new ArrayList<MyPair>();
-		
-		
-	//	System.out.println("Cluster id " + this.id);
 		int arrCnt = 0;
 		// edge :  query to relation
-//		System.out.println("Edge ;  query to relation");
 		for(VisualNode v : this.queries){
 			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);
 			for(VisualEdge e : edges){
 				if(this.relations.contains(e.getToNode())){
-//					System.out.println(v.getName() +"; x ; " + v.getLocation().getX() +  "; y  ; "+ v.getLocation().getY() +"; : ;" +e.getToNode().getName()+ "; x ; " +e.getToNode().getLocation().getX()+ "; y ; " +e.getToNode().getLocation().getY());
 					MyPair p= new MyPair(v.getLocation(), e.getToNode().getLocation());
 					myEdges.add(p);
-					
-//					myArray[arrCnt][0] = v.getLocation();
-//					myArray[arrCnt][1] = e.getToNode().getLocation();
-//					arrCnt++;
 				}
 			}
 		}
@@ -82,12 +81,10 @@ public class VisualCluster {
 		
 		// edge :  query to view
 		if(this.views!= null){
-//			System.out.println("Edge ;  query to view");
 			for(VisualNode v : this.queries){
 				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);
 				for(VisualEdge e : edges){
 					if(this.views.contains(e.getToNode())){
-//						System.out.println(v.getName() +"; x ;" + v.getLocation().getX() +  "; y  ; "+ v.getLocation().getY() +"; : ;" +e.getToNode().getName()+ "; x ; " +e.getToNode().getLocation().getX()+ "; y ; " +e.getToNode().getLocation().getY());				
 						MyPair p= new MyPair(v.getLocation(), e.getToNode().getLocation());
 						myEdges.add(p);
 					}
@@ -96,14 +93,12 @@ public class VisualCluster {
 		}
 		
 		
-		// edge :  query to view
+		// edge :  view to relation
 		if(this.views!= null){
-//			System.out.println("Edge ;  view to relation");
 			for(VisualNode v : this.views){
 				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);
 				for(VisualEdge e : edges){
 					if(this.relations.contains(e.getToNode())){
-//						System.out.println(v.getName() +"; x ; " + v.getLocation().getX() +  "; y  ; "+ v.getLocation().getY() +"; : ;" +e.getToNode().getName()+ "; x ; " +e.getToNode().getLocation().getX()+ "; y ; " +e.getToNode().getLocation().getY());
 						MyPair p= new MyPair(v.getLocation(), e.getToNode().getLocation());
 						myEdges.add(p);
 					}
@@ -116,7 +111,6 @@ public class VisualCluster {
 				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);
 				for(VisualEdge e : edges){
 					if(this.views.subList(views.indexOf(v), views.size()) .contains(e.getToNode())){
-//						System.out.println(v.getName() +"; x ; " + v.getLocation().getX() +  "; y  ; "+ v.getLocation().getY() +"; : ;" +e.getToNode().getName()+ "; x ; " +e.getToNode().getLocation().getX()+ "; y ; " +e.getToNode().getLocation().getY());
 						MyPair p= new MyPair(v.getLocation(), e.getToNode().getLocation());
 						myEdges.add(p);
 					}
@@ -125,11 +119,17 @@ public class VisualCluster {
 		}
 		for(int i = 0; i < myEdges.size(); i++){
 			Line2D line1 = new Line2D.Double(myEdges.get(i).getFirstPoint(), myEdges.get(i).getSecondPoint());
+			Point2D fp = myEdges.get(i).getFirstPoint();
+			Point2D sp = myEdges.get(i).getSecondPoint();
+			lineLenght += fp.distance(sp);
 			for(int j = 0; j < myEdges.size(); j++){
 				if(j==i){
 					continue;
 				}
 				Line2D line2 = new Line2D.Double(myEdges.get(j).getFirstPoint(), myEdges.get(j).getSecondPoint());
+				Point2D fp2 = myEdges.get(j).getFirstPoint();
+				Point2D sp2 = myEdges.get(j).getSecondPoint();
+				lineLenght += fp2.distance(sp2);
 				boolean result = line2.intersectsLine(line1);
 				if(result && (myEdges.get(i).getSecondPoint()!= myEdges.get(j).getSecondPoint()) && (myEdges.get(i).getFirstPoint()!= myEdges.get(j).getFirstPoint())){
 					edgeCrossCluster++;
@@ -137,13 +137,24 @@ public class VisualCluster {
 				
 			}
 		}
+		lineLenght = lineLenght/myEdges.size();
+		this.lineLenght = this.lineLenght/2;
+		this.edgeCrossCluster = this.edgeCrossCluster/2;
 		
-		System.out.println((this.edgeCrossCluster/2));
+		
+			System.out.println("avg mikos " + lineLenght);
+			System.out.println((this.edgeCrossCluster));
+
+	}
+	
+	protected double getLineLength(){
+		printInClusterEdges();
+		return this.lineLenght;
 	}
 	
 	public int getInterClusterCrossings(){
-		
-		return this.edgeCrossCluster/2;
+		printInClusterEdges();
+		return this.edgeCrossCluster;
 	}
 	
 }
