@@ -36,32 +36,31 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 					INITIAL_SIZE = 21;   //60
 				}
 				else{
-					INITIAL_SIZE = 4;
 					allEdges = v._inEdges.size() + v._outEdges.size();
-				//	INITIAL_SIZE = 4*allEdges;
 					INITIAL_SIZE = 4 + 10*(int)Math.log((double)allEdges);
 				}
 				
-				if (type.getCategory()== NodeCategory.MODULE)
+				if (type.getCategory()== NodeCategory.MODULE){
+					v.size=INITIAL_SIZE;
 					return INITIAL_SIZE;
-				else if (type.getCategory()== NodeCategory.CONTAINER)
+				}
+				else if (type.getCategory()== NodeCategory.CONTAINER){
 					//return INITIAL_SIZE * 4 ;
-					if(type == NodeType.NODE_TYPE_CLUSTER){
-						System.out.println("MEFETHOSSSSSS    " +N);
-						return N;
-					}
-					else{
+						v.size=INITIAL_SIZE;
 						return 10;
 					}
 				/***
 				 * @author pmanousi
 				 */
-				else if (type.getCategory()== NodeCategory.INOUTSCHEMA)
+				else if (type.getCategory()== NodeCategory.INOUTSCHEMA){
 					//return INITIAL_SIZE / 2;
+					v.size=INITIAL_SIZE;
 					return 10;
-				else
+				}else{
 					//return INITIAL_SIZE/4;
+					v.size=INITIAL_SIZE;
 					return 10;
+				}
 
 			}});
 		//extends setAspectRatioTransformer for defining the custom aspect ration of nodes

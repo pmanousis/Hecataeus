@@ -25,7 +25,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 	private List<VisualNode> views;
 	private ClusterSet cs;
 	private static int clusterId = 0;
-	
+	private VisualTotalClusters clusterList;
 	protected List<String> files;
 	private List<VisualNode> RQV;
 	protected VisualCircleLayout vcl;
@@ -112,7 +112,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
         qc.addAll(queriesInCluster(nodes));
         vc.addAll(viewsInCluster(nodes));
         
-        int singleQinCl = nodes.size() - rc.size() - outQ(nodes).size() - vc.size();
+        int singleQinCl = nodes.size() - rc.size() - outQ(nodes).size() - vc.size() - queriesWithViews(qc).size();
         Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>(getRSimilarity(qc));
         if(relationsInCluster(nodes).size()>4){
         	Map<ArrayList<VisualNode>, Integer> sorted = sortByComparator(set);
@@ -126,21 +126,35 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
         int Q = singleQinCl;
         double qAngle = 0;
         double sAngle = 0;
+        double newAngle = 2*Math.PI/rc.size();
+        ArrayList<VisualNode> multyV = new ArrayList<VisualNode>(vc);//getmultyViews
+        double viewBand = getViewBandSize(multyV, relationRad);
+        if(qRad <= viewBand){
+        	qRad = viewBand+40;
+        }
+        if(qRad <= relationRad){
+        	qRad = relationRad+40;
+        }
         for(VisualNode r : rc){
         	ArrayList<VisualNode> queriesforR = new ArrayList<VisualNode>(getQueriesforR(r));
         	qAngle = placeQueries(queriesforR, cx, cy, qRad, qAngle, Q);
         	sAngle += qAngle;
-        	placeRelation(r, qAngle, sAngle, relationRad, cx, cy);
+        	placeRelation(r, qAngle, sAngle, relationRad, cx, cy, newAngle);
         }
         placeViews(vc, relationRad, qRad, cx, cy);
         placeOutQueries(nodes, qRad, cx, cy);
+        placeQueriesWithViews(qc, cx, cy, qRad);
+        placeMultyViews(multyV, cx, cy, relationRad+10);
 		clusterId++;
 		VisualCluster cluster = new VisualCluster(qRad, rc, vc, qc, cx, cy, clusterId);
+		clusterList.addCluster(cluster);
 		cluster.printInClusterEdges();
 		edgelenngthforGraph += cluster.getLineLength();
 	}
 	
 	protected void CirclingCusters(){
+		clusterList = new VisualTotalClusters();
+		clusterList.clearList();
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
 		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();
 		for(Cluster cl : clusters){
@@ -174,7 +188,8 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 			counter += size;
 			p++;
 		}while(counter < sortedV.size());
-		
+		sublistofClusters.add(sublistofClusters.size(), new ArrayList<ArrayList<VisualNode>>(sortedV.subList(sortedV.size()-1, sortedV.size())));
+
 		
 		
 		

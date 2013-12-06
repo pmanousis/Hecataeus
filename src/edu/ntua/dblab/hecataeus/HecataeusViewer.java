@@ -1820,8 +1820,8 @@ public class HecataeusViewer {
 				message += edgeNum;
 				
 				message += "\n----------------------\n";
-				double avgEL = vgec.getAvgEdgeLength();
-				message += "Average Edge Length : "+avgEL ;
+				//double avgEL = vgec.getAvgEdgeLength();
+				///message += "Average Edge Length : "+avgEL ;
 				
 				
 				

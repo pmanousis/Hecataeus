@@ -242,6 +242,7 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 			n.setLocation(coord);
 			dosomething(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2, n, 0);
 			cnt++;
+			n.setNodeAngle(angle);
 			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(n, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 			HecataeusViewer.getActiveViewer().repaint();
 		}

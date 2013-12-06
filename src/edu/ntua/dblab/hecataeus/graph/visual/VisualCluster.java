@@ -140,10 +140,10 @@ public class VisualCluster {
 		lineLenght = lineLenght/myEdges.size();
 		this.lineLenght = this.lineLenght/2;
 		this.edgeCrossCluster = this.edgeCrossCluster/2;
-		
-		
-			System.out.println("avg mikos " + lineLenght);
-			System.out.println((this.edgeCrossCluster));
+//		
+//		
+//			System.out.println("avg mikos " + lineLenght);
+//			System.out.println((this.edgeCrossCluster));
 
 	}
 	

@@ -31,6 +31,8 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Boolean isVisible  = true;
 	private VisualizationViewer<VisualNode, VisualEdge> Viewer;
 	
+public int size;
+	
 	private Color nodeColor;
 	
 	//private VisualGraph myGraph;
