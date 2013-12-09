@@ -1,5 +1,6 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
+import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,7 +65,7 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
 	        int singleQinCl = nodes.size() - rc.size() - outQ(nodes).size() - vc.size() - queriesWithViews(qc).size();
 	        Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>(getRSimilarity(qc));
 	        Map<ArrayList<VisualNode>, Integer> viewSet = new HashMap<ArrayList<VisualNode>, Integer>(getVSimilarity(vc));
-	        if(relationsInCluster(nodes).size()>4){
+	        if(relationsInCluster(nodes).size()>3){
 	        	Map<ArrayList<VisualNode>, Integer> sorted = sortByComparator(set);
 	        	Map<ArrayList<VisualNode>, Integer> sortedViews = sortByComparator(viewSet);
 	            ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>(getSortedArray(sorted, rc));
@@ -125,6 +126,9 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
 	protected void CirclingCusters(){
 		clusterList = new VisualTotalClusters();
 		clusterList.clearList();
+		Dimension d = getSize();
+		double w = d.getWidth();
+		double h = d.getHeight();
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
 		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();
 		for(Cluster cl : clusters){
@@ -170,14 +174,18 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
 			double angle = 0.0, sum = 0.0;
 			
 			for(ArrayList<VisualNode> lista : listaC){
-				
 				List<VisualNode> nodes = new ArrayList<VisualNode>();
 				Collections.sort(lista, new CustomComparator());
 				nodes.addAll(lista);
-				angle = (Math.acos(  (2*bigCircleRad*bigCircleRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*bigCircleRad*bigCircleRad )))*2;   // 0.94 is used simulate strait lines to curves
-				double cx = Math.cos(sum+angle/2) * bigCircleRad*1.8;// 1.8 is used for white space borders
-				double cy =	Math.sin(sum+angle/2) * bigCircleRad*1.8;
-		//		System.out.println("Node name    " + lista.get(0).getName()  + "   cx:    " +cx + " cy: " +cy+ " my angle: " +angle );
+				//angle = (Math.acos(  (2*bigCircleRad*bigCircleRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*bigCircleRad*bigCircleRad )))*2;   // 0.94 is used simulate strait lines to curves
+				double temp =   (2*bigCircleRad*bigCircleRad - getSmallRad(nodes)*getSmallRad(nodes)*0.94)/(2*bigCircleRad*bigCircleRad );
+				if(Math.abs(temp)>1){
+					temp = 0.9;
+				}
+				angle = (Math.acos(temp))*2;
+				double cx = Math.cos((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 + (w/2);// 1.8 is used for white space borders
+				double cy =	Math.sin((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 + (h/2);
+				System.out.println("center angle " + ((sum+angle/2)/2*Math.PI));
 				sum+=angle;
 				circles(nodes, cx, cy);
 				a++;

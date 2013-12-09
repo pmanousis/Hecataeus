@@ -1,5 +1,6 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
+import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,7 +102,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
         int singleQinCl = nodes.size() - rc.size() - outQ(nodes).size() - vc.size() - queriesWithViews(qc).size();
         Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>(getRSimilarity(qc));
         Map<ArrayList<VisualNode>, Integer> viewSet = new HashMap<ArrayList<VisualNode>, Integer>(getVSimilarity(vc));
-        if(relationsInCluster(nodes).size()>4){
+        if(relationsInCluster(nodes).size()>3){
         	Map<ArrayList<VisualNode>, Integer> sorted = sortByComparator(set);
         	Map<ArrayList<VisualNode>, Integer> sortedViews = sortByComparator(viewSet);
             ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>(getSortedArray(sorted, rc));
@@ -161,6 +162,9 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		clusterList = new VisualTotalClusters();
 		clusterList.clearList();
 		List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
+		Dimension d = getSize();
+		double w = d.getWidth();
+		double h = d.getHeight();
 		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();
 		for(Cluster cl : clusters){
 			vertices.add(cl.getNode());
@@ -226,9 +230,9 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 				nodes.addAll(lista);
 				//correct angle
 				angle = (2*Math.PI*a)/listaC.size();
-				double cx = Math.cos(angle) * bigCircleRad*1.2;// 1.8 is used for white space borders
+				double cx = Math.cos(angle) * bigCircleRad*1.2 +(w/2);// 1.8 is used for white space borders
 				
-				double cy =	Math.sin(angle) * bigCircleRad*1.2;
+				double cy =	Math.sin(angle) * bigCircleRad*1.2 + (h/2);
 //				System.out.println("ANGLEEE   " + angle);
 				int m = 0;
 				a++;
@@ -240,6 +244,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 			//System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}
 		HecataeusViewer.getActiveViewer().repaint();
+		System.out.println("dimc  "+ graph.getSize());
 	}
 	
 	

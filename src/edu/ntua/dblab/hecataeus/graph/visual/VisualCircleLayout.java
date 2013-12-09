@@ -471,7 +471,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected ArrayList<VisualNode> getSortedArray(Map<ArrayList<VisualNode>, Integer> sorted, ArrayList<VisualNode>rc){
 		ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>();
 		for(Entry e : sorted.entrySet()){
-			System.out.println("print  " + e.getValue()+"   " +e.getKey());
+		//	System.out.println("print  " + e.getValue()+"   " +e.getKey());
 			ArrayList<VisualNode> temp = ((ArrayList<VisualNode>)e.getKey());
 			for(VisualNode node : temp){
 				if(!sortedR.contains(node)){
@@ -656,4 +656,62 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		}
 		return set;
 	}
+	
+	protected void placeRelations(ArrayList<VisualNode>rc, double cx, double cy){
+		double smallRad = 1.3*getSmallRad(rc);
+		double angle = (2 * Math.PI ) / rc.size();
+		int cnt = 0;
+		for(VisualNode v : rc){
+			Point2D coord = transform(v);
+			coord.setLocation(Math.cos(angle*cnt)*smallRad+(cx),Math.sin(angle*cnt)*smallRad+(cy));
+			v.setLocation(coord);
+			v.setNodeAngle(angle*cnt);
+			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+			HecataeusViewer.getActiveViewer().repaint();
+			cnt++;
+		}
+		
+	}
+	
+  protected void drawCircles(List<VisualNode> nodes, double cx, double cy){
+		int b = 0;
+		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
+		ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
+		ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				rc.add(v);
+				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
+				Point2D coord = transform(v);
+				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
+				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+				v.setLocation(coord);
+				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+				HecataeusViewer.getActiveViewer().repaint();
+			}else{
+				if(v.getType() == NodeType.NODE_TYPE_QUERY){
+					qc.add(v);
+				}
+				else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+					vc.add(v);
+				}
+				double smallRad = getSmallRad(nodes);
+				Point2D coord = transform(v);
+				double angleA = 0.0;
+				if(relationsInCluster(nodes).size() > 1){
+					angleA = (2 * Math.PI ) / (nodes.size()-relationsInCluster(nodes).size());
+				}else{
+					angleA = (2 * Math.PI ) / nodes.size();
+				}
+				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
+				v.setLocation(coord);
+				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
+				HecataeusViewer.getActiveViewer().repaint();
+			}
+			b++;
+		}
+		
+		
+	}
+  
 }

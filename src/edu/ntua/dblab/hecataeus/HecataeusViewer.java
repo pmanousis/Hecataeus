@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +74,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -729,8 +729,18 @@ public class HecataeusViewer {
 		mntmZoomInWindow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+				
+				
+				
+				Dimension d = ((VisualGraph)activeViewer.getGraphLayout().getGraph()).getSize();
+//				System.out.println("dimention " +d.width + "  " + d.height);
+//				System.out.println("dimention " +d.width/2 + "  " + d.height/2);
+				System.out.println("lala: "+activeViewer.getVisibleRect());
+				//centerAt(new Point2D.Double(d.width/2, d.height/2));
 				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+				
 				zoomToWindow(activeViewer);
+				
 			}
 		});
 		mnVisualize.add(mntmZoomInWindow);
@@ -1842,6 +1852,40 @@ public class HecataeusViewer {
 			}
 		});
 		mnMetsics.add(mntmGraphEdgeData);
+		
+		
+		JMenuItem mntmGraphSpace = new JMenuItem("Graph Space");
+		mntmGraphSpace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String message ="Total used space";
+				double maxX = graph.getVertices().get(0).getLocation().getX(), minX = graph.getVertices().get(0).getLocation().getX(), maxY = graph.getVertices().get(0).getLocation().getY(), minY = graph.getVertices().get(0).getLocation().getY();
+				for(VisualNode node: graph.getVertices()){
+					if(node.getVisible()){
+						if(node.getLocation().getX()>maxX){
+							maxX=node.getLocation().getX();
+						}
+						if(node.getLocation().getX()<minX){
+							minX = node.getLocation().getX();
+						}
+						if(node.getLocation().getY()>maxY){
+							maxY = node.getLocation().getY();
+						}
+						if(node.getLocation().getY()<minY){
+							minY = node.getLocation().getY();
+						}
+					}
+				}
+				//Rectangle2D rec = new Rectangle2D.Double(Math.abs(maxY-minY),Math.abs(maxX-minX),0,0);
+				double area = Math.abs(maxY-minY)*Math.abs(maxX-minX);
+				
+				Dimension viwerDim = HecataeusViewer.getActiveViewer().getSize();
+				double w = viwerDim.getWidth(), h = viwerDim.getHeight();
+				System.out.println("screen x " + w +" screen Y "+ h +"  minx " + minX + " MIn y " + minY + " maxX  " + maxX + " maxY  " + maxY);
+				message += "\nTotal sreen area (w*h):  "+ w*h+"\narea used by graph: "  +area + "\nPersent%: "+(area*100)/(w*h);
+				JOptionPane.showMessageDialog(frame, message, "area", JOptionPane.INFORMATION_MESSAGE );
+			}
+		});
+		mnMetsics.add(mntmGraphSpace);
 		
 		JMenuItem mntmOutpoutForModule = new JMenuItem("Output For Module Nodes");
 		mntmOutpoutForModule.addActionListener(new ActionListener() {
