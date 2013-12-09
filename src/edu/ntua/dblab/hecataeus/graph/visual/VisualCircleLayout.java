@@ -217,6 +217,12 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 						
 			Point2D coord = transform(q);
 			sAngle+=Angle;
+//			if(Angle*a>Math.toRadians(180)){
+//				coord.setLocation(Math.cos((-1)*Angle*a)*qRad+cx, Math.sin((-1)*Angle*a)*qRad+cy);
+//
+//			}else{
+//				coord.setLocation(Math.cos(Angle*a)*qRad+cx, Math.sin(Angle*a)*qRad+cy);
+//			}
 			coord.setLocation(Math.cos(Angle*a)*qRad+cx, Math.sin(Angle*a)*qRad+cy);
 
 			q.setLocation(coord);
@@ -465,6 +471,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected ArrayList<VisualNode> getSortedArray(Map<ArrayList<VisualNode>, Integer> sorted, ArrayList<VisualNode>rc){
 		ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>();
 		for(Entry e : sorted.entrySet()){
+			System.out.println("print  " + e.getValue()+"   " +e.getKey());
 			ArrayList<VisualNode> temp = ((ArrayList<VisualNode>)e.getKey());
 			for(VisualNode node : temp){
 				if(!sortedR.contains(node)){
@@ -545,22 +552,42 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	
 	protected void placeOutQueries(List<VisualNode> nodes, double qRad, double cx, double cy){
 		double jqRad = qRad + 40;
-		double c = 0;
+		ArrayList<VisualNode>  allR = new ArrayList<VisualNode>();
 		for(VisualNode v : outQ(nodes)){
+			double c = 0;
 			ArrayList<VisualNode> myR = new ArrayList<VisualNode>();
 			for(VisualEdge myEdge : v.getOutEdges()){
 				if(myEdge.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
 					myR.add(myEdge.getToNode());
+					allR.add(myEdge.getToNode());
 				}
 			}
+			
 			double myAngle = 0.0;
 			for(VisualNode rel : myR){
+//				if(myAngle + rel.getNodeAngle() < 2*Math.PI){
+//					myAngle += rel.getNodeAngle();
+//				}else{
+//					//myAngle += 2*Math.PI - rel.getNodeAngle();
+//					myAngle = Math.PI +(myAngle + rel.getNodeAngle());
+//				}
 				myAngle += rel.getNodeAngle();
 			}
-			myAngle = myAngle/2 + c;
-			System.out.println("my angle  " + Math.toDegrees(myAngle));
-			c += 0.09;
+		//	if(allR.contains(myR)){
+		//		c += 0.09;
+		//	}
+			if(myAngle<2*Math.PI){
+				myAngle = myAngle/2 + c;
+			}
+			else{
+				myAngle = myAngle + c;
+			}
+//			myAngle = myAngle/2 + c;
 			
+			c += 0.09;
+//			if(myAngle>Math.toRadians(180)){
+//				myAngle = 2*Math.PI-myAngle;
+//			}
 			Point2D coord = transform(v);
 			double jqx = Math.cos(myAngle)*jqRad+(cx);
 			double jqy = Math.sin(myAngle)*jqRad+(cy);
@@ -568,6 +595,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 
 			v.setLocation(coord);
 			v.setNodeAngle(myAngle);
+//			allR.addAll(myR);
 			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 			HecataeusViewer.getActiveViewer().repaint();
 		}
@@ -595,6 +623,34 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 					set.put(QtR, set.get(QtR)+1);
 				}else{
 					set.put(QtR, 1);
+				}
+			}
+		}
+		return set;
+	}
+	
+	protected Map<ArrayList<VisualNode>, Integer> getVSimilarity(ArrayList<VisualNode> vc){
+		Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>();
+		
+		for(VisualNode v : vc){
+			ArrayList<VisualEdge> vEdges = new ArrayList<VisualEdge>(v.getOutEdges());
+			int toRelation = 0;
+			for(VisualEdge ed : vEdges){
+				if(ed.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
+					toRelation++;
+				}
+			}
+			if(toRelation > 1){
+				ArrayList<VisualNode> VtR = new ArrayList<VisualNode>();
+				for(VisualEdge ed : vEdges){
+					if(ed.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
+						VtR.add(ed.getFromNode());
+					}
+				}
+				if(set.containsKey(VtR)){
+					set.put(VtR, set.get(VtR)+1);
+				}else{
+					set.put(VtR, 1);
 				}
 			}
 		}

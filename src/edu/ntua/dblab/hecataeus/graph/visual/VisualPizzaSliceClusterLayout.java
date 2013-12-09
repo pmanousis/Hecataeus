@@ -63,11 +63,15 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
 	        
 	        int singleQinCl = nodes.size() - rc.size() - outQ(nodes).size() - vc.size() - queriesWithViews(qc).size();
 	        Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>(getRSimilarity(qc));
+	        Map<ArrayList<VisualNode>, Integer> viewSet = new HashMap<ArrayList<VisualNode>, Integer>(getVSimilarity(vc));
 	        if(relationsInCluster(nodes).size()>4){
 	        	Map<ArrayList<VisualNode>, Integer> sorted = sortByComparator(set);
+	        	Map<ArrayList<VisualNode>, Integer> sortedViews = sortByComparator(viewSet);
 	            ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>(getSortedArray(sorted, rc));
-	            rc.clear();
-	            rc.addAll(sortedR);
+	            ArrayList<VisualNode> sortedV = new ArrayList<VisualNode>(getSortedArray(sortedViews, vc));
+	            rc.clear();vc.clear();
+	            rc.addAll(sortedR);vc.addAll(sortedV);
+	            
 	        }
 	 
 	        double relationRad = 1.9*getSmallRad(rc);
