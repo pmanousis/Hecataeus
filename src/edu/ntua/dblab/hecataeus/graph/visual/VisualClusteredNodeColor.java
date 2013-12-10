@@ -88,28 +88,34 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 					}
 				}
 				if(node.getType() != NodeType.NODE_TYPE_RELATION){
-					VisualFileColor vfs = new VisualFileColor();
-					if(vfs.getFileNames()!=null){
-						if(file == null){
-							this.color = 5;
-						}else{
-							int col = vfs.getFileNames().indexOf(file.getName());
-							//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
-							
-							if(col == -1){
-								 System.out.println("WTF = what a terible failure");
-								 this.color = -1;
-							}
-							else{
-								this.color = (col+1)%6; 
-								node.setNodeColor(getColor(this.color));
-							}
-						}
+					if(node.getType() == NodeType.NODE_TYPE_VIEW){
+						//ta views einai prasina
+						this.color = 150;
+						node.setNodeColor(getColor(this.color));
 					}
 					else{
-						this.color = 0; 
+						VisualFileColor vfs = new VisualFileColor();
+						if(vfs.getFileNames()!=null){
+							if(file == null){
+								this.color = 5;
+							}else{
+								int col = vfs.getFileNames().indexOf(file.getName());
+								//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
+								
+								if(col == -1){
+									 System.out.println("WTF = what a terible failure");
+									 this.color = -1;
+								}
+								else{
+									this.color = (col+1)%6; 
+									node.setNodeColor(getColor(this.color));
+								}
+							}
+						}
+						else{
+							this.color = 0; 
+						}
 					}
-					
 				}
 				else{//ta relation einai grey
 					this.color = 100;
@@ -156,8 +162,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			
 			
 			
-			case 100: return new Color (96,96,96);
-			
+			case 100: return new Color (96,96,96);//relations
+			case 150: return new Color(46,139,87);//views
 			case 200:  return new Color (0,0,0);
 			
 			default : return new Color(0,0,0);

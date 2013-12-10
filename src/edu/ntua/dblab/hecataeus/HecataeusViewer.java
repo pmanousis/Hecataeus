@@ -26,10 +26,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.imageio.ImageIO;
@@ -80,7 +78,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStrokeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
@@ -99,33 +96,21 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
 
 public class HecataeusViewer {
 	
-	// a dummy counter for disposing or exiting application  
-	private static int countOpenViewers = 0;
+	// a dummy counter for tabs  
 	public static int countOpenTabs = 0;
-	private static int cnt = 0;
-	private static int cnt2 = 0;
-	private static int cnt3 = 0;
-	private static int cnt4 = 0;
-	private static int cnt5 = 0;
-	private static int cnt6 = 0;
-	private static Forest<VisualNode,VisualEdge> evaGraph;
 	// the visual graph object
 /**@author pmanousi Needed for topologicalTravel so became public. */
 	public static VisualGraph graph;
-//	public VisualSubGraph grafos;
 	public Viewers viewer;
 	
 	protected Container content;
 	protected HecataeusProjectConfiguration projectConf;
 	protected HecataeusPolicyManagerGUI policyManagerGui;
 	protected HecataeusEventManagerGUI eventManagerGui;
+	protected HecataeusFileColorListGUI fileColorListGui;
 	protected VisualNode epilegmenosKombos;
-	
 	protected JTabbedPane managerTabbedPane;
 	protected JTabbedPane tabbedPane;
-	
-	//private ClosableTabbedPane tabbedPane;
-	
 	protected static JTabbedPane sourceTabbedPane;
 	protected static int sourceTabbedPaneIndex;
 	public static JFrame frame;
@@ -142,39 +127,22 @@ public class HecataeusViewer {
 	// the visual component
 	public static VisualizationViewer<VisualNode, VisualEdge> vv;
 	protected VisualizationViewer<VisualNode, VisualEdge> vv1;
-
-	
 	protected static List<VisualizationViewer<VisualNode, VisualEdge>> viewers;
-	
 	private static final String frameIconUrl = "resources/hecataeusIcon.png";
 	protected Viewers VisualizationViewer;
 	protected MouseListener ml;
-	
 	protected VisualNodeStroke<Integer,Number> vsh;
-	protected VisualNodeStrokeColor vnsc;
-
-//	protected VisualEdgeColor ec;
-	
-	
 	public JList<String> fileColorList;
 	private DefaultListModel<String> listModel;
 	private JPanel panel_3;
-	
-//	protected final static Object TRANSPARENCY = "transparency";
-//	public static Map<VisualNode,Number> transparency = new HashMap<VisualNode,Number>();
-	
 	public static  List<VisualGraph> graphs;
-	
-	public static int selectionAlg = 0;
-//	public JSlider edgeBetweennessSlider;
-//	public JToggleButton groupVertices;
+
 	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
 	//	myViewer = new HecataeusViewer(new VisualGraph());
-		
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -200,7 +168,6 @@ public class HecataeusViewer {
 	
 
 	public void startHecataeus(){
-		
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -230,53 +197,29 @@ public class HecataeusViewer {
 		
 		projectConf=new HecataeusProjectConfiguration();
 		this.graph = inGraph;
-		
 		this.myViewer = myViewer;
 		graphs = new ArrayList<VisualGraph>();
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize(); 
-		
-		viewers = new ArrayList<VisualizationViewer<VisualNode, VisualEdge>>() ;
 
+		viewers = new ArrayList<VisualizationViewer<VisualNode, VisualEdge>>() ;
 		// the layout
 		layout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-		
 		layout.setSize(prefferedSize);
-//		subLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-		//the visualization viewer
-		
+//		subLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);	
 		VisualizationViewer = new Viewers();
-		
 		vv = VisualizationViewer.SetViewers(layout, this);
 		vv.setName("full zoom");
-	
-		
 		viewers.add(vv);
-		
-		
-		countOpenViewers ++;
-		
 		/**
 		 * @author pmanousi
 		 * Inform mouse plugins for the viewer (and have access to epilegmenosKombos in order to update managers. 
 		 */
 		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
-		vv.setGraphMouse(gm);
-		
+		vv.setGraphMouse(gm);		
 		gm.HecataeusViewerPM(this);
-		
-
-		
-				
 		vsh = new VisualNodeStroke<Integer,Number>(vv.getPickedVertexState(), graph, vv);
 		vv.getRenderContext().setVertexStrokeTransformer(vsh);
-		
-		vnsc = new VisualNodeStrokeColor(vv.getPickedVertexState());
-
 		initialize();
-		
-//		for(VisualNode nodes : graph.getVertices()) {
-//			transparency.put(nodes, new Double(0.9));
-//		}
 	}
 
 
@@ -419,17 +362,22 @@ public class HecataeusViewer {
 				}
 			}
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
-			VisualCircleLayout vcl = new VisualCircleLayout(this.graph);
 			
 			
-			
-			List<String> files = new ArrayList<String>(vcl.getFileNames());
-			listModel.removeAllElements();
-			for(String f : files){
-				listModel.addElement(f);
-			}
-			fileColorList.setCellRenderer(new HecataeusjListCellColor());
-			panel_3.repaint();
+			fileColorListGui.createPanel(this.graph);
+			fileColorListGui.repaint();
+			//panel_colors.repaint();
+//			VisualCircleLayout vcl = new VisualCircleLayout(this.graph);
+//			
+//			
+//			
+//			List<String> files = new ArrayList<String>(vcl.getFileNames());
+//			listModel.removeAllElements();
+//			for(String f : files){
+//				listModel.addElement(f);
+//			}
+//			fileColorList.setCellRenderer(new HecataeusjListCellColor());
+//			panel_3.repaint();
 			policyManagerGui.UPDATE();
 			//TODO theloun allages edw
 			//get new layout's positions
@@ -536,10 +484,8 @@ public class HecataeusViewer {
 	private void closeProject()
 	{
 		layout.getGraph().clear();
-		//containerLayout.getGraph().clear();
 		graph.clear();
 		vv.repaint();
-		//vvContainer.repaint();
 		projectConf.clearProject();
 		policyManagerGui.UPDATE();
 		eventManagerGui.UPDATE();
@@ -814,11 +760,7 @@ public class HecataeusViewer {
 				public void actionPerformed(ActionEvent e) {
 					// update the top layout of the graph
 					if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
-						
 						VisualEdgeBetweennessClustering.south = new JPanel();
-//							VisualEdgeBetweennessClustering.south = new SLPanel();
-//							VisualEdgeBetweennessClustering.south.setTweenManager(SLAnimator.createTweenManager());
-						
 						frame.getContentPane().add(VisualEdgeBetweennessClustering.south, BorderLayout.SOUTH);
 						frame.validate();
 						frame.repaint();
@@ -855,10 +797,6 @@ public class HecataeusViewer {
 		}
 		
 		mnVisualize.add(mnAlgorithms);
-		
-		
-
-		
 		mnAlgorithms.addSeparator();
 		
 		JMenuItem mntmRevert = new JMenuItem("Revert");
@@ -873,6 +811,12 @@ public class HecataeusViewer {
 			}
 		});
 		mnAlgorithms.add(mntmRevert);
+		
+		/*
+		 * eixe ginei gia na zwgrafizei me D3 douleuei alla telika to paratisame
+		 * 
+		 */
+		
 		
 //		JMenuItem mntmWeb = new JMenuItem("web");
 //		mntmWeb.addActionListener(new ActionListener() {
@@ -985,10 +929,9 @@ public class HecataeusViewer {
 
 		
 		JCheckBoxMenuItem chckbxmntmBigNodes = new JCheckBoxMenuItem("Big Nodes");
-		chckbxmntmBigNodes.setSelected(true);
+		chckbxmntmBigNodes.setSelected(false);
 		chckbxmntmBigNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-//				nodeSize = true;
 				AbstractButton aButton = (AbstractButton) arg0.getSource();
 				boolean selected = aButton.getModel().isSelected();
 				if (selected) {
@@ -1002,48 +945,12 @@ public class HecataeusViewer {
 				}
 			}
 		});
-//		nodeSize = false;
-//		new VisualNodeShape();
-//		vv.repaint();
-		
-		
-		chckbxmntmBigNodes.setSelected(true);
 		mnVisualize.add(chckbxmntmBigNodes);
-		JMenuItem mntmColorCollapse = new JMenuItem("color list");
+		vv.repaint();
+		
+		JMenuItem mntmColorCollapse = new JMenuItem("colapse");
 		mntmColorCollapse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				evaGraph = new DelegateForest<VisualNode,VisualEdge>();
-				
-				for(VisualNode v : graph.getVertices()){
-					if(v.getType() == NodeType.NODE_TYPE_RELATION){
-						evaGraph.addVertex(v);
-						for(VisualEdge ak : v.getInEdges()){
-							if(ak.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
-								if(!evaGraph.containsEdge(ak)){
-									evaGraph.addEdge(ak, v, ak.getFromNode());
-								}
-								
-							}
-						}
-					}
-					else if(v.getType() == NodeType.NODE_TYPE_QUERY){
-						evaGraph.addVertex(v);
-						for(VisualEdge ak : v.getOutEdges()){
-							if(ak.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
-								if(!evaGraph.containsEdge(ak)){
-									evaGraph.addEdge(ak, v, ak.getToNode());
-								}
-							}
-						}
-					}
-				}
-				System.out.println(evaGraph);
-				Collection<VisualNode> roots = TreeUtils.getRoots((Forest<VisualNode, VisualEdge>) evaGraph);
-				System.out.println(roots);
-				System.out.println(roots.size());
-				System.out.println(evaGraph.getVertexCount());
-				
-				
 //				VisualNode eva = new VisualNode("eva", NodeType.NODE_TYPE_VIEW);
 //				
 //				layout.getGraph().addVertex(eva);
@@ -2529,25 +2436,25 @@ public class HecataeusViewer {
 		});
 		mnHelp.add(mntmAboutHecataeus);
 		
-		panel_3 = new JPanel();
-		panel_3.setBorder(BorderFactory.createTitledBorder("Colors"));
-		listModel = new DefaultListModel<String>();
-//		listModel.addElement("eva");
-		//JScrollPane listScrollPane = new JScrollPane();
-		fileColorList = new JList<String>(listModel);
-		fileColorList.setBackground(UIManager.getColor("background"));
-		fileColorList.setVisibleRowCount(57);
-		fileColorList.setOpaque(true);
-		fileColorList.setValueIsAdjusting(false);
-		fileColorList.setSize(20,700);
-	//	listScrollPane.setSize(100, 700);
-	//	listScrollPane.setViewportView(fileColorList);
-
-		panel_3.add(fileColorList);
-		frame.getContentPane().add(panel_3, "cell 0 0,growy");
-		panel_3.setSize(20, 700);
-		//panel_3.setVisible(false);
-		
+//		panel_3 = new JPanel();
+//		panel_3.setBorder(BorderFactory.createTitledBorder("Colors"));
+//		listModel = new DefaultListModel<String>();
+////		listModel.addElement("eva");
+//		//JScrollPane listScrollPane = new JScrollPane();
+//		fileColorList = new JList<String>(listModel);
+//		fileColorList.setBackground(UIManager.getColor("background"));
+//		fileColorList.setVisibleRowCount(57);
+//		fileColorList.setOpaque(true);
+//		fileColorList.setValueIsAdjusting(false);
+//		fileColorList.setSize(20,700);
+//	//	listScrollPane.setSize(100, 700);
+//	//	listScrollPane.setViewportView(fileColorList);
+//
+//		panel_3.add(fileColorList);
+//		frame.getContentPane().add(panel_3, "cell 0 0,growy");
+//		panel_3.setSize(20, 700);
+//		//panel_3.setVisible(false);
+//		
 		
 		JSplitPane splitPane = new JSplitPane();
 		frame.getContentPane().add(splitPane, "cell 2 0,growy");
@@ -2579,7 +2486,8 @@ public class HecataeusViewer {
 		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
-
+		fileColorListGui = new HecataeusFileColorListGUI(this);
+		
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createTitledBorder("PMG"));
@@ -2588,50 +2496,11 @@ public class HecataeusViewer {
 		JPanel panel_2 = new JPanel();
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
 		
+		JPanel panel_colors = new JPanel();
+		managerTabbedPane.addTab("Colors", null, fileColorListGui, null);
+		
 		splitPane.setDividerLocation(0.8);
 		splitPane.setResizeWeight(1);
-
-		
-		
-//		
-//		
-//		groupVertices = new JToggleButton("Group Clusters");
-//		
-//		//Create slider to adjust the number of edges to remove when clustering
-//		edgeBetweennessSlider = new JSlider(JSlider.HORIZONTAL);
-//		edgeBetweennessSlider.setBackground(Color.WHITE);
-//		edgeBetweennessSlider.setPreferredSize(new Dimension(450, 50));
-//		edgeBetweennessSlider.setPaintTicks(true);
-//		edgeBetweennessSlider.setMaximum(graph.getEdgeCount());
-//		edgeBetweennessSlider.setMinimum(0);
-//		edgeBetweennessSlider.setValue(0);
-//		edgeBetweennessSlider.setMajorTickSpacing(10);
-//		edgeBetweennessSlider.setPaintLabels(true);
-//		edgeBetweennessSlider.setPaintTicks(true);
-//		
-//		
-//		final JPanel eastControls = new JPanel();
-//		eastControls.setOpaque(true);
-//		eastControls.setLayout(new BoxLayout(eastControls, BoxLayout.Y_AXIS));
-//		eastControls.add(Box.createVerticalGlue());
-//		eastControls.add(edgeBetweennessSlider);
-//		
-//		final String COMMANDSTRING = "Edges removed for clusters: ";
-//		final String eastSize = COMMANDSTRING + edgeBetweennessSlider.getValue();
-//		
-//		final TitledBorder sliderBorder = BorderFactory.createTitledBorder(eastSize);
-//		eastControls.setBorder(sliderBorder);
-//		//eastControls.add(eastSize);
-//		eastControls.add(Box.createVerticalGlue());
-//		
-//		JPanel south = new JPanel();
-//		JPanel grid = new JPanel(new GridLayout(2,1));
-//		grid.add(groupVertices);
-//		south.add(grid);
-//		south.add(eastControls);
-//		
-//		frame.getContentPane().add(south,"south");
-
 	}
 	
 	private JPanel createToolsPanel()
