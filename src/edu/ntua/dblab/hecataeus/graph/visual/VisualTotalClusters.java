@@ -6,6 +6,10 @@ public class VisualTotalClusters {
 
 	private static ArrayList<VisualCluster> clusters = new ArrayList<VisualCluster>();
 	
+	public VisualTotalClusters(int i){
+		
+	}
+	
 	public VisualTotalClusters() {
 		if(this.clusters==null){
 			this.clusters = new ArrayList<VisualCluster>();
@@ -27,5 +31,16 @@ public class VisualTotalClusters {
 			data += cl.getClusterId()+ "\t" +cl.getClusterRad() + "\t" + cl.getInterClusterCrossings() + "\t" + cl.getLineLength() + "\n"; 
 		}
 		return data;
+	}
+	/*
+	 * get total area covered by clusters
+	 * 
+	 */
+	public double getTotalArea(){
+		double area = 0;
+		for(VisualCluster cl : this.clusters){
+			area += cl.getArea();
+		}
+		return area;
 	}
 }

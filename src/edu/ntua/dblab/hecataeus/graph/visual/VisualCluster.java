@@ -17,6 +17,7 @@ public class VisualCluster {
 	private double cx;
 	private double cy;
 	private int id;
+	private double area;
 	private double lineLenght = 0;
 	
 	private int edgeCrossCluster = 0;
@@ -30,6 +31,12 @@ public class VisualCluster {
 		this.cy = y;
 		this.id = id;
 	}
+	
+	protected double getArea(){
+		return Math.PI*Math.pow(this.rad, 2);
+	}
+	
+	
 	
 	protected double getClusterRad(){
 		return this.rad;

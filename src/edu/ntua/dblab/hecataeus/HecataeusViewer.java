@@ -1843,7 +1843,7 @@ public class HecataeusViewer {
 		JMenuItem mntmGraphEdgeData = new JMenuItem("Graph Cluster Data");
 		mntmGraphEdgeData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String message = "Cluster ID: \t Cluster Rad: \t Cluster edge crossings \t Cluster Line Length  \n";
+				String message = "Cluster ID: \t Cluster Rad: \t Cluster edge crossings \t Cluster Line Length\n";
 				
 				VisualTotalClusters vtc = new VisualTotalClusters();
 				message += vtc.getClustersData();
@@ -1858,7 +1858,10 @@ public class HecataeusViewer {
 		mntmGraphSpace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String message ="Total used space";
-				double maxX = graph.getVertices().get(0).getLocation().getX(), minX = graph.getVertices().get(0).getLocation().getX(), maxY = graph.getVertices().get(0).getLocation().getY(), minY = graph.getVertices().get(0).getLocation().getY();
+				System.out.println("layout S   " +layout.getSize());
+				Dimension viwerDim = layout.getSize();
+				double w = viwerDim.getWidth(), h = viwerDim.getHeight();
+				double maxX = 0, minX = w, maxY = 0, minY = h;
 				for(VisualNode node: graph.getVertices()){
 					if(node.getVisible()){
 						if(node.getLocation().getX()>maxX){
@@ -1875,14 +1878,19 @@ public class HecataeusViewer {
 						}
 					}
 				}
-				//Rectangle2D rec = new Rectangle2D.Double(Math.abs(maxY-minY),Math.abs(maxX-minX),0,0);
-				double area = Math.abs(maxY-minY)*Math.abs(maxX-minX);
-				
-				Dimension viwerDim = HecataeusViewer.getActiveViewer().getSize();
-				double w = viwerDim.getWidth(), h = viwerDim.getHeight();
-				System.out.println("screen x " + w +" screen Y "+ h +"  minx " + minX + " MIn y " + minY + " maxX  " + maxX + " maxY  " + maxY);
-				message += "\nTotal sreen area (w*h):  "+ w*h+"\narea used by graph: "  +area + "\nPersent%: "+(area*100)/(w*h);
-				JOptionPane.showMessageDialog(frame, message, "area", JOptionPane.INFORMATION_MESSAGE );
+				Point2D myMaxX= new Point2D.Double(maxX,0);
+				Point2D myMinX= new Point2D.Double(minX,0);
+				Point2D myMaxY= new Point2D.Double(0,maxY);
+				Point2D myMinY= new Point2D.Double(0,minY);
+				double distX = myMaxX.distance(myMinX);
+				double distY = myMaxY.distance(myMinY);
+				double area = distX*distY;
+				VisualTotalClusters vtc = new VisualTotalClusters(0);
+				message += "\nArea used by graph: "  +area;
+				message += "\nTotal area occupied by clusters: "+vtc.getTotalArea();
+				message += "\nPersent% "+((100*vtc.getTotalArea())/area);
+				//JOptionPane.showMessageDialog(frame, message, "area", JOptionPane.INFORMATION_MESSAGE );
+				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Area", message);
 			}
 		});
 		mnMetsics.add(mntmGraphSpace);

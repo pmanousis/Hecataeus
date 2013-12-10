@@ -29,6 +29,9 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 	private List<VisualNode> RQV;
 	protected VisualCircleLayout vcl;
 	private VisualTotalClusters clusterList;
+	
+	public double totalArea=0;
+	
 	protected VisualCirclingClustersLayout(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
@@ -140,6 +143,7 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		VisualCluster cluster = new VisualCluster(qRad, rc, vc, qc, cx, cy, clusterId);
 		clusterList.addCluster(cluster);
 		cluster.printInClusterEdges();
+		totalArea+=cluster.getArea();
 		edgelenngthforGraph += cluster.getLineLength();
 	}
 	
@@ -195,33 +199,30 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 
 		
 
-		double bigCircleRad = 0.0;
-		double bigClusterRad = 0.0;
+		double bigCircleRad = 0.0, tempCircleRad=0;
 //		System.out.println(sublistofClusters);
 		
-		
 		for(ArrayList<ArrayList<VisualNode>> listaC: sublistofClusters){
-			ArrayList<ArrayList<VisualNode>> tmp ;
-			if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
-				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)+1));
+			
+			double periferia=0;
+			for(ArrayList<VisualNode> lista : listaC)
+			{
+				periferia+=getSmallRad(lista);
+			}
+			
+			tempCircleRad=bigCircleRad+periferia/Math.PI;
+			if(tempCircleRad<bigCircleRad+getSmallRad(listaC.get(listaC.size()-1)))
+			{
+				tempCircleRad=bigCircleRad+getSmallRad(listaC.get(listaC.size()-1));
+			}
+			
+			if(periferia > tempCircleRad){
+				bigCircleRad=periferia*1.2;
 			}
 			else{
-				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)));	
+				bigCircleRad=tempCircleRad;
 			}
-
-			if(tmp.size()>1&& listaC.size()>1){
-				bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
-				bigCircleRad = (bigClusterRad)*2;
-			}
-			else{
-				bigClusterRad += getSmallRad(listaC.get(0));
-				bigCircleRad = (bigClusterRad)*2;
-			}
-			
-//			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
-			
-			
-			
+		
 			double angle = 0.0, sum = 0.0;
 			int a = 0;
 			for(ArrayList<VisualNode> lista : listaC){

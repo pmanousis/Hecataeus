@@ -183,8 +183,8 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
 					temp = 0.9;
 				}
 				angle = (Math.acos(temp))*2;
-				double cx = Math.cos((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 + (w/2);// 1.8 is used for white space borders
-				double cy =	Math.sin((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 + (h/2);
+				double cx = Math.cos((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8;// 1.8 is used for white space borders
+				double cy =	Math.sin((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8;
 				System.out.println("center angle " + ((sum+angle/2)/2*Math.PI));
 				sum+=angle;
 				circles(nodes, cx, cy);

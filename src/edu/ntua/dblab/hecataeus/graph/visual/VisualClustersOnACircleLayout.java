@@ -228,8 +228,8 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 				temp = 0.9;
 			}
 			angle = (Math.acos( temp))*2;   // 0.94 is used simulate strait lines to curves
-			double cx = Math.cos(sum+angle/2) * myRad*1.8+(w/2);// 1.8 is used for white space borders
-			double cy =	Math.sin(sum+angle/2) * myRad*1.8+(h/2);
+			double cx = Math.cos(sum+angle/2) * myRad*1.8;// 1.8 is used for white space borders
+			double cy =	Math.sin(sum+angle/2) * myRad*1.8;
 			Point2D coord1 = transform(nodes.get(0));
 			coord1.setLocation(cx, cy);
 
