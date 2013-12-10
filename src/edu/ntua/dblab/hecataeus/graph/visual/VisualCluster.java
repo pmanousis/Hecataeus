@@ -39,7 +39,8 @@ public class VisualCluster {
 	
 	
 	protected double getClusterRad(){
-		return this.rad;
+		double radToReturn = (double) Math.round(this.rad * 100) / 100;
+		return radToReturn;
 	}
 	
 	protected ArrayList<VisualNode> getRelationsInCluster(){
@@ -147,16 +148,12 @@ public class VisualCluster {
 		lineLenght = lineLenght/myEdges.size();
 		this.lineLenght = this.lineLenght/2;
 		this.edgeCrossCluster = this.edgeCrossCluster/2;
-//		
-//		
-//			System.out.println("avg mikos " + lineLenght);
-//			System.out.println((this.edgeCrossCluster));
-
 	}
 	
 	protected double getLineLength(){
 		printInClusterEdges();
-		return this.lineLenght;
+		double length = (double) Math.round(lineLenght * 100) / 100;
+		return length;
 	}
 	
 	public int getInterClusterCrossings(){

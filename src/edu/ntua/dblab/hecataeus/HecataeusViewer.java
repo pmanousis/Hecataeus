@@ -3,7 +3,6 @@ package edu.ntua.dblab.hecataeus;
 
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -20,7 +19,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -71,7 +69,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
-import edu.ntua.dblab.hecataeus.graph.visual.MyDefaultEdgeLaberRenderer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
@@ -81,7 +78,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualGraphEdgeCrossings;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeNeighborColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStrokeColor;
@@ -156,8 +152,7 @@ public class HecataeusViewer {
 	
 	protected VisualNodeStroke<Integer,Number> vsh;
 	protected VisualNodeStrokeColor vnsc;
-	protected MyDefaultEdgeLaberRenderer er;
-	protected VisualNodeNeighborColor nnc;
+
 //	protected VisualEdgeColor ec;
 	
 	
@@ -165,8 +160,8 @@ public class HecataeusViewer {
 	private DefaultListModel<String> listModel;
 	private JPanel panel_3;
 	
-	protected final static Object TRANSPARENCY = "transparency";
-	public static Map<VisualNode,Number> transparency = new HashMap<VisualNode,Number>();
+//	protected final static Object TRANSPARENCY = "transparency";
+//	public static Map<VisualNode,Number> transparency = new HashMap<VisualNode,Number>();
 	
 	public static  List<VisualGraph> graphs;
 	
@@ -277,17 +272,11 @@ public class HecataeusViewer {
 		
 		vnsc = new VisualNodeStrokeColor(vv.getPickedVertexState());
 
-		er = new MyDefaultEdgeLaberRenderer(Color.BLUE, Color.GREEN);
-		vv.getRenderContext().setEdgeLabelRenderer(er);
-				
 		initialize();
 		
-		for(VisualNode nodes : graph.getVertices()) {
-			transparency.put(nodes, new Double(0.9));
-		}
-		
-		nnc = new VisualNodeNeighborColor(vv.getPickedVertexState());
-		vv.getRenderContext().setVertexFillPaintTransformer(nnc);
+//		for(VisualNode nodes : graph.getVertices()) {
+//			transparency.put(nodes, new Double(0.9));
+//		}
 	}
 
 
@@ -729,13 +718,7 @@ public class HecataeusViewer {
 		mntmZoomInWindow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-				
-				
-				
 				Dimension d = ((VisualGraph)activeViewer.getGraphLayout().getGraph()).getSize();
-//				System.out.println("dimention " +d.width + "  " + d.height);
-//				System.out.println("dimention " +d.width/2 + "  " + d.height/2);
-				System.out.println("lala: "+activeViewer.getVisibleRect());
 				//centerAt(new Point2D.Double(d.width/2, d.height/2));
 				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 				
@@ -827,110 +810,48 @@ public class HecataeusViewer {
 		JMenu mnAlgorithms = new JMenu("Algorithms");
 		
 		for (final VisualLayoutType layoutType : VisualLayoutType.values()) {
-			if(layoutType == VisualLayoutType.ClusteredCircleLayout){
-				JMenu mnClusteredCircleLayout = new JMenu("Clustered Circle Layout");
-				mnAlgorithms.add(mnClusteredCircleLayout);
-				
-				JMenuItem mntmQueries = new JMenuItem("Queries");
-				mntmQueries.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutQ;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmQueries);
-				
-				JMenuItem mntmViews = new JMenuItem("Views");
-				mntmViews.addActionListener(new ActionListener() {
-					
-					public void actionPerformed(ActionEvent e) {
-						selectionAlg++;
+			mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
+				public void actionPerformed(ActionEvent e) {
+					// update the top layout of the graph
+					if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
 						
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutV;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-						HecataeusViewer.this.zoomToWindow(activeViewer);
-						frame.repaint();
-					}
-				});
-				mnClusteredCircleLayout.add(mntmViews);
-				
-				JMenuItem mntmRelations = new JMenuItem("Relations");
-				mntmRelations.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutR;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-						zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmRelations);
-				
-				JMenuItem mntmCoC = new JMenuItem("Clusters on a circle");
-				mntmCoC.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-						VisualLayoutType layoutType = VisualLayoutType.ClusteredCircleLayoutC;
-						getLayout(activeViewer).setTopLayoutType(layoutType);
-						HecataeusViewer.this.getLayoutPositions();
-						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-						zoomToWindow(activeViewer);
-					}
-				});
-				mnClusteredCircleLayout.add(mntmCoC);
-			}
-			else{
-				mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
-					public void actionPerformed(ActionEvent e) {
-						// update the top layout of the graph
-						if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
-							
-							VisualEdgeBetweennessClustering.south = new JPanel();
+						VisualEdgeBetweennessClustering.south = new JPanel();
 //							VisualEdgeBetweennessClustering.south = new SLPanel();
 //							VisualEdgeBetweennessClustering.south.setTweenManager(SLAnimator.createTweenManager());
-							
-							frame.getContentPane().add(VisualEdgeBetweennessClustering.south, BorderLayout.SOUTH);
-							frame.validate();
-							frame.repaint();
-							final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-							System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-							getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
-							HecataeusViewer.this.getLayoutPositions();
-							Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-							Point2D c = new Point((int)d.getWidth()/4, (int)d.getHeight()/4);
-							centerAt(c);
-							zoomToWindow(activeViewer);
-						}
-						else{
-							vv.setGraphLayout(layout);
-							if(VisualEdgeBetweennessClustering.south!=null){
-								frame.remove(VisualEdgeBetweennessClustering.south);
-							}
-							frame.repaint();
-							
-							final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-							System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-							
-							getLayout(activeViewer).setTopLayoutType(layoutType);  
-							
-							HecataeusViewer.this.getLayoutPositions();
-							//centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-							Point2D c = new Point(0, 0);
-							centerAt(c);
-							vv.repaint();
-							zoomToWindow(activeViewer);
-						}
+						
+						frame.getContentPane().add(VisualEdgeBetweennessClustering.south, BorderLayout.SOUTH);
+						frame.validate();
+						frame.repaint();
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+						getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
+						HecataeusViewer.this.getLayoutPositions();
+						Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+						Point2D c = new Point((int)d.getWidth()/4, (int)d.getHeight()/4);
+						centerAt(c);
+						zoomToWindow(activeViewer);
 					}
-				});
-			}
+					else{
+						vv.setGraphLayout(layout);
+						if(VisualEdgeBetweennessClustering.south!=null){
+							frame.remove(VisualEdgeBetweennessClustering.south);
+						}
+						frame.repaint();
+						
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+						
+						getLayout(activeViewer).setTopLayoutType(layoutType);  
+						
+						HecataeusViewer.this.getLayoutPositions();
+						//centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+						Point2D c = new Point(0, 0);
+						centerAt(c);
+						vv.repaint();
+						zoomToWindow(activeViewer);
+					}
+				}
+			});
 		}
 		
 		mnVisualize.add(mnAlgorithms);
@@ -1857,7 +1778,7 @@ public class HecataeusViewer {
 		JMenuItem mntmGraphSpace = new JMenuItem("Graph Space");
 		mntmGraphSpace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String message ="Total used space";
+				String message ="";
 				System.out.println("layout S   " +layout.getSize());
 				Dimension viwerDim = layout.getSize();
 				double w = viwerDim.getWidth(), h = viwerDim.getHeight();
@@ -1885,12 +1806,13 @@ public class HecataeusViewer {
 				double distX = myMaxX.distance(myMinX);
 				double distY = myMaxY.distance(myMinY);
 				double area = distX*distY;
+				area = (double) Math.round(area * 100) / 100;
 				VisualTotalClusters vtc = new VisualTotalClusters(0);
-				message += "\nArea used by graph: "  +area;
+				message += "Area used by graph: "  +area;
 				message += "\nTotal area occupied by clusters: "+vtc.getTotalArea();
-				message += "\nPersent% "+((100*vtc.getTotalArea())/area);
-				//JOptionPane.showMessageDialog(frame, message, "area", JOptionPane.INFORMATION_MESSAGE );
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Area", message);
+				message += "\nPersent% "+ Math.round(((100*vtc.getTotalArea())/area)* 100) / 100;
+				JOptionPane.showMessageDialog(frame, message, "Total used space", JOptionPane.INFORMATION_MESSAGE );
+				//final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Total used space", message);
 			}
 		});
 		mnMetsics.add(mntmGraphSpace);

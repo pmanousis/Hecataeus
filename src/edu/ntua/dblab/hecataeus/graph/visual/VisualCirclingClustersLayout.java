@@ -231,16 +231,14 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 				nodes.addAll(lista);
 				//correct angle
 				angle = (2*Math.PI*a)/listaC.size();
-				double cx = Math.cos(angle) * bigCircleRad*1.2 +(w/2);// 1.8 is used for white space borders
+				double cx = Math.cos(angle) * bigCircleRad*1.2;// 1.8 is used for white space borders
 				
-				double cy =	Math.sin(angle) * bigCircleRad*1.2 + (h/2);
+				double cy =	Math.sin(angle) * bigCircleRad*1.2;
 //				System.out.println("ANGLEEE   " + angle);
 				int m = 0;
 				a++;
 				sum+=angle;
 				circles(nodes, cx, cy);
-				
-				
 			}
 			//System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}

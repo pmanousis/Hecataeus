@@ -36,7 +36,7 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 		VisualNode file = null;
 		float alpha = 0.2f;
 		if (picked.isPicked(node)){
-			return new Color(64,224,208);
+			return new Color(255,127,80);
 		}
 		else{
 			Collection<VisualNode> toNodes = new ArrayList<VisualNode>();
@@ -65,7 +65,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 					light_value = 0.6f;
 					Color dark = new Color(0, 1f, dark_value, alpha);
 					Color light = new Color(0, 0, light_value, alpha);
-					return new GradientPaint( 0, 0, Color.GRAY, 10, 0, dark, false);
+					return dark;
+					//return new GradientPaint( 0, 0, Color.GRAY, 10, 0, dark, false);
 				}
 			}
 			for(VisualNode w : fromNodes){
@@ -75,7 +76,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 					light_value = 0.6f;
 					Color dark = new Color(0, 0, dark_value, alpha);
 					Color light = new Color(1f, 0.3f, light_value, alpha);
-					return new GradientPaint( 0, 2, Color.YELLOW, 10, 7.6f, light, false);
+					return light;
+					//return new GradientPaint( 0, 2, Color.YELLOW, 10, 7.6f, light, false);
 				}
 			}
 			if(node.getType().getCategory() == NodeCategory.MODULE ){
