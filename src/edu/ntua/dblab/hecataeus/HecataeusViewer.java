@@ -20,11 +20,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -61,6 +62,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
@@ -68,7 +70,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
@@ -84,9 +86,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
-import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.util.TreeUtils;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
@@ -108,6 +107,7 @@ public class HecataeusViewer {
 	protected HecataeusPolicyManagerGUI policyManagerGui;
 	protected HecataeusEventManagerGUI eventManagerGui;
 	protected HecataeusFileColorListGUI fileColorListGui;
+	public static HecataeusClusterMap hecMap;
 	protected VisualNode epilegmenosKombos;
 	protected JTabbedPane managerTabbedPane;
 	protected JTabbedPane tabbedPane;
@@ -320,7 +320,7 @@ public class HecataeusViewer {
 					this.graphs.add(graph);
 					//TODO theloun allages edw
 					//pass the location of the vertices to the layout of the graph
-					HecataeusViewer.this.setLayout(VisualLayoutType.ClusteredCircleLayoutC, VisualLayoutType.ClusteredCircleLayoutC);
+					HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
 			//		layout = new VisualLayout(graph);
 					
 
@@ -352,13 +352,29 @@ public class HecataeusViewer {
 //
 //						tabbedPane.setTabComponentAt(countOpenTabs, test);
 //						
-						HecataeusViewer.this.setLayout(VisualLayoutType.ClusteredCircleLayoutC, VisualLayoutType.ClusteredCircleLayoutC);
+						HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
 						
 					///	layout = new VisualLayout(graph);
 					}
 					catch (IOException e1) {}
 					catch (SQLException e1) {}
 					catch (Exception e1) {}
+				}
+			}
+			
+			for(VisualNode v : graph.getVertices()){
+				if(v.getVisible()){
+					if(v.getType().getCategory() == NodeCategory.MODULE ){
+						List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
+						for(VisualEdge e : edges){
+							if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
+								if(e.getFromNode().getType() == NodeType.NODE_TYPE_FILE){
+									//System.out.println("TYPE FILE name " + e.getFromNode().getName());
+									v.setFileName(e.getFromNode().getName());
+								}
+							}
+						}
+					}
 				}
 			}
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
@@ -612,6 +628,47 @@ public class HecataeusViewer {
 			}
 		});
 		mnNewMenu.add(mntmCloseProject);
+		
+		
+		JMenuItem mntmExportClusterData = new JMenuItem("Export Cluster Data");
+		mntmExportClusterData.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VisualTotalClusters vtc = new VisualTotalClusters(0);
+				String message = "<html><head><title>Hecataeus</title></head><body>";
+				message+="<h3 style=\"background-color:red;\">Cluster Data</h3>";
+				for(VisualCluster vc : vtc.getClusters()){
+					message+="<tr><h3>Cluster Name: " + vc.getClusterLabel(vc) + "</h3></tr>";
+					message+="<h3>Relations in cluster: </h3>";
+					for(VisualNode v : vc.getRelationsInCluster()){
+						message+="<b>"+v.getName()+"</b>"+"<br>";
+					}
+					message+="<h3>Views in cluster: </h3>";
+					for(VisualNode v : vc.getViewsInCluster()){
+						message+="<b>"+v.getName()+"</b>"+ " from file: " + v.getFileName()+"<br>";
+					}
+					message+="<h3>Queries in cluster: </h3>";
+					for(VisualNode v : vc.getQueriesInCluster()){
+						message+="<b>"+v.getName()+"</b>" + " from file: " + v.getFileName()+"<br>";
+					}
+					message+="<hr>";
+				}
+				message+="</body></html>";
+				
+				JFileChooser chooser = new JFileChooser(projectConf.curPath+"/OTHER");
+				FileFilterImpl filter = new FileFilterImpl("txt","Text File");
+				chooser.addChoosableFileFilter(filter);
+				if ((chooser.showSaveDialog(frame)) == JFileChooser.APPROVE_OPTION) {
+					String fileDescription = chooser.getSelectedFile().getAbsolutePath();
+					if (!fileDescription.endsWith(".html"))
+						fileDescription += ".html";				
+					writeTxtFile(new File(fileDescription),message);
+				}
+				
+				
+			}
+		});
+		mnNewMenu.add(mntmExportClusterData);
+		
 		
 		JMenuItem mntmSaveProject = new JMenuItem("Save Project");
 		mntmSaveProject.addActionListener(new ActionListener() {
@@ -936,11 +993,11 @@ public class HecataeusViewer {
 				boolean selected = aButton.getModel().isSelected();
 				if (selected) {
 					nodeSize = true;
-					new VisualNodeShape(0);
+					new VisualNodeShape();
 					getActiveViewer().repaint();
 				}else{
 					nodeSize = false;
-					new VisualNodeShape(0);
+					new VisualNodeShape();
 					getActiveViewer().repaint();
 				}
 			}
@@ -2487,18 +2544,19 @@ public class HecataeusViewer {
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
 		fileColorListGui = new HecataeusFileColorListGUI(this);
+		hecMap = new HecataeusClusterMap(this);
 		
-		
+		JPanel panel_map = new JPanel();
+		managerTabbedPane.addTab("Map", null, hecMap, null);
+		JPanel panel_colors = new JPanel();
+		managerTabbedPane.addTab("Colors", null, fileColorListGui, null);
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createTitledBorder("PMG"));
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
-		
 		JPanel panel_2 = new JPanel();
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
 		
-		JPanel panel_colors = new JPanel();
-		managerTabbedPane.addTab("Colors", null, fileColorListGui, null);
-		
+
 		splitPane.setDividerLocation(0.8);
 		splitPane.setResizeWeight(1);
 	}
@@ -2763,6 +2821,19 @@ public class HecataeusViewer {
 	}
 	
 	
+	private void writeTxtFile(File file, String message){
+		try {
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(message);
+			bw.close();
+			System.out.println("Done writing");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public void zoomToWindow(VisualizationViewer<VisualNode, VisualEdge> currentViewer){
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer;
 		
@@ -3003,7 +3074,7 @@ public class HecataeusViewer {
 	}
 	
 
-protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
+	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
 		
 		Point2D p;String name = null;
 		Shape r = vv.getBounds();		
@@ -3018,7 +3089,7 @@ protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane testPane = new MyPane(subNodes.get(0), vv1, Sub);
 		vv1.setGraphLayout(subLayout);
-		vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape(0));
+		vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 		String onoma="";
 		onoma+=subNodes.get(0).getName();
 		for(int i=1;i<subNodes.size();i++)

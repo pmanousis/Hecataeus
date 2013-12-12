@@ -30,19 +30,9 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
    
     public Paint transform(VisualNode v)
     {
-    	
- //   	float alpha = HecataeusViewer.transparency.get(v).floatValue();
     	float alpha = 0.7f;
     	if (picked.isPicked(v))
         {
-        	
-        	Color color1 = new Color(0xeb,0xeb,0xeb);
-
-        	Color color2 = new Color(0xa2,0xbd,0xd8);
-        	
-        	GradientPaint gp = new GradientPaint( 0f, 0f, color1, 9f, 1f, color2 , true);
-        	
-            
         	return new Color (64,224,208);
         	//return Color.cyan;
             //return (Paint) new GradientVertexRenderer<Integer, Number>( new Color(175,224,0), new Color(133,170,173), true); 
@@ -121,15 +111,17 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
                 		return new Color(100,255,50);
                 	else if (type==NodeType.NODE_TYPE_ATTRIBUTE)
                 		return Color.LIGHT_GRAY;
-/**
- * @author pmanousi
- */
-else if (type==NodeType.NODE_TYPE_INPUT)
-	return Color.BLUE;
-else if (type==NodeType.NODE_TYPE_OUTPUT)
-	return Color.ORANGE;
-else if (type==NodeType.NODE_TYPE_SEMANTICS)
-	return Color.MAGENTA;
+					/**
+					 * @author pmanousi
+					 */
+					else if (type==NodeType.NODE_TYPE_INPUT)
+						return Color.BLUE;
+					else if (type==NodeType.NODE_TYPE_OUTPUT)
+						return Color.ORANGE;
+					else if (type==NodeType.NODE_TYPE_SEMANTICS)
+						return Color.MAGENTA;
+					else if(type == NodeType.NODE_TYPE_CLUSTER)
+						return new Color(0.3f,0.9f,0.6f, alpha); //67,205,128
                 	else return Color.WHITE;
                 }
         	}

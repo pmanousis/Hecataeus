@@ -30,14 +30,14 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
 	private VisualizationViewer<VisualNode, VisualEdge> Viewer;
-	
+	private double nodeSize; // used only for node type cluster
+	private Color nodeColor;
+	private String label; //used only for node type cluster
+	private String fileName;
 public int size;
 	
-	private Color nodeColor;
 	
-	//private VisualGraph myGraph;
-	//the corresponding EvolutionNode object
-//	private EvolutionNode hecataeusEvolutionNode = null;
+
 	
 	
 	public VisualNode(){
@@ -47,6 +47,9 @@ public int size;
 		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
+		this.nodeSize = 0.0;
+		this.label = "";
+		this.fileName = "";
 //		this.myGraph = graph;
 	}
 	
@@ -73,13 +76,40 @@ public int size;
 		return this.angle;
 	}
 	
+	public void setNodeSize(double size){
+		this.nodeSize = size;
+	}
+	
+	public double getNodeSize(){
+		return this.nodeSize;
+	}
+	
+	public void setNodeLabel(String label){
+		this.label = label;
+	}
+	
+	public String getNodeLabel(){
+		return this.label;
+	}
+	
+	public void setFileName(String name){
+		this.fileName = name;
+	}
+	
+	public String getFileName(){
+		return this.fileName;
+	}
+	
 	public VisualNode(String name, NodeType type) {
 		super(name, type);
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
 		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
 		this.angle = 0.0;
-//		this.myGraph = graph;
+		this.nodeColor = new Color(255,255,255);
+		this.nodeSize = 0.0;
+		this.label = "";
+		this.fileName = "";
 	}
 	
 
@@ -128,6 +158,10 @@ public int size;
 		node.setStatus(this.getStatus(),true);
 		node._inEdges=this.getInEdges();
 		node._outEdges= this.getOutEdges();
+		node.setNodeAngle(this.angle);
+		node.setNodeColor(this.nodeColor);
+		node.setNodeSize(this.nodeSize);
+		node.setLocation(this.getLocation());
 		return node;
 	}
 

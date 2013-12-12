@@ -19,6 +19,9 @@ public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
 //    		String test1 = " " + v.getNodeAngle();
 //    		return test1;
     	//default: return(v.toString()); 
+    	
+    	case NODE_TYPE_CLUSTER:
+    		return v.getNodeLabel();
     	default: return(""); 
     	}
     	

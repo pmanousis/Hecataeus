@@ -10,6 +10,7 @@ import java.util.Map;
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
+import edu.ntua.dblab.hecataeus.HecataeusClusterMap;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 
 public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
@@ -190,6 +191,7 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
         engine.buildFirstSolution();
         cs = engine.execute(endC);
         CirclingCusters();
+		HecataeusViewer.hecMap.createMap();
     }
 
     @Override

@@ -24,6 +24,10 @@ public class VisualTotalClusters {
 		this.clusters.clear();
 	}
 	
+	public ArrayList<VisualCluster> getClusters(){
+		return this.clusters;
+	}
+	
 	public String getClustersData(){
 		String data = new String();
 		data+="Total num of Clusters: " + this.clusters.size()+ "\n\n";

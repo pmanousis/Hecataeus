@@ -3,7 +3,17 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 
 
 
@@ -19,8 +29,12 @@ public class VisualCluster {
 	private int id;
 	private double area;
 	private double lineLenght = 0;
+	private String label;
 	
 	private int edgeCrossCluster = 0;
+	public VisualCluster(){
+		
+	}
 	
 	public VisualCluster(double r, ArrayList<VisualNode> rn, ArrayList<VisualNode>vn, ArrayList<VisualNode>qn, double x, double y, int id){
 		this.rad = r;
@@ -30,36 +44,46 @@ public class VisualCluster {
 		this.cx = x;
 		this.cy = y;
 		this.id = id;
+		this.label = getDominatingRealationsInCluster(this);
+	}
+	
+	
+	
+	public String getClusterLabel(VisualCluster cl){
+		return this.label;
 	}
 	
 	protected double getArea(){
 		return Math.PI*Math.pow(this.rad, 2);
 	}
 	
-	
+	public double getClusterSize(VisualCluster cluster){
+		double size = cluster.getRelationsInCluster().size() + cluster.getViewsInCluster().size() + cluster.getQueriesInCluster().size();
+		return size;
+	}
 	
 	protected double getClusterRad(){
 		double radToReturn = (double) Math.round(this.rad * 100) / 100;
 		return radToReturn;
 	}
 	
-	protected ArrayList<VisualNode> getRelationsInCluster(){
+	public ArrayList<VisualNode> getRelationsInCluster(){
 		return this.relations;
 	}
 	
-	protected ArrayList<VisualNode> getViewsInCluster(){
+	public ArrayList<VisualNode> getViewsInCluster(){
 		return this.views;
 	}
 	
-	protected ArrayList<VisualNode> getQueriesInCluster(){
+	public ArrayList<VisualNode> getQueriesInCluster(){
 		return this.queries;
 	}
 	
-	protected double getCenterXOfCluster(){
+	public double getCenterXOfCluster(){
 		return this.cx;
 	}
 	
-	protected double getCenterYOfCluster(){
+	public double getCenterYOfCluster(){
 		return this.cy;
 	}
 	
@@ -67,8 +91,43 @@ public class VisualCluster {
 		
 	}
 	
-	protected int getClusterId(){
+	public int getClusterId(){
 		return this.id;
+	}
+	
+	private String getDominatingRealationsInCluster(VisualCluster cl){
+		if(cl.getRelationsInCluster().size() == 1){
+			return cl.getRelationsInCluster().get(0).getName();
+		}
+		else{
+			String names = "-";
+			Map<VisualNode,Integer> relations = new HashMap<VisualNode,Integer>();
+			ArrayList<VisualNode> myR = new ArrayList<VisualNode>(cl.getRelationsInCluster());
+			
+			for(VisualNode v : myR){
+				int value = 0;
+				ArrayList<VisualEdge> myE = new ArrayList<VisualEdge>(v.getInEdges());
+				for(VisualEdge e : myE){
+					if(e.getType() == EdgeType.EDGE_TYPE_USES){
+						value++;
+					}
+				}
+				relations.put(v, value);
+			}
+			int sum = 0;
+			for(Map.Entry<VisualNode, Integer> entry : relations.entrySet()){
+				System.out.println("key  " + entry.getKey() + " value "+ entry.getValue());
+				sum+=entry.getValue();
+			}
+			int avg = (int)sum/relations.size();
+			for(Map.Entry<VisualNode, Integer> entry : relations.entrySet()){
+				if(entry.getValue() >= avg){
+					names+=entry.getKey()+"-";
+				}
+			}
+			System.out.println("names  " + names);
+			return names;
+		}
 	}
 	
 	protected void printInClusterEdges(){

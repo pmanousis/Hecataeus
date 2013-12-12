@@ -20,6 +20,7 @@ import com.sun.xml.internal.messaging.saaj.packaging.mime.util.QEncoderStream;
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
+import edu.ntua.dblab.hecataeus.HecataeusClusterMap;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
@@ -262,6 +263,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
 		clustersOnaCircle(endC);
+		HecataeusViewer.hecMap.createMap();
 	}
 
 	@Override

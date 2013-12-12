@@ -21,11 +21,9 @@ import edu.uci.ics.jung.visualization.picking.PickedInfo;
 public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> implements Transformer<VisualNode,Shape> {
 	
 	private static int INITIAL_SIZE = 21; // itan 60 alliws 4
-	protected int N;
-	
-	
-	public VisualNodeShape(int nodes) {
-		this.N = nodes;
+
+	public VisualNodeShape() {
+		//this.N = nodes;
 		//extends setSizeTransformer for defining the custom size of nodes  
 		setSizeTransformer(new Transformer<VisualNode,Integer>() {
 			public Integer transform(VisualNode v) {
@@ -46,9 +44,16 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 				}
 				else if (type.getCategory()== NodeCategory.CONTAINER){
 					//return INITIAL_SIZE * 4 ;
+					if(v.getType() == NodeType.NODE_TYPE_CLUSTER){
+						v.size=(int)v.getNodeSize();
+						int ns = (int)Math.log(Math.pow((int)v.getNodeSize(), 3)) + (int)v.getNodeSize()*2; //(int)v.getNodeSize()
+						return ns;
+					}
+					else{
 						v.size=INITIAL_SIZE;
 						return 10;
 					}
+				}
 				/***
 				 * @author pmanousi
 				 */
@@ -92,10 +97,9 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 				|| type==NodeType.NODE_TYPE_PACKAGE		//
 				|| type==NodeType.NODE_TYPE_EMBEDDED_STATEMENT)
 			return factory.getRectangle(v);
-		else if (type ==NodeType.NODE_TYPE_RELATION)
+		else if (type ==NodeType.NODE_TYPE_RELATION
+				|| type ==NodeType.NODE_TYPE_CLUSTER)
 			return factory.getEllipse(v);
-		else if (type ==NodeType.NODE_TYPE_CLUSTER)
-			return factory.getEllipse(v);//added by evakont
 		else if (type ==NodeType.NODE_TYPE_VIEW)
 			return factory.getRegularPolygon(v,3);
 		/***

@@ -258,7 +258,8 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 		cs = engine.execute(endC);
 		
 		CirclingCusters();
-		
+		HecataeusViewer.hecMap.createMap();
+
 	}
 
 	@Override

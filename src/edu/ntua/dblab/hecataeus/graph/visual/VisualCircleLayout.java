@@ -392,7 +392,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			viewN.setLocation(coord);
 			viewN.setNodeAngle(Angle*c);
 			c++;
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new  VisualNodeShape(0));
+			HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new  VisualNodeShape());
 			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(viewN, HecataeusViewer.getActiveViewer().getPickedVertexState()));
 			HecataeusViewer.getActiveViewer().repaint();
 			}

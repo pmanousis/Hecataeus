@@ -44,7 +44,7 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			
 			List<VisualEdge> inE = new ArrayList<VisualEdge>(node._inEdges);
 			List<VisualEdge> outE = new ArrayList<VisualEdge>(node._outEdges);
-
+			VisualFileColor vfs = new VisualFileColor();
 			
 			for(VisualEdge edgeIndx : inE){
 				if(edgeIndx.getFromNode()!=null){
@@ -85,6 +85,7 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 				for(VisualEdge e : edges){
 					if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
 						file = e.getFromNode();
+						file.setNodeColor(getColor(vfs.getFileNames().indexOf(file.getName())));
 					}
 				}
 				if(node.getType() != NodeType.NODE_TYPE_RELATION){
@@ -94,7 +95,7 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 						node.setNodeColor(getColor(this.color));
 					}
 					else{
-						VisualFileColor vfs = new VisualFileColor();
+						
 						if(vfs.getFileNames()!=null){
 							if(file == null){
 								this.color = 5;

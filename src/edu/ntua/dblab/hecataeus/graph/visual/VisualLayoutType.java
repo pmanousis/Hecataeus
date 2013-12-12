@@ -4,7 +4,6 @@ import java.awt.geom.Point2D;
 
 import edu.ntua.dblab.hecataeus.HecataeusInputDialog;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleClusteredLayout.ClusterE;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTopologicalLayout.Orientation;
 import edu.uci.ics.jung.algorithms.layout.BalloonLayout;
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;
@@ -16,7 +15,6 @@ import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
 import edu.uci.ics.jung.algorithms.layout.SpringLayout;
 import edu.uci.ics.jung.algorithms.layout.StaticLayout;
 import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.Forest;
 
 public enum VisualLayoutType {
 	StaticLayout,
@@ -36,8 +34,6 @@ public enum VisualLayoutType {
 	AnOtherEvaTestLayout,
 	EvaTestLayout1,
 	ConcentricCircleLayout,
-	ClusteredCircleLayout,
-	ClusteredCircleLayoutC,
 	ClustersonaCircleLayout,
 	CirclingClusterLayout,
 	CirclingClusterLayoutV2,
@@ -87,10 +83,6 @@ public enum VisualLayoutType {
 				return "EvaTestLayout1";
 			case ConcentricCircleLayout:
 				return "ConcentricCircleLayout";
-			case ClusteredCircleLayout:
-				return "Clustered Circle Layout";
-			case ClusteredCircleLayoutC:
-				return "";
 			case ClustersonaCircleLayout:
 				return "Clusters on a Circle";
 			case CirclingClusterLayout:
@@ -178,8 +170,6 @@ public enum VisualLayoutType {
 				return new VisualTopologicalLayout(g, Orientation.evaTest2);
 			case ConcentricCircleLayout:
 				return new VisualConcentricCircleLayout(g);
-			case ClusteredCircleLayoutC:
-				return new VisualCircleClusteredLayout(g, ClusterE.Circle);	
 			case ClustersonaCircleLayout:
 				HecataeusInputDialog d1 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualClustersOnACircleLayout(g, d1.getC());
