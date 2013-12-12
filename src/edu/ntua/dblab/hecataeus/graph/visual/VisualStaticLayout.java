@@ -25,8 +25,6 @@ public class VisualStaticLayout extends AbstractLayout<Object, Object>{
 			Point2D loc = n.getLocation();
 			coord.setLocation( loc.getX(), loc.getY());
 			n.setLocation(coord);
-			int nodeSize = (int)n.getNodeSize();
-			//HecataeusClusterMap.myViewer.getRenderContext().setVertexShapeTransformer(new VisualNodeShape(nodeSize));
 		}
 	}
 

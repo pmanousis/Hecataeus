@@ -92,10 +92,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 				RQV.add(v);
 			}
 		}
-		
-//		VisualFileColor vfc = new VisualFileColor();
-//		vfc.setFileNames(files);
-		
 	}
 
 	
@@ -143,15 +139,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		}
 		return views;
 	}
-	
-//	public List<String> getFileNames(){
-//		if(files!=null){
-//			return files;
-//		}
-//		else{
-//			return null;
-//		}
-//	}
 	
 	@Override
 	public void initialize() {

@@ -20,10 +20,6 @@ public class VisualFileColor {
 		this.FileColor = new HashMap<String, Color>(setColorForFiles(this.files));
 	}
 	
-//	protected List<String> getFileNames(){
-//		return this.files;
-//	}
-	
 	protected Color getColorForFile(String fileName){
 		return this.FileColor.get(fileName);
 	}

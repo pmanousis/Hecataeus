@@ -106,8 +106,5 @@ public class HecataeusClusterMap extends JPanel{
 		GraphZoomScrollPane sp = new GraphZoomScrollPane(myViewer);
 		sp.add(myViewer);
 		this.add(sp);
-		
-		
-		//this.add(myViewer);
 	}
 }

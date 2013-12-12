@@ -54,7 +54,7 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 				String tooltip="<html>";
 				String cat = node.getType().getCategory().toString();
 				tooltip += cat + "  ";
-				if(node.getType() == NodeType.NODE_TYPE_QUERY){
+				if(node.getType() == NodeType.NODE_TYPE_QUERY){     //gia na kserw to arxeio pou einai to query
 					tooltip+="<br>From file <b>"+ node.getFileName() +"</b><br>";
 				}
 				if ((node.getSQLDefinition()!=null)&&(!node.getSQLDefinition().isEmpty())) {
