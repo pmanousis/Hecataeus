@@ -73,6 +73,7 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraphEdgeCrossings;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
@@ -361,7 +362,8 @@ public class HecataeusViewer {
 					catch (Exception e1) {}
 				}
 			}
-			
+			VisualFileColor vfc = new VisualFileColor();
+			List<String> fileNames = new ArrayList<String>();
 			for(VisualNode v : graph.getVertices()){
 				if(v.getVisible()){
 					if(v.getType().getCategory() == NodeCategory.MODULE ){
@@ -369,7 +371,9 @@ public class HecataeusViewer {
 						for(VisualEdge e : edges){
 							if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
 								if(e.getFromNode().getType() == NodeType.NODE_TYPE_FILE){
-									//System.out.println("TYPE FILE name " + e.getFromNode().getName());
+									if(!fileNames.contains(e.getFromNode().getName())){
+										fileNames.add(e.getFromNode().getName());
+									}
 									v.setFileName(e.getFromNode().getName());
 								}
 							}
@@ -377,6 +381,7 @@ public class HecataeusViewer {
 					}
 				}
 			}
+			vfc.setFileNames(fileNames);
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
 			
 			

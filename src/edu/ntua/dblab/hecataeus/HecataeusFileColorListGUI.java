@@ -1,14 +1,15 @@
 package edu.ntua.dblab.hecataeus;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCircleLayout;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 
 public class HecataeusFileColorListGUI  extends JPanel{
@@ -35,13 +36,13 @@ public class HecataeusFileColorListGUI  extends JPanel{
 	
 	public void createPanel(VisualGraph graph){
 		
-		VisualCircleLayout vcl = new VisualCircleLayout(graph);
-		List<String> files = new ArrayList<String>(vcl.getFileNames());
+		VisualFileColor vfs = new VisualFileColor();
+		HashMap<String, Color> FileColor = new HashMap<String, Color>(vfs.getFileColorMap());
 		listModel.removeAllElements();
-		for(String f : files){
-			listModel.addElement(f);
+		for(Map.Entry<String, Color> entry : FileColor.entrySet()){
+			listModel.addElement(entry.getKey());
 		}
-		fileColorList.setCellRenderer(new HecataeusjListCellColor());
+		fileColorList.setCellRenderer(new HecataeusjListCellColor(FileColor));
 		this.validate();
 		this.repaint();
 	}

@@ -81,41 +81,16 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 				}
 			}
 			if(node.getType().getCategory() == NodeCategory.MODULE ){
-			List<VisualEdge> edges = new ArrayList<VisualEdge>(node.getInEdges());
-				for(VisualEdge e : edges){
-					if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
-						file = e.getFromNode();
-						file.setNodeColor(getColor(vfs.getFileNames().indexOf(file.getName())));
-					}
-				}
 				if(node.getType() != NodeType.NODE_TYPE_RELATION){
 					if(node.getType() == NodeType.NODE_TYPE_VIEW){
 						//ta views einai prasina
 						this.color = 150;
 						node.setNodeColor(getColor(this.color));
 					}
-					else{
-						
-						if(vfs.getFileNames()!=null){
-							if(file == null){
-								this.color = 5;
-							}else{
-								int col = vfs.getFileNames().indexOf(file.getName());
-								//System.out.println("my name is  " + node.getName()   + " i come from  " + file + " i thesi   " + col );
-								
-								if(col == -1){
-									 System.out.println("WTF = what a terible failure");
-									 this.color = -1;
-								}
-								else{
-									this.color = (col+1)%6; 
-									node.setNodeColor(getColor(this.color));
-								}
-							}
-						}
-						else{
-							this.color = 0; 
-						}
+					else{ //QUERY
+						String fileName = node.getFileName();
+						Color toReturn = vfs.getColorForFile(fileName);
+						return toReturn;
 					}
 				}
 				else{//ta relation einai grey
@@ -127,42 +102,6 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			}
 		}
 		switch (this.color){
-			case 0: return new Color(16, 78, 139);
-			case 1: return new Color(255,102,102);
-			case 2: return new Color(255,178,102);
-			case 3: return new Color(178,255,102);
-			case 4: return new Color(102,178,255);
-			case 5: return new Color(178,102,255);
-			case 6: return new Color(255,102,102);
-//			case 7: return new Color(255,255,102);
-//			case 8: return new Color(102,102,255);
-//			case 9: return new Color(255,153,024);
-//			case 10: return new Color(102,204,0);
-//			case 11: return new Color(153,0,153);
-//			case 12: return new Color(102,0,0);
-//			case 13: return new Color(0,51,102);
-//			case 14: return new Color(204,204,255);
-//			case 15: return new Color(0,128,255);
-//			case 16: return new Color(255,153,51);
-//			case 17: return new Color(255,192,203);
-//			case 18: return new Color(198, 226, 255);
-//			case 19: return new Color(30, 199,	40);
-//			case 20: return new Color(0, 201, 87);
-//			case 21: return new Color(188, 238, 104);
-//			case 22: return new Color(238, 230,133);
-//			case 23: return new Color(0, 206, 209);
-//			case 24: return new Color(61, 145, 64);
-//			case 25: return new Color(127,255,212);
-//			case 26: return new Color(0,0,128);
-//			case 27: return new Color(147,112,219);
-//			case 28: return new Color(255,250,205);
-//			case 29: return new Color(113,198,113);
-//			case 30: return new Color(139,131,120);
-//			case 31: return new Color(224,102,255);
-//			
-			
-			
-			
 			case 100: return new Color (96,96,96);//relations
 			case 150: return new Color(46,139,87);//views
 			case 200:  return new Color (0,0,0);
@@ -189,46 +128,10 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 	private Color getColor(int c){
 		
 		switch (c){
-		case 0: return new Color(16, 78, 139);
-		case 1: return new Color(255,102,102);
-		case 2: return new Color(255,178,102);
-		case 3: return new Color(178,255,102);
-		case 4: return new Color(102,178,255);
-		case 5: return new Color(178,102,255);
-		case 6: return new Color(255,102,102);
-		case 7: return new Color(255,255,102);
-		case 8: return new Color(102,102,255);
-		case 9: return new Color(255,153,024);
-		case 10: return new Color(102,204,0);
-		case 11: return new Color(153,0,153);
-		case 12: return new Color(102,0,0);
-		case 13: return new Color(0,51,102);
-		case 14: return new Color(204,204,255);
-		case 15: return new Color(0,128,255);
-		case 16: return new Color(255,153,51);
-		case 17: return new Color(255,192,203);
-		case 18: return new Color(198, 226, 255);
-		case 19: return new Color(30, 199,	40);
-		case 20: return new Color(0, 201, 87);
-		case 21: return new Color(188, 238, 104);
-		case 22: return new Color(238, 230,133);
-		case 23: return new Color(0, 206, 209);
-		case 24: return new Color(61, 145, 64);
-		case 25: return new Color(127,255,212);
-		case 26: return new Color(0,0,128);
-		case 27: return new Color(147,112,219);
-		case 28: return new Color(255,250,205);
-		case 29: return new Color(113,198,113);
-		case 30: return new Color(139,131,120);
-		case 31: return new Color(224,102,255);
-		
-		
-		
-		
-		case 100: return new Color (255,62, 150);
-		
-		default : return new Color(0,0,0);
-	}
+			case 100: return new Color (255,62, 150);
+			case 150: return new Color(46,139,87);
+			default : return new Color(0,0,0);
+		}
 		
 		
 	}
