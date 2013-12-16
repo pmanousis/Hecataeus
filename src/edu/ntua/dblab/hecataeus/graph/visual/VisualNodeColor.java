@@ -125,8 +125,6 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
                 	else return Color.WHITE;
                 }
         	}
-
         }
-            
     }
 }

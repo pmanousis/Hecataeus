@@ -228,9 +228,10 @@ public class VisualCirclingClustersLayoutV3 extends VisualCircleLayout{
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
-		
 		CirclingCusters();
-		
+		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
+		HecataeusViewer.getActiveViewer().repaint();
+		HecataeusViewer.hecMap.createMap();
 	}
 
 	@Override

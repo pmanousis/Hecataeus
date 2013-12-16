@@ -71,6 +71,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualClusteredNodeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
@@ -134,8 +135,8 @@ public class HecataeusViewer {
 	protected MouseListener ml;
 	protected VisualNodeStroke<Integer,Number> vsh;
 	public JList<String> fileColorList;
-	private DefaultListModel<String> listModel;
-	private JPanel panel_3;
+//	private DefaultListModel<String> listModel;
+//	private JPanel panel_3;
 	public static  List<VisualGraph> graphs;
 
 	
@@ -168,28 +169,28 @@ public class HecataeusViewer {
 	}
 	
 
-	public void startHecataeus(){
-		try {
-			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-				if ("Nimbus".equals(info.getName())) {
-					UIManager.setLookAndFeel(info.getClassName());
-					break;
-				}
-			}
-		} catch (Exception e) {
-		}
-		
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					HecataeusViewer window = new HecataeusViewer(new VisualGraph());
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	public void startHecataeus(){
+//		try {
+//			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+//				if ("Nimbus".equals(info.getName())) {
+//					UIManager.setLookAndFeel(info.getClassName());
+//					break;
+//				}
+//			}
+//		} catch (Exception e) {
+//		}
+//		
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					HecataeusViewer window = new HecataeusViewer(new VisualGraph());
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 	
 	/**
 	 * Create the application.
@@ -404,7 +405,6 @@ public class HecataeusViewer {
 			//get new layout's positions
 			HecataeusViewer.this.getLayoutPositions();
 			HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-//			HecataeusViewer.this.zoomToWindow();
 			HecataeusViewer.this.zoomToWindow(vv);
 			eventManagerGui.UPDATE();
 			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -580,7 +580,7 @@ public class HecataeusViewer {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
 	//	frame.getContentPane().setLayout(new MigLayout("wrap", "[1889.00]", "[999.00]"));
-		frame.getContentPane().setLayout(new MigLayout("", "[pref!][][grow,fill]", "[984.00]15[]"));
+		frame.getContentPane().setLayout(new MigLayout("", "[grow,fill]", "[984.00]15[]"));
 //		MigLayout layout = new MigLayout(
 //				 "", // Layout Constraints
 //				 "[grow][][grow]", // Column constraints
@@ -666,10 +666,8 @@ public class HecataeusViewer {
 					String fileDescription = chooser.getSelectedFile().getAbsolutePath();
 					if (!fileDescription.endsWith(".html"))
 						fileDescription += ".html";				
-					writeTxtFile(new File(fileDescription),message);
+					writeHtmlFile(new File(fileDescription),message);
 				}
-				
-				
 			}
 		});
 		mnNewMenu.add(mntmExportClusterData);
@@ -998,11 +996,11 @@ public class HecataeusViewer {
 				boolean selected = aButton.getModel().isSelected();
 				if (selected) {
 					nodeSize = true;
-					new VisualNodeShape();
+					getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 					getActiveViewer().repaint();
 				}else{
 					nodeSize = false;
-					new VisualNodeShape();
+					getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 					getActiveViewer().repaint();
 				}
 			}
@@ -2519,7 +2517,7 @@ public class HecataeusViewer {
 //		
 		
 		JSplitPane splitPane = new JSplitPane();
-		frame.getContentPane().add(splitPane, "cell 2 0,growy");
+		frame.getContentPane().add(splitPane, "cell 0 0,growy");
 
 		splitPane.setOneTouchExpandable(true);
 		
@@ -2826,7 +2824,7 @@ public class HecataeusViewer {
 	}
 	
 	
-	private void writeTxtFile(File file, String message){
+	private void writeHtmlFile(File file, String message){
 		try {
 			FileWriter fw = new FileWriter(file.getAbsoluteFile());
 			BufferedWriter bw = new BufferedWriter(fw);
@@ -3081,39 +3079,31 @@ public class HecataeusViewer {
 
 	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
 		
-		Point2D p;String name = null;
-		Shape r = vv.getBounds();		
 		VisualGraph Sub = sub;
 		this.graphs.add(Sub);
 		
 		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		Sub.setViewerToGraph(vv1);
-		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
+		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.EvaTestLayout1, VisualLayoutType.EvaTestLayout1);
 		
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
-		GraphZoomScrollPane testPane = new MyPane(subNodes.get(0), vv1, Sub);
+		GraphZoomScrollPane myPane = new GraphZoomScrollPane(vv1);
 		vv1.setGraphLayout(subLayout);
-		vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 		String onoma="";
 		onoma+=subNodes.get(0).getName();
-		for(int i=1;i<subNodes.size();i++)
-		{
-			if(subNodes.get(i).getType().getCategory()==NodeCategory.MODULE)
-			{
+		for(int i=1;i<subNodes.size();i++){
+			if(subNodes.get(i).getType().getCategory() == NodeCategory.MODULE){
 				onoma+="-"+subNodes.get(i).getName();
 			}
 		}
 		vv1.setName(onoma);
 		viewers.add(vv1);
-		tabbedPane.addTab(onoma, null, testPane, "Displays the logical dependencies between modules");
-		
+		tabbedPane.addTab(onoma, null, myPane, "New Tab");
 		VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
-		System.out.println("viewer  " + activeViewer.getName());
-
 		countOpenTabs++;		
 		tabbedPane.setSelectedIndex(countOpenTabs);
-		tabbedPane.setTabComponentAt(countOpenTabs,new ButtonTabComponent(tabbedPane));
+		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
 		
 		activeViewer = this.getActiveViewer();
 		System.out.println("viewer  " + activeViewer.getName());

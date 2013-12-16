@@ -35,15 +35,10 @@ public class HecataeusClusterMap extends JPanel{
 	private HecataeusViewer hec;
 	private ArrayList<VisualNode> myNodes = new ArrayList<VisualNode>();
 	
-
-	
-	
 	public HecataeusClusterMap(HecataeusViewer hec){
 		this.hec = hec;
 	}
-	
-	
-	
+
 	public void createMap(){
 		myNodes.clear();
 		if(myViewer!=null){
@@ -55,7 +50,6 @@ public class HecataeusClusterMap extends JPanel{
 		VisualTotalClusters vtc = new VisualTotalClusters();
 		
 		ArrayList<VisualCluster> myClusters = vtc.getClusters();
-		
 		
 		for(VisualCluster cl : myClusters){
 			String name = ""+cl.getClusterId();
@@ -76,8 +70,6 @@ public class HecataeusClusterMap extends JPanel{
 		}
 		final Layout layout= new VisualStaticLayout(graph,myNodes);
 		
-		
-		
 		myViewer = new VisualizationViewer(layout);
 		myViewer.setBackground(Color.white);
 		myViewer.setPickSupport(new LayoutLensShapePickSupport<VisualNode, VisualEdge>(myViewer));
@@ -95,13 +87,10 @@ public class HecataeusClusterMap extends JPanel{
 		pr.setVertexShapeTransformer(new VisualNodeShape());
 		pr.setVertexIncludePredicate(new VisualNodeVisible());
 		myViewer.getRenderContext().getMultiLayerTransformer().addChangeListener(myViewer);
-		//DefaultModalGraphMouse gm = new DefaultModalGraphMouse();
 		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
 		gm.setMode(Mode.PICKING);
 		myViewer.setGraphLayout(layout);
 		myViewer.setGraphMouse(gm);
-	
-		
 		
 		GraphZoomScrollPane sp = new GraphZoomScrollPane(myViewer);
 		sp.add(myViewer);

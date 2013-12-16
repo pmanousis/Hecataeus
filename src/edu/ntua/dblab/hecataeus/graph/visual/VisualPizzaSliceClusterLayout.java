@@ -191,6 +191,8 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
         engine.buildFirstSolution();
         cs = engine.execute(endC);
         CirclingCusters();
+        HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
+		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.hecMap.createMap();
     }
 

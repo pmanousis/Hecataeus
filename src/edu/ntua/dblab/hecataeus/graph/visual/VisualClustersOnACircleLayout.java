@@ -184,19 +184,13 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		edgelenngthforGraph += cluster.getLineLength();
     }
     
-	private void clustersOnaCircle(double endC){
+	private void clustersOnaCircle(){
 		clusterList = new VisualTotalClusters();
 		clusterList.clearList();
 		ArrayList<Cluster> Clusters;
 		double [][] distances = cs.getClusterDistances();
-		//if(endC != 1){
-		//	SortedArrayList sl = new SortedArrayList();
-		//	Clusters = new ArrayList<Cluster>(sl.insertSorted(cs.getClusters(), distances));
-			
-		//}
-		//else{
-			Clusters = new ArrayList<Cluster>(cs.getClusters());
-		//}
+
+		Clusters = new ArrayList<Cluster>(cs.getClusters());
 		System.out.println("    " + Clusters);
 		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();       //lista me ta clusters 
 		ArrayList<ArrayList<VisualNode>> V = new ArrayList<ArrayList<VisualNode>>();   // tin xrisimopoio gia na anakatevw tin vertices gia na min einai olla ta megala cluster mazi
@@ -262,7 +256,9 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
-		clustersOnaCircle(endC);
+		clustersOnaCircle();
+		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
+		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.hecMap.createMap();
 	}
 

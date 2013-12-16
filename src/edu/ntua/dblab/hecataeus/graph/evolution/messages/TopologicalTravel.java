@@ -136,9 +136,6 @@ public class TopologicalTravel
 			}
 			layerCounter++;
 		}
-		for(Map.Entry<Double, ArrayList<VisualNode>> entry : layers.entrySet()){
-			System.out.println(entry.getKey() + "/" + entry.getValue());
-		}
 		return layers;
 	}
 }

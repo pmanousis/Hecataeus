@@ -219,64 +219,6 @@ public class PopUpClickListener extends MouseAdapter{
 		return directedMenu;
 	}
 
-	
-	/**
-	 * @author eva
-	 */
-	
-//	
-//	
-//	protected AbstractAction collapser(){
-//		return new AbstractAction("Collapse Nodes") {
-//			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-//
-//		
-//			public void actionPerformed(ActionEvent e) {
-//				VisualLayoutType layoutType = VisualLayoutType.ConcentricCircleLayout;
-//				containerLayout = new VisualAggregateLayout(graph, layoutType, layoutType);
-//				if(pickedNodes.size() > 2) {
-//					VisualGraph gr = (VisualGraph) layout.getGraph();
-//					
-//					
-//					
-//					List<VisualNode> physicalNodes = graph.getVertices(NodeCategory.CONTAINER);
-//					VisualGraph containerGraph= graph.toGraph(physicalNodes);
-//					for (VisualNode node1: containerGraph.getVertices()) {
-//						for (VisualNode node2: containerGraph.getVertices()) {
-//							if (!node1.equals(node2) && graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
-//								VisualEdge newEdge = new VisualEdge("from",EdgeType.EDGE_TYPE_FROM, node1, node2); 
-//								containerGraph.addEdge(newEdge);
-//							}				
-//						}
-//					}
-//							
-//					GraphCollapser collapser = new GraphCollapser(graph);
-//				//	 pass the graph to the layout 
-//					VisualGraph g = (VisualGraph) collapser.collapse(graph, containerGraph);
-//					containerLayout.setGraph(g);
-//				//	set the module-level layout
-//					containerLayout.setTopLayoutType(containerLayout.getTopLayoutType());
-//				//	set the low-level layout
-//					containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
-//				
-//					
-//					gr = (VisualGraph) containerLayout.getGraph();
-//					// first update location of top - level node
-//					for (VisualNode node: containerLayout.getDelegate().getGraph().getVertices()) {
-//						layout.setLocation(node, gr.getLocation(node));
-//					}
-//					 //then update locations of all other nodes
-//					for (VisualNode node: gr.getVertices()) {
-//						containerLayout.setLocation(node, gr.getLocation(node));
-//					}
-//				}
-//				
-//			}
-//			
-//			
-//			
-//		};
-//	}
 
 	class ClusterVertexShapeFunction<V> extends EllipseVertexShapeTransformer<V> {
 
@@ -334,16 +276,9 @@ public class PopUpClickListener extends MouseAdapter{
 				//get parentNode
 				
 				for(final VisualNode node :pickedNodes) {
-					System.out.println("PICKED NODES   "  + pickedNodes);
+//					System.out.println("PICKED NODES   "  + pickedNodes);
 					parent.addAll(graph.getModule(node));
-		//			sub.addVertex(node);
 				}
-//				for(VisualNode node : parent){
-//					sub.addVertex(node);
-//					
-//				}
-				//nodes = parent;
-				//sub = graph.toGraph(nodes);
 				
 				VisualGraph GV = new VisualGraph(graph.toGraph(parent));
 				sub =  new VisualGraph(GV);

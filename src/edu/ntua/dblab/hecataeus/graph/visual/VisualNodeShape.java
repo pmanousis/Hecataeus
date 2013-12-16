@@ -23,7 +23,6 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 	private static int INITIAL_SIZE = 21; // itan 60 alliws 4
 
 	public VisualNodeShape() {
-		//this.N = nodes;
 		//extends setSizeTransformer for defining the custom size of nodes  
 		setSizeTransformer(new Transformer<VisualNode,Integer>() {
 			public Integer transform(VisualNode v) {

@@ -441,9 +441,9 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		return subGraph;
 	}
 	
-	public Graph toG(VisualGraph inGraph){
-		return inGraph;
-	}
+//	public Graph toG(VisualGraph inGraph){
+//		return inGraph;
+//	}
 	
 	
 	

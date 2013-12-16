@@ -48,10 +48,9 @@ public class VisualDebianCircleLayout extends VisualCircleLayout{
 				double smallRad = getSmallRad(relationsInCluster(nodes));
 				Point2D coord = transform(v);
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
-				v.setLocation(coord);
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-				HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
-				HecataeusViewer.vv.repaint();
+				v.setLocation(coord);
+				v.setNodeAngle(angleA*b);
 			}else{
 				double smallRad = getSmallRad(nodes);
 				Point2D coord = transform(v);
@@ -61,10 +60,9 @@ public class VisualDebianCircleLayout extends VisualCircleLayout{
 				}else{
 					angleA = (2 * Math.PI ) / nodes.size();
 				}
-				v.setLocation(coord);
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-				HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.vv.getPickedVertexState()));
-				HecataeusViewer.vv.repaint();
+				v.setLocation(coord);
+				v.setNodeAngle(angleA*b);
 			}
 			b++;
 		}
@@ -103,7 +101,9 @@ public class VisualDebianCircleLayout extends VisualCircleLayout{
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
 		debianClusters();
-		
+		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.vv.getPickedVertexState()));
+		HecataeusViewer.vv.repaint();
+		HecataeusViewer.hecMap.createMap();
 	}
 
 	@Override

@@ -215,8 +215,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			q.setLocation(coord);
 			q.setNodeAngle(Angle*a);
 			a++;
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(q, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 		}
 		
 		return sAngle;
@@ -268,8 +266,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			n.setLocation(coord);
 			n.setNodeAngle(Angle*e);
 			e++;
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(n, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 		}
 		
 	}
@@ -288,8 +284,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			q.setLocation(coord);
 			q.setNodeAngle(Angle*b);
 			b++;
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(q, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 		}
 		
 		return sAngle;
@@ -379,9 +373,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			viewN.setLocation(coord);
 			viewN.setNodeAngle(Angle*c);
 			c++;
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new  VisualNodeShape());
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(viewN, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 			}
 		}
 	}
@@ -410,8 +401,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			v.setLocation(coord);
 			v.setNodeAngle(myAngle);
 			va++;
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 		}
 		
 	}
@@ -531,9 +520,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		coord.setLocation(rx, ry);
 		r.setLocation(coord);
 		r.setNodeAngle(sAngle-(qAngle/2));
-	
-		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(r, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-		HecataeusViewer.getActiveViewer().repaint();
 	}
 	
 	
@@ -583,8 +569,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			v.setLocation(coord);
 			v.setNodeAngle(myAngle);
 //			allR.addAll(myR);
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 		}
 	}
 	
@@ -653,8 +637,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			coord.setLocation(Math.cos(angle*cnt)*smallRad+(cx),Math.sin(angle*cnt)*smallRad+(cy));
 			v.setLocation(coord);
 			v.setNodeAngle(angle*cnt);
-			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 			cnt++;
 		}
 		
@@ -673,8 +655,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 				v.setLocation(coord);
-				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-				HecataeusViewer.getActiveViewer().repaint();
 			}else{
 				if(v.getType() == NodeType.NODE_TYPE_QUERY){
 					qc.add(v);
@@ -692,8 +672,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 				}
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 				v.setLocation(coord);
-				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-				HecataeusViewer.getActiveViewer().repaint();
 			}
 			b++;
 		}

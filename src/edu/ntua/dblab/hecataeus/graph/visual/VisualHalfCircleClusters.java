@@ -52,8 +52,6 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
 				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 				v.setLocation(coord);
-				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-				HecataeusViewer.getActiveViewer().repaint();
 			}else{
 				double smallRad = getSmallRad(nodes);
 				Point2D coord = transform(v);
@@ -83,9 +81,6 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 					v.setLocation(coord);
 					coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
 				}
-				
-				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-				HecataeusViewer.getActiveViewer().repaint();
 			}
 			b++;
 		}
@@ -161,7 +156,9 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
 		halfCircles();
-		
+		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
+		HecataeusViewer.getActiveViewer().repaint();
+		HecataeusViewer.hecMap.createMap();
 	}
 
 	@Override

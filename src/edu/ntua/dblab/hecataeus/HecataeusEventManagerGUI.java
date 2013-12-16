@@ -210,6 +210,7 @@ public class HecataeusEventManagerGUI extends JPanel
 	protected void SHOWIMPACT()
 	{
 		TopologicalTravel pmtt=new TopologicalTravel(this.viewer);
+		
 		pmtt.travel();
 		if(this.epilegmenosKombos!=null)
 		{

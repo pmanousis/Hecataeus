@@ -8,14 +8,10 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 
 import edu.ntua.dblab.hecataeus.HecataeusModalGraphMouse;
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /**
  * The class implements a visual node of the graph
@@ -29,12 +25,11 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Point2D location;
 	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
-	private VisualizationViewer<VisualNode, VisualEdge> Viewer;
 	private double nodeSize; // used only for node type cluster
 	private Color nodeColor;
 	private String label; //used only for node type cluster
 	private String fileName;
-public int size;
+	public int size;
 	
 	
 
@@ -44,13 +39,11 @@ public int size;
 		super();
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
-		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
 		this.nodeSize = 0.0;
 		this.label = "";
 		this.fileName = "";
-//		this.myGraph = graph;
 	}
 	
 	public void setLocation(Point2D loc){
@@ -104,7 +97,6 @@ public int size;
 		super(name, type);
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
-		this.Viewer = HecataeusViewer.myViewer.getActiveViewer();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
 		this.nodeSize = 0.0;
@@ -112,12 +104,6 @@ public int size;
 		this.fileName = "";
 	}
 	
-
-	
-	public void setVisibleInViewer(boolean Value, VisualizationViewer<VisualNode, VisualEdge> Viewer){
-		List<VisualNode> nodes = new ArrayList<VisualNode>();
-		nodes.addAll(Viewer.getGraphLayout().getGraph().getVertices());
-	}
 	
 	public void setVisible(boolean Value) {
 		this.isVisible = Value;
@@ -162,14 +148,15 @@ public int size;
 		node.setNodeColor(this.nodeColor);
 		node.setNodeSize(this.nodeSize);
 		node.setLocation(this.getLocation());
+		node.setFileName(this.fileName);
 		return node;
 	}
 
-	public void addMouseListener(HecataeusModalGraphMouse myListener, MouseEvent e) {
-		// TODO Auto-generated method stub
-		if (e.isPopupTrigger())
-			myListener.graphReleased(this, e);
-	}
+//	public void addMouseListener(HecataeusModalGraphMouse myListener, MouseEvent e) {
+//		// TODO Auto-generated method stub
+//		if (e.isPopupTrigger())
+//			myListener.graphReleased(this, e);
+//	}
 	
 
 }
