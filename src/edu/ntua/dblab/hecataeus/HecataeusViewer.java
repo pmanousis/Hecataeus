@@ -69,6 +69,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
+import edu.ntua.dblab.hecataeus.graph.visual.VertexCollapseDemo;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualClusteredNodeColor;
@@ -1011,93 +1012,13 @@ public class HecataeusViewer {
 		JMenuItem mntmColorCollapse = new JMenuItem("colapse");
 		mntmColorCollapse.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-//				VisualNode eva = new VisualNode("eva", NodeType.NODE_TYPE_VIEW);
-//				
-//				layout.getGraph().addVertex(eva);
-				
-//				
-//				for(VisualNode v : graph.getVertices()){
-//					
-//					//Colorv.getNodeColor(v);
-//					
-//				}
-//				
-//				
-//				
-//				
-//				
-//				VisualNode root = null;
-//				VisualGraph subGraph = new VisualGraph();
-//				for(VisualNode v : graph.getVertices()){
-//					if(v.getType()==NodeType.NODE_TYPE_QUERY){
-//						root = v;
-//						//if(v._inEdges != null){
-//							subGraph.addVertex(v);
-//							for(VisualEdge edge : v.getInEdges()){
-//								if(edge.getType() == EdgeType.EDGE_TYPE_USES){
-//									subGraph.addEdge(edge);
-//								}
-//							}
-//							for(VisualEdge edge : v.getOutEdges()){
-//									if(edge.getType() == EdgeType.EDGE_TYPE_USES){
-//										subGraph.addEdge(edge);
-//									}
-//								}
-//						//}
-//					}
-//					
-//				}
-//			//	VisualColorCollapser collapser = new VisualColorCollapser(graph);
-//				GraphCollapser collapser;
-//				collapser = new GraphCollapser((Graph)graph);
-//				
-//				
-//				
-//				VisualGraph inGraph = layout.getGraph();
-//				Collection tobeornottobe = new HashSet(vv.getPickedVertexState().getPicked());
-//				VisualGraph clusterGraph = (VisualGraph) collapser.getClusterGraph(inGraph, tobeornottobe);
-//
-//				Graph g =  collapser.collapse((Graph)layout.getGraph(), (Graph)clusterGraph);
-//                double sumx = 0;
-//                double sumy = 0;
-//                for(Object v : tobeornottobe) {
-//                	Point2D p = (Point2D)layout.transform((VisualNode) v);
-//                	sumx += p.getX();
-//                	sumy += p.getY();
-//                }
-//                Point2D cp = new Point2D.Double(sumx/tobeornottobe.size(), sumy/tobeornottobe.size());
-//                vv.getRenderContext().getParallelEdgeIndexFunction().reset();
-//                layout.setGraph(g);
-//                
-//                for(VisualNode n : clusterGraph.getVertices()){
-//                	layout.setLocation(n, cp);
-//                }
-//
-//                vv.repaint();
-
-				
-				
-//				
-//				GraphCollapser collapser = new GraphCollapser(graph);
-////				//	 pass the graph to the layout 
-//					VisualGraph g = (VisualGraph) collapser.collapse(graph, subGraph);
-//					layout.setGraph(graph);
-////				//	set the module-level layout
-//					layout.setTopLayoutType(layout.getTopLayoutType());
-////				//	set the low-level layout
-//					layout.setSubLayoutType(layout.getSubLayoutType());
-//				
-//				GraphCollapser collapser = new GraphCollapser(graph);
-//			
-//				
-//				
-//					
-//						collapser.collapse(graph, subGraph);
-					
-//					Graph gr = new DirectedSparseGraph<VisualNode, VisualEdge>();
-//					gr = collapser.collapse((Graph)graph, (Graph)subGraph);
-//					
-//					layout.setGraph(gr);
+				EventQueue.invokeLater(new Runnable() {
+					public void run() {
+		    	VertexCollapseDemo vcd = new VertexCollapseDemo();
+		        
+		        vcd.frame.setVisible(true);
+					}
+		    	});
 				
 			}
 			
@@ -1778,8 +1699,9 @@ public class HecataeusViewer {
 				message += "Area used by graph: "  +area;
 				message += "\nTotal area occupied by clusters: "+vtc.getTotalArea();
 				message += "\nPersent% "+ Math.round(((100*vtc.getTotalArea())/area)* 100) / 100;
-				JOptionPane.showMessageDialog(frame, message, "Total used space", JOptionPane.INFORMATION_MESSAGE );
-				//final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Total used space", message);
+				
+				//JOptionPane.showMessageDialog(frame, message, "Total used space", JOptionPane.INFORMATION_MESSAGE );
+				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Total used space", message);
 			}
 		});
 		mnMetsics.add(mntmGraphSpace);

@@ -535,7 +535,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 					allR.add(myEdge.getToNode());
 				}
 			}
-			
+			int cnt = 0;
 			double myAngle = 0.0;
 			for(VisualNode rel : myR){
 //				if(myAngle + rel.getNodeAngle() < 2*Math.PI){
@@ -545,12 +545,13 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 //					myAngle = Math.PI +(myAngle + rel.getNodeAngle());
 //				}
 				myAngle += rel.getNodeAngle();
+				cnt++;
 			}
 		//	if(allR.contains(myR)){
 		//		c += 0.09;
 		//	}
 			if(myAngle<2*Math.PI){
-				myAngle = myAngle/2 + c;
+				myAngle = myAngle/cnt + c;
 			}
 			else{
 				myAngle = myAngle + c;

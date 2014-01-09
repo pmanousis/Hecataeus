@@ -13,6 +13,7 @@ import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 public class VisualCirclingClustersLayout extends VisualCircleLayout{
 
@@ -250,14 +251,25 @@ public class VisualCirclingClustersLayout extends VisualCircleLayout{
 	
 	@Override
 	public void initialize() {
+		//begin clustering
+		StopWatch clusterTimer = new StopWatch();
+		clusterTimer.start();
 		HAggloEngine engine = new HAggloEngine(this.graph);
 		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);
 		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
-		
+		clusterTimer.stop();
+		System.out.println("Cluster TIMER " + clusterTimer.toString());
+		//end clustering
+		//begin visualization
+		StopWatch visTimer = new StopWatch();
+		visTimer.start();
 		CirclingCusters();
+		visTimer.stop();
+		System.out.println("Visualization TIMER " + visTimer.toString());
+		//end visualization
 		HecataeusViewer.hecMap.createMap();
 
 	}

@@ -12,6 +12,7 @@ import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusClusterMap;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
 
@@ -185,12 +186,24 @@ public class VisualPizzaSliceClusterLayout extends VisualCircleLayout{
     
     @Override
     public void initialize() {
+    	//begin clustering
+    	StopWatch clusterTimer = new StopWatch();
+    	clusterTimer.start();
         HAggloEngine engine = new HAggloEngine(this.graph);
         VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);
         engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
         engine.buildFirstSolution();
         cs = engine.execute(endC);
+		clusterTimer.stop();
+		System.out.println("Cluster TIMER " + clusterTimer.toString());
+		//end clustering
+		//begin visualization
+		StopWatch visTimer = new StopWatch();
+		visTimer.start();
         CirclingCusters();
+        visTimer.stop();
+		System.out.println("Visualization TIMER " + visTimer.toString());
+		//end visualization
         HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.hecMap.createMap();

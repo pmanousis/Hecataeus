@@ -23,6 +23,7 @@ import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusClusterMap;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	
@@ -242,21 +243,33 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		}
 //		System.out.println("diametros = "+ (myRad*1.8*2));
 //		System.out.println("AVG EDGE LENGTH FOR GRAPG = "+ edgelenngthforGraph);
-		w=d.getSize().getWidth();
-		h=d.getSize().getHeight();
-		System.out.println("windth/2  "+ w/2);System.out.println("height/2  "+ h/2);
-		System.out.println("dim  "+ graph.getSize());
+//		w=d.getSize().getWidth();
+//		h=d.getSize().getHeight();
+//		System.out.println("windth/2  "+ w/2);System.out.println("height/2  "+ h/2);
+//		System.out.println("dim  "+ graph.getSize());
 	}
 
 
 	@Override
 	public void initialize() {
+		//beging clustering
+		StopWatch clusterTimer = new StopWatch();
+		clusterTimer.start();
 		HAggloEngine engine = new HAggloEngine(this.graph);
 		VisualCreateAdjMatrix cAdjM = new VisualCreateAdjMatrix(RQV);		
 		engine.executeParser(relations, queries, views, cAdjM.createAdjMatrix());
 		engine.buildFirstSolution();
 		cs = engine.execute(endC);
+		clusterTimer.stop();
+		System.out.println("Cluster TIMER " + clusterTimer.toString());
+		//end clustering
+		//begin visualization
+		StopWatch visTimer = new StopWatch();
+		visTimer.start();
 		clustersOnaCircle();
+		visTimer.stop();
+		System.out.println("Visualization TIMER " + visTimer.toString());
+		//end visualization
 		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.hecMap.createMap();

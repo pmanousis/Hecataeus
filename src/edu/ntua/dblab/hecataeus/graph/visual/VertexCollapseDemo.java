@@ -25,6 +25,7 @@ import javax.swing.JPanel;
 import org.apache.commons.collections15.Predicate;
 import org.apache.commons.collections15.Transformer;
 
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
@@ -62,9 +63,9 @@ import edu.uci.ics.jung.visualization.util.PredicatedParallelEdgeIndexFunction;
 public class VertexCollapseDemo extends JFrame {
 
 	
-	JFrame frame  = new JFrame();
+	public JFrame frame  = new JFrame();
     Graph graph;
-
+    Graph<Object, Object> gr;
     /**
      * the visual component and renderer for the graph
      */
@@ -77,11 +78,17 @@ public class VertexCollapseDemo extends JFrame {
     public VertexCollapseDemo() {
         
         // create a simple graph for the demo
-        graph = 
-            TestGraphs.getOneComponentGraph();
-        collapser = new GraphCollapser(graph);
+        //graph = TestGraphs.getOneComponentGraph();
+        graph = HecataeusViewer.graph;
+        for(Object v : graph.getVertices()){
+        	gr.addVertex(v);
+        }
+        for(Object e : graph.getEdges()){
+        	gr.addEdge(e, graph.getNeighbors(e));
+        }
+        collapser = new GraphCollapser(gr);
         
-        layout = new FRLayout(graph);
+        layout = new FRLayout(gr);
 
         Dimension preferredSize = new Dimension(400,400);
         final VisualizationModel visualizationModel = 
@@ -227,7 +234,7 @@ public class VertexCollapseDemo extends JFrame {
         reset.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                layout.setGraph(graph);
+                layout.setGraph(gr);
                 exclusions.clear();
                 vv.repaint();
             }});

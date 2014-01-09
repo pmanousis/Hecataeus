@@ -34,8 +34,6 @@ class SortedArrayList extends ArrayList{
 				
 			}
 		}
-	
-		
 		return sorted;
     }
 }
