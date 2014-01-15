@@ -3,15 +3,21 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import edu.ntua.dblab.hecataeus.HecataeusClusterMap;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 
-
+/**
+ * a static layout  
+ * used only for the overview map where each node gets the location 
+ * of the cluster it represents in the full zoom view
+ * 
+ */
 public class VisualStaticLayout extends AbstractLayout<Object, Object>{
 
+	@SuppressWarnings({ "unused", "rawtypes" })
 	private Graph graph;
 	ArrayList<VisualNode> nodes;
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public VisualStaticLayout(Graph graph, ArrayList<VisualNode> nodes) {
 		super(graph);
 		this.graph =  graph;

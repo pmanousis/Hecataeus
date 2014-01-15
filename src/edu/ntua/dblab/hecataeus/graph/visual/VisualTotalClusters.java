@@ -2,6 +2,14 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.util.ArrayList;
 
+
+/**
+ * has a list of clusters visualized
+ * and writes their info in a string variable 
+ * for printing
+ * 
+ */
+
 public class VisualTotalClusters {
 
 	private static ArrayList<VisualCluster> clusters = new ArrayList<VisualCluster>();
@@ -10,6 +18,7 @@ public class VisualTotalClusters {
 		
 	}
 	
+	@SuppressWarnings("static-access")
 	public VisualTotalClusters() {
 		if(this.clusters==null){
 			this.clusters = new ArrayList<VisualCluster>();
@@ -20,14 +29,17 @@ public class VisualTotalClusters {
 		clusters.add(cl);
 	}
 	
+	@SuppressWarnings("static-access")
 	protected void clearList(){
 		this.clusters.clear();
 	}
 	
+	@SuppressWarnings("static-access")
 	public ArrayList<VisualCluster> getClusters(){
 		return this.clusters;
 	}
 	
+	@SuppressWarnings("static-access")
 	public String getClustersData(){
 		String data = new String();
 		data+="Total num of Clusters: " + this.clusters.size()+ "\n\n";
@@ -45,10 +57,11 @@ public class VisualTotalClusters {
 		data += "\n\n\t"+avgRad+"\t\t"+avgCrossings+"\t"+avgLength+"\n";
 		return data;
 	}
-	/*
-	 * get total area covered by clusters
+	/**
+	 * @return total area covered by clusters
 	 * 
 	 */
+	@SuppressWarnings("static-access")
 	public double getTotalArea(){
 		double area = 0;
 		for(VisualCluster cl : this.clusters){

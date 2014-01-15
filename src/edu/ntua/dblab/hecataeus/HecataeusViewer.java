@@ -35,7 +35,6 @@ import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
@@ -69,10 +68,8 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
-import edu.ntua.dblab.hecataeus.graph.visual.VertexCollapseDemo;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualClusteredNodeColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
@@ -139,7 +136,7 @@ public class HecataeusViewer {
 //	private DefaultListModel<String> listModel;
 //	private JPanel panel_3;
 	public static  List<VisualGraph> graphs;
-
+private VisualTotalClusters vtc;
 	
 	/**
 	 * Launch the application.
@@ -580,12 +577,8 @@ public class HecataeusViewer {
 		frame.setSize(new Dimension(2004, 1053));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
-	//	frame.getContentPane().setLayout(new MigLayout("wrap", "[1889.00]", "[999.00]"));
 		frame.getContentPane().setLayout(new MigLayout("", "[grow,fill]", "[984.00]15[]"));
-//		MigLayout layout = new MigLayout(
-//				 "", // Layout Constraints
-//				 "[grow][][grow]", // Column constraints
-//				 "[][shrink 0]"); 
+
 		frame.setSize(prefferedSize);
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
@@ -826,7 +819,7 @@ public class HecataeusViewer {
 						frame.validate();
 						frame.repaint();
 						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+					//	System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
 						getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
 						HecataeusViewer.this.getLayoutPositions();
 						Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
@@ -842,7 +835,7 @@ public class HecataeusViewer {
 						frame.repaint();
 						
 						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-						System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
+					//	System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
 						
 						getLayout(activeViewer).setTopLayoutType(layoutType);  
 						
@@ -1009,22 +1002,7 @@ public class HecataeusViewer {
 		mnVisualize.add(chckbxmntmBigNodes);
 		vv.repaint();
 		
-		JMenuItem mntmColorCollapse = new JMenuItem("colapse");
-		mntmColorCollapse.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				EventQueue.invokeLater(new Runnable() {
-					public void run() {
-		    	VertexCollapseDemo vcd = new VertexCollapseDemo();
-		        
-		        vcd.frame.setVisible(true);
-					}
-		    	});
-				
-			}
-			
-			
-		});
-		mnVisualize.add(mntmColorCollapse);
+		
 		
 		JMenu mnTools = new JMenu("Tools");
 		menuBar.add(mnTools);
@@ -1583,21 +1561,7 @@ public class HecataeusViewer {
 			}
 		});
 		mnNodes.add(mntmQueries);
-		
-		
-		
-//		JMenuItem mntmNodes = new JMenuItem("Nodes");
-//		mntmNodes.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.this.getActiveViewer().getGraphLayout().getGraph(); 
-//				int countNodes = 0;
-//				for (VisualNode v : activeGraph.getVertices()) {
-//					if (v.getVisible())
-//						countNodes++;
-//				}
-//				JOptionPane.showMessageDialog(content, countNodes);
-//			}
-//		});
+
 		mnCount.add(mnNodes);
 		
 		JMenuItem mntmNewMenuItem = new JMenuItem("Policies");
@@ -1639,11 +1603,7 @@ public class HecataeusViewer {
 				message += edgeNum;
 				
 				message += "\n----------------------\n";
-				//double avgEL = vgec.getAvgEdgeLength();
-				///message += "Average Edge Length : "+avgEL ;
-				
-				
-				
+
 				JOptionPane.showMessageDialog(frame, message, "Edge Crossings", JOptionPane.INFORMATION_MESSAGE );
 			}
 		});
@@ -2418,26 +2378,6 @@ public class HecataeusViewer {
 		});
 		mnHelp.add(mntmAboutHecataeus);
 		
-//		panel_3 = new JPanel();
-//		panel_3.setBorder(BorderFactory.createTitledBorder("Colors"));
-//		listModel = new DefaultListModel<String>();
-////		listModel.addElement("eva");
-//		//JScrollPane listScrollPane = new JScrollPane();
-//		fileColorList = new JList<String>(listModel);
-//		fileColorList.setBackground(UIManager.getColor("background"));
-//		fileColorList.setVisibleRowCount(57);
-//		fileColorList.setOpaque(true);
-//		fileColorList.setValueIsAdjusting(false);
-//		fileColorList.setSize(20,700);
-//	//	listScrollPane.setSize(100, 700);
-//	//	listScrollPane.setViewportView(fileColorList);
-//
-//		panel_3.add(fileColorList);
-//		frame.getContentPane().add(panel_3, "cell 0 0,growy");
-//		panel_3.setSize(20, 700);
-//		//panel_3.setVisible(false);
-//		
-		
 		JSplitPane splitPane = new JSplitPane();
 		frame.getContentPane().add(splitPane, "cell 0 0,growy");
 
@@ -2496,24 +2436,7 @@ public class HecataeusViewer {
 	    return panel;
 	  }
 	
-	
-//	private void addTabbedPane() {
-//		// Create ClosableTabbedPane and override the tabAboutToClose
-//		// to be notified when certain tab is going to close.
-//		tabbedPane = new ClosableTabbedPane() {
-//
-//			public boolean tabAboutToClose(int tabIndex) {
-//				String tab = tabbedPane.getTabTitleAt(tabIndex);
-//				int choice = JOptionPane.showConfirmDialog(null,"You are about to close '" + tab+ "'\nDo you want to proceed ?","Confirmation Dialog", JOptionPane.INFORMATION_MESSAGE);
-//				if(choice == 1){
-//					countOpenTabs--;
-//				}
-//				return choice == 0; // if returned false tab closing will be
-//									// canceled
-//			}
-//		};
-//		frame.getContentPane().add(tabbedPane);
-//	}
+
 	
 	/**
 	 * Class for filtering files sql and DDL files in File chooser 
@@ -3007,7 +2930,7 @@ public class HecataeusViewer {
 		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		Sub.setViewerToGraph(vv1);
-		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.EvaTestLayout1, VisualLayoutType.EvaTestLayout1);
+		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.ZoomedLayoutForModules, VisualLayoutType.ZoomedLayoutForModules);
 		
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane myPane = new GraphZoomScrollPane(vv1);

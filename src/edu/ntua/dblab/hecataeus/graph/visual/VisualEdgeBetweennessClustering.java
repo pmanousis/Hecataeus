@@ -21,6 +21,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToggleButton;
+import javax.swing.SpringLayout;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -33,11 +34,18 @@ import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.ISOMLayout;
+import edu.uci.ics.jung.algorithms.layout.KKLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 
-
+/**
+ * jung's edge betweenes cluster
+ * @author eva
+ *
+ */
 @SuppressWarnings("serial")
 public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 
@@ -119,7 +127,6 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 	
 	private void setUpView(){
 		
-		System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!! EDGE BETWEENNESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 		final Graph<VisualNode, VisualEdge> graph = this.RQ;
 		
 		final AggregateLayout<VisualNode, VisualEdge> layout = new AggregateLayout<VisualNode, VisualEdge>(new VisualClustersOnACircleLayout((VisualGraph)graph, endC));
@@ -130,20 +137,6 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		
 		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 
-//		HecataeusViewer.vv.getRenderContext().setEdgeDrawPaintTransformer(MapTransformer.<VisualEdge,Paint>getInstance(edgePaints));
-		
-//		HecataeusViewer.vv.getRenderContext().setVertexStrokeTransformer(new Transformer<VisualNode,Stroke>() {
-//			protected final Stroke THIN = new BasicStroke(1);
-//				protected final Stroke THICK= new BasicStroke(2);
-//				public Stroke transform(VisualNode v){
-//					Paint c = edgePaints.get(v);
-//					if (c == Color.LIGHT_GRAY)
-//						return THIN;
-//					else 
-//						return THICK;
-//				}
-//		    });
-		
 		final JToggleButton groupVertices = new JToggleButton("Group Clusters");
 		
 		//Create slider to adjust the number of edges to remove when clustering
@@ -171,7 +164,6 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		
 		final TitledBorder sliderBorder = BorderFactory.createTitledBorder(eastSize);
 		eastControls.setBorder(sliderBorder);
-		//eastControls.add(eastSize);
 		eastControls.add(Box.createVerticalGlue());
 		
 		groupVertices.addItemListener(new ItemListener() {
@@ -197,8 +189,6 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 			}
 		});
 		
-
-//		south = new JPanel();
 		JPanel grid = new JPanel(new GridLayout(2,1));
 		grid.add(groupVertices);
 		south.add(grid);
@@ -229,14 +219,6 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 			}
 			i++;
 		}
-//		for (VisualEdge e : g.getEdges()) {
-//			
-//			if (edges.contains(e)) {
-//				edgePaints.put(e, Color.lightGray);
-//			} else {
-//				edgePaints.put(e, Color.black);
-//			}
-//		}
 	}
 	
 	private static void colorCluster(Set<VisualNode> vertices, Color c) {
@@ -253,6 +235,7 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 				subGraph.addVertex(v);
 			}
 			Layout<VisualNode,VisualEdge> subLayout =  new VisualCirclesLayout(subGraph);
+
 			subLayout.setInitializer(HecataeusViewer.getActiveViewer().getGraphLayout());
 			subLayout.setSize(new Dimension(40,40));
 			

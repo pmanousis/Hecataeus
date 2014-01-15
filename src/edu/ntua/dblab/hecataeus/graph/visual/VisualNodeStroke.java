@@ -13,7 +13,11 @@ import org.apache.commons.collections15.Transformer;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
-
+/**
+ * 
+ * @author eva
+ * stroke type for nodes
+ */
 public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 	
 	private static int i = 0;
@@ -52,7 +56,6 @@ public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 			mediumOut = new BasicStroke(3f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 2.0f, dashing, 0f);
 		}
 		if (picked.isPicked(v)){
-//			System.out.println("PICKED  " + v.toString());
 			return heavy;
 		}
 		else{

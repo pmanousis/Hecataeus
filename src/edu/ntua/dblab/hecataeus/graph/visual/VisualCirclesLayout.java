@@ -5,10 +5,14 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.uci.ics.jung.graph.Graph;
 
+/**
+ * 
+ * @author eva
+ * circular layout used only for edgebetweeness clusring
+ */
 public class VisualCirclesLayout extends VisualConcentricCircleLayout{
 
 	private Graph graph;
@@ -20,6 +24,7 @@ public class VisualCirclesLayout extends VisualConcentricCircleLayout{
 		super(g);
 		this.graph = g;
 	}
+	@SuppressWarnings("unchecked")
 	public void initialize() {
 		Dimension d = getSize();
 		
@@ -48,10 +53,7 @@ public class VisualCirclesLayout extends VisualConcentricCircleLayout{
 			double angle = (2*Math.PI*cnt)/nodes.size();
 			coord.setLocation(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2);
 			n.setLocation(coord);
-			dosomething(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2, n, 0);
 			cnt++;
-//			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(n, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-			HecataeusViewer.getActiveViewer().repaint();
 		}
 		
 	}

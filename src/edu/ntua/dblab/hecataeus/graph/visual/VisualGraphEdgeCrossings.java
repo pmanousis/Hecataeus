@@ -6,7 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-
+/**
+ * count edge crossings of graph
+ * @author eva
+ *
+ */
 public class VisualGraphEdgeCrossings {
 
 	protected VisualGraph graph;

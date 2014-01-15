@@ -1,4 +1,7 @@
 package clusters.HACAlgorithms;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -26,7 +29,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 		double copyDist[][];
 		ClusterSet lastSolution = solutions.get(numClusterSets-1);
 		int endC;
-		System.out.println("ALGO \nObjs:"+numObjects+"\tCLS:"+numClusterSets+"\n");
+//		System.out.println("ALGO \nObjs:"+numObjects+"\tCLS:"+numClusterSets+"\n");
 		/*
 		 * 0. compute pairwise distances
 		 * 1. clone last solution
@@ -58,7 +61,7 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 					copyDist[j][i] = currDist;
 
 					//highlight the single pair with the minimum distance
-					if (currDist < minDist){
+					if (currDist <= minDist){
 						minPos1 = i;
 						minPos2 = j;
 						minDist = currDist;
@@ -67,9 +70,9 @@ public class SimpleHAC_AvgLink extends HACAlgorithm {
 				}
 				copyDist[i][i] = 0;
 			}
-			
-			if(minDist==end)
-			{
+//			BigDecimal MD = new BigDecimal(minDist).round(new MathContext(1, RoundingMode.HALF_DOWN));
+//			BigDecimal e = new BigDecimal(end).round(new MathContext(1, RoundingMode.HALF_DOWN));
+			if(minDist == end){
 				break;
 			}
 			

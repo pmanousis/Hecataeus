@@ -335,7 +335,7 @@ public class Parser extends PreparatoryEngine {
 		adjMatrix = new int[numObjects][numObjects];
 //		adjMatrix = adjMatrixFromInput;
 		adjMatrix = adjM;
-		System.out.println(adjMatrix);
+//		System.out.println(adjMatrix);
 		/****************** i eva ta ekane comment ***************/
 //		for (int i =0; i <numTables; i++){
 //			for (int j = 0; j < numQueries; j++){

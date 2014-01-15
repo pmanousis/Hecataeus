@@ -73,9 +73,9 @@ public class HAggloEngine {
 			clustId++;
 		}
 		orgSolution.createDistances(clustId);
-		System.out.println("Num of Original clusters: " + orgSolution.getClusters().size()+  "\n");
+//		System.out.println("Num of Original clusters: " + orgSolution.getClusters().size()+  "\n");
 		solutions.add(orgSolution);
-		System.out.println("Num of Solutions: " + solutions.size()+ "\n");
+//		System.out.println("Num of Solutions: " + solutions.size()+ "\n");
 	}
 	
 	public void printResultsConsole(){
@@ -91,7 +91,7 @@ public class HAggloEngine {
 	//	prsr.parseFile(fileName);
 		prsr.parseFile("/home/eva/clusters/test.ascii", relations, queries, views);
 		int numNodes = prsr.produceFacetedObjects();
-		System.out.println("Preprocessing gave " + numNodes + " nodes overall");
+//		System.out.println("Preprocessing gave " + numNodes + " nodes overall");
 		prsr.testPreparatoryEngine();
 		prsr.produceAdjMatrix(adjM);
 		try {
@@ -121,9 +121,9 @@ public class HAggloEngine {
 			clustId++;
 		}
 		orgSolution.createDistances(clustId);
-		System.out.println("Num of Original clusters: " + orgSolution.getClusters().size()+  "\n");
+//		System.out.println("Num of Original clusters: " + orgSolution.getClusters().size()+  "\n");
 		solutions.add(orgSolution);
-		System.out.println("Num of Solutions: " + solutions.size()+ "\n");
+//		System.out.println("Num of Solutions: " + solutions.size()+ "\n");
 	}
 	
 //	private int numObjects = 0;

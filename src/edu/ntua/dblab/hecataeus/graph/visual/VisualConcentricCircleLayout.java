@@ -21,6 +21,14 @@ import edu.uci.ics.jung.algorithms.scoring.BarycenterScorer;
 import edu.uci.ics.jung.algorithms.scoring.BetweennessCentrality;
 import edu.uci.ics.jung.algorithms.shortestpath.Distance;
 import edu.uci.ics.jung.graph.Hypergraph;
+/**
+ * 
+ * @author eva
+ * concentric circle layout 
+ * nodes are not clustered for this layout
+ * one circle for node types : relation query view
+ * the circles are ordered in to out from fewer number of nodes for each node type to more 
+ */
 
 public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,VisualEdge> {
 
@@ -84,25 +92,13 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 		return queryRadius;
 	}
 
-
-	public void scorer(){
-
-		BetweennessCentrality beetwc = new BetweennessCentrality(graph);
-		
-		//BarycenterScorer bc = new BarycenterScorer((Graph)graph);
-		Double[] dist = null;
-		int i = 0;
-		for(Object v : graph.getVertices()){
-			//dist[i] = bc.getVertexScore(v);
-			beetwc.getVertexScore(v);
-			VisualNode vn = (VisualNode)v; 
-			beetwc.getEdgeScore(vn._inEdges.get(0));
-			//System.out.println(dist);
-			i++;
-		}
-		
-	}
-	
+	/**
+	 * 
+	 * @param comparator
+	 * can be used to sort each type of nodes in some way
+	 * not implemeted here
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void setRelationVertexOrder(Comparator<VisualNode> comparator){
 		if (relations == null){
 			for(VisualNode v : nodes){
@@ -113,7 +109,13 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 		Collections.sort((List)relations, comparator);
 	}
 	
-	
+	/**
+	 * 
+	 * @param comparator
+	 * can be used to sort each type of nodes in some way
+	 * not implemeted here
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void setViewVertexOrder(Comparator<VisualNode> comparator){
 		if (views == null){
 			for(VisualNode v : nodes){
@@ -124,7 +126,13 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 		Collections.sort((List)views, comparator);
 	}
 	
-	
+	/**
+	 * 
+	 * @param comparator
+	 * can be used to sort each type of nodes in some way
+	 * not implemeted here
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void setQueryVertexOrder(Comparator<VisualNode> comparator){
 		if (queries == null){
 			for(VisualNode v : nodes){
@@ -154,63 +162,41 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 
 			Collections.sort(sizes);
 			
-			/*
+			/**
 			 * 
-			 * calculate every radius
+			 * calculate every radius for each node type
 			 * 
 			 */
 			
 			double tempRad = 0;
 			if (relationRadius <= 0) {
-//				relationRadius = 0.45 * (height < width ? height/3 : width/3);
-//				relationRadius = 0.45 * (height < width ? height : width);
-				
+
 				if(relations.size() == sizes.get(0)){           // ta relations einai ta ligotera
 					relationRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				//	tempRad = relationRadius;
 				}else if(relations.size() == sizes.get(1)){     //ta relations einai ta mesaia
 					relationRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				//	relationRadius+=tempRad;
-				//	tempRad = relationRadius;
 				}else{    // ta relations einai ta perissotera
 					relationRadius = 0.45 * (height < width ? height : width)+100;
-				//	relationRadius+=tempRad;
 				}
 			}
 			
 			if (viewRadius <= 0) {
-//				viewRadius = 0.45 * (height < width ? height/2 : width/2);
-//				viewRadius = 0.45 * (height < width ? height*2 : width*2);
-//				viewRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				
 				if(views.size() == sizes.get(0)){           // ta views einai ta ligotera
 					viewRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				//	tempRad = viewRadius;
 				}else if(views.size() == sizes.get(1)){     //ta views einai ta mesaia
 					viewRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				//	viewRadius+=tempRad;
-				//	tempRad = viewRadius;
 				}else{    // ta views einai ta perissotera
 					viewRadius = 0.45 * (height < width ? height : width)+100;
-				//	viewRadius+=tempRad;
 				}
 			}
 			
 			if (queryRadius <= 0) {
-//				queryRadius = 0.45 * (height < width ? height : width);
-//				queryRadius = 0.45 * (height < width ? height*3 : width*3);
-//				queryRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				
 				if(queries.size() == sizes.get(0)){           // ta queries einai ta ligotera
 					queryRadius = 0.45 * (height < width ? height*sizes.get(0)/sizes.get(1) : width*sizes.get(0)/sizes.get(1));
-				//	tempRad = queryRadius;
 				}else if(queries.size() == sizes.get(1)){     //ta queries einai ta mesaia
 					queryRadius = 0.45 * (height < width ? height*sizes.get(1)/sizes.get(2) : width*sizes.get(1)/sizes.get(2));
-				//	queryRadius+=tempRad;
-				//	tempRad = queryRadius;
 				}else{    // ta queries einai ta perissotera
 					queryRadius = 0.45 * (height < width ? height : width)+100;
-				//	queryRadius+=tempRad;
 				}
 			}
 			
@@ -244,15 +230,13 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 			dosomething(Math.cos(angle) * radius + width/2 , Math.sin(angle) * radius + height/2, n, 0);
 			cnt++;
 			n.setNodeAngle(angle);
-//			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(n, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-//			HecataeusViewer.getActiveViewer().repaint();
 		}
 		
 	}
 
 	/**
 	 * 
-	 * 
+	 * visualizes lower lever nodes in a circle around the module they belong
 	 * @param x  x coordinate of inner circle
 	 * @param y  y coord of inner circle
 	 * @param node

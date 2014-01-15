@@ -17,7 +17,13 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 
 
 
-
+/**
+ * @author eva
+ * calculates cluster data
+ * calculates labels for clusters
+ * calculates the number of edges inside a cluster and their crossings
+ * calculates edge length in a cluster
+ */
 public class VisualCluster {
 
 	private double rad;
@@ -27,13 +33,11 @@ public class VisualCluster {
 	private double cx;
 	private double cy;
 	private int id;
-	private double area;
 	private double lineLenght = 0;
 	private String label;
 	
 	private int edgeCrossCluster = 0;
 	public VisualCluster(){
-		
 	}
 	
 	public VisualCluster(double r, ArrayList<VisualNode> rn, ArrayList<VisualNode>vn, ArrayList<VisualNode>qn, double x, double y, int id){
@@ -116,7 +120,6 @@ public class VisualCluster {
 			}
 			int sum = 0;
 			for(Map.Entry<VisualNode, Integer> entry : relations.entrySet()){
-				System.out.println("key  " + entry.getKey() + " value "+ entry.getValue());
 				sum+=entry.getValue();
 			}
 			int avg = (int)sum/relations.size();
@@ -125,7 +128,6 @@ public class VisualCluster {
 					names+=entry.getKey()+"-";
 				}
 			}
-			System.out.println("names  " + names);
 			return names;
 		}
 	}

@@ -4,7 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-
+/**
+ * 
+ * @author eva
+ * creates Adjacency matrix for clustering
+ */
 public class VisualCreateAdjMatrix {
 
 	private List<VisualNode> RQV;
@@ -16,7 +20,6 @@ public class VisualCreateAdjMatrix {
 	}
 	
 	protected int[][] createAdjMatrix(){
-		System.out.println("----- creating adj matrix  -------");
 		int[][] adj = new int [this.RQV.size()][this.RQV.size()];
 		int pos = 0, k = 0;
 		for(int i = 0; i < this.RQV.size(); i++){
@@ -36,7 +39,6 @@ public class VisualCreateAdjMatrix {
 				}
 			}
 		}
-		System.out.println("----- done !!----------");
 		return adj;
 	}
 }

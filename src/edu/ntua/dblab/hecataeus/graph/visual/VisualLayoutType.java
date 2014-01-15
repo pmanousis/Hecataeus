@@ -30,17 +30,16 @@ public enum VisualLayoutType {
 	FRLayout,
 	ISOMLayout,
 	SpringLayout,
-	EvaTestLayout,
-	AnOtherEvaTestLayout,
-	EvaTestLayout1,
+	ZoomedLayoutForModules,
+	ZoomedLayoutForModulesV2,
 	ConcentricCircleLayout,
 	ClustersonaCircleLayout,
-	CirclingClusterLayout,
-	CirclingClusterLayoutV2,
-	CirclingClusterLayoutV3,
+	ConcentricCirclesClusterLayout,
+	ConcentricCirclesClusterLayoutV2,
+	ConcentricCirclesClusterLayoutV3,
+	ConcentricArcsClusterLayout,
 	DebianCircleLayout,
 	StarLayout,
-	PizzaSliceLayout,
 	EdgeBetweennessClustering;
 
 		/**
@@ -75,28 +74,26 @@ public enum VisualLayoutType {
 				return "Left to Right Topological Layout (Inverse)";
 			case Down2TopTopologicalLayout:
 				return "Bottom Up Topological Layout";
-			case EvaTestLayout:
-				return "EvaTestLayout";
-			case AnOtherEvaTestLayout:
-				return "AnOtherEvaTestLayout";
-			case EvaTestLayout1:
-				return "EvaTestLayout1";
+			case ZoomedLayoutForModulesV2:
+				return "Zoomed Layout For Modules V2";
+			case ZoomedLayoutForModules:
+				return "Zoomed Layout For Modules";
 			case ConcentricCircleLayout:
 				return "ConcentricCircleLayout";
 			case ClustersonaCircleLayout:
 				return "Clusters on a Circle";
-			case CirclingClusterLayout:
-				return "Clusters on Concentric Circle Segments";
-			case CirclingClusterLayoutV2:
-				return "Clusters on Concentric Circle Segments V2";
-			case CirclingClusterLayoutV3:
-				return "Clusters on Concentric Circle Segments V3";
+			case ConcentricCirclesClusterLayout:
+				return "Clusters on Concentric Circles";
+			case ConcentricCirclesClusterLayoutV2:
+				return "Clusters on Concentric Circles V2";
+			case ConcentricCirclesClusterLayoutV3:
+				return "Clusters on Concentric Circles V3";
 			case DebianCircleLayout:
-				return "Spiral";
+				return "Clusters on a Spiral";
 			case StarLayout:
 				return "Star Layout";
-			case PizzaSliceLayout:
-				return "Pizza Slice Cluster Layout";
+			case ConcentricArcsClusterLayout:
+				return "Clusters on Concentric Arcs";
 			case EdgeBetweennessClustering:
 				return "Edge Betweenness Clustering";
 			default:
@@ -162,38 +159,36 @@ public enum VisualLayoutType {
 				return new VisualTopologicalLayout(g, Orientation.INVERSELEFT2RIGHT);
 			case RadialTreeLayout:
 				return new RadialTreeLayout<VisualNode, VisualEdge>(new DelegateForest<VisualNode, VisualEdge>(g));
-			case EvaTestLayout:
-				return new VisualTopologicalLayout(g, Orientation.evaTest);
-			case AnOtherEvaTestLayout:
-				return new VisualTopologicalLayout(g, Orientation.evaTest1);
-			case EvaTestLayout1:
-				return new VisualTopologicalLayout(g, Orientation.evaTest2);
+			case ZoomedLayoutForModulesV2:
+				return new VisualTopologicalLayout(g, Orientation.ZoomedLayoutForModulesV2);
+			case ZoomedLayoutForModules:
+				return new VisualTopologicalLayout(g, Orientation.ZoomedLayoutForModules);
 			case ConcentricCircleLayout:
 				return new VisualConcentricCircleLayout(g);
 			case ClustersonaCircleLayout:
 				HecataeusInputDialog d1 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualClustersOnACircleLayout(g, d1.getC());
-			case CirclingClusterLayout:
+			case ConcentricCirclesClusterLayout:
 				HecataeusInputDialog d2 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
-				return new VisualCirclingClustersLayout(g, d2.getC());
+				return new VisualConcentricCirlesClustersLayout(g, d2.getC());
 			case DebianCircleLayout:
 				HecataeusInputDialog d3 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualDebianCircleLayout(g, d3.getC());
 			case StarLayout:
 				HecataeusInputDialog d5 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualStarLayout(g, d5.getC());
-			case PizzaSliceLayout:
+			case ConcentricArcsClusterLayout:
 				HecataeusInputDialog d6 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
-				return new VisualPizzaSliceClusterLayout(g, d6.getC());
+				return new VisualConcentricArcsClusterLayout(g, d6.getC());
 			case EdgeBetweennessClustering:
 				HecataeusInputDialog d7 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualEdgeBetweennessClustering(g, d7.getC());
-			case CirclingClusterLayoutV2:
+			case ConcentricCirclesClusterLayoutV2:
 				HecataeusInputDialog d8 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
-				return new VisualCirclingClustersLayoutV2(g, d8.getC());
-			case CirclingClusterLayoutV3:
+				return new VisualConcetricCirclesClustersLayoutV2(g, d8.getC());
+			case ConcentricCirclesClusterLayoutV3:
 				HecataeusInputDialog d9 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
-				return new VisualCirclingClustersLayoutV3(g, d9.getC());
+				return new VisualConcetricCirclesClustersLayoutV3(g, d9.getC());
 			default: 
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}

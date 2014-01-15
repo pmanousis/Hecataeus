@@ -24,10 +24,10 @@ public abstract class PreparatoryEngine {
 	public abstract void produceDistanceMatrix(DistanceFunctionEnum F) throws IOException;
 	
 	public void testPreparatoryEngine(){
-		System.out.println("Number of Tables: " + numTables + " " + inputTables.size());
-		System.out.println("Number of Queries: " + numQueries + " " + inputQueries.size());
+//		System.out.println("Number of Tables: " + numTables + " " + inputTables.size());
+//		System.out.println("Number of Queries: " + numQueries + " " + inputQueries.size());
 		
-		System.out.println("Number of Views: " + numViews + " " + inputViews.size());
+//		System.out.println("Number of Views: " + numViews + " " + inputViews.size());
 		
 		for(ClusterableObject co: inputObjects){
 //			System.out.println(co.printClusterableObject());

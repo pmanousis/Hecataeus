@@ -28,10 +28,17 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
 import edu.uci.ics.jung.visualization.picking.LayoutLensShapePickSupport;
 import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
-
+/**
+ * draws the overview map
+ * @author eva
+ *
+ */
+@SuppressWarnings("serial")
 public class HecataeusClusterMap extends JPanel{
 	
+	@SuppressWarnings("rawtypes")
 	public VisualizationViewer myViewer;
+	@SuppressWarnings("unused")
 	private HecataeusViewer hec;
 	private ArrayList<VisualNode> myNodes = new ArrayList<VisualNode>();
 	
@@ -39,6 +46,7 @@ public class HecataeusClusterMap extends JPanel{
 		this.hec = hec;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createMap(){
 		myNodes.clear();
 		if(myViewer!=null){
@@ -76,14 +84,9 @@ public class HecataeusClusterMap extends JPanel{
 		myViewer.setVertexToolTipTransformer(new VisualNodeToolTips());
 		RenderContext<VisualNode, VisualEdge>  pr = myViewer.getRenderContext();
 		pr.setVertexLabelTransformer(new VisualNodeLabel());
-		myViewer.getRenderer().getVertexLabelRenderer().setPosition(Position.AUTO); 
-		//myViewer.getRenderContext().setEdgeStrokeTransformer(new ConstantTransformer(new BasicStroke(0.1f)));
+		myViewer.getRenderer().getVertexLabelRenderer().setPosition(Position.AUTO);
 		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9)));
-		//pr.setEdgeShapeTransformer(new EdgeShape.Line());  //quad 
-		//pr.setEdgeLabelTransformer(new VisualEdgeLabel());
 		pr.setVertexFillPaintTransformer(new VisualNodeColor(myViewer.getPickedVertexState()));
-		//pr.setEdgeDrawPaintTransformer(new VisualEdgeDrawColor(myViewer.getPickedEdgeState()));
-		//pr.setEdgeFillPaintTransformer( new VisualEdgeColor(myViewer.getPickedEdgeState()));
 		pr.setVertexShapeTransformer(new VisualNodeShape());
 		pr.setVertexIncludePredicate(new VisualNodeVisible());
 		myViewer.getRenderContext().getMultiLayerTransformer().addChangeListener(myViewer);

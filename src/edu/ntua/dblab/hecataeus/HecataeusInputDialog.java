@@ -69,7 +69,7 @@ public class HecataeusInputDialog extends JDialog{
 		
 		btnOk.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(slider.getValue()*0.1);
+			//	System.out.println(slider.getValue()*0.1);
 				clustering = slider.getValue()*0.1;
 				dispose();
 			}

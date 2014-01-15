@@ -1,7 +1,6 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,9 +12,8 @@ import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.graph.util.EdgeType;
 
-public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
+public class VisualConcetricCirclesClustersLayoutV3 extends VisualCircleLayout{
 
 	
 	protected VisualGraph graph;
@@ -25,12 +23,13 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 	private List<VisualNode> views;
 	private ClusterSet cs;
 	private static int clusterId = 0;
-	private VisualTotalClusters clusterList;
+	private double edgelenngthforGraph = 0;
 	protected List<String> files;
 	private List<VisualNode> RQV;
 	protected VisualCircleLayout vcl;
-	private double edgelenngthforGraph = 0;
-	protected VisualCirclingClustersLayoutV2(VisualGraph g, double endC) {
+	private VisualTotalClusters clusterList;
+	
+	protected VisualConcetricCirclesClustersLayoutV3(VisualGraph g, double endC) {
 		super(g);
 		this.graph = g;
 		this.endC = endC;
@@ -44,7 +43,7 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		files = new ArrayList<String>(vcl.files);
 		
 	}
-
+//
 //	private void circles(List<VisualNode> nodes, double cx, double cy){
 //		int b = 0;
 //		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
@@ -84,22 +83,8 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 //		}
 //		clusterId++;
 //		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
-//		VisualNode clusterNode = new VisualNode("TEST"+clusterId,NodeType.NODE_TYPE_CLUSTER);
-//		
-////		Point2D cluLoc = transform(clusterNode);
-////		cluLoc.setLocation(cx,cy);
-////		clusterNode.setLocation(cluLoc);
-////		
-////		clusterNode.setVisible(true);
-////		HecataeusViewer.layout.getGraph().addVertex(clusterNode);
-////		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(clusterNode, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-////		HecataeusViewer.getActiveViewer().setVertexToolTipTransformer(new VisualNodeToolTips());
-////		int tralala = (int)getSmallRad(nodes);
-////		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape(tralala*10));
-////		HecataeusViewer.getActiveViewer().repaint();
 //		cluster.printInClusterEdges();
 //	}
-	
 	private void circles(List<VisualNode> nodes, double cx, double cy){
         int b = 0, relwithoutQ = 0;
         ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
@@ -141,9 +126,9 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
         }
         for(VisualNode r : rc){
         	ArrayList<VisualNode> queriesforR = new ArrayList<VisualNode>(getQueriesforR(r));
-        	qAngle = placeQueries(queriesforR, cx, cy, qRad, qAngle, Q);
+        	qAngle = placeQueries(queriesforR, cx, cy, qRad, Q);
         	sAngle += qAngle;
-        	placeRelation(r, qAngle, sAngle, relationRad, cx, cy, newAngle);
+        	placeRelation(r, qAngle, sAngle, relationRad, cx, cy,newAngle);
         }
         placeViews(vc, relationRad, qRad, cx, cy);
         placeOutQueries(nodes, qRad, cx, cy);
@@ -155,7 +140,6 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		cluster.printInClusterEdges();
 		edgelenngthforGraph += cluster.getLineLength();
 	}
-	
 	protected void CirclingCusters(){
 		clusterList = new VisualTotalClusters();
 		clusterList.clearList();
@@ -167,75 +151,44 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 		ArrayList<ArrayList<VisualNode>> sortedV = new ArrayList<ArrayList<VisualNode>>();
 		Collections.sort(vertices, new ListComparator());
 		sortedV.addAll(vertices);
-		//new
-		Collections.sort(sortedV,new ReverseListComparator());
+
 //		System.out.println(sortedV);
 		
 		double myRad = 1.0;
 		
 		ArrayList<ArrayList<ArrayList<VisualNode>>> sublistofClusters = new ArrayList<ArrayList<ArrayList<VisualNode>>>();
-//		while((int) Math.pow(2, myRad)<sortedV.size()){
-//			//new ebala to -1 gia na ksekinaei apo 0
-//			ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) (Math.pow(2, myRad-1))-1, (int) (Math.pow(2, myRad))-1));
-//			sublistofClusters.add(tmpVl);
-//			myRad++;
-//		}
-//		ArrayList<ArrayList<VisualNode>> tmpVl=new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), sortedV.size()));
-//		sublistofClusters.add(tmpVl);
-		int counter = 0, p = 1;
-		do{
-			int start = counter;
-			int size = (int)Math.pow(2, p);
-			int end =  (start+(size) >= sortedV.size() ? sortedV.size()-1 : start+(size));
-			ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(sortedV.subList(start, end));
+		while((int) Math.pow(2, myRad)<sortedV.size()){
+			//new ebala to -1 gia na ksekinaei apo 0
+			ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) (Math.pow(2, myRad-1)), (int) (Math.pow(2, myRad))));
 			sublistofClusters.add(tmpVl);
-			counter += size;
-			p++;
-		}while(counter < sortedV.size());
-		sublistofClusters.add(sublistofClusters.size(), new ArrayList<ArrayList<VisualNode>>(sortedV.subList(sortedV.size()-1, sortedV.size())));
+			myRad++;
+		}
+		ArrayList<ArrayList<VisualNode>> tmpVl=new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), sortedV.size()));
+		sublistofClusters.add(tmpVl);
+		sublistofClusters.add(0, new ArrayList<ArrayList<VisualNode>>(sortedV.subList(0, 1)));
 
-		
-		
+//		int counter = 0, p = 1;
+//		do{
+//			int start = counter;
+//			int size = (int)Math.pow(2, p);
+//			int end =  (start+(size) >= sortedV.size() ? sortedV.size()-1 : start+(size));
+//			ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(sortedV.subList(start, end));
+//			sublistofClusters.add(tmpVl);
+//			counter += size;
+//			p++;
+//		}while(counter < sortedV.size());
 		
 
-//		System.out.println(sublistofClusters);
-//new!!
-	//	Collections.reverse(sublistofClusters);
-		
+		Collections.reverse(sublistofClusters);
 
 		double bigCircleRad = 0.0;
 		double bigClusterRad = 0.0;
-//		System.out.println(sublistofClusters);
-		double biggestClusterRad = getSmallRad(sublistofClusters.get(0).get(0));
-		int diam = 0;
 		double prevRad =0.0;
 		for(ArrayList<ArrayList<VisualNode>> listaC: sublistofClusters){
 			ArrayList<ArrayList<VisualNode>> tmp ;
-			if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
-				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)+1));
-				//tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(0));
-			}
-			else{
-				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)));	
-//				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(0));
-			}
-
-//			bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
-			//new
-		//	bigClusterRad += getSmallRad(tmp.get(0));
-
-			if(diam>0){
-				bigClusterRad += getSmallRad(tmp.get(0));
-			//	bigCircleRad = 2*bigClusterRad+2*biggestClusterRad;
-				bigCircleRad = prevRad+ bigClusterRad*2;
-			}else{
-				bigClusterRad += getSmallRad(tmp.get(0)) + getSmallRad(tmp.get(1));
-				bigCircleRad = (bigClusterRad)*1.2;// white space between circle layers
-			}
-			prevRad = bigCircleRad;
-			
-			
-			diam++;
+			tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(0));
+			bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
+			bigCircleRad = prevRad+ bigClusterRad*1.2;
 //			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
 			
 			
@@ -261,7 +214,6 @@ public class VisualCirclingClustersLayoutV2 extends VisualCircleLayout{
 				
 				
 			}
-			//System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}
 		HecataeusViewer.getActiveViewer().repaint();
 	}

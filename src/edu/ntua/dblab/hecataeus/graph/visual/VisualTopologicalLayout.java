@@ -29,9 +29,8 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		LEFT2RIGHT,
 		TOP2DOWN,
 		INVERSELEFT2RIGHT,
-		evaTest,
-		evaTest1,
-		evaTest2
+		ZoomedLayoutForModules,
+		ZoomedLayoutForModulesV2
 		;
 	}
 	
@@ -96,17 +95,13 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	case TOP2DOWN:
     		initializeUpBottom();
     		break;
-    	case evaTest:
+    	case ZoomedLayoutForModulesV2:
     		init();
-    		testTest();
+    		ZoomedLayoutForModulesV2();
     		break;
-    	case evaTest1:
+    	case ZoomedLayoutForModules:
     		init();
-    		evaTest1();
-    		break;
-    	case evaTest2:
-    		init();
-    		evaTest2();
+    		ZoomedLayoutForModules();
     		break;
     	default:
     		initializeRight2Left();
@@ -376,7 +371,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	}
 	
 	
-	private void evaTest1(){
+	private void ZoomedLayoutForModulesV2(){
 		if (initialPosition  == null)
 			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
 		else
@@ -460,7 +455,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	}
 	
 	
-	private void evaTest2(){
+	private void ZoomedLayoutForModules(){
 		
 		if (initialPosition  == null)
 			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
@@ -502,297 +497,8 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			//set the location of the next group that is visualized
 			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
 		}
-		
-//		if (initialPosition  == null)
-//			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight())
-//		else
-//			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
-//		
-//		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
-//		double rx = 0;
-//		//use a list to add/remove nodes from the graph for layout reasons
-//		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
-//		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
-//		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
-//		for (VisualNode v: nodes) 
-//			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
-//		List<VisualNode> queries = new ArrayList<VisualNode>();
-//		List<VisualNode> relations = new ArrayList<VisualNode>();
-//		List<VisualNode> views = new ArrayList<VisualNode>();
-//		for(VisualNode v : nodes){
-//			if(v.getType() == NodeType.NODE_TYPE_QUERY){
-//				queries.add(v);
-//			}
-//			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
-//				relations.add(v);
-//			}
-//			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
-//				views.add(v);
-//			}
-//		}
-//
-//		double prevx = graph.getCenter().getX()+900;
-//		for(VisualNode q : queries){
-//			System.out.println(q.getName());
-//			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/queries.size(),60)));
-//			location = new Point2D.Double(prevx, cntQuery);
-//			super.setLocation(q,location);
-//			
-//			//location.setLocation(graph.getCenter().getX()+700, cntQuery);
-//			q.setLocation(location);
-//			graph.setLocation(q, location);
-//		//	cntQuery = relations.size()*100;
-//			System.out.println("QUERIES  " + q.getName() + "  y  " + cntQuery);
-//		//	cntQuery += ((relations.size()*100) - 100/(queries.size()-1))+100;
-//			System.out.println(relations.size());
-//			System.out.println(queries.size());
-//			cntQuery += ((relations.size()*100) - 100)/(queries.size()-1);
-//			System.out.println(cntQuery);
-//		}
-//		int j = 0;
-//		double prevyV = (relations.size()*100)/2;
-//		TreeMap<Double, VisualNode> idQueries = new TreeMap<Double, VisualNode>();
-//		for(VisualNode v : views){
-//			idQueries.put(v.ID, v);
-//		}
-//		Map reverseOrderedMap = new TreeMap(idQueries.descendingMap());
-//		System.out.println("VIEWS  map" + reverseOrderedMap);
-//		Collection c = reverseOrderedMap.values();
-//		Iterator itr = c.iterator();
-//		
-//		Set keys = reverseOrderedMap.keySet();
-//		for (Iterator it = keys.iterator(); it.hasNext();) {
-//			Double key = (Double)it.next();
-//			VisualNode viewNode = (VisualNode) reverseOrderedMap.get(key);
-//			System.out.println(key + " = " + viewNode);
-//				
-//	//		OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/views.size(),60)));
-//			location = new Point2D.Double(graph.getCenter().getX()+500-j, prevyV);
-//			
-//			double temp = graph.getCenter().getX()+500-j;
-//			
-//			j+=150;
-//			viewNode.setLocation(location);
-//			graph.setLocation(viewNode, location);
-//			super.setLocation(viewNode,location);
-//			cntView+=100;
-//			System.out.println(viewNode.getName()+ "  loc x "+ temp + "  loc y   " + prevyV);
-//			System.out.println(viewNode.getName()+ "!!!!  loc "+  location);
-//			rx = graph.getCenter().getX()+500-j;
-//		}
-//		for(VisualNode r : relations){
-//			System.out.println("+++++ "+r.getName());
-//			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
-//			location = new Point2D.Double(rx, cntRelation);
-//			super.setLocation(r,location);
-//			location.setLocation(rx, cntRelation);
-//			r.setLocation(location);
-//			graph.setLocation(r, location);
-//			Point2D loc1 = graph.getLocation(r);
-//			System.out.println(r.getName()+ "  loc x "+ rx + "  loc y   " + cntRelation);
-//
-//			cntRelation+=100;
-//		}
 	}
-	
-	
-	private void testTest(){
-		
 
-		if (initialPosition  == null)
-			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
-		else
-			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
-
-		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
-		
-		//OFFSET.setLocation(new Point2D.Double(-this.getSize().width/2,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
-		
-		//use a list to add/remove nodes from the graph for layout reasons
-		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
-		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
-		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
-		for (VisualNode v: nodes) 
-			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
-		List<VisualNode> queries = new ArrayList<VisualNode>();
-		List<VisualNode> relations = new ArrayList<VisualNode>();
-		List<VisualNode> views = new ArrayList<VisualNode>();
-		List<VisualNode> Tempviews = new ArrayList<VisualNode>();
-		for(VisualNode v : nodes){
-			if(v.getType() == NodeType.NODE_TYPE_QUERY){
-				queries.add(v);
-			}
-			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				relations.add(v);
-			}
-			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
-				Tempviews.add(v);
-				views.add(v);
-			}
-		}
-		
-		for(VisualNode v : views){
-			
-			System.out.println("---- "+v.getName());
-			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/views.size(),60)));
-			location = new Point2D.Double(graph.getCenter().getX()+400, cntView);
-			super.setLocation(v,location);
-			
-	//		location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-			location.setLocation(graph.getCenter().getX()+400, cntView);
-			v.setLocation(location);
-			graph.setLocation(v, location);
-			Point2D loc1 = graph.getLocation(v);
-			int temp = cntView;
-	//		cntView+=100;
-	//		cntView = cntRelation - 100;
-	//		temp = cntView;
-			System.out.println("---- "+v.getName()   + "  y  " + temp);
-			List<VisualNode> viewToQuery = new ArrayList<VisualNode>();
-			List<VisualNode> viewToRelation = new ArrayList<VisualNode>();
-			
-			
-			
-			if(v.getInEdges()!= null){
-				for(VisualEdge e: this.graph.getInEdges(v)){
-					if(e.getFromNode().getType() == NodeType.NODE_TYPE_QUERY){
-						viewToQuery.add( e.getFromNode());
-					}
-					else if(e.getFromNode().getType() == NodeType.NODE_TYPE_RELATION){     //TODO ginetai?????
-		//				viewToRelation.add( e.getFromNode());
-					}
-					
-					
-				}
-				if(viewToQuery != null){
-					
-				int size = viewToQuery.size()/2;
-					for(VisualNode myNode : viewToQuery){
-						location = new Point2D.Double(graph.getCenter().getX()+200, cntQuery);
-						super.setLocation(myNode,location);
-						
-				//		location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-						location.setLocation(graph.getCenter().getX()+200, cntQuery);
-						myNode.setLocation(location);
-						graph.setLocation(myNode, location);
-						cntQuery+=100;
-						
-						System.out.println("Query  "+myNode.getName()   + "  y  " + cntQuery);
-						
-						List<VisualNode> QueryToRelation = new ArrayList<VisualNode>();
-						
-						for(VisualEdge e : this.graph.getOutEdges(myNode)){
-							if(e.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
-								QueryToRelation.add(e.getToNode());
-								
-							}
-						}
-						int RelationSize = QueryToRelation.size()/2;
-						if(QueryToRelation.size() != 0){
-							if(RelationSize == 0){
-								if(QueryToRelation != null){
-									cntRelation = (viewToQuery.size()/2)*(cntQuery -100);
-									location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
-									super.setLocation(QueryToRelation.get(0),location);
-									
-							//		location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-									location.setLocation(graph.getCenter().getX(), cntRelation);
-									QueryToRelation.get(0).setLocation(location);
-									graph.setLocation(QueryToRelation.get(0), location);
-									cntRelation+=100;
-									
-									System.out.println("Relation  "+QueryToRelation.get(0).getName()   + "  y  " + cntRelation);
-								}
-							}
-							else{
-								for(VisualNode myRelationNode : QueryToRelation){
-									//cntRelation = cntQuery;
-									location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
-									super.setLocation(myRelationNode,location);
-									
-							//		location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-									location.setLocation(graph.getCenter().getX(), cntRelation);
-									myRelationNode.setLocation(location);
-									graph.setLocation(myRelationNode, location);
-									cntRelation+=100;
-									
-									
-									System.out.println("Relation  "+myRelationNode.getName()   + "  y  " + cntRelation);
-								}
-							}
-						}
-					}
-				}
-				System.out.println("node " + v.getName() +" has inedges to queries  " + viewToQuery);
-			}
-			if(v.getOutEdges()!= null){
-				for(VisualEdge e: this.graph.getOutEdges(v)){
-					if(e.getToNode().getType() == NodeType.NODE_TYPE_RELATION){
-						viewToRelation.add( e.getToNode());
-					}
-				}
-				System.out.println("tralala   " + viewToRelation);
-				for(VisualNode RelationNode : viewToRelation){
-						location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
-						super.setLocation(RelationNode,location);
-						
-						location.setLocation(graph.getCenter().getX(), cntRelation);
-						RelationNode.setLocation(location);
-						graph.setLocation(RelationNode, location);
-						cntRelation+=100;
-						
-						System.out.println("Relation  "+RelationNode.getName()   + "  y  " + cntRelation);
-				}
-			}
-			cntView = cntRelation;
-			
-		}
-//		while (nodes.size()>0) {
-//			//hold the current group
-//			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
-//			//create each group from all vertices with no outgoing edges
-//			for (VisualNode v: nodes) {
-//				if (outEdges.get(v).size()==0) {
-//					visualizedGroup.add(v);
-//				}
-//			}
-//			//Initialize the offset according to the number of vertices in current group
-//			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
-//			System.out.println(" sizee  " + this.getSize());
-//			System.out.println("size.width =  " + this.getSize().width  + "  size.getheight   " + this.getSize().getHeight()+ "   visGroup size =  " + visualizedGroup.size()      );
-//			System.out.println("OFFSET  x  " + this.getSize().width/2   +"     OFFSET  y    "  +   Math.max(this.getSize().getHeight()/visualizedGroup.size(),60));
-//			
-//			//visualize the current group
-//			while (!visualizedGroup.isEmpty()) {
-//				//get each vertex in group
-//				VisualNode v = visualizedGroup.get(0);
-//				// set the location of the current vertex
-//				super.setLocation(v,location);
-//				// remove in edges
-//				for(VisualEdge e: this.graph.getInEdges(v)){
-//					outEdges.get(e.getFromNode()).remove(e);
-//				}
-//				//remove each visualized node
-//				visualizedGroup.remove(v);
-//				nodes.remove(v);
-//				
-//	    		//set the location of the next vertex in the group that is visualized
-//				double x = location.getX();
-//				double y = location.getY();
-//				location.setLocation(location.getX()/2, location.getY()+ OFFSET.getY());
-//				v.setLocation(location);
-//				Point2D loc = graph.getLocation(v);
-//				graph.setLocation(v, location);
-//				Point2D loc1 = graph.getLocation(v);
-//			}
-//			//set the location of the next group that is visualized
-//			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
-//		}
-	}
-	
-	
-	
-	
 	/***
 	 * initialize the locations of nodes 
 	 * according to the topological sort layout, starting from the up side 
