@@ -132,11 +132,14 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
                 List<VisualNode> nodes = new ArrayList<VisualNode>();
                 Collections.sort(lista, new CustomComparator());
                 nodes.addAll(lista);
-                double temp =   (2*Math.pow(bigCircleRad, 2)- Math.pow(getSmallRad(nodes), 2)*0.9)/(2*Math.pow(bigCircleRad, 2));
-                if(Math.abs(temp)>1){
-                    temp = 1;
-                }
-                angle = (Math.acos(temp))*1.2;
+                
+                if(getSmallRad(nodes) >= bigCircleRad){
+    				double temp =   (2*Math.pow(bigCircleRad, 2)- Math.pow(getSmallRad(nodes), 2)*0.9)/(2*Math.pow(bigCircleRad, 2) );
+    				angle = (Math.acos(temp))*1.2; 
+    			}
+    			else{
+    				angle = Math.asin(getSmallRad(nodes)/bigCircleRad)*1.2;
+    			}
                 double cx = Math.cos((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 ;// 1.8 is used for white space borders
                 double cy =    Math.sin((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 ;
                 sum+=angle;

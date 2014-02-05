@@ -91,11 +91,15 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 			List<VisualNode> nodes = new ArrayList<VisualNode>();
 			Collections.sort(lista, new CustomComparator());
 			nodes.addAll(lista);
-			double temp =   (2*Math.pow(myRad, 2)  - Math.pow(getSmallRad(nodes), 2)*0.94)/(2*Math.pow(myRad, 2) );// 0.94 is used simulate strait lines to curves
-			if(Math.abs(temp)>1){
-				temp = 0.9;
+			
+			if(getSmallRad(nodes) >= myRad){
+				double temp =   (2*Math.pow(myRad, 2)  - Math.pow(getSmallRad(nodes), 2)*0.94)/(2*Math.pow(myRad, 2) );// 0.94 is used simulate strait lines to curves
+				angle = (Math.acos(temp))*2; 
 			}
-			angle = (Math.acos(temp))*2;  
+			else{
+				angle = Math.asin(getSmallRad(nodes)/myRad)*2;
+			}
+			
 			//we draw the circle in the center of the canvas (0,0)
 			double cx = Math.cos(sum+angle/2) * myRad*1.8;// 1.8 is used for white space borders
 			double cy =	Math.sin(sum+angle/2) * myRad*1.8;
