@@ -3,23 +3,34 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
-
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.graph.Graph;
 
 public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdge>{
 
+	public static int cntQuery = 100;
+	public static int cntRelation = 100;
+	public static int cntView = 100;
+	public static int cnt4 = 0;
+	public static int cnt5 = 0;
 	
 	public enum Orientation{
 		RIGHT2LEFT,
 		DOWN2TOP,
 		LEFT2RIGHT,
 		TOP2DOWN,
-		INVERSELEFT2RIGHT
+		INVERSELEFT2RIGHT,
+		ZoomedLayoutForModules,
+		ZoomedLayoutForModulesV2
 		;
 	}
 	
@@ -67,6 +78,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     }
     
     public void initialize() {
+    	System.out.println("orientation   " + this.orientation.toString());
     	switch (this.orientation) {
     	case RIGHT2LEFT:
     		initializeRight2Left();
@@ -83,11 +95,25 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	case TOP2DOWN:
     		initializeUpBottom();
     		break;
+    	case ZoomedLayoutForModulesV2:
+    		init();
+    		ZoomedLayoutForModulesV2();
+    		break;
+    	case ZoomedLayoutForModules:
+    		init();
+    		ZoomedLayoutForModules();
+    		break;
     	default:
     		initializeRight2Left();
     	}
     }
 
+    private void init(){
+    	cntView = 100;
+    	cntQuery = 100;
+    	cntRelation = 100;
+    }
+    
 	public void reset() {
 		this.initialize();
 	}
@@ -156,7 +182,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				nodes.remove(v);
 				
 	    		//set the location of the next vertex in the group that is visualized
-				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
+				location.setLocation(location.getX()/2, location.getY()-100+ OFFSET.getY());   //TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			}
 			//set the location of the next group that is visualized
 			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
@@ -344,6 +370,135 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		}
 	}
 	
+	
+	private void ZoomedLayoutForModulesV2(){
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		/*
+		 * @param location = the current location of the graph
+		 */
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		//use a list to add/remove nodes from the graph for layout reasons
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the outEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> outEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			outEdges.put(v, new ArrayList<VisualEdge>(this.graph.getOutEdges(v)));
+		List<VisualNode> queries = new ArrayList<VisualNode>();
+		List<VisualNode> relations = new ArrayList<VisualNode>();
+		List<VisualNode> views = new ArrayList<VisualNode>();
+		for(VisualNode v : nodes){
+			if(v.getType() == NodeType.NODE_TYPE_QUERY){
+				queries.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
+				relations.add(v);
+			}
+			else if(v.getType() == NodeType.NODE_TYPE_VIEW){
+				views.add(v);
+			}
+		}
+	
+		
+		
+		for(VisualNode q : queries){
+			System.out.println(q.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/queries.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX()+200, cntQuery);
+			super.setLocation(q,location);
+			
+			location.setLocation(graph.getCenter().getX()+200, cntQuery);
+			q.setLocation(location);
+			graph.setLocation(q, location);
+			Point2D loc1 = graph.getLocation(q);
+			cntQuery+=100;
+		}
+		
+		for(VisualNode r : relations){
+			System.out.println("+++++ "+r.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
+			super.setLocation(r,location);
+			location.setLocation(graph.getCenter().getX(), cntRelation);
+			r.setLocation(location);
+			graph.setLocation(r, location);
+			Point2D loc1 = graph.getLocation(r);
+			cntRelation+=100;
+		}
+		
+		
+		for(VisualNode v : views){
+			
+			System.out.println("---- "+v.getName());
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/views.size(),60)));
+			location = new Point2D.Double(graph.getCenter().getX()+400, cntView);
+			super.setLocation(v,location);
+			
+			location.setLocation(graph.getCenter().getX()+400, cntView);
+			v.setLocation(location);
+			graph.setLocation(v, location);
+			Point2D loc1 = graph.getLocation(v);
+			int temp = cntView;
+	//		cntView+=100;
+	//		cntView = cntRelation - 100;
+	//		temp = cntView;
+			cntView = cntRelation-100;
+			System.out.println("---- "+v.getName()   + "  y  " + temp);
+			List<VisualNode> viewToQuery = new ArrayList<VisualNode>();
+			List<VisualNode> viewToRelation = new ArrayList<VisualNode>();
+			
+		}
+	
+	}
+	
+	
+	private void ZoomedLayoutForModules(){
+		
+		if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
+		else
+			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+
+		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
+		
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		//use a temporary HashMap to hold the inEdges for each node , in order to remove them according to the topological algo
+		Map<VisualNode, List<VisualEdge>> inEdges= new HashMap<VisualNode,List<VisualEdge>>();
+		for (VisualNode v: nodes) 
+			inEdges.put(v, new ArrayList<VisualEdge>(this.graph.getInEdges(v)));
+			
+		while (nodes.size()>0) {
+			List<VisualNode> visualizedGroup = new ArrayList<VisualNode>();
+			for (VisualNode v: nodes) {
+				if (inEdges.get(v).size()==0) {
+					visualizedGroup.add(v);
+				}
+			}
+			OFFSET.setLocation(new Point2D.Double(this.getSize().width/3,Math.max(this.getSize().getHeight()/visualizedGroup.size(),60)));
+			//visualize the current group
+			while (!visualizedGroup.isEmpty()) {
+				//get each vertex in group
+				VisualNode v = visualizedGroup.get(0);
+				// set the location of the current vertex
+				super.setLocation(v,location);
+				// remove out edges
+				for(VisualEdge e: this.graph.getOutEdges(v)){
+					inEdges.get(e.getToNode()).remove(e);
+				}
+				//remove each visualized node
+				visualizedGroup.remove(v);
+				nodes.remove(v);
+	    		//set the location of the next vertex in the group that is visualized
+				location.setLocation(location.getX(), location.getY()+ OFFSET.getY());
+			}
+			//set the location of the next group that is visualized
+			location.setLocation(location.getX()+ OFFSET.getX(), initialPosition.getY());
+		}
+	}
+
 	/***
 	 * initialize the locations of nodes 
 	 * according to the topological sort layout, starting from the up side 

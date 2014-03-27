@@ -17,3 +17,10 @@ FROM v_tr, student
 WHERE v_tr.sid=student.sid AND v_tr.tgrade > 4 / 10
 GROUP BY student.sid, student.sname;
 
+CREATE VIEW v_course2 AS
+SELECT semester.mid, semester.mdescr, coursestd.csid, coursestd.csname, course.cid
+FROM semester, coursestd, course
+WHERE semester.mid=course.mid AND coursestd.csid=course.csid;
+SELECT v_course2.mid, v_course2.mdescr, v_course2.csid, v_course2.csname, v_course2.cid, transcript.sid, transcript.tgrade
+FROM v_course2, transcript
+WHERE v_course2.cid=transcript.cid;

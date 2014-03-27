@@ -2,14 +2,12 @@ package edu.ntua.dblab.hecataeus;
 
 import java.awt.Container;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,19 +21,16 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.plaf.FileChooserUI;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 @SuppressWarnings("serial")
@@ -68,8 +63,7 @@ public class HecataeusEventManagerGUI extends JPanel
 		pickNodeBtn.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
-            {
+			public void actionPerformed(ActionEvent e){
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = viewer.getActiveViewer();
 				// obtain user input from JOptionPane input dialog
 				String nodeName = JOptionPane.showInputDialog( "The name of node to find: ");
@@ -216,6 +210,7 @@ public class HecataeusEventManagerGUI extends JPanel
 	protected void SHOWIMPACT()
 	{
 		TopologicalTravel pmtt=new TopologicalTravel(this.viewer);
+		
 		pmtt.travel();
 		if(this.epilegmenosKombos!=null)
 		{

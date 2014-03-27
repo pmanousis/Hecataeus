@@ -1,0 +1,2 @@
+SELECT COUNT(*) FROM  mynode  n WHERE n.promote = 1 AND n.status = 1;
+SELECT * FROM  menu_links  WHERE link_path = 0 ;

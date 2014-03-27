@@ -17,9 +17,9 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
-import java.sql.*;
+import java.io.File;
+import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.io.*;
 
 class Trace extends PrintWriter {
 //#ifdef TRACE

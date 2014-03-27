@@ -1,0 +1,22 @@
+SELECT * from PAYPAL WHERE order_id = 0;
+select * from PAYPAL where order_id = 0;
+select * from PAYPAL where order_id = 0 and txn_id <> 0 ;
+./includes/modules/payment/paypaldp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypaldp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypaldp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypaldp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypaldp.php:        $sql = "SELECT zone_code FROM " . TABLE_ZONES . " WHERE zone_name = :zoneName";
+./includes/modules/payment/linkpoint_api.php:     $sql = "select * from " . TABLE_LINKPOINT_API . " where order_id = '" . $zf_order_id . "' and transaction_result = 'APPROVED' order by date_added";
+./includes/modules/payment/paypalwpp.php:    $sql = "SELECT * from " . TABLE_PAYPAL . " WHERE order_id = :orderID
+./includes/modules/payment/paypalwpp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID order by last_modified DESC, date_added DESC, parent_txn_id DESC, paypal_ipn_id DESC ";
+./includes/modules/payment/paypalwpp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypalwpp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypalwpp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypalwpp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypalwpp.php:    $sql = "select * from " . TABLE_PAYPAL . " where order_id = :orderID  AND parent_txn_id = '' ";
+./includes/modules/payment/paypalwpp.php:        $sql = "SELECT zone_code FROM " . TABLE_ZONES . " WHERE zone_name = :zoneName";
+./includes/modules/payment/paypalwpp.php:      $sql = "select * from " . TABLE_CUSTOMERS . " where customers_id = :custID ";
+./includes/modules/payment/paypalwpp.php:      $sql = "SELECT countries_id FROM " . TABLE_COUNTRIES . " WHERE countries_id = :countryId: LIMIT 1";
+./includes/modules/payment/paypalwpp.php:      $sql = "SELECT countries_id FROM " . TABLE_COUNTRIES . " WHERE countries_id = :countryId LIMIT 1";
+./includes/modules/payment/paypalwpp.php:    $sql = "SELECT * FROM " . TABLE_CUSTOMERS . "
+

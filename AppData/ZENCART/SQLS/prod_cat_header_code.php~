@@ -1,0 +1,1 @@
+./admin/includes/modules/prod_cat_header_code.php:  $sql = "select * from " . TABLE_PRODUCT_TYPES;

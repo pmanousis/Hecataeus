@@ -3,12 +3,9 @@ package edu.ntua.dblab.hecataeus.graph.evolution.messages;
 import java.util.PriorityQueue;
 import java.util.UUID;
 
-import javax.swing.JOptionPane;
-
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.MetriseisRewrite;
 
 public class QueryViewRenameSelfMaestro<V extends EvolutionNode<E>,E extends EvolutionEdge> extends MaestroAbstract<V,E>

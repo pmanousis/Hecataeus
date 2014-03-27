@@ -1,0 +1,4 @@
+./admin/store_manager.php:        $sql = "select products_id from " . TABLE_PRODUCTS;
+./admin/store_manager.php:        $sql = "select products_id from " . TABLE_PRODUCTS;
+./admin/store_manager.php:          $sql = "select products_id, categories_id from " . TABLE_PRODUCTS_TO_CATEGORIES . " where products_id='" . $check_products->fields['products_id'] . "'";
+

@@ -1,0 +1,7 @@
+SELECT 1 FROM  taxonomy_term_data  WHERE tid = 0 AND vid = 0 ;
+SELECT nid, timestamp FROM  history  WHERE uid = 0 ;
+SELECT cid, name, created, uid FROM  mycomment  WHERE nid = 0 AND status = 0 ORDER BY cid DESC;
+SELECT uid, created FROM  mynode  WHERE nid = 0 ;
+SELECT COUNT(nid) FROM  mynode ;
+SELECT * FROM  taxonomy_term_data  t WHERE t.vid = 0 AND t.name = 0 AND t.description = 0 ;
+SELECT t.parent FROM  taxonomy_term_hierarchy  t WHERE t.tid = 0 ;

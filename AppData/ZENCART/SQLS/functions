@@ -1,0 +1,17 @@
+select categories_image from CATEGORIES where categories_id= 0;
+select categories_name from CATEGORIES_DESCRIPTION where categories_id= 0 and language_id= 0;
+select products_type from PRODUCTS  where products_id=0;
+select type_handler from PRODUCT_TYPES  where type_id = 0;
+select configuration_key, configuration_value from PRODUCT_TYPE_LAYOUT  where configuration_key=0;
+select configuration_key, configuration_value from CONFIGURATION where configuration_key=0;
+select categories_id from PRODUCTS_TO_CATEGORIES;
+select parent_id from CATEGORIES;
+select parent_id from CATEGORIES ;
+select categories_id from CATEGORIES ;
+SELECT * FROM COUPON_RESTRICT ;
+SELECT products_model FROM PRODUCTS ;
+SELECT * FROM  TABLE_COUPON_RESTRICT ;
+SELECT * FROM COUPON_RESTRICT ;
+select * from GET_TERMS_TO_FILTER;
+select customers_email_format from CUSTOMERS  where customers_email_address= 0;
+

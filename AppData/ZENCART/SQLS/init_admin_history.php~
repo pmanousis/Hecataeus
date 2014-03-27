@@ -1,0 +1,2 @@
+./admin/includes/init_includes/init_admin_history.php:    $sql = "SELECT ip_address from " . TABLE_ADMIN_ACTIVITY_LOG . " LIMIT 1";
+

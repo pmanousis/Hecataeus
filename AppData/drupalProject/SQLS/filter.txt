@@ -1,0 +1,13 @@
+SELECT format FROM  filter_format  WHERE name = 0 AND format <> 0 ;
+SELECT 1 FROM  filter_format  WHERE format = 0 ;
+SELECT * FROM  filter  ORDER BY weight, module, name;
+SELECT * FROM  filter_format  WHERE format = 0 ;
+SELECT * FROM  filter  WHERE format = 0 ;
+SELECT * FROM  cache_filter ;
+SELECT * FROM  filter  WHERE format = 0 ORDER BY weight ASC;
+SELECT MIN(weight) FROM  filter_format ;
+SELECT bid FROM  mybloc_custom  WHERE info = 0 ;
+SELECT format FROM  filter_format ;
+SELECT * FROM  filter_format ;
+SELECT format FROM  filter_format  WHERE name = 0 ;
+SELECT format FROM  filter_format ;

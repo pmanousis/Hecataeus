@@ -1,0 +1,2 @@
+select c.customers_id, c.customers_lastname, c.customers_firstname, c.customers_email_address, c.customers_group_pricing, a.entry_country_id, a.entry_company, ci.customers_info_date_of_last_logon, ci.customers_info_date_account_created  from CUSTOMERS  c left join CUSTOMERS_INFO  ci on c.customers_id= ci.customers_info_id left join ADDRESS_BOOK a on c.customers_id = a.customers_id and c.customers_default_address_id = a.address_book_id;
+

@@ -1,0 +1,2 @@
+./includes/init_includes/init_templates.php:            from " . TABLE_TEMPLATE_SELECT . "
+./includes/init_includes/init_templates.php:            from " . TABLE_TEMPLATE_SELECT . "

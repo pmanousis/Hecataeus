@@ -1,0 +1,1 @@
+SELECT 1 FROM  filter_format  WHERE name = 0;

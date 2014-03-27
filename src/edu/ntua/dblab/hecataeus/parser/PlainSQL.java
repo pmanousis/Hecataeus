@@ -8,7 +8,13 @@ package edu.ntua.dblab.hecataeus.parser;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import edu.ntua.dblab.hecataeus.hsql.*;
+
+import edu.ntua.dblab.hecataeus.hsql.Channel;
+import edu.ntua.dblab.hecataeus.hsql.Database;
+import edu.ntua.dblab.hecataeus.hsql.Parser;
+import edu.ntua.dblab.hecataeus.hsql.Result;
+import edu.ntua.dblab.hecataeus.hsql.Select;
+import edu.ntua.dblab.hecataeus.hsql.Tokenizer;
 
 public class PlainSQL extends Statement{
 	private SpecificOperator op;

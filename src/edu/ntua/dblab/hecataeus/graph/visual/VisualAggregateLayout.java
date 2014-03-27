@@ -2,11 +2,13 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.graph.Forest;
 /***
  * 
  * @author gpapas
@@ -36,7 +38,10 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 		this.setSize(this.graph.getSize());
 		this.topLayoutType = topLayoutType;
 		this.subLayoutType = subLayoutType;
-		this.subGraphs = new HashMap<VisualNode, VisualGraph>();
+//		this.subGraphs = new HashMap<VisualNode, VisualGraph>();
+		this.subGraphs = new TreeMap<VisualNode, VisualGraph>();
+		
+		
 	}
 	
 	/***
@@ -45,13 +50,15 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 	 */
 	public void setTopLayoutType(VisualLayoutType topLayoutType) {
 		this.topLayoutType = topLayoutType;
+
 		//create the layout only for top level nodes
 		Layout<VisualNode,VisualEdge> topLayout = VisualLayoutType.getLayoutFor(this.topLayoutGraph, this.topLayoutType);
 		//pass the old size to the new layout
 		topLayout.setSize(this.getSize());
 		//set the new layout as delegate layout
-		for (VisualNode v : this.topLayoutGraph.getVertices())
+		for (VisualNode v : this.topLayoutGraph.getVertices()){
 			super.setLocation(v, topLayout.transform(v));
+		}
 	}
 	
 	/***
@@ -161,5 +168,4 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 		super.setLocation(v,location);
 		graph.setLocation(v,location);
 	}
-	
 }

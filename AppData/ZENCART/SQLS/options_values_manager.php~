@@ -1,0 +1,13 @@
+./admin/options_values_manager.php:            $downloads_remove_query = "select products_attributes_id from " . TABLE_PRODUCTS_ATTRIBUTES . " where products_id='" . $current_products_id . "' and options_id='" . $options_id_from . "' and options_values_id='" . $options_values_values_id_from . "'";
+./admin/options_values_manager.php:  $option_from_dropdown = "\n" . '<select name="options_id_from">' . $option_from_dropdown;
+./admin/options_values_manager.php:  $option_from_dropdown.= "\n" . '</select>';
+./admin/options_values_manager.php:  $option_values_from_dropdown = "\n" . '<select name="options_values_values_id_from">' . $option_values_from_dropdown;
+./admin/options_values_manager.php:  $option_values_from_dropdown .= "\n" . '</select>';
+./admin/options_values_manager.php:  $options_id_from_products_id = TEXT_SELECT_OPTION_FROM_PRODUCTS_ID . '&nbsp;<input type="text" name="copy_from_products_id" size="4">&nbsp;';
+./admin/options_values_manager.php:                  TEXT_SELECT_OPTION_FROM . '<br />' . $option_from_dropdown . '&nbsp;<br />' .
+./admin/options_values_manager.php:                  TEXT_SELECT_OPTION_VALUES_FROM . '<br />' . $option_values_from_dropdown; ?>&nbsp;
+./admin/options_values_manager.php:                  TEXT_SELECT_DELETE_OPTION_FROM . '<br />' . $option_from_dropdown . '&nbsp;<br />' .
+./admin/options_values_manager.php:                  TEXT_SELECT_DELETE_OPTION_VALUES_FROM . '<br />' . $option_values_from_dropdown; ?>&nbsp;
+./admin/options_values_manager.php:                  TEXT_SELECT_OPTION_FROM_ADD . '<br />' . $option_from_dropdown . '&nbsp;<br />' .
+./admin/options_values_manager.php:                  TEXT_SELECT_OPTION_VALUES_FROM_ADD . '<br />' . $option_values_from_dropdown . '&nbsp;<br /><br />' .
+

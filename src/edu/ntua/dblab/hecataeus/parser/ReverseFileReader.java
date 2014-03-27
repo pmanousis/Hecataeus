@@ -5,7 +5,8 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.RandomAccessFile;
  
 public class ReverseFileReader {	
 		private RandomAccessFile randomfile;	

@@ -17,8 +17,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
-import java.sql.*;
-import java.util.Vector;
+import java.sql.SQLException;
 
 //gpapas modification -->make public
 public class TableFilter {

@@ -1,0 +1,3 @@
+/admin/options_name_manager.php:    $options = "select * from " . TABLE_PRODUCTS_OPTIONS . " where language_id = :languageId: order by :optionOrderBy:";
+./admin/options_name_manager.php:                  <td class="dataTableHeadingContent"><?php echo TEXT_SELECT_OPTION_FROM; ?><br /><select name="options_id_from">
+

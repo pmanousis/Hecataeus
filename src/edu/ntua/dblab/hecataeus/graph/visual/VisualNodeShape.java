@@ -9,33 +9,62 @@ import java.awt.Shape;
 
 import org.apache.commons.collections15.Transformer;
 
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
+import edu.uci.ics.jung.visualization.picking.PickedInfo;
 
 /*
  * sets the shape of nodes according to their type
  */
-public final class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> implements Transformer<VisualNode,Shape> {
+public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> implements Transformer<VisualNode,Shape> {
 	
-	private static final int INITIAL_SIZE = 40;
-	
+	private static int INITIAL_SIZE = 21; // itan 60 alliws 4
+
 	public VisualNodeShape() {
 		//extends setSizeTransformer for defining the custom size of nodes  
 		setSizeTransformer(new Transformer<VisualNode,Integer>() {
 			public Integer transform(VisualNode v) {
+				
 				NodeType type = (v.getType());
-				if (type.getCategory()== NodeCategory.MODULE)
+				int allEdges;
+				if(HecataeusViewer.nodeSize){
+					INITIAL_SIZE = 21;   //60
+				}
+				else{
+					allEdges = v._inEdges.size() + v._outEdges.size();
+					INITIAL_SIZE = 4 + 10*(int)Math.log((double)allEdges);
+				}
+				
+				if (type.getCategory()== NodeCategory.MODULE){
+					v.size=INITIAL_SIZE;
 					return INITIAL_SIZE;
-				else if (type.getCategory()== NodeCategory.CONTAINER)
-					return INITIAL_SIZE * 4 ;
-/***
- * @author pmanousi
- */
-else if (type.getCategory()== NodeCategory.INOUTSCHEMA)
-	return INITIAL_SIZE / 2;
-				else
-					return INITIAL_SIZE/4;
+				}
+				else if (type.getCategory()== NodeCategory.CONTAINER){
+					//return INITIAL_SIZE * 4 ;
+					if(v.getType() == NodeType.NODE_TYPE_CLUSTER){
+						v.size=(int)v.getNodeSize();
+						int ns = (int)Math.log(Math.pow((int)v.getNodeSize(), 3)) + (int)v.getNodeSize()*2; //(int)v.getNodeSize()
+						return ns;
+					}
+					else{
+						v.size=INITIAL_SIZE;
+						return 10;
+					}
+				}
+				/***
+				 * @author pmanousi
+				 */
+				else if (type.getCategory()== NodeCategory.INOUTSCHEMA){
+					//return INITIAL_SIZE / 2;
+					v.size=INITIAL_SIZE;
+					return 10;
+				}else{
+					//return INITIAL_SIZE/4;
+					v.size=INITIAL_SIZE;
+					return 10;
+				}
 
 			}});
 		//extends setAspectRatioTransformer for defining the custom aspect ration of nodes
@@ -67,19 +96,20 @@ else if (type.getCategory()== NodeCategory.INOUTSCHEMA)
 				|| type==NodeType.NODE_TYPE_PACKAGE		//
 				|| type==NodeType.NODE_TYPE_EMBEDDED_STATEMENT)
 			return factory.getRectangle(v);
-		else if (type ==NodeType.NODE_TYPE_RELATION)
+		else if (type ==NodeType.NODE_TYPE_RELATION
+				|| type ==NodeType.NODE_TYPE_CLUSTER)
 			return factory.getEllipse(v);
 		else if (type ==NodeType.NODE_TYPE_VIEW)
 			return factory.getRegularPolygon(v,3);
-/***
- * @author pmanousi
- */
-else if (type ==NodeType.NODE_TYPE_OUTPUT)
-	return factory.getRegularPolygon(v,5);
-else if (type ==NodeType.NODE_TYPE_INPUT)
-	return factory.getRegularPolygon(v,5);
-else if (type==NodeType.NODE_TYPE_SEMANTICS)
-	return factory.getRegularPolygon(v,5);
+		/***
+		 * @author pmanousi
+		 */
+		else if (type ==NodeType.NODE_TYPE_OUTPUT)
+			return factory.getRegularPolygon(v,5);
+		else if (type ==NodeType.NODE_TYPE_INPUT)
+			return factory.getRegularPolygon(v,5);
+		else if (type==NodeType.NODE_TYPE_SEMANTICS)
+			return factory.getRegularPolygon(v,5);
 		else
 			return factory.getRegularPolygon(v,4);
 	} 

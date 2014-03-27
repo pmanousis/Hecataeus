@@ -1,2 +1,2 @@
 SQL: SQLS/pm.sql,SQLS/pm.tpl
-POL: POLICIES/DefaultPolicy.plc, POLICIES/PropagateAll.plc, POLICIES/Mixture.plc
+POL: POLICIES/DefaultPolicy.plc,POLICIES/PropagateAll.plc,POLICIES/Mixture.plc,POLICIES/test.plc

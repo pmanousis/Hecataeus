@@ -7,6 +7,8 @@ package edu.ntua.dblab.hecataeus.graph.evolution;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+
 /**
  * @author  George Papastefanatos
  */
@@ -21,9 +23,10 @@ static int counter;
 	
 	private EvolutionPolicies  _policies = null;
 	private EvolutionEvents _events = null;
-	protected List<E> _outEdges = null;
-	protected List<E> _inEdges = null;
+	public List<E> _outEdges = null;
+	public List<E> _inEdges = null;
 	private StatusType _status = StatusType.NO_STATUS;
+	
 
 	public EvolutionNode() {
 		// just create the node and set afterwards its properties
@@ -247,5 +250,6 @@ static int counter;
 	public void setLine(int line) {								/*added by sgerag*/	
 		this._line=line;
 	}
+
 	
 }

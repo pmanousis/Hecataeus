@@ -17,10 +17,15 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
-import java.sql.*;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.io.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.Hashtable;
 
 class Column {
 	private static Hashtable hTypes;

@@ -1,0 +1,1 @@
+SELECT Table_Name FROM user_tables WHERE Table_Name LIKE 'SGOLD%';

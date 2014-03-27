@@ -17,8 +17,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-
-
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicies;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
@@ -36,6 +34,10 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
  */
 public final class HecataeusNodePolicies extends JDialog {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected JTextArea jTextArea;
 	protected JComboBox comboBoxEventType;
 	protected JComboBox comboBoxEventNodeParent;

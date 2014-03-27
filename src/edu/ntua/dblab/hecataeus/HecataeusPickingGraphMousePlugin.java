@@ -3,6 +3,7 @@ package edu.ntua.dblab.hecataeus;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
+
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
