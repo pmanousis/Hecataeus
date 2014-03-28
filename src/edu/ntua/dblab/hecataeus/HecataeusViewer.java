@@ -132,7 +132,7 @@ public class HecataeusViewer {
 	protected Viewers VisualizationViewer;
 	protected MouseListener ml;
 	protected VisualNodeStroke<Integer,Number> vsh;
-	public JList<String> fileColorList;
+	public JList fileColorList;
 //	private DefaultListModel<String> listModel;
 //	private JPanel panel_3;
 	public static  List<VisualGraph> graphs;
@@ -208,7 +208,7 @@ private VisualTotalClusters vtc;
 //		subLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);	
 		VisualizationViewer = new Viewers();
 		vv = VisualizationViewer.SetViewers(layout, this);
-		vv.setName("full zoom");
+		vv.setName("Architecture Graph");
 		viewers.add(vv);
 		/**
 		 * @author pmanousi
@@ -807,13 +807,22 @@ private VisualTotalClusters vtc;
 		});
 		mnShow.add(mntmNodesWithEvent);
 		
-		JMenu mnAlgorithms = new JMenu("Algorithms");
+		final JMenu mnAlgorithms = new JMenu("Algorithms");
 		
 		for (final VisualLayoutType layoutType : VisualLayoutType.values()) {
+			if(layoutType.equals(VisualLayoutType.ZoomedLayoutForModules))
+			{
+				mnAlgorithms.addSeparator();
+			}
+			if(layoutType.equals(VisualLayoutType.ZoomedLayoutForModules)||layoutType.equals(VisualLayoutType.ZoomedLayoutForModulesV2))
+			{
+				continue;
+			}
 			mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
 				public void actionPerformed(ActionEvent e) {
+
 					// update the top layout of the graph
-					if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
+					/*if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
 						VisualEdgeBetweennessClustering.south = new JPanel();
 						frame.getContentPane().add(VisualEdgeBetweennessClustering.south, BorderLayout.SOUTH);
 						frame.validate();
@@ -827,7 +836,7 @@ private VisualTotalClusters vtc;
 						centerAt(c);
 						zoomToWindow(activeViewer);
 					}
-					else{
+					else{*/
 						vv.setGraphLayout(layout);
 						if(VisualEdgeBetweennessClustering.south!=null){
 							frame.remove(VisualEdgeBetweennessClustering.south);
@@ -840,12 +849,12 @@ private VisualTotalClusters vtc;
 						getLayout(activeViewer).setTopLayoutType(layoutType);  
 						
 						HecataeusViewer.this.getLayoutPositions();
-						//centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 						Point2D c = new Point(0, 0);
 						centerAt(c);
 						vv.repaint();
 						zoomToWindow(activeViewer);
-					}
+					//}
 				}
 			});
 		}
@@ -2400,7 +2409,7 @@ private VisualTotalClusters vtc;
 		
 		JPanel panel_1 = new JPanel();
 		
-		tabbedPane.addTab("full zoom", null, panel_1, null);
+		tabbedPane.addTab("Architecture Graph", null, panel_1, null);
 
 		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 
@@ -2694,12 +2703,12 @@ private VisualTotalClusters vtc;
 				Point2D p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
 				while (!r.contains(p)) 
 					{
-					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
+					scaler.scale(activeViewer, 1 / 1.2f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
-//					try {
-//						Thread.sleep(100);
-//					} catch (InterruptedException ex) {
-//					}
+					try {
+						Thread.sleep(1);
+					} catch (InterruptedException ex) {
+					}
 				}
 			}
 		}
@@ -2914,7 +2923,7 @@ private VisualTotalClusters vtc;
 	}
 	
 	public VisualAggregateLayout getLayout(VisualizationViewer<VisualNode, VisualEdge> activeViewer){
-		if(activeViewer.getName().compareTo("full zoom") == 0){
+		if(activeViewer.getName().compareTo("Architecture Graph") == 0){
 			return layout;
 		}else{
 			return subLayout;
@@ -2923,7 +2932,6 @@ private VisualTotalClusters vtc;
 	
 
 	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
-		
 		VisualGraph Sub = sub;
 		this.graphs.add(Sub);
 		
@@ -2931,7 +2939,6 @@ private VisualTotalClusters vtc;
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		Sub.setViewerToGraph(vv1);
 		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.ZoomedLayoutForModules, VisualLayoutType.ZoomedLayoutForModules);
-		
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane myPane = new GraphZoomScrollPane(vv1);
 		vv1.setGraphLayout(subLayout);
@@ -2951,18 +2958,10 @@ private VisualTotalClusters vtc;
 		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
 		
 		activeViewer = this.getActiveViewer();
-		System.out.println("viewer  " + activeViewer.getName());
-
+//		System.out.println("viewer  " + activeViewer.getName());
 		vv1.repaint();
+		this.zoomToWindow(vv1);
 	}
-	
-
-	protected void zoomToTab(VisualGraph subGraph){
-		List<VisualNode> subNodes = new ArrayList<VisualNode>(subGraph.getVertices());
-		
-		zoomToModuleTab(subNodes, subGraph);
-	}
-	
 	
 	public static JFrame getHecFrame(){
 		return frame;

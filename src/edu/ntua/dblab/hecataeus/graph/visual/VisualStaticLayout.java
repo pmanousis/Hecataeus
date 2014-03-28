@@ -9,7 +9,7 @@ import edu.uci.ics.jung.graph.Graph;
 /**
  * a static layout  
  * used only for the overview map where each node gets the location 
- * of the cluster it represents in the full zoom view
+ * of the cluster it represents in the Architecture Graph view
  * 
  */
 public class VisualStaticLayout extends AbstractLayout<Object, Object>{

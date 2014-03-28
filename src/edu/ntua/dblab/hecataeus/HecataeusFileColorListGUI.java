@@ -13,16 +13,16 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 
 public class HecataeusFileColorListGUI  extends JPanel{
-	public JList<String> fileColorList;
-	private DefaultListModel<String> listModel;
+	public JList fileColorList;
+	private DefaultListModel listModel;
 	private VisualGraph g;
 	
 	public HecataeusFileColorListGUI(HecataeusViewer v){
 		this.g = (VisualGraph) v.getActiveViewer().getGraphLayout().getGraph();
-		listModel = new DefaultListModel<String>();
+		listModel = new DefaultListModel();
 //		listModel.addElement("eva");
 		//JScrollPane listScrollPane = new JScrollPane();
-		fileColorList = new JList<String>(listModel);
+		fileColorList = new JList(listModel);
 		fileColorList.setBackground(UIManager.getColor("background"));
 		fileColorList.setVisibleRowCount(57);
 		fileColorList.setOpaque(true);

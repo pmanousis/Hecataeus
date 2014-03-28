@@ -151,9 +151,7 @@ protected HecataeusViewer viewer;
 			@SuppressWarnings("unchecked")
 			VisualizationViewer<VisualNode,VisualEdge> vv = (VisualizationViewer<VisualNode,VisualEdge>) me.getSource();
 			VisualGraph g = (VisualGraph) vv.getGraphLayout().getGraph();
-			
-			System.out.println("oi komboi    "   + g);
-			
+//			System.out.println("oi komboi    "   + g);
 			if (node.getType().getCategory()== NodeCategory.MODULE||node.getType().getCategory()== NodeCategory.INOUTSCHEMA) {
 				List<VisualNode> module = g.getModule(node);
 				for (VisualNode child : module) {

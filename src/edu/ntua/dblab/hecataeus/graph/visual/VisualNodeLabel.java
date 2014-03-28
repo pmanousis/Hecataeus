@@ -22,7 +22,11 @@ public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
     	
     	case NODE_TYPE_CLUSTER:
     		return v.getNodeLabel();
-    	default: return(""); 
+    	case NODE_TYPE_RELATION:
+    	case NODE_TYPE_QUERY:
+    	case NODE_TYPE_VIEW:
+    		return("");
+    	default: return(v.toString()); 
     	}
     	
     }

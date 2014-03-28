@@ -214,6 +214,7 @@ public class HecataeusEventManagerGUI extends JPanel
 		pmtt.travel();
 		if(this.epilegmenosKombos!=null)
 		{
+			this.epilegmenosKombos=this.viewer.graphs.get(0).findVertexByNameParent(this.selectedNodeLbl.getText()); /** @author pmanousi Because of many panes, we need to say specifically to run events on the first one, with the original graph. */
 			EvolutionEvent<VisualNode> event =new EvolutionEvent<VisualNode>(EventType.toEventType((String)this.eventCombo.getSelectedItem()));
 			event.setEventNode(this.epilegmenosKombos);
 			VisualGraph agraph = (VisualGraph)this.viewer.graph;
@@ -226,13 +227,13 @@ public class HecataeusEventManagerGUI extends JPanel
  * @author pmanousi
  * For reports.			
  */
-try
-{
-    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
-    out.print(viewer.projectConf.projectName+", "+viewer.policyManagerGui.currentPolicyFilename.substring(viewer.policyManagerGui.currentPolicyFilename.indexOf("/")+1)+", ");
-    out.close();
-} catch (IOException e)
-{}
+			try
+			{
+			    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
+			    out.print(viewer.projectConf.projectName+", "+viewer.policyManagerGui.currentPolicyFilename.substring(viewer.policyManagerGui.currentPolicyFilename.indexOf("/")+1)+", ");
+			    out.close();
+			} catch (IOException e)
+			{}
 			agraph.initializeChange(event);
 			//set the layout of the graph
 			this.viewer.setLayout(VisualLayoutType.Right2LeftTopologicalLayout, VisualLayoutType.Top2DownTopologicalLayout);
@@ -240,6 +241,10 @@ try
 			this.viewer.getLayoutPositions();
 			this.viewer.getActiveViewer().repaint();
 			this.viewer.policyManagerGui.loadPolicy();
+		}
+		else
+		{
+			System.out.println("Soy gamietai to mouni tis mamas soy.");
 		}
 	}
 
