@@ -131,6 +131,7 @@ public enum VisualLayoutType {
 			}
 			
 		}
+		
 		public static Layout<VisualNode, VisualEdge> getLayoutFor(VisualGraph g, VisualLayoutType type) {
 			switch (type) {
 			case StaticLayout: 
@@ -193,5 +194,4 @@ public enum VisualLayoutType {
 				return new StaticLayout<VisualNode, VisualEdge>(g);
 			}
 		}
-		
 }

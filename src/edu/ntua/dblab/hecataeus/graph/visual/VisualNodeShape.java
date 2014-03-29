@@ -13,7 +13,6 @@ import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.visualization.decorators.AbstractVertexShapeTransformer;
-import edu.uci.ics.jung.visualization.picking.PickedInfo;
 
 /*
  * sets the shape of nodes according to their type
@@ -23,10 +22,9 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 	private static int INITIAL_SIZE = 21; // itan 60 alliws 4
 
 	public VisualNodeShape() {
-		//extends setSizeTransformer for defining the custom size of nodes  
+		//extends setSizeTransformer for defining the custom size of nodes
 		setSizeTransformer(new Transformer<VisualNode,Integer>() {
 			public Integer transform(VisualNode v) {
-				
 				NodeType type = (v.getType());
 				int allEdges;
 				if(HecataeusViewer.nodeSize){
@@ -45,7 +43,7 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 					//return INITIAL_SIZE * 4 ;
 					if(v.getType() == NodeType.NODE_TYPE_CLUSTER){
 						v.size=(int)v.getNodeSize();
-						int ns = (int)Math.log(Math.pow((int)v.getNodeSize(), 3)) + (int)v.getNodeSize()*2; //(int)v.getNodeSize()
+						int ns = 3*(int)Math.log(v.getNodeSize()) + (int)v.getNodeSize()*2; //(int)v.getNodeSize()
 						return ns;
 					}
 					else{
@@ -104,11 +102,7 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 		/***
 		 * @author pmanousi
 		 */
-		else if (type ==NodeType.NODE_TYPE_OUTPUT)
-			return factory.getRegularPolygon(v,5);
-		else if (type ==NodeType.NODE_TYPE_INPUT)
-			return factory.getRegularPolygon(v,5);
-		else if (type==NodeType.NODE_TYPE_SEMANTICS)
+		else if (type ==NodeType.NODE_TYPE_OUTPUT||type ==NodeType.NODE_TYPE_INPUT||type==NodeType.NODE_TYPE_SEMANTICS)
 			return factory.getRegularPolygon(v,5);
 		else
 			return factory.getRegularPolygon(v,4);

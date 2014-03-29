@@ -91,7 +91,7 @@ public class HecataeusClusterMap extends JPanel{
 		pr.setVertexIncludePredicate(new VisualNodeVisible());
 		myViewer.getRenderContext().getMultiLayerTransformer().addChangeListener(myViewer);
 		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
-		gm.setMode(Mode.PICKING);
+		gm.setMode(Mode.TRANSFORMING);
 		myViewer.setGraphLayout(layout);
 		myViewer.setGraphMouse(gm);
 		

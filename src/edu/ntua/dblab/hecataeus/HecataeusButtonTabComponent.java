@@ -81,9 +81,9 @@ public class HecataeusButtonTabComponent extends JPanel {
 			int choice = JOptionPane.showConfirmDialog(null,"You are about to close '" + tab+ "'\nDo you want to proceed ?","Confirmation Dialog", JOptionPane.INFORMATION_MESSAGE);
 			if(choice == JOptionPane.YES_OPTION){
 				HecataeusViewer.countOpenTabs--;
-			}
-			if (i != -1) {
-				pane.remove(i);
+				if (i != -1) {
+					pane.remove(i);
+				}
 			}
 		}
 

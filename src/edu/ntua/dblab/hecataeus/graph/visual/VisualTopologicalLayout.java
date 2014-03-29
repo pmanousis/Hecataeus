@@ -78,7 +78,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     }
     
     public void initialize() {
-    	System.out.println("orientation   " + this.orientation.toString());
+//    	System.out.println("orientation   " + this.orientation.toString());
     	switch (this.orientation) {
     	case RIGHT2LEFT:
     		initializeRight2Left();
@@ -372,10 +372,10 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	
 	
 	private void ZoomedLayoutForModulesV2(){
-		if (initialPosition  == null)
+		//if (initialPosition  == null)
 			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
-		else
-			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		//else
+			//initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
 		/*
 		 * @param location = the current location of the graph
 		 */
@@ -401,15 +401,11 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				views.add(v);
 			}
 		}
-	
-		
 		
 		for(VisualNode q : queries){
-			System.out.println(q.getName());
 			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/queries.size(),60)));
 			location = new Point2D.Double(graph.getCenter().getX()+200, cntQuery);
 			super.setLocation(q,location);
-			
 			location.setLocation(graph.getCenter().getX()+200, cntQuery);
 			q.setLocation(location);
 			graph.setLocation(q, location);
@@ -418,7 +414,6 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		}
 		
 		for(VisualNode r : relations){
-			System.out.println("+++++ "+r.getName());
 			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/relations.size(),60)));
 			location = new Point2D.Double(graph.getCenter().getX(), cntRelation);
 			super.setLocation(r,location);
@@ -429,10 +424,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			cntRelation+=100;
 		}
 		
-		
 		for(VisualNode v : views){
-			
-			System.out.println("---- "+v.getName());
 			OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,Math.max(this.getSize().getHeight()/views.size(),60)));
 			location = new Point2D.Double(graph.getCenter().getX()+400, cntView);
 			super.setLocation(v,location);
@@ -442,9 +434,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			graph.setLocation(v, location);
 			Point2D loc1 = graph.getLocation(v);
 			int temp = cntView;
-	//		cntView+=100;
-	//		cntView = cntRelation - 100;
-	//		temp = cntView;
+
 			cntView = cntRelation-100;
 			System.out.println("---- "+v.getName()   + "  y  " + temp);
 			List<VisualNode> viewToQuery = new ArrayList<VisualNode>();
@@ -457,10 +447,10 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	
 	private void ZoomedLayoutForModules(){
 		
-		if (initialPosition  == null)
-			initialPosition = new Point2D.Double(this.getSize().getWidth(),0);
-		else
-			initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
+		//if (initialPosition  == null)
+			initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
+		//else
+			//initialPosition = new Point2D.Double(this.getSize().getWidth()/2+initialPosition.getX(),this.getSize().getHeight()/2 + initialPosition.getY());
 
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		

@@ -19,7 +19,6 @@ public class HecataeusPickingGraphMousePlugin extends PickingGraphMousePlugin<Vi
 	}
 	 
 	protected void pickContainedVertices(VisualizationViewer<VisualNode, VisualEdge> vv,Point2D down, Point2D out, boolean clear) {
-
 		Layout<VisualNode, VisualEdge> layout = vv.getGraphLayout();
 		PickedState<VisualNode> pickedVertexState = vv.getPickedVertexState();
 
@@ -39,6 +38,4 @@ public class HecataeusPickingGraphMousePlugin extends PickingGraphMousePlugin<Vi
 			}
 		}
 	}
-
 }
-

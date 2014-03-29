@@ -484,10 +484,8 @@ public class HecataeusPolicyManagerGUI extends JPanel
 		this.epilegmenosKombos = PopUpClickListener.clickedVertex;
 		if(this.epilegmenosKombos==null)
 		{
-			System.out.println("o epilelgmenos kombos einai null");
 			return;	
 		}
-		System.out.println("o epilelgmenos kombos einai " + this.epilegmenosKombos);
 		VisualNode pateras=null;			
 		for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 		{
@@ -499,9 +497,7 @@ public class HecataeusPolicyManagerGUI extends JPanel
 				pateras=this.epilegmenosKombos.getInEdges().get(i).getFromNode();
 			}
 		}
-		
 		temp=edu.ntua.dblab.hecataeus.graph.evolution.EventType.values(this.epilegmenosKombos.getType());
-
 		if(pateras != null){
 			for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 			{
@@ -516,7 +512,6 @@ public class HecataeusPolicyManagerGUI extends JPanel
 					temp.remove(EventType.DELETE_SELF);
 					temp.remove(EventType.RENAME_SELF);
 				}
-				
 			}
 			for(int i=0;i<temp.size();i++)
 			{

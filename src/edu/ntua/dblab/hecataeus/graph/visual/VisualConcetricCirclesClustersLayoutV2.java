@@ -17,7 +17,6 @@ import edu.uci.ics.jung.graph.util.EdgeType;
 
 public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 
-	
 	protected VisualGraph graph;
 	protected double endC;
 	private List<VisualNode> queries;
@@ -45,68 +44,11 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 		
 	}
 
-//	private void circles(List<VisualNode> nodes, double cx, double cy){
-//		int b = 0;
-//		ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
-//		ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
-//		ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
-//		for(VisualNode v : nodes){
-//			if(v.getType() == NodeType.NODE_TYPE_RELATION){
-//				rc.add(v);
-//				double smallRad = 1.3*getSmallRad(relationsInCluster(nodes));
-//				Point2D coord = transform(v);
-//				double angleA = (2 * Math.PI ) / relationsInCluster(nodes).size();
-//				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-//				v.setLocation(coord);
-//				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-//				HecataeusViewer.getActiveViewer().repaint();
-//			}else{
-//				if(v.getType() == NodeType.NODE_TYPE_QUERY){
-//					qc.add(v);
-//				}
-//				else if(v.getType() == NodeType.NODE_TYPE_VIEW){
-//					vc.add(v);
-//				}
-//				double smallRad = getSmallRad(nodes);
-//				Point2D coord = transform(v);
-//				double angleA = 0.0;
-//				if(relationsInCluster(nodes).size() > 1){
-//					angleA = (2 * Math.PI ) / (nodes.size()-relationsInCluster(nodes).size());
-//				}else{
-//					angleA = (2 * Math.PI ) / nodes.size();
-//				}
-//				coord.setLocation(Math.cos(angleA*b)*smallRad+(cx),Math.sin(angleA*b)*smallRad+(cy));
-//				v.setLocation(coord);
-//				HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(v, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-//				HecataeusViewer.getActiveViewer().repaint();
-//			}
-//			b++;
-//		}
-//		clusterId++;
-//		VisualCluster cluster = new VisualCluster(getSmallRad(nodes), rc, vc, qc, cx, cy, clusterId);
-//		VisualNode clusterNode = new VisualNode("TEST"+clusterId,NodeType.NODE_TYPE_CLUSTER);
-//		
-////		Point2D cluLoc = transform(clusterNode);
-////		cluLoc.setLocation(cx,cy);
-////		clusterNode.setLocation(cluLoc);
-////		
-////		clusterNode.setVisible(true);
-////		HecataeusViewer.layout.getGraph().addVertex(clusterNode);
-////		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(clusterNode, HecataeusViewer.getActiveViewer().getPickedVertexState()));
-////		HecataeusViewer.getActiveViewer().setVertexToolTipTransformer(new VisualNodeToolTips());
-////		int tralala = (int)getSmallRad(nodes);
-////		HecataeusViewer.getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape(tralala*10));
-////		HecataeusViewer.getActiveViewer().repaint();
-//		cluster.printInClusterEdges();
-//	}
-	
 	private void circles(List<VisualNode> nodes, double cx, double cy){
         int b = 0, relwithoutQ = 0;
         ArrayList<VisualNode> rc = new ArrayList<VisualNode>();
         ArrayList<VisualNode> qc = new ArrayList<VisualNode>();
         ArrayList<VisualNode> vc = new ArrayList<VisualNode>();
-        
-        
         
         rc.addAll(relationsInCluster(nodes));
         qc.addAll(queriesInCluster(nodes));
@@ -174,14 +116,7 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 		double myRad = 1.0;
 		
 		ArrayList<ArrayList<ArrayList<VisualNode>>> sublistofClusters = new ArrayList<ArrayList<ArrayList<VisualNode>>>();
-//		while((int) Math.pow(2, myRad)<sortedV.size()){
-//			//new ebala to -1 gia na ksekinaei apo 0
-//			ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) (Math.pow(2, myRad-1))-1, (int) (Math.pow(2, myRad))-1));
-//			sublistofClusters.add(tmpVl);
-//			myRad++;
-//		}
-//		ArrayList<ArrayList<VisualNode>> tmpVl=new ArrayList<ArrayList<VisualNode>>(sortedV.subList((int) Math.pow(2, myRad-1), sortedV.size()));
-//		sublistofClusters.add(tmpVl);
+
 		int counter = 0, p = 1;
 		do{
 			int start = counter;
@@ -194,15 +129,6 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 		}while(counter < sortedV.size());
 		sublistofClusters.add(sublistofClusters.size(), new ArrayList<ArrayList<VisualNode>>(sortedV.subList(sortedV.size()-1, sortedV.size())));
 
-		
-		
-		
-
-//		System.out.println(sublistofClusters);
-//new!!
-	//	Collections.reverse(sublistofClusters);
-		
-
 		double bigCircleRad = 0.0;
 		double bigClusterRad = 0.0;
 //		System.out.println(sublistofClusters);
@@ -213,16 +139,10 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 			ArrayList<ArrayList<VisualNode>> tmp ;
 			if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
 				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)+1));
-				//tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(0));
 			}
 			else{
 				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)));	
-//				tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(0));
 			}
-
-//			bigClusterRad += getSmallRad(tmp.get(tmp.size()-1));
-			//new
-		//	bigClusterRad += getSmallRad(tmp.get(0));
 
 			if(diam>0){
 				bigClusterRad += getSmallRad(tmp.get(0));
@@ -236,10 +156,7 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 			
 			
 			diam++;
-//			System.out.println("TELIKI aktina megalou kiklou"+bigCircleRad);
-			
-			
-			
+		
 			double angle = 0.0, sum = 0.0;
 			int a = 0;
 			for(ArrayList<VisualNode> lista : listaC){
@@ -249,24 +166,16 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 				int temps = listaC.size();
 				//correct angle
 				angle = (2*Math.PI*a)/temps;
-				
 				double cx = Math.cos(angle) * bigCircleRad*1.8;// 1.8 is used for white space borders
-				
 				double cy =	Math.sin(angle) * bigCircleRad*1.8;
-//				System.out.println("ANGLEEE   " + angle);
 				int m = 0;
 				a++;
 				sum+=angle;
 				circles(nodes, cx, cy);
-				
-				
 			}
-			//System.out.println("oli i gonia tou kuklou logika 2p   " + sum+angle);
 		}
 		HecataeusViewer.getActiveViewer().repaint();
 	}
-	
-	
 	
 	@Override
 	public void initialize() {

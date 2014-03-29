@@ -55,31 +55,29 @@ public class Viewers {
 		
 		vv.setVertexToolTipTransformer(new VisualNodeToolTips());
 		vv.setEdgeToolTipTransformer(new VisualEdgeToolTips());
-		// the renderer of the vv
-		RenderContext<VisualNode, VisualEdge>  pr = vv.getRenderContext();
 		// the labels of the Vertices
-		pr.setVertexLabelTransformer(new VisualNodeLabel());
+		vv.getRenderContext().setVertexLabelTransformer(new VisualNodeLabel());
 		vv.getRenderer().getVertexLabelRenderer().setPosition(Position.AUTO); 
 
 		vv.getRenderContext().setEdgeStrokeTransformer(new ConstantTransformer(new BasicStroke(0.1f)));
 		// the fonts of the vertices
-		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13)));         //node size
+		vv.getRenderContext().setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 13)));         //node size
 		//the shape of the edges
-		pr.setEdgeShapeTransformer(new EdgeShape.Line());  //quad 
+		vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.Line());  //quad 
 		// the labels of the Edges
-		pr.setEdgeLabelTransformer(new VisualEdgeLabel());
+		vv.getRenderContext().setEdgeLabelTransformer(new VisualEdgeLabel());
 		// call the setVertexPaintFunction to paint the nodes
-		pr.setVertexFillPaintTransformer(new VisualNodeColor(vv.getPickedVertexState()));
+		vv.getRenderContext().setVertexFillPaintTransformer(new VisualNodeColor(vv.getPickedVertexState()));
 		
 		//set edge color
-		pr.setEdgeDrawPaintTransformer(new VisualEdgeDrawColor(vv.getPickedEdgeState()));
+		vv.getRenderContext().setEdgeDrawPaintTransformer(new VisualEdgeDrawColor(vv.getPickedEdgeState()));
 		// call the setEdgePaintFunction to paint the edges
-		pr.setEdgeFillPaintTransformer( new VisualEdgeColor(vv.getPickedEdgeState()));
+		vv.getRenderContext().setEdgeFillPaintTransformer( new VisualEdgeColor(vv.getPickedEdgeState()));
 		// call the setVertexShapeFunction to set the shape of the nodes
-		pr.setVertexShapeTransformer(new VisualNodeShape());
+		vv.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 		// call the setNodeVisible to set the shape of the nodes according to
-		pr.setVertexIncludePredicate(new VisualNodeVisible());
-		pr.setVertexIconTransformer(new VisualNodeIcon());
+		vv.getRenderContext().setVertexIncludePredicate(new VisualNodeVisible());
+		vv.getRenderContext().setVertexIconTransformer(new VisualNodeIcon());
 		
 //		double amount = 1.0;
 //		ScalingControl scaler = new CrossoverScalingControl();

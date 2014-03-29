@@ -2,7 +2,6 @@ package edu.ntua.dblab.hecataeus;
 
 
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -12,7 +11,6 @@ import java.awt.FileDialog;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -60,6 +58,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.collections15.functors.ConstantTransformer;
+
 import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
@@ -84,7 +84,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
-import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.Layer;
@@ -386,18 +385,6 @@ private VisualTotalClusters vtc;
 			
 			fileColorListGui.createPanel(this.graph);
 			fileColorListGui.repaint();
-			//panel_colors.repaint();
-//			VisualCircleLayout vcl = new VisualCircleLayout(this.graph);
-//			
-//			
-//			
-//			List<String> files = new ArrayList<String>(vcl.getFileNames());
-//			listModel.removeAllElements();
-//			for(String f : files){
-//				listModel.addElement(f);
-//			}
-//			fileColorList.setCellRenderer(new HecataeusjListCellColor());
-//			panel_3.repaint();
 			policyManagerGui.UPDATE();
 			//TODO theloun allages edw
 			//get new layout's positions
@@ -554,18 +541,6 @@ private VisualTotalClusters vtc;
 			}
 		}
 	}
-	
-	
-	/**
-	 * @author pmanousi
-	 * Exits Hecataeus.
-	 */
-	private void exitHecataeus()
-	{
-		frame.dispose();
-	}
-	
-	
 
 	/**
 	 * Initialize the contents of the frame.
@@ -674,15 +649,7 @@ private VisualTotalClusters vtc;
 			}
 		});
 		mnNewMenu.add(mntmSaveProject);
-		
-		JMenuItem mntmExit = new JMenuItem("Exit");
-		mntmExit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				exitHecataeus();
-			}
-		});
-		mnNewMenu.add(mntmExit);
-		
+
 		JMenu mnVisualize = new JMenu("Visualize");
 		menuBar.add(mnVisualize);
 		
@@ -849,10 +816,10 @@ private VisualTotalClusters vtc;
 						getLayout(activeViewer).setTopLayoutType(layoutType);  
 						
 						HecataeusViewer.this.getLayoutPositions();
-						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-						Point2D c = new Point(0, 0);
-						centerAt(c);
+/*						Point2D c = new Point(0, 0);
+						centerAt(c);*/
 						vv.repaint();
+						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 						zoomToWindow(activeViewer);
 					//}
 				}
@@ -989,29 +956,26 @@ private VisualTotalClusters vtc;
 		mnVisualize.add(chckbxmntmNewCheckItem);
 		vv.getRenderContext().setVertexIconTransformer(null);
 		vv.repaint();
-
 		
-		JCheckBoxMenuItem chckbxmntmBigNodes = new JCheckBoxMenuItem("Big Nodes");
-		chckbxmntmBigNodes.setSelected(false);
-		chckbxmntmBigNodes.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				AbstractButton aButton = (AbstractButton) arg0.getSource();
-				boolean selected = aButton.getModel().isSelected();
-				if (selected) {
-					nodeSize = true;
-					getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
-					getActiveViewer().repaint();
-				}else{
-					nodeSize = false;
-					getActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
-					getActiveViewer().repaint();
-				}
-			}
-		});
-		mnVisualize.add(chckbxmntmBigNodes);
-		vv.repaint();
-		
-		
+//		JCheckBoxMenuItem chckbxmntmBigNodes = new JCheckBoxMenuItem("Big Nodes");
+//		chckbxmntmBigNodes.setSelected(false);
+//		chckbxmntmBigNodes.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				AbstractButton aButton = (AbstractButton) arg0.getSource();
+//				boolean selected = aButton.getModel().isSelected();
+//				if (selected) {
+//					nodeSize = true;
+//					getActiveViewer().getRenderContext().setVertexShapeTransformer(new ConstantTransformer(new VisualNodeShape()));
+//					getActiveViewer().repaint();
+//				}else{
+//					nodeSize = false;
+//					getActiveViewer().getRenderContext().setVertexShapeTransformer(new ConstantTransformer(new VisualNodeShape()));
+//					getActiveViewer().repaint();
+//				}
+//			}
+//		});
+//		mnVisualize.add(chckbxmntmBigNodes);
+//		vv.repaint();
 		
 		JMenu mnTools = new JMenu("Tools");
 		menuBar.add(mnTools);
@@ -1125,273 +1089,273 @@ private VisualTotalClusters vtc;
 		JMenu mnManage = new JMenu("Manage");
 		menuBar.add(mnManage);
 		
-		JMenuItem mntmEvents = new JMenuItem("Events");
-		mntmEvents.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				NodeChooser ndc = new NodeChooser(NodeChooser.FOR_EVENT);
-			}
-		});
-		mnManage.add(mntmEvents);
+//		JMenuItem mntmEvents = new JMenuItem("Events");
+//		mntmEvents.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				NodeChooser ndc = new NodeChooser(NodeChooser.FOR_EVENT);
+//			}
+//		});
+//		mnManage.add(mntmEvents);
+//		
+//		JMenu mnPolicies = new JMenu("Policies");
+//		mnManage.add(mnPolicies);
+//		
+//		mnManage.addSeparator();
+//		
+//		JMenuItem mntmEdit = new JMenuItem("Edit");
+//		mntmEdit.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				NodeChooser ndc = new NodeChooser(NodeChooser.FOR_POLICY);
+//			}
+//		});
+//		mnPolicies.add(mntmEdit);
+//		
+//		JMenuItem mntmShow = new JMenuItem("Show Default");
+//		mntmShow.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				String msg = "";
+//				
+//				for (int i = 0; i < graph.getDefaultPolicyDecsriptions().size(); i++) {
+//					msg += graph.getDefaultPolicyDecsriptions().get(i) + "\n";
+//				}
+//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame,  "Default Policies", msg);
+//			}
+//		});
+//		mnPolicies.add(mntmShow);
+//		
+//		mnPolicies.addSeparator();
+//		
+//		JMenuItem mntmImport = new JMenuItem("Import");
+//		mntmImport.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				JFileChooser chooser = new JFileChooser(projectConf.curPath);
+//				FileFilterImpl filter = new FileFilterImpl("txt");
+//				chooser.addChoosableFileFilter(filter);
+//				int option = chooser.showOpenDialog(content);
+//				if (option == JFileChooser.APPROVE_OPTION) {
+//					File file = chooser.getSelectedFile();
+//					HecataeusSQLExtensionParser parser = new HecataeusSQLExtensionParser(graph, file);
+//					try {
+//						parser.processFile();
+//					} catch (HecataeusException ex) {
+//						final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Error importing Policies", ex.getMessage());
+//					}
+//					vv.repaint();
+////					vvContainer.repaint();
+//				}
+//			}
+//		});
+//		mnPolicies.add(mntmImport);
+//		
+//		JMenuItem mntmExport = new JMenuItem("Export");
+//		mntmExport.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				JFileChooser chooser = new JFileChooser(projectConf.curPath);
+//
+//				FileFilterImpl filter = new FileFilterImpl("txt");
+//				chooser.addChoosableFileFilter(filter);
+//				int option = chooser.showSaveDialog(content);
+//				if (option == JFileChooser.APPROVE_OPTION) {
+//
+//					String fileDescription = chooser.getSelectedFile().getAbsolutePath();
+//					if (!fileDescription.endsWith("txt"))
+//						fileDescription += ".txt";		
+//					
+//					File file = new File(fileDescription);
+//
+//					if (file.exists()) {
+//						int response = JOptionPane
+//								.showConfirmDialog(
+//										null,
+//										"The file will be overriden! Do you agree? Answer with y or n",
+//										"Warning!", JOptionPane.YES_NO_OPTION,
+//										JOptionPane.WARNING_MESSAGE);
+//						if (response == 0)
+//							try {
+//								frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//								layout.getGraph().exportPoliciesToFile(file);
+//								frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//								JOptionPane.showMessageDialog(null,"The file was created successfully","Information",JOptionPane.INFORMATION_MESSAGE);
+//							} catch (RuntimeException e1) {
+//								// TODO Auto-generated catch block
+//								e1.printStackTrace();
+//							}
+//						else
+//							;
+//					} else {
+//						try {
+//							frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+//							layout.getGraph().exportPoliciesToFile(file);
+//							frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+//							JOptionPane.showMessageDialog(null,"The file was created successfully","Information",JOptionPane.INFORMATION_MESSAGE);
+//						} catch (RuntimeException e1) {
+//							e1.printStackTrace();
+//						}
+//					}
+//					projectConf.curPath = chooser.getSelectedFile().getPath();
+//				}
+//			}
+//		});
+//		mnPolicies.add(mntmExport);
 		
-		JMenu mnPolicies = new JMenu("Policies");
-		mnManage.add(mnPolicies);
-		
-		mnManage.addSeparator();
-		
-		JMenuItem mntmEdit = new JMenuItem("Edit");
-		mntmEdit.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				NodeChooser ndc = new NodeChooser(NodeChooser.FOR_POLICY);
-			}
-		});
-		mnPolicies.add(mntmEdit);
-		
-		JMenuItem mntmShow = new JMenuItem("Show Default");
-		mntmShow.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String msg = "";
-				
-				for (int i = 0; i < graph.getDefaultPolicyDecsriptions().size(); i++) {
-					msg += graph.getDefaultPolicyDecsriptions().get(i) + "\n";
-				}
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame,  "Default Policies", msg);
-			}
-		});
-		mnPolicies.add(mntmShow);
-		
-		mnPolicies.addSeparator();
-		
-		JMenuItem mntmImport = new JMenuItem("Import");
-		mntmImport.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser(projectConf.curPath);
-				FileFilterImpl filter = new FileFilterImpl("txt");
-				chooser.addChoosableFileFilter(filter);
-				int option = chooser.showOpenDialog(content);
-				if (option == JFileChooser.APPROVE_OPTION) {
-					File file = chooser.getSelectedFile();
-					HecataeusSQLExtensionParser parser = new HecataeusSQLExtensionParser(graph, file);
-					try {
-						parser.processFile();
-					} catch (HecataeusException ex) {
-						final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Error importing Policies", ex.getMessage());
-					}
-					vv.repaint();
-//					vvContainer.repaint();
-				}
-			}
-		});
-		mnPolicies.add(mntmImport);
-		
-		JMenuItem mntmExport = new JMenuItem("Export");
-		mntmExport.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser(projectConf.curPath);
-
-				FileFilterImpl filter = new FileFilterImpl("txt");
-				chooser.addChoosableFileFilter(filter);
-				int option = chooser.showSaveDialog(content);
-				if (option == JFileChooser.APPROVE_OPTION) {
-
-					String fileDescription = chooser.getSelectedFile().getAbsolutePath();
-					if (!fileDescription.endsWith("txt"))
-						fileDescription += ".txt";		
-					
-					File file = new File(fileDescription);
-
-					if (file.exists()) {
-						int response = JOptionPane
-								.showConfirmDialog(
-										null,
-										"The file will be overriden! Do you agree? Answer with y or n",
-										"Warning!", JOptionPane.YES_NO_OPTION,
-										JOptionPane.WARNING_MESSAGE);
-						if (response == 0)
-							try {
-								frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-								layout.getGraph().exportPoliciesToFile(file);
-								frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-								JOptionPane.showMessageDialog(null,"The file was created successfully","Information",JOptionPane.INFORMATION_MESSAGE);
-							} catch (RuntimeException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						else
-							;
-					} else {
-						try {
-							frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-							layout.getGraph().exportPoliciesToFile(file);
-							frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-							JOptionPane.showMessageDialog(null,"The file was created successfully","Information",JOptionPane.INFORMATION_MESSAGE);
-						} catch (RuntimeException e1) {
-							e1.printStackTrace();
-						}
-					}
-					projectConf.curPath = chooser.getSelectedFile().getPath();
-				}
-			}
-		});
-		mnPolicies.add(mntmExport);
-		
-		JMenu mnOutputEventsHandin = new JMenu("Output Events Flooding");
-		mnManage.add(mnOutputEventsHandin);
-		
-		JMenuItem mntmPerEvent = new JMenuItem("Per Event");
-		mntmPerEvent.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
-				
-				String msg = "";
-				int countEvents = 0;
-				for (VisualNode v : activeGraph.getVertices()) {
-					if (v.getHasEvents()) {
-						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
-							countEvents++;
-							
-							msg += "Event " + countEvents + ": "
-									+ event.getEventType().toString() + "\tOn "
-									+ event.getEventNode().getName() + "\n";
-							msg += "Module\tNode Name\tNode Type\tStatus\n";
-							// set status =NO_Status
-							for (VisualNode n : graph.getVertices()) {
-								n.setStatus(StatusType.NO_STATUS, true);
-							}
-							// run algo
-							activeGraph.initializeChange(event);
-							// output
-							for (VisualNode node : activeGraph.getVertices(NodeCategory.MODULE)) {
-								for (VisualNode evNode : activeGraph.getModule(node)) {
-									if (evNode.getStatus() != StatusType.NO_STATUS) {
-										msg += graph.getTopLevelNode(evNode).getName()
-										+ "\t"
-										+ evNode.getName()
-										+ "\t"
-										+ evNode.getType().toString()
-										+ "\t"
-										+ evNode.getStatus().toString() + "\n";
-									}
-								}
-							}
-							msg += "--------------------------------------------------------\t";
-							msg += "--------------------------------------------------------\t";
-							msg += "--------------------------------------------------------\t";
-							msg += "--------------------------------------------------------\n";
-						}
-					}
-
-				}
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame,  "Output Events ", msg);
-			}
-		});
-		mnOutputEventsHandin.add(mntmPerEvent);
-		
-		JMenuItem mntmTotal = new JMenuItem("Total");
-		mntmTotal.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
-				String msg = "";
-				int countEvents = 0;
-				msg += "EventID\tEventtype\tEventNode\tNodekey\tModule\tNode Name\tNode Type\tStatus\n";
-
-				for (VisualNode v : activeGraph.getVertices()) {
-					if (v.getHasEvents()) {
-						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
-							
-
-							countEvents++;
-							 
-							
-							String strEvent = "Event " + countEvents + "\t"
-									+ event.getEventType().toString() + "\t"
-									+ event.getEventNode().getName();
-							// set status =NO_Status
-							for (VisualNode n : activeGraph.getVertices()) {
-								n.setStatus(StatusType.NO_STATUS, true);
-							}
-							// run algo
-							activeGraph.initializeChange(event);
-							// output
-							for (VisualNode node : activeGraph.getVertices(NodeCategory.MODULE)) {
-								for (VisualNode evNode : activeGraph.getModule(node)) {
-										if (evNode.getStatus() != StatusType.NO_STATUS) {
-											msg += strEvent
-													+ "\t"
-													+ graph.getKey(evNode)
-													+ "\t"
-													+ graph.getTopLevelNode(evNode).getName()
-													+ "\t"
-													+ evNode.getName()
-													+ "\t"
-													+ evNode.getType().toString()
-													+ "\t"
-													+ evNode.getStatus().toString() + "\n";
-										}
-									}
-							}
-						}
-					}
-
-				}
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Output Events ", msg);
-			}
-		});
-		mnOutputEventsHandin.add(mntmTotal);
-		
-		JMenuItem mntmModulesTotalAfected = new JMenuItem("Modules Total Affected");
-		mntmModulesTotalAfected.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
-				String msg = "";
-				int countEvents = 0;
-				msg += "Nodekey\tModule\tNode Name\tNode Type\tAffected\n";
-				List<VisualNode> modules = activeGraph.getVertices(NodeCategory.MODULE);
-				int[] affectedModules = new int[modules.size()];
-				
-				for (VisualNode v : activeGraph.getVertices()) {
-					if (v.getHasEvents()) {
-						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
-							int r=1; 
-							//uncomment and enter here the occurrences of attribute additions 
-//							if (v.getName().equals("S4") && event.getEventType()==EventType.ADD_ATTRIBUTE)
-//								r = 58;
-//							if (v.getName().equals("S1") && event.getEventType()==EventType.ADD_ATTRIBUTE)
-//								r = 14;
+//		JMenu mnOutputEventsHandin = new JMenu("Output Events Flooding");
+//		mnManage.add(mnOutputEventsHandin);
+//		
+//		JMenuItem mntmPerEvent = new JMenuItem("Per Event");
+//		mntmPerEvent.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
+//				
+//				String msg = "";
+//				int countEvents = 0;
+//				for (VisualNode v : activeGraph.getVertices()) {
+//					if (v.getHasEvents()) {
+//						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
+//							countEvents++;
 //							
-
-							for (int i = 0; i < r; i++) {
-								// set status =NO_Status
-								for (VisualNode n : activeGraph.getVertices()) {
-									n.setStatus(StatusType.NO_STATUS, true);
-								}
-								// run algo
-								activeGraph.initializeChange(event);
-								// output
-								for (VisualNode evNode : modules) {
-									if (evNode.getStatus() != StatusType.NO_STATUS)
-										affectedModules[modules.indexOf(evNode)]++;
-								}
-
-							}
-						}
-					}
-				}
-				for (VisualNode evNode : modules) {
-					msg +=graph.getKey(evNode)
-					+ "\t"
-					+ graph.getTopLevelNode(evNode).getName()
-					+ "\t"
-					+ evNode.getName()
-					+ "\t"
-					+ evNode.getType().toString()
-					+ "\t"
-					+ affectedModules[modules.indexOf(evNode)] + "\n";
-				}
-
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Output Events ", msg);
-			}
-		});
-		mnOutputEventsHandin.add(mntmModulesTotalAfected);
+//							msg += "Event " + countEvents + ": "
+//									+ event.getEventType().toString() + "\tOn "
+//									+ event.getEventNode().getName() + "\n";
+//							msg += "Module\tNode Name\tNode Type\tStatus\n";
+//							// set status =NO_Status
+//							for (VisualNode n : graph.getVertices()) {
+//								n.setStatus(StatusType.NO_STATUS, true);
+//							}
+//							// run algo
+//							activeGraph.initializeChange(event);
+//							// output
+//							for (VisualNode node : activeGraph.getVertices(NodeCategory.MODULE)) {
+//								for (VisualNode evNode : activeGraph.getModule(node)) {
+//									if (evNode.getStatus() != StatusType.NO_STATUS) {
+//										msg += graph.getTopLevelNode(evNode).getName()
+//										+ "\t"
+//										+ evNode.getName()
+//										+ "\t"
+//										+ evNode.getType().toString()
+//										+ "\t"
+//										+ evNode.getStatus().toString() + "\n";
+//									}
+//								}
+//							}
+//							msg += "--------------------------------------------------------\t";
+//							msg += "--------------------------------------------------------\t";
+//							msg += "--------------------------------------------------------\t";
+//							msg += "--------------------------------------------------------\n";
+//						}
+//					}
+//
+//				}
+//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame,  "Output Events ", msg);
+//			}
+//		});
+//		mnOutputEventsHandin.add(mntmPerEvent);
+//		
+//		JMenuItem mntmTotal = new JMenuItem("Total");
+//		mntmTotal.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
+//				String msg = "";
+//				int countEvents = 0;
+//				msg += "EventID\tEventtype\tEventNode\tNodekey\tModule\tNode Name\tNode Type\tStatus\n";
+//
+//				for (VisualNode v : activeGraph.getVertices()) {
+//					if (v.getHasEvents()) {
+//						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
+//							
+//
+//							countEvents++;
+//							 
+//							
+//							String strEvent = "Event " + countEvents + "\t"
+//									+ event.getEventType().toString() + "\t"
+//									+ event.getEventNode().getName();
+//							// set status =NO_Status
+//							for (VisualNode n : activeGraph.getVertices()) {
+//								n.setStatus(StatusType.NO_STATUS, true);
+//							}
+//							// run algo
+//							activeGraph.initializeChange(event);
+//							// output
+//							for (VisualNode node : activeGraph.getVertices(NodeCategory.MODULE)) {
+//								for (VisualNode evNode : activeGraph.getModule(node)) {
+//										if (evNode.getStatus() != StatusType.NO_STATUS) {
+//											msg += strEvent
+//													+ "\t"
+//													+ graph.getKey(evNode)
+//													+ "\t"
+//													+ graph.getTopLevelNode(evNode).getName()
+//													+ "\t"
+//													+ evNode.getName()
+//													+ "\t"
+//													+ evNode.getType().toString()
+//													+ "\t"
+//													+ evNode.getStatus().toString() + "\n";
+//										}
+//									}
+//							}
+//						}
+//					}
+//
+//				}
+//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Output Events ", msg);
+//			}
+//		});
+//		mnOutputEventsHandin.add(mntmTotal);
+//		
+//		JMenuItem mntmModulesTotalAfected = new JMenuItem("Modules Total Affected");
+//		mntmModulesTotalAfected.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
+//				String msg = "";
+//				int countEvents = 0;
+//				msg += "Nodekey\tModule\tNode Name\tNode Type\tAffected\n";
+//				List<VisualNode> modules = activeGraph.getVertices(NodeCategory.MODULE);
+//				int[] affectedModules = new int[modules.size()];
+//				
+//				for (VisualNode v : activeGraph.getVertices()) {
+//					if (v.getHasEvents()) {
+//						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
+//							int r=1; 
+//							//uncomment and enter here the occurrences of attribute additions 
+////							if (v.getName().equals("S4") && event.getEventType()==EventType.ADD_ATTRIBUTE)
+////								r = 58;
+////							if (v.getName().equals("S1") && event.getEventType()==EventType.ADD_ATTRIBUTE)
+////								r = 14;
+////							
+//
+//							for (int i = 0; i < r; i++) {
+//								// set status =NO_Status
+//								for (VisualNode n : activeGraph.getVertices()) {
+//									n.setStatus(StatusType.NO_STATUS, true);
+//								}
+//								// run algo
+//								activeGraph.initializeChange(event);
+//								// output
+//								for (VisualNode evNode : modules) {
+//									if (evNode.getStatus() != StatusType.NO_STATUS)
+//										affectedModules[modules.indexOf(evNode)]++;
+//								}
+//
+//							}
+//						}
+//					}
+//				}
+//				for (VisualNode evNode : modules) {
+//					msg +=graph.getKey(evNode)
+//					+ "\t"
+//					+ graph.getTopLevelNode(evNode).getName()
+//					+ "\t"
+//					+ evNode.getName()
+//					+ "\t"
+//					+ evNode.getType().toString()
+//					+ "\t"
+//					+ affectedModules[modules.indexOf(evNode)] + "\n";
+//				}
+//
+//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Output Events ", msg);
+//			}
+//		});
+//		mnOutputEventsHandin.add(mntmModulesTotalAfected);
 		
 		JMenuItem mntmClearAllPolicies = new JMenuItem("Clear All Policies");
 		mntmClearAllPolicies.addActionListener(new ActionListener() {
@@ -1481,21 +1445,21 @@ private VisualTotalClusters vtc;
 		});
 		mnManage.add(mntmInversePolicies);
 		
-		JMenuItem mntmPropagateAll = new JMenuItem("Propagate All");
-		mntmPropagateAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				for (VisualNode v : graph.getVertices()) {
-					if (v.getHasPolicies()) {
-						for (EvolutionPolicy<VisualNode> p : v.getPolicies()) {
-							p.setPolicyType(PolicyType.PROPAGATE);
-						}
-					}
-				}
-				vv.repaint();
-//				vvContainer.repaint();
-			}
-		});
-		mnManage.add(mntmPropagateAll);
+//		JMenuItem mntmPropagateAll = new JMenuItem("Propagate All");
+//		mntmPropagateAll.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				for (VisualNode v : graph.getVertices()) {
+//					if (v.getHasPolicies()) {
+//						for (EvolutionPolicy<VisualNode> p : v.getPolicies()) {
+//							p.setPolicyType(PolicyType.PROPAGATE);
+//						}
+//					}
+//				}
+//				vv.repaint();
+////				vvContainer.repaint();
+//			}
+//		});
+//		mnManage.add(mntmPropagateAll);
 		
 		JMenu mnMetsics = new JMenu("Metrics");
 		menuBar.add(mnMetsics);
@@ -2402,7 +2366,7 @@ private VisualTotalClusters vtc;
 			public void stateChanged(ChangeEvent arg0) {
 				sourceTabbedPane = (JTabbedPane) arg0.getSource();
 				sourceTabbedPaneIndex = sourceTabbedPane.getSelectedIndex();
-				System.out.println("Tab changed to: " + sourceTabbedPane.getTitleAt(sourceTabbedPaneIndex));
+//				System.out.println("Tab changed to: " + sourceTabbedPane.getTitleAt(sourceTabbedPaneIndex));
 			}
 		});
 		splitPane.setLeftComponent(tabbedPane);
@@ -2429,10 +2393,8 @@ private VisualTotalClusters vtc;
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
 		JPanel panel_2 = new JPanel();
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
-		
-
-		splitPane.setDividerLocation(0.8);
-		splitPane.setResizeWeight(1);
+//		splitPane.setDividerLocation(1);
+		splitPane.setResizeWeight(0.75);
 	}
 	
 	private JPanel createToolsPanel()
@@ -2693,9 +2655,7 @@ private VisualTotalClusters vtc;
 	
 	public void zoomToWindow(VisualizationViewer<VisualNode, VisualEdge> currentViewer){
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer;
-		
 		activeViewer = currentViewer;
-		
 		Shape r = activeViewer.getBounds();
 		Point2D vvcenter = activeViewer.getCenter();
 		for (VisualNode jungNode: activeViewer.getGraphLayout().getGraph().getVertices()) {
@@ -2713,7 +2673,6 @@ private VisualTotalClusters vtc;
 			}
 		}
 		tabbedPane.setComponentAt(getActiveTab(),new GraphZoomScrollPane(currentViewer));
-		//tabbedPane.add(new GraphZoomScrollPane(currentViewer));
 	}
 
 	
@@ -2896,15 +2855,11 @@ private VisualTotalClusters vtc;
 	}
 	
 	public static VisualizationViewer<VisualNode, VisualEdge> getActiveViewer(){
-		
 		String tabName = sourceTabbedPane.getTitleAt(getActiveTab());
-		sourceTabbedPane.getComponentAt(getActiveTab());
-//		String tabName = sourceTabbedPane.getTitleAt(sourceTabbedPaneIndex);
-//		sourceTabbedPane.getComponentAt(sourceTabbedPaneIndex);
 		if(viewers.size()>0){
-			for(VisualizationViewer<VisualNode, VisualEdge> viewer : viewers){
-				if(viewer.getName().equals(tabName)){
-					return viewer;
+			for(VisualizationViewer<VisualNode, VisualEdge> vr : viewers){
+				if(vr.getName().equals(tabName)){
+					return vr;
 				}
 			}
 		}
@@ -2912,10 +2867,20 @@ private VisualTotalClusters vtc;
 			return vv;
 		}
 		return null;
-//		//if (vv.getWidth()>0) 
-//			return vv; 
-//		//else 
-//			//return vvContainer;
+	}
+	
+	public static VisualizationViewer<VisualNode, VisualEdge> getArchitectureGraphActiveViewer(){
+		if(viewers.size()>0){
+			for(VisualizationViewer<VisualNode, VisualEdge> vr : viewers){
+				if(vr.getName().equals("Architecture Graph")){
+					return vr;
+				}
+			}
+		}
+		else{
+			return null;
+		}
+		return null;
 	}
 	
 	public static int getActiveTab(){
@@ -2929,6 +2894,8 @@ private VisualTotalClusters vtc;
 			return subLayout;
 		}
 	}
+	
+	
 	
 
 	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
@@ -2958,7 +2925,7 @@ private VisualTotalClusters vtc;
 		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
 		
 		activeViewer = this.getActiveViewer();
-//		System.out.println("viewer  " + activeViewer.getName());
+		//vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 		vv1.repaint();
 		this.zoomToWindow(vv1);
 	}

@@ -40,9 +40,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	protected VisualizationViewer<VisualNode, VisualEdge> myViewer;
     protected List<VisualNode> myNodes;
     
-    /** 
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	public VisualGraph() {
@@ -55,17 +52,13 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		file.delete();
 	}
 	
-	
 	public VisualGraph(VisualizationViewer<VisualNode, VisualEdge> viewer){
 		this.myViewer = viewer;
-		
-
 	}
 	
 	public void setViewerToGraph(VisualizationViewer<VisualNode, VisualEdge> viewer){
 		this.myViewer = viewer;
 	}
-	
 	
 	public VisualizationViewer<VisualNode, VisualEdge> getMyViewer(){
 		return this.myViewer;
@@ -79,39 +72,31 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	 * @return the dimension of the graph
 	 */
 	public Dimension getSize(){
+		// return new Dimension(1200, 800);
+		if (this.getVertexCount()>0) {
+			//initialize coords with first vertex location
+			VisualNode v = new VisualNode();
+			v = this.getVertices().get(0); 
+//			VisualNode v = this.getVertices().get(0); 
+//			myNodes.add(v);
+			double minX = this.getLocation(v).getX();
+			double minY = this.getLocation(v).getY();
+			double maxX = this.getLocation(v).getX();
+			double maxY = this.getLocation(v).getY();
+			for (VisualNode jungNode: this.getVertices()) {
+				if (jungNode.getVisible()) {
+					Point2D p = this.getLocation(jungNode);
+					minX=(minX>p.getX()?p.getX():minX);
+					minY=(minY>p.getY()?p.getY():minY);
+					maxX=(maxX<p.getX()?p.getX():maxX);
+					maxY=(maxY<p.getY()?p.getY():maxY);
+				}
+			}
+
+			return new Dimension((int)(maxX-minX),(int)(maxY-minY));
+		}
+		//else return default
 		return new Dimension(1200, 800);
-//		if (this.getVertexCount()>0) {
-//			
-//			//initialize coords with first vertex location
-//			
-//			VisualNode v = new VisualNode();
-//			
-//			
-//			
-//			v = this.getVertices().get(0); 
-////			VisualNode v = this.getVertices().get(0); 
-////			myNodes.add(v);
-//			double minX = this.getLocation(v).getX();
-//			double minY = this.getLocation(v).getY();
-//			double maxX = this.getLocation(v).getX();
-//			double maxY = this.getLocation(v).getY();
-//			
-//			
-//
-//			for (VisualNode jungNode: this.getVertices()) {
-//				if (jungNode.getVisible()) {
-//					Point2D p = this.getLocation(jungNode);
-//					minX=(minX>p.getX()?p.getX():minX);
-//					minY=(minY>p.getY()?p.getY():minY);
-//					maxX=(maxX<p.getX()?p.getX():maxX);
-//					maxY=(maxY<p.getY()?p.getY():maxY);
-//				}
-//			}
-//
-//			/*return new Dimension((int)(maxX-minX),(int)(maxY-minY));*/
-//		}
-//		//else return default
-//		return new Dimension(1200, 800);
 		
 	}
 
@@ -148,7 +133,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	} 
 	
 	public VisualGraph importFromXML(File file) {
-
 		//holds the current key of the graph
 		int currentKey = this.getKeyGenerator();
 		myNodes = new ArrayList<VisualNode>();
@@ -162,9 +146,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		String eFromNode = null;
 		String eToNode = null;
 		String nSQLDefinition = null;
-				
 		try {
-	
 	        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 	        Document doc = docBuilder.parse (file);
@@ -220,7 +202,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	                	nSQLDefinition = ((Node)textSQLDefinitionList.item(0)).getNodeValue();
 	                }else
 	                	nSQLDefinition="";
-
 
 					// add node
 					VisualNode v = new VisualNode();
@@ -293,105 +274,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	            }//end of if clause
 	
 	        }//end of for loop for edges
-	        
-/*	        // find the policies (if any exists) for nodes
-	        NodeList listOfPolicies = doc.getElementsByTagName("HPolicies");
-	        Element PoliciesElement = (Element)listOfPolicies.item(0);
-	    	
-	        listOfPolicies = PoliciesElement.getElementsByTagName("HPolicy");
-	        
-    		if (listOfPolicies.getLength()>0) {
-            	for(int i=0; i<listOfPolicies.getLength() ; i++){
-
-            		Node firstPolicy = listOfPolicies.item(i);
-            		if(firstPolicy.getNodeType() == Node.ELEMENT_NODE){
-
-            			Element firstPolicyElement = (Element)firstPolicy;
-
-            			//-------                    
-            			NodeList HNodeList = firstPolicyElement.getElementsByTagName("HNode");
-            			Element HNodeElement = (Element)HNodeList.item(0);
-
-            			NodeList textHNodeList = HNodeElement.getChildNodes();
-            			String nHNode = ((Node)textHNodeList.item(0)).getNodeValue();
-
-            			//-------                    
-            			NodeList HEventList = firstPolicyElement.getElementsByTagName("HEvent");
-            			Element HEventElement = (Element)HEventList.item(0);
-
-            			NodeList HEventNodeList = HEventElement.getElementsByTagName("HEventNode");
-            			Element HEventNodeElement = (Element)HEventNodeList.item(0);
-
-            			NodeList textHEventNodeList = HEventNodeElement.getChildNodes();
-            			String nHEventNode = ((Node)textHEventNodeList.item(0)).getNodeValue();
-            			
-            			NodeList HEventTypeList = HEventElement.getElementsByTagName("HEventType");
-            			Element HEventTypeElement = (Element)HEventTypeList.item(0);
-
-            			NodeList textHEventTypeList = HEventTypeElement.getChildNodes();
-            			String nHEventType = ((Node)textHEventTypeList.item(0)).getNodeValue();
-            
-            			//----                    
-            			NodeList HPolicyTypeList = firstPolicyElement.getElementsByTagName("HPolicyType");
-            			Element HPolicyTypeElement = (Element)HPolicyTypeList.item(0);
-
-            			NodeList textHPolicyTypeList = HPolicyTypeElement.getChildNodes();
-            			String nHPolicyType = ((Node)textHPolicyTypeList.item(0)).getNodeValue();
-
-            			VisualNode HNode = this.findVertex(currentKey+new Integer(nHNode));
-            			VisualNode HEventNode = this.findVertex(currentKey+new Integer(nHEventNode));
-            			EventType HEventType = EventType.toEventType(nHEventType);
-            			PolicyType HPolicyType = PolicyType.toPolicyType(nHPolicyType);
-
-            			HNode.addPolicy(HEventType, HEventNode, HPolicyType);
-            		}//end of if clause
-
-            	}//end of for loop for policies
-
-            }//end of if policies exist
-    		
-    		//get events
-	        NodeList listOfEvents = doc.getElementsByTagName("HEvents");
-	        Element EventsElement = (Element)listOfEvents.item(0);
-	    	
-	        listOfEvents = EventsElement.getElementsByTagName("HEvent");
-			
-            if (listOfEvents.getLength()>0) {
-            	for(int i=0; i<listOfEvents.getLength() ; i++){
-            		Node firstEvent = listOfEvents.item(i);
-            		if(firstEvent.getNodeType() == Node.ELEMENT_NODE){
-            			Element firstEventElement = (Element)firstEvent;
-
-            			//-------                    
-            			NodeList HNodeList = firstEventElement.getElementsByTagName("HNode");
-            			Element HNodeElement = (Element)HNodeList.item(0);
-
-            			NodeList textHNodeList = HNodeElement.getChildNodes();
-            			String nHNode = ((Node)textHNodeList.item(0)).getNodeValue();
-
-            			//-------                    
-            			NodeList HEventNodeList = firstEventElement.getElementsByTagName("HEventNode");
-            			Element HEventNodeElement = (Element)HEventNodeList.item(0);
-
-            			NodeList textHEventNodeList = HEventNodeElement.getChildNodes();
-            			String nHEventNode = ((Node)textHEventNodeList.item(0)).getNodeValue();
-            			
-            			//-------                    
-            			NodeList HEventTypeList = firstEventElement.getElementsByTagName("HEventType");
-            			Element HEventTypeElement = (Element)HEventTypeList.item(0);
-
-            			NodeList textHEventTypeList = HEventTypeElement.getChildNodes();
-            			String nHEventType = ((Node)textHEventTypeList.item(0)).getNodeValue();
-            			
-            			VisualNode HNode = this.findVertex(currentKey+new Integer(nHNode));
-            			VisualNode HEventNode = this.findVertex(currentKey+new Integer(nHEventNode));
-            			EventType HEventType = EventType.toEventType(nHEventType);
-            			
-            			HNode.addEvent(HEventType);            			
-            		}
-            	}//end of for loop for events
-            }//end of if events exist
-*/
             //get the last element - graph keygenerator
             NodeList keyGen = doc.getElementsByTagName("HKeyGen");
             Element keyGenElement = (Element)keyGen.item(0);
@@ -440,12 +322,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 			subGraph.setLocation(v, this.getLocation(v)); 
 		return subGraph;
 	}
-	
-//	public Graph toG(VisualGraph inGraph){
-//		return inGraph;
-//	}
-	
-	
 	
 	public void exportToXML(File file) {
 		
@@ -522,63 +398,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					// end element HEdge
 				}
 				rootElement.appendChild(elementHedges);
-				
-				
-/*				// write policies
-				Element elementHPolicies = document.createElement("HPolicies");
-				// write events
-				Element elementHEvents = document.createElement("HEvents");
-				
-				for (VisualNode v : this.getVertices()) {
-					for (EvolutionPolicy<VisualNode> p: v.getPolicies()) {
-						//start tag HPolicy
-						Element elementHPolicy = document.createElement("HPolicy");
-						elementHPolicies.appendChild(elementHPolicy);
-						//write Node having the policy
-						Element elementHNode = document.createElement("HNode");
-						elementHNode.appendChild(document.createTextNode(this.getKey(v).toString()));
-						elementHPolicy.appendChild(elementHNode);
-						//write event handled by the policy
-						Element elementEvent = document.createElement("HEvent");
-						elementHPolicy.appendChild(elementEvent);
-						
-						Element elementEventNode = document.createElement("HEventNode");
-						elementEventNode.appendChild(document.createTextNode(this.getKey(p.getSourceEvent().getEventNode()).toString()));
-						elementEvent.appendChild(elementEventNode);
-						
-						Element elementEventType = document.createElement("HEventType");
-						elementEventType.appendChild(document.createTextNode(p.getSourceEvent().getEventType().toString()));
-						elementEvent.appendChild(elementEventType);
-						//write policy type
-						Element elementPolicyType = document.createElement("HPolicyType");
-						elementPolicyType.appendChild(document.createTextNode(p.getPolicyType().toString()));
-						elementHPolicy.appendChild(elementPolicyType);
-						// end element HPolicy
-					}
-					for (EvolutionEvent<VisualNode> e : v.getEvents()) {
-						//write element event
-						Element elementHEvent = document.createElement("HEvent");
-						elementHEvents.appendChild(elementHEvent);
-						//write Node having the event
-						Element elementHNode = document.createElement("HNode");
-						elementHNode.appendChild(document.createTextNode(this.getKey(v).toString()));
-						elementHEvent.appendChild(elementHNode);
-						
-						Element elementEventNode = document.createElement("HEventNode");
-						elementEventNode.appendChild(document.createTextNode(this.getKey(e.getEventNode()).toString()));
-						elementHEvent.appendChild(elementEventNode);
-						Element elementEventType = document.createElement("HEventType");
-						elementEventType.appendChild(document.createTextNode(e.getEventType().toString()));
-						elementHEvent.appendChild(elementEventType);
-						// end element HEvent
-						
-					}
-				}
-				rootElement.appendChild(elementHPolicies);
-				rootElement.appendChild(elementHEvents);
-			
-	*/
-				//
+
 				Element elementHKeyGen = document.createElement("HKeyGen");
 				elementHKeyGen.appendChild(document.createTextNode((new Integer(this.getKeyGenerator()).toString())));
 				rootElement.appendChild(elementHKeyGen);

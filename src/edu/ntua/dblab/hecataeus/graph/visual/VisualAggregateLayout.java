@@ -5,10 +5,8 @@ import java.awt.geom.Point2D;
 import java.util.Map;
 import java.util.TreeMap;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.Forest;
 /***
  * 
  * @author gpapas

@@ -109,8 +109,6 @@ public class PopUpClickListener extends MouseAdapter{
 			}
 		}
 	}
-	
-	
 
 	class ClusterVertexShapeFunction<V> extends EllipseVertexShapeTransformer<V> {
 
@@ -167,10 +165,4 @@ public class PopUpClickListener extends MouseAdapter{
 			}
 		};
 	}
-	
-	
-	
-
-	
 }
-

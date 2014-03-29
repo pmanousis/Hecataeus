@@ -3,14 +3,11 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
-import edu.ntua.dblab.hecataeus.HecataeusClusterMap;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 

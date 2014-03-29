@@ -545,8 +545,8 @@ int numberOfNodes=0;
  * @author pmanousi
  * For time count of step 1.
  */
-StopWatch step1 = new StopWatch();
-step1.start();
+//StopWatch step1 = new StopWatch();
+//step1.start();
 	while (!queue.isEmpty())
 	{
 		try
@@ -574,7 +574,7 @@ step1.start();
  * @author pmanousi
  * For time count of step 1.
  */
-step1.stop();
+//step1.stop();
 /*
  * counting nodes with status! 
  */
@@ -621,8 +621,8 @@ for(int i=0;i<rel.size();i++)
  * @author pmanousi
  * For time count of step 2.
  */
-StopWatch step2 = new StopWatch();
-step2.start();
+//StopWatch step2 = new StopWatch();
+//step2.start();
 	while (i.hasNext())
 	{
 		ModuleNode<V, E> prosElegxo=i.next();
@@ -637,17 +637,16 @@ step2.start();
  * @author pmanousi
  * For time count of step 2.
  */
-step2.stop();
+//step2.stop();
 /**
  * @author pmanousi
  * For time count of step 3.
  */
-
 MetriseisRewrite mr=new MetriseisRewrite();
 int clonedModules=0;
 int rewrittenModules=0;
 StopWatch step3 = new StopWatch();
-step3.start();
+//step3.start();
 
 	if(st==StatusType.BLOCKED)
 	{
@@ -709,17 +708,14 @@ step3.start();
  * @author pmanousi
  * For time count of step 3.
  */
-step3.stop();
-
-
-
-try
-{
-    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
-    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules+","+step1.toString()+","+step2.toString()+","+step3.toString());
-    out.close();
-} catch (IOException e)
-{}
+//step3.stop();
+//try
+//{
+//    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
+//    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules+","+step1.toString()+","+step2.toString()+","+step3.toString());
+//    out.close();
+//} catch (IOException e)
+//{}
 }
 
 
