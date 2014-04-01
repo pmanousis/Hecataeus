@@ -1,4 +1,0 @@
-referenceExample, test.plc, DELETE_SELF: TRANSCRIPT_SCHEMA.SID,3,4,19,123,0,0
-referenceExample, test.plc, RENAME_SELF: 9dcf2aa5-307c-42ab-940d-769ebed5367d_SCHEMA.,0,4,0,123,1,0
-referenceExample, test.plc, RENAME_SELF: c0de7d7e-c092-4e58-a925-84683f4b0092_SCHEMA.,0,4,0,123,1,0
-referenceExample, test.plc, DELETE_SELF: TRANSCRIPT_SCHEMA.TGRADE,3,4,20,123,0,0
