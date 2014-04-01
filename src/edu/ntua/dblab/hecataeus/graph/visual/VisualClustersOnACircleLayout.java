@@ -40,7 +40,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		this.graph = g;
 		this.endC = endC;
 		vcl = new VisualCircleLayout(this.graph);
-		
 		queries = new ArrayList<VisualNode>(vcl.getQueries());
 		relations = new ArrayList<VisualNode>(vcl.getRelations());
 		views = new ArrayList<VisualNode>(vcl.getViews());
@@ -50,8 +49,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 
 /**
  * Implements what the class is about
- * 
- * 
  */
 	private void clustersOnaCircle(){
 		/**

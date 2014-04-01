@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class VisualFileColor {
 	
@@ -13,6 +12,7 @@ public class VisualFileColor {
 	protected static HashMap<String, Color> FileColor;
 	
 	public VisualFileColor(){
+		
 	}
 	
 	public void setFileNames(List<String> files){
@@ -35,13 +35,8 @@ public class VisualFileColor {
 			FileColor.put(name, getColor(cnt%6));
 			cnt++;
 		}
-		
-		for(Map.Entry<String, Color> entry : FileColor.entrySet()){
-			System.out.println("file name" + entry.getKey() +" file color " + entry.getValue() );
-		}
 		return FileColor;
 	}
-	
 	
 	private Color getColor(int c){
 		
@@ -53,8 +48,6 @@ public class VisualFileColor {
 		case 4: return new Color(102,178,255);
 		case 5: return new Color(178,102,255);
 		case 6: return new Color(255,102,102);
-		
-		
 		default : return new Color(0,0,0);
 		}
 	}

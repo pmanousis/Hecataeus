@@ -3,19 +3,11 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-
-
 
 /**
  * @author eva

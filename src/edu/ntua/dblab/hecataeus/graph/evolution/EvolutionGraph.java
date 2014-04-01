@@ -8,7 +8,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,7 +26,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Hypergraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> extends DirectedSparseGraph<V, E>{
@@ -53,18 +51,15 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		
 	/**
 	 * adds a new EvolutionNode
-	 *  
 	 **/
 	public boolean addVertex(V Node) {
 		// assign key
 		nodeKeys.put(Node, ++EvolutionGraph._KeyGenerator);
-		
 		return super.addVertex(Node);
 	}
 
-	public boolean addVertexEVA(VisualGraph g) {
+	public boolean addVertex(VisualGraph g) {
 		graphkMap.put(g, ++EvolutionGraph._KeyGenerator);
-		
 		return true;
 	}
 		
@@ -74,39 +69,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	public boolean addEdge(E Edge, V fromNode, V toNode) {
 		return this.addEdge(Edge);		
 	}
-	
-	public boolean addEdgeEVA(E Edge, V fromNode, VisualGraph toGraph){
-		return this.addEdgeEVA(Edge);
-	}
-	
-	public boolean addEdgeEVA1(E Edge, VisualGraph fromgrGraph, V toNode){
-		return this.addEdgeEVA(Edge);
-	}
-	
-	public boolean addEdgeEVA(E Edge){
-		edgeKeys.put(Edge, ++EvolutionGraph._KeyGenerator);
-		// add edge to incoming edges of ToNode
-		V fromNode = (V) Edge.getFromNode();
-		if(fromNode==null||fromNode.getOutEdges()==null)
-		{
-			if(fromNode==null)
-			{
-				System.out.println("fromNode=NULL!!! on edge: "+ Edge.getName()+" to node:"+Edge.getToNode());
-			}
-			else
-			{
-				System.out.println("86 line: "+fromNode.getName());
-			}
-		}
-		if (!fromNode.getOutEdges().contains(Edge))
-			fromNode.getOutEdges().add(Edge);
-		// add edge to outgoing edges of FromNode
-		V toNode = (V) Edge.getToNode();
-		if (!toNode.getInEdges().contains(Edge))
-			toNode.getInEdges().add(Edge);
-		return super.addEdge(Edge, fromNode, toNode);
-	}
-	
 	
 	/**
 	 * adds edge by HecataeusEdge

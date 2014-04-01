@@ -5,11 +5,9 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.uci.ics.jung.graph.Graph;
 
 /**
- * 
  * @author eva
  * circular layout used only for edgebetweeness clusring
  */

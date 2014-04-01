@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,7 +33,6 @@ import org.xml.sax.SAXParseException;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 //import edu.uci.ics.jung.graph.Vertex;
 
@@ -46,7 +46,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	}
 
 	public VisualGraph(VisualGraph subGraph){
-		File file = new File("eva");
+		File file = new File(UUID.randomUUID().toString());
 		subGraph.exportToXML(file);
 		this.importFromXML(file);
 		file.delete();

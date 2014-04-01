@@ -31,7 +31,6 @@ public enum VisualLayoutType {
 	ISOMLayout,
 	SpringLayout,
 	ZoomedLayoutForModules,
-	ZoomedLayoutForModulesV2,
 	ConcentricCircleLayout,
 	ClustersonaCircleLayout,
 	ConcentricCirclesClusterLayout,
@@ -160,8 +159,6 @@ public enum VisualLayoutType {
 				return new VisualTopologicalLayout(g, Orientation.INVERSELEFT2RIGHT);
 			case RadialTreeLayout:
 				return new RadialTreeLayout<VisualNode, VisualEdge>(new DelegateForest<VisualNode, VisualEdge>(g));
-			case ZoomedLayoutForModulesV2:
-				return new VisualTopologicalLayout(g, Orientation.ZoomedLayoutForModulesV2);
 			case ZoomedLayoutForModules:
 				return new VisualTopologicalLayout(g, Orientation.ZoomedLayoutForModules);
 			case ConcentricCircleLayout:

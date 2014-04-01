@@ -9,7 +9,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 /**
  * count edge crossings of graph
  * @author eva
- *
  */
 public class VisualGraphEdgeCrossings {
 

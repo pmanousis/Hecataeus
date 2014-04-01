@@ -133,7 +133,7 @@ public class TopologicalTravel
 		}
 		TreeMap<Double, ArrayList<VisualNode>> layers = new TreeMap<Double, ArrayList<VisualNode>>(); 
 		double layerCounter = 0.0;
-		double eva = 0.0;
+		double layerIndicator = 0.0;
 		while(highLevelNodes.size()>0)
 		{
 			ArrayList<VisualNode> sameLayerNodes = new ArrayList<VisualNode>();
@@ -145,9 +145,9 @@ public class TopologicalTravel
 				}
 			}
 			if(sameLayerNodes.size()>0){
-				highLevelNodes.removeAll(sameLayerNodes);	// Remove startNode from list.
-				layers.put(eva, sameLayerNodes);
-				eva++;
+				highLevelNodes.removeAll(sameLayerNodes);
+				layers.put(layerIndicator, sameLayerNodes);
+				layerIndicator++;
 			}
 			layerCounter++;
 		}

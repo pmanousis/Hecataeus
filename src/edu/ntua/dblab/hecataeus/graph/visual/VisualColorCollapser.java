@@ -47,7 +47,7 @@ public VisualGraph collapse(VisualGraph inGraph, VisualGraph clusterGraph) {
 		    }
 		}
 		// add the clusterGraph as a vertex
-		graph.addVertexEVA(clusterGraph);
+		graph.addVertex(clusterGraph);
 		
 		//add all edges from the inGraph, unless both endpoints of
 		// the edge are in the cluster
@@ -55,13 +55,10 @@ public VisualGraph collapse(VisualGraph inGraph, VisualGraph clusterGraph) {
 		Pair endpoints = inGraph.getEndpoints(e);
 		// don't add edges whose endpoints are both in the cluster
 			if(cluster.containsAll(endpoints) == false) {
-			
 			    if(cluster.contains(endpoints.getFirst())) {
-			    	graph.addEdgeEVA1(e, clusterGraph, (VisualNode)endpoints.getSecond());
-			
+			    	clusterGraph.addEdge(e);
 			    } else if(cluster.contains(endpoints.getSecond())) {
-			    	graph.addEdgeEVA(e, (VisualNode)endpoints.getFirst(), clusterGraph);
-			
+			    	clusterGraph.addEdge(e);
 			    } else {
 			    	graph.addEdge(e,(VisualNode)endpoints.getFirst(), (VisualNode)endpoints.getSecond());
 			    }

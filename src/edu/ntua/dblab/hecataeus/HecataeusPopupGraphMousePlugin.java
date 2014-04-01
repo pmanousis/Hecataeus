@@ -25,7 +25,7 @@ import edu.uci.ics.jung.visualization.picking.PickedState;
 public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin<VisualNode,VisualEdge>{
 
 	protected VisualizationViewer<VisualNode,VisualEdge> vv = null;
-	protected VisualizationViewer<VisualNode,VisualEdge> vveva = null;
+	protected VisualizationViewer<VisualNode,VisualEdge> newVv = null;
 	protected Set<VisualNode> pickedNodes;
 	protected Set<VisualEdge> pickedEdges;
 	protected Point2D pointClicked ;

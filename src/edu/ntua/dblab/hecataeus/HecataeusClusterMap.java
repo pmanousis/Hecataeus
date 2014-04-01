@@ -31,7 +31,6 @@ import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 /**
  * draws the overview map
  * @author eva
- *
  */
 @SuppressWarnings("serial")
 public class HecataeusClusterMap extends JPanel{

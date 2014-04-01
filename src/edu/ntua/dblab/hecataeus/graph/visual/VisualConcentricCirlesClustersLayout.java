@@ -1,18 +1,14 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Dimension;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 /**
@@ -21,7 +17,6 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
  * First we divide the clusters in groups of 2^i
  * then for each group we place its clusters on a different circle
  * We optimize the radius of each concetric circle with our radius optimization technique
- * 
  */
 
 public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
@@ -55,8 +50,6 @@ public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
 
 	/**
 	 * Implements what the class is about
-	 * 
-	 * 
 	 */
 	protected void CirclingCusters(){
 		/**

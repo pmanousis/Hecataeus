@@ -14,7 +14,6 @@ import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 /**
- * 
  * @author eva
  * stroke type for nodes
  */

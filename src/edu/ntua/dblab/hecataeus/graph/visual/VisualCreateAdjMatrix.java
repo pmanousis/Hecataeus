@@ -5,7 +5,6 @@ import java.util.List;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 /**
- * 
  * @author eva
  * creates Adjacency matrix for clustering
  */

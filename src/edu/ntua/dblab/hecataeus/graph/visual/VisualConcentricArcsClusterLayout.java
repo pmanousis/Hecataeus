@@ -52,8 +52,6 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
   
     /**
 	 * Implements what the class is about
-	 * 
-	 * 
 	 */
     protected void CirclingCusters(){
     	/**

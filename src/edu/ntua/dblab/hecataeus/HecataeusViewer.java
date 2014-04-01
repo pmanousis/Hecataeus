@@ -58,8 +58,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import org.apache.commons.collections15.functors.ConstantTransformer;
-
 import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
@@ -78,7 +76,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualGraphEdgeCrossings;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
@@ -781,7 +778,7 @@ private VisualTotalClusters vtc;
 			{
 				mnAlgorithms.addSeparator();
 			}
-			if(layoutType.equals(VisualLayoutType.ZoomedLayoutForModules)||layoutType.equals(VisualLayoutType.ZoomedLayoutForModulesV2))
+			if(layoutType.equals(VisualLayoutType.ZoomedLayoutForModules))
 			{
 				continue;
 			}
@@ -811,13 +808,8 @@ private VisualTotalClusters vtc;
 						frame.repaint();
 						
 						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-					//	System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-						
 						getLayout(activeViewer).setTopLayoutType(layoutType);  
-						
 						HecataeusViewer.this.getLayoutPositions();
-/*						Point2D c = new Point(0, 0);
-						centerAt(c);*/
 						vv.repaint();
 						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 						zoomToWindow(activeViewer);
@@ -2700,9 +2692,7 @@ private VisualTotalClusters vtc;
 		
 		/**
 		 * @author evakont	
-		 * 
 		 * the intial layout is ConcentricCircleLayout
-		 * 
 		 */		
 		getLayout(activeViewer).setTopLayoutType(layoutType);
 		HecataeusViewer.this.getLayoutPositions();
