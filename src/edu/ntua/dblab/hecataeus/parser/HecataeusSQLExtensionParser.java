@@ -34,6 +34,7 @@ public final class HecataeusSQLExtensionParser{
 
 	private VisualGraph _graph;
 	private File _inputFile;
+	private int allreadyByStar = 0;	// If there was sentence as NODE: on * then <plc>; I need to know it for the sentences as NODE: on <evt> then <plc>;
 	
 //	private enum DBEvents { 
 //		ADDITION, 
@@ -80,11 +81,124 @@ public final class HecataeusSQLExtensionParser{
 		this._inputFile = inputFile ;
 	}
 
+	/**
+	 * @author pmanousi
+	 * Sets policy to all nodes.
+	 * @throws Exception if there is unrecognized event type.
+	 */
+	private void parseDatabasePolicy(String policyStringClause, ArrayList<String> relationSentences, ArrayList<String> viewSentences, ArrayList<String> querySentences) throws Exception{
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		policyClause.nextToken(": ").trim();	//These policies always start with reserved word NODE:
+		policyClause.nextToken(" ").trim();
+		String evtString = policyClause.nextToken().trim();	// This is for ON keyword
+		evtString = policyClause.nextToken().trim();	// This is for the event.
+		String plcStr= policyClause.nextToken().trim();	// This is for the THEN keyword
+		plcStr = policyClause.nextToken().trim();	// This is the policy;
+		
+		if(evtString.equals("*")==true)
+		{	// For all events.
+			relationSentences.add(allreadyByStar,"RELATION.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+			relationSentences.add(allreadyByStar,"RELATION.OUT.SELF: on DELETE_SELF then "+plcStr);
+			relationSentences.add(allreadyByStar,"RELATION.OUT.SELF: on RENAME_SELF then "+plcStr);
+			relationSentences.add(allreadyByStar,"RELATION.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
+			relationSentences.add(allreadyByStar,"RELATION.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on DELETE_SELF then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on RENAME_SELF then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on RENAME_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.IN.SELF: on DELETE_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.IN.SELF: on RENAME_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.IN.SELF: on ADD_ATTRIBUTE_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.IN.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.IN.ATTRIBUTES: on RENAME_PROVIDER then "+plcStr);
+			viewSentences.add(allreadyByStar,"VIEW.SMTX.SELF: on ALTER_SEMANTICS then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on DELETE_SELF then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on RENAME_SELF then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on RENAME_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.IN.SELF: on DELETE_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.IN.SELF: on RENAME_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.IN.SELF: on ADD_ATTRIBUTE_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.IN.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.IN.ATTRIBUTES: on RENAME_PROVIDER then "+plcStr);
+			querySentences.add(allreadyByStar,"QUERY.SMTX.SELF: on ALTER_SEMANTICS then "+plcStr);
+			allreadyByStar=1;
+		}
+		else
+		{
+			if(evtString.equals(EventType.ADD_ATTRIBUTE.toString()))
+			{
+				relationSentences.add(allreadyByStar,"RELATION.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+			}
+			else if(evtString.equals(EventType.ADD_ATTRIBUTE_PROVIDER.toString()))
+			{
+				viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER then "+plcStr);
+			}
+			else if(evtString.equals(EventType.DELETE_SELF.toString()))
+			{
+				relationSentences.add(allreadyByStar,"RELATION.OUT.SELF: on DELETE_SELF then "+plcStr);
+				relationSentences.add(allreadyByStar,"RELATION.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on DELETE_SELF then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on DELETE_SELF then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
+			}
+			else if(evtString.equals(EventType.DELETE_PROVIDER.toString()))
+			{
+				viewSentences.add(allreadyByStar,"VIEW.IN.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.IN.SELF: on DELETE_PROVIDER then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.IN.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.IN.SELF: on DELETE_PROVIDER then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+			}
+			else if(evtString.equals(EventType.RENAME_SELF.toString()))
+			{
+				relationSentences.add(allreadyByStar,"RELATION.OUT.SELF: on RENAME_SELF then "+plcStr);
+				relationSentences.add(allreadyByStar,"RELATION.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.SELF: on RENAME_SELF then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.SELF: on RENAME_SELF then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
+			}
+			else if(evtString.equals(EventType.RENAME_PROVIDER.toString()))
+			{
+				viewSentences.add(allreadyByStar,"VIEW.IN.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.IN.SELF: on DELETE_PROVIDER then "+plcStr);
+				viewSentences.add(allreadyByStar,"VIEW.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.IN.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.IN.SELF: on DELETE_PROVIDER then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
+			}
+			else if(evtString.equals(EventType.ALTER_SEMANTICS.toString()))
+			{
+				viewSentences.add(allreadyByStar,"VIEW.SMTX.SELF: on ALTER_SEMANTICS then "+plcStr);
+				querySentences.add(allreadyByStar,"QUERY.SMTX.SELF: on ALTER_SEMANTICS then "+plcStr);
+			}
+			else
+			{
+				throw new Exception("Input file is not in the correct format or empty file");
+			}
+		}
+	}
+	
 	public void processFile() throws HecataeusException
 	{
 		String sentence = "";	// holds each separate sentence
 		ArrayList<String> nodeSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
-		//ArrayList<String> databaseSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		ArrayList<String> nodeStarSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
+		ArrayList<String> databaseSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
 		ArrayList<String> relationSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
 		ArrayList<String> viewSentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
 		ArrayList<String> querySentences = new ArrayList<String>();	//holds database wide policies, so that to parse them last
@@ -100,7 +214,12 @@ public final class HecataeusSQLExtensionParser{
 					sentence = sentence.toUpperCase().replace(";", "");
 					StringTokenizer token = new StringTokenizer(sentence);
 					String nodeName = token.nextToken(":");	//get node name
-					if (nodeName.trim().startsWith("RELATION."))	//check whether it is relation wide policy
+					
+					if (nodeName.trim().equals("NODE"))	//check whether it is for all nodes.
+					{
+						databaseSentences.add(sentence);
+					}					
+					else if (nodeName.trim().startsWith("RELATION."))	//check whether it is relation wide policy
 					{
 						relationSentences.add(sentence);
 					}
@@ -114,7 +233,14 @@ public final class HecataeusSQLExtensionParser{
 					}
 					else
 					{
-						nodeSentences.add(sentence);
+						if(sentence.contains("*"))
+						{
+							nodeStarSentences.add(sentence);
+						}
+						else
+						{
+							nodeSentences.add(sentence);
+						}
 					}
 				}
 			}
@@ -126,12 +252,17 @@ public final class HecataeusSQLExtensionParser{
 		}
 		try
 		{
-			if ((relationSentences.size()+viewSentences.size()+querySentences.size()+nodeSentences.size())<=0)
+			if ((relationSentences.size()+viewSentences.size()+querySentences.size()+nodeSentences.size()+databaseSentences.size()+nodeStarSentences.size())<=0)
 			{
 				throw new Exception("Input file is not in the correct format or empty file");
 			}
 			else
 			{
+				for (int i = 0; i < databaseSentences.size(); i++)	//parse first the global policies
+				{	// add to relationSentences, viewSentences and querySentences all the needed policies.
+					sentence = databaseSentences.get(i);
+					this.parseDatabasePolicy(sentence, relationSentences, viewSentences, querySentences);
+				}
 				for (int i = 0; i < relationSentences.size(); i++)	//parse first the global policies
 				{
 					sentence = relationSentences.get(i);
@@ -147,6 +278,12 @@ public final class HecataeusSQLExtensionParser{
 					sentence = querySentences.get(i);
 					this.parseQueryPolicy(sentence);
 				}
+				for (int i = 0; i < nodeStarSentences.size(); i++)	//parse first the <module>: on * then <policy>; lines
+				{
+					sentence= nodeStarSentences.get(i);
+					this.parseModulePolicy(sentence);
+				}
+				
 				for (int i = 0; i < nodeSentences.size(); i++)	//parse then the node policies
 				{
 					sentence = nodeSentences.get(i).toUpperCase();
@@ -179,7 +316,7 @@ public final class HecataeusSQLExtensionParser{
 	private void clearPolicies() {
 	
 		for (VisualNode node: this._graph.getVertices()) {
-			node.getPolicies().clear();
+			node.getPolicies().clear();	
 			this._graph.getDefaultPolicyDecsriptions().clear();
 		}
 	}
@@ -453,6 +590,100 @@ public final class HecataeusSQLExtensionParser{
 	
 	/**
 	 * @author pmanousi
+	 * Sets policy for a specific module containing * in event parameter of policy file.
+	 * @param policyStringClause
+	 * @throws HecataeusException
+	 */
+	private void parseModulePolicy(String policyStringClause) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String nodeName = policyClause.nextToken(":").trim();
+		//get node on which policy is applied
+		VisualNode node;
+		node = this.getNodeByName(nodeName);
+		if (node==null)
+			throw new HecataeusException("Unknown Node: " + nodeName);
+		String currentWord = policyClause.nextToken(" ").trim();
+		currentWord = policyClause.nextToken(" ").trim();
+		//Expect ON keyword
+		if (!(currentWord.equalsIgnoreCase("ON"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: ON");
+		}
+		
+		//Get event type (actually it is *)
+		currentWord = policyClause.nextToken().trim();
+		
+		
+		//Expect THEN keyword
+		currentWord = policyClause.nextToken().trim();
+		if (!(currentWord.equalsIgnoreCase("THEN"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: THEN");
+		}
+		//Get Policy Type
+		currentWord = policyClause.nextToken().trim();
+		PolicyType policyType;
+		try {
+			policyType = PolicyType.toPolicyType(currentWord.toUpperCase());
+		
+		} catch (Exception e) {
+			throw new HecataeusException( "Unknown Policy: " + currentWord); 
+		}
+		if (policyClause.hasMoreTokens()) {
+			throw new HecataeusException( "Unexpected Token: " + policyClause.nextToken());
+			}
+		//add new policy to Node, if not the same exists
+		switch (node.getType()) {
+		case NODE_TYPE_QUERY:
+		case NODE_TYPE_VIEW:
+			for(int i=0;i<node.getOutEdges().size();i++)
+			{
+				if(node.getOutEdges().get(i).getToNode().getType().equals(NodeType.NODE_TYPE_SEMANTICS))
+				{
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.ALTER_SEMANTICS,policyType);
+				}
+				if(node.getOutEdges().get(i).getToNode().getType().equals(NodeType.NODE_TYPE_OUTPUT))
+				{
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.ADD_ATTRIBUTE,policyType);
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.DELETE_SELF,policyType);
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.RENAME_SELF,policyType);
+					for(int j=0;j<node.getOutEdges().get(i).getToNode().getOutEdges().size();j++)
+					{
+						node.getOutEdges().get(i).getToNode().getOutEdges().get(j).getToNode().addPolicy(EventType.DELETE_SELF,policyType);
+						node.getOutEdges().get(i).getToNode().getOutEdges().get(j).getToNode().addPolicy(EventType.DELETE_PROVIDER,policyType);
+						node.getOutEdges().get(i).getToNode().getOutEdges().get(j).getToNode().addPolicy(EventType.RENAME_SELF,policyType);
+						node.getOutEdges().get(i).getToNode().getOutEdges().get(j).getToNode().addPolicy(EventType.RENAME_PROVIDER,policyType);
+					}
+				}
+				if(node.getOutEdges().get(i).getToNode().getType().equals(NodeType.NODE_TYPE_INPUT))
+				{
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.ADD_ATTRIBUTE_PROVIDER,policyType);
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.DELETE_PROVIDER,policyType);
+					node.getOutEdges().get(i).getToNode().addPolicy(EventType.RENAME_PROVIDER,policyType);
+					for(int j=0;j<node.getOutEdges().get(i).getToNode().getOutEdges().size();j++)
+					{
+						node.getOutEdges().get(i).getToNode().getOutEdges().get(j).getToNode().addPolicy(EventType.DELETE_PROVIDER,policyType);
+						node.getOutEdges().get(i).getToNode().getOutEdges().get(j).getToNode().addPolicy(EventType.RENAME_PROVIDER,policyType);
+					}
+				}
+			}
+			break;
+		case NODE_TYPE_RELATION:
+			node.getOutEdges().get(0).getToNode().addPolicy(EventType.ADD_ATTRIBUTE,policyType);
+			node.getOutEdges().get(0).getToNode().addPolicy(EventType.DELETE_SELF,policyType);
+			node.getOutEdges().get(0).getToNode().addPolicy(EventType.RENAME_SELF,policyType);
+			for(int i=0;i<node.getOutEdges().get(0).getToNode().getOutEdges().size();i++)
+			{
+				node.getOutEdges().get(0).getToNode().getOutEdges().get(i).getToNode().addPolicy(EventType.DELETE_SELF,policyType);
+				node.getOutEdges().get(0).getToNode().getOutEdges().get(i).getToNode().addPolicy(EventType.RENAME_SELF,policyType);
+			}
+			break;
+		default:
+			break;
+		}
+	};
+	
+	
+	/**
+	 * @author pmanousi
 	 */
 	private void parseNodeAttributesPolicy(String policyStringClause) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
@@ -523,10 +754,8 @@ public final class HecataeusSQLExtensionParser{
 			}
 		}else
 			return node;
-		
 		return node;
-		
-	} 
+	}
 		
 	private  String readSentence(BufferedReader ffile) throws HecataeusException{
 		String sentence="";
