@@ -251,5 +251,26 @@ static int counter;
 		this._line=line;
 	}
 
+	 /**
+	  * used for finding the parent of a node (query, view, relation)
+	  **/
+	 public EvolutionNode<EvolutionEdge> getParentNode() {
+		 for (EvolutionEdge e: this.getInEdges()){
+			 //if node is attribute then 
+			 if (((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA))
+				||((this.getType()==NodeType.NODE_TYPE_CONDITION) && (e.getType()==EdgeType.EDGE_TYPE_OPERATOR))
+				||((this.getType()==NodeType.NODE_TYPE_OPERAND) && ((e.getType()==EdgeType.EDGE_TYPE_OPERATOR)
+				||(e.getType()==EdgeType.EDGE_TYPE_WHERE)))
+				||(this.getType()==NodeType.NODE_TYPE_CONSTANT)
+				||((this.getType()==NodeType.NODE_TYPE_GROUP_BY) && (e.getType()==EdgeType.EDGE_TYPE_GROUP_BY))
+				||(this.getType()==NodeType.NODE_TYPE_FUNCTION)
+				|| (this.getType()==NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
+				|| (this.getType()==NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT))
+				|| (this.getType()==NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS))
+			 )
+				 return (EvolutionNode<EvolutionEdge>) e.getFromNode();
+		 }
+		 return null;
+	 }
 	
 }

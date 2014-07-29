@@ -155,6 +155,19 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		nodeKeys.remove(node);
 		nodeKeys.put(node,key);
 	}
+	
+	/**
+	 *  get node by its name and type category, for more than one occurrences, the first is returned
+	 **/
+	public V findVertexByName(String name, NodeCategory nc) {
+		for (V u: this.getVertices()) {
+			if (u.getName().toUpperCase().equals(name.toUpperCase())&& u.getType().getCategory()==nc) {
+				return u;
+			}
+		}
+		
+		return null;
+	}
 
 	/**
 	 *  get node by its name and type, for more than one occurrences, the first is returned
@@ -720,9 +733,9 @@ StopWatch step3 = new StopWatch();
 		}
 
 		//If no policy is returned check parents' policy for this event to override provider's policy
-		if (this.getParentNode(nr)!=null) {
+		if (nr.getParentNode()!=null) {
 			EvolutionEvent<V> newEvent = new EvolutionEvent<V>(/*nr,*/event.getEventType());
-			return getPrevailingPolicy(newEvent,this.getParentNode(nr),previousPolicyType);
+			return getPrevailingPolicy(newEvent,(V) nr.getParentNode(),previousPolicyType);
 		}
 
 		//if no self or parents policy exists then return provider's policy
@@ -909,29 +922,7 @@ StopWatch step3 = new StopWatch();
 
 	 }
 		
-	 /**
-	  * used for finding the parent of a node (query, view, relation)
-	  **/
-	 public V getParentNode(V node) {
-		 for (E e: this.getInEdges(node)){
-			 //if node is attribute then 
-			 if (((node.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
-					 && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA))
-					 ||((node.getType()==NodeType.NODE_TYPE_CONDITION)
-							 && (e.getType()==EdgeType.EDGE_TYPE_OPERATOR))		
-							 ||((node.getType()==NodeType.NODE_TYPE_OPERAND)
-									 && ((e.getType()==EdgeType.EDGE_TYPE_OPERATOR)
-											 ||(e.getType()==EdgeType.EDGE_TYPE_WHERE)))		
-											 ||(node.getType()==NodeType.NODE_TYPE_CONSTANT)		
-											 ||((node.getType()==NodeType.NODE_TYPE_GROUP_BY)
-													 && (e.getType()==EdgeType.EDGE_TYPE_GROUP_BY))		
-													 ||(node.getType()==NodeType.NODE_TYPE_FUNCTION)
-			 )
-				 return this.getSource(e);
-		 }
-		 return null;
-	 }
-		
+	
 
 	/**
 	 * sets the keyGenerator to zero, to start counting the elements from the beginning

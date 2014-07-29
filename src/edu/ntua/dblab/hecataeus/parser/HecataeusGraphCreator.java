@@ -82,21 +82,21 @@ public class HecataeusGraphCreator{
 			// Add the relation node
 			u = add_node(tTable.getName(), NodeType.NODE_TYPE_RELATION);
 			u.setSQLDefinition(definition);
-/**
-* @author pmanousi start
-* Make a new node called tableName+" OUTPUT" and my table hits this node, later attributes will hit outputNode.
-*/
-VisualNode outputNode=add_node(u.getName()+"_SCHEMA", NodeType.NODE_TYPE_OUTPUT);
-e=add_edge(u, outputNode, EdgeType.EDGE_TYPE_OUTPUT,"OUT_S");
+			/**
+			* @author pmanousi start
+			* Make a new node called tableName+" OUTPUT" and my table hits this node, later attributes will hit outputNode.
+			*/
+			VisualNode outputNode=add_node(u.getName()+"_SCHEMA", NodeType.NODE_TYPE_OUTPUT);
+			e=add_edge(u, outputNode, EdgeType.EDGE_TYPE_OUTPUT,"OUT_S");
 			// Add the attribute nodes
 			for (int i = 0; i < tTable.getColumnCount();i++) {
 				// Add new attribute node and a new edge with the relation node
 				v = add_node(tTable.getColumnName(i), NodeType.NODE_TYPE_ATTRIBUTE);
-/**
- * @author pmanousi
- * Changed edges to hit outputNode.
- */
-e = add_edge(outputNode, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
+				/**
+				 * @author pmanousi
+				 * Changed edges to hit outputNode.
+				 */
+				e = add_edge(outputNode, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 			}
 			addTableConstraints(tTable);
 			return u;								//added by sgerag
@@ -192,14 +192,14 @@ e = add_edge(outputNode, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 	private VisualNode find_attribute(String TableName, String Attribute) {
 		VisualNode u ;
 		u = HGraph.getAttributeNode(TableName+"_SCHEMA", Attribute);
-/**
- * @author pmanousi
- * If it is not a table then it is a view we ask about.
- */
-if(u==null)
-{
-	u = HGraph.getAttributeNode(TableName+"_OUT", Attribute);
-}
+		/**
+		 * @author pmanousi
+		 * If it is not a table then it is a view we ask about.
+		 */
+		if(u==null)
+		{
+			u = HGraph.getAttributeNode(TableName+"_OUT", Attribute);
+		}
 		return u ;
 	}
 	
@@ -459,48 +459,48 @@ if(u==null)
 		if (!stChilds.isEmpty())	return false;
 		return hasEmpty;
 	}
-	
-/**
- * @author pmanousi
- * We check to see if a node already exists in any of the input nodes.  If not we create it and hang it in the table or view it should be getting input from.
- */
-private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName)
-{
-	VisualNode x=null;
-	VisualEdge e=null;
-	for(int i=0;i<qn.getOutEdges().size();i++)
+
+	/**
+	 * @author pmanousi
+	 * We check to see if a node already exists in any of the input nodes.  If not we create it and hang it in the table or view it should be getting input from.
+	 */
+	private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName)
 	{
-		if(qn.getOutEdges().get(i).getToNode().getName().equals(qn.getName()+"_IN_"+tableName))
+		VisualNode x=null;
+		VisualEdge e=null;
+		for(int i=0;i<qn.getOutEdges().size();i++)
 		{
-			VisualNode in=qn.getOutEdges().get(i).getToNode();
-			for(int j=0;j<in.getOutEdges().size();j++)
+			if(qn.getOutEdges().get(i).getToNode().getName().equals(qn.getName()+"_IN_"+tableName))
 			{
-				if(in.getOutEdges().get(j).getToNode().getName().equals(nodeName))
+				VisualNode in=qn.getOutEdges().get(i).getToNode();
+				for(int j=0;j<in.getOutEdges().size();j++)
 				{
-					return(in.getOutEdges().get(j).getToNode());
-				}
-			}
-			x=add_node(nodeName, NodeType.NODE_TYPE_ATTRIBUTE);
-			e=add_edge(in, x, EdgeType.EDGE_TYPE_INPUT, "S");
-			for(int j=0;j<in.getOutEdges().size();j++)
-			{
-				if(in.getOutEdges().get(j).getName().equals("from"))
-				{
-					for(int k=0;k<in.getOutEdges().get(j).getToNode().getOutEdges().size();k++)
+					if(in.getOutEdges().get(j).getToNode().getName().equals(nodeName))
 					{
-						if(in.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode().getName().equals(nodeName))
+						return(in.getOutEdges().get(j).getToNode());
+					}
+				}
+				x=add_node(nodeName, NodeType.NODE_TYPE_ATTRIBUTE);
+				e=add_edge(in, x, EdgeType.EDGE_TYPE_INPUT, "S");
+				for(int j=0;j<in.getOutEdges().size();j++)
+				{
+					if(in.getOutEdges().get(j).getName().equals("from"))
+					{
+						for(int k=0;k<in.getOutEdges().get(j).getToNode().getOutEdges().size();k++)
 						{
-							e=add_edge(x, in.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode(), EdgeType.EDGE_TYPE_MAPPING, "map-select");
-							break;
+							if(in.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode().getName().equals(nodeName))
+							{
+								e=add_edge(x, in.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode(), EdgeType.EDGE_TYPE_MAPPING, "map-select");
+								break;
+							}
 						}
 					}
 				}
+				break;
 			}
-			break;
 		}
+		return(x);
 	}
-	return(x);
-}
 	
 	private void createQuery(VisualNode u, Select sSelect, boolean nested) throws SQLException{
 		Expression expression;
@@ -509,15 +509,13 @@ private VisualNode existsInInputSchema(VisualNode qn,String tableName, String no
 		VisualNode v = null ;
 		VisualNode w = null ;
 		VisualNode x = null ;
-/**
- * @author pmanousi
- */
-VisualNode input=null;
-VisualNode output=add_node(u.getName()+"_OUT", NodeType.NODE_TYPE_OUTPUT);
-VisualNode semantics=add_node(u.getName()+"_SMTX", NodeType.NODE_TYPE_SEMANTICS);
+		VisualNode input=null;
+		VisualNode output=add_node(u.getName()+"_OUT", NodeType.NODE_TYPE_OUTPUT);
+		VisualNode semantics=add_node(u.getName()+"_SMTX", NodeType.NODE_TYPE_SEMANTICS);
 		VisualEdge e;
-e=add_edge(u, output, EdgeType.EDGE_TYPE_OUTPUT,u.getName()+"OUT_S");
-e=add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS,u.getName()+"SMTX_S");
+		e=add_edge(u, output, EdgeType.EDGE_TYPE_OUTPUT,u.getName()+"OUT_S");
+		e=add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS,u.getName()+"SMTX_S");
+		
 		int tblIndex = 0;
 		// __________________________________________________________________________________________________  
 		// check for self-join
@@ -534,23 +532,20 @@ e=add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS,u.getName()+"SMTX_S");
 		for (int i = 0; i < sSelect.tFilter.length; i++) {
 			if ( selfJoinedTables[i] != null)
 			{
-/**
- * @author pmanousi
- */
-input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getName(), NodeType.NODE_TYPE_INPUT);
-e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
+				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getName(), NodeType.NODE_TYPE_INPUT);
+				e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
 			}
 			else
 			{
-/**
- * @author pmanousi
- * Create new schema, also change the from edge from input to table_schema instead of from query to table.
- */
-input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getTable().getName(), NodeType.NODE_TYPE_INPUT);
-e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
+				/**
+				 * @author pmanousi
+				 * Create new schema, also change the from edge from input to table_schema instead of from query to table.
+				 */
+				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getTable().getName(), NodeType.NODE_TYPE_INPUT);
+				e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
 			}
-e = add_edge(input.getInEdges().get(0).getFromNode(), find_relationFrom(sSelect.tFilter[i].getTable().getName()).getInEdges().get(0).getFromNode(), EdgeType.EDGE_TYPE_USES, "uses");			
-e = add_edge(input, find_relationFrom(sSelect.tFilter[i].getTable().getName()), EdgeType.EDGE_TYPE_FROM, "from");
+			e = add_edge(input.getInEdges().get(0).getFromNode(), find_relationFrom(sSelect.tFilter[i].getTable().getName()).getInEdges().get(0).getFromNode(), EdgeType.EDGE_TYPE_USES, "uses");			
+			e = add_edge(input, find_relationFrom(sSelect.tFilter[i].getTable().getName()), EdgeType.EDGE_TYPE_FROM, "from");
 		}
 		// Visualize the select part  
 		// The following loop examines only the selected columns
@@ -560,14 +555,8 @@ e = add_edge(input, find_relationFrom(sSelect.tFilter[i].getTable().getName()), 
 			// Type COLUMN
 			if (expression.getType()== Expression.COLUMN) {
 				v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE) ;
-/**
- * @author pmanousi
- */
-e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
-/**
- * @author pmanousi
- * */
-x=existsInInputSchema(u, expression.getTableName(), expression.getColumnName());
+				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
+				x=existsInInputSchema(u, expression.getTableName(), expression.getColumnName());
 				e = add_edge(v,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
 			}
 			// Type VALUE
@@ -595,12 +584,9 @@ x=existsInInputSchema(u, expression.getTableName(), expression.getColumnName());
 				else 
 					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE);
 				w = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION) ;
-/**
- * @author pmanousi
- */
-e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
-e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING,"map-select");
-e= add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, function.getName());
+				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
+				e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING,"map-select");
+				e= add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, function.getName());
 				for (int j = 0; j <function.eArg.length ; j++) {
 					VisualNode arg =add_expression(function.eArg[j],u);
 					e = add_edge(w,	arg, EdgeType.EDGE_TYPE_MAPPING, "op"+(j+1)) ;
@@ -636,12 +622,9 @@ e= add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, function.getName());
 				else 
 					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE);
 				w = add_node(strFunction, NodeType.NODE_TYPE_FUNCTION) ;
-/**
- * @author pmanousi
- */
-e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
-e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
-e=add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, strFunction);
+				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
+				e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
+				e=add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, strFunction);
 				switch (expression.getArg().getType())
 				{
 				//if the aggregate function's argument is an asterix
@@ -675,11 +658,11 @@ e=add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, strFunction);
 						//convert func(R.*) it to graph
 						//map only query attributes to R attributes
 						for (int l = 0; l < sSelect.tFilter[tblIndex].getTable().getColumnCount(); l++){
-/**
- * @author pmanousi
- * Create INPUT schema nodes if they don't exist and fix their edges to output of table.
- */
-x=existsInInputSchema(u, sSelect.tFilter[tblIndex].getTable().getName(), sSelect.tFilter[tblIndex].getTable().getColumnName(l));
+							/**
+							 * @author pmanousi
+							 * Create INPUT schema nodes if they don't exist and fix their edges to output of table.
+							 */
+							x=existsInInputSchema(u, sSelect.tFilter[tblIndex].getTable().getName(), sSelect.tFilter[tblIndex].getTable().getColumnName(l));
 						}
 					}	
 					//if we have func(*)
@@ -692,11 +675,11 @@ x=existsInInputSchema(u, sSelect.tFilter[tblIndex].getTable().getName(), sSelect
 						for (int l = 0; l < sSelect.tFilter.length; l++){
 							for (int j = 0; j < sSelect.tFilter[l].getTable().getColumnCount(); j++)
 							{
-/**
- * @author pmanousi
- * Create INPUT schema nodes if they don't exist and fix their edges to output of table.
- */
-x=existsInInputSchema(u, sSelect.tFilter[l].getTable().getName(), sSelect.tFilter[l].getTable().getColumnName(j));
+								/**
+								 * @author pmanousi
+								 * Create INPUT schema nodes if they don't exist and fix their edges to output of table.
+								 */
+								x=existsInInputSchema(u, sSelect.tFilter[l].getTable().getName(), sSelect.tFilter[l].getTable().getColumnName(j));
 							}
 						}
 					}
@@ -707,19 +690,19 @@ x=existsInInputSchema(u, sSelect.tFilter[l].getTable().getName(), sSelect.tFilte
 					//only if no alias exist for this column
 					if (expression.getAlias()== "")
 						v.setName(v.getName() + "(" + expression.getArg().getColumnName() + ")");
-/**
- * @author pmanousi
- * Changed to work with output node of table.
- */
-x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName());
+						/**
+						 * @author pmanousi
+						 * Changed to work with output node of table.
+						 */
+						x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName());
 					e = add_edge(w,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select");
 					break;
 				default : 
-/**
- * @author pmanousi
- * Changed to work with output node of table.
- */
-x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName());
+					/**
+					 * @author pmanousi
+					 * Changed to work with output node of table.
+					 */
+					x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName());
 					break;
 				}
 			}
@@ -728,21 +711,18 @@ x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg()
 		// Visualize the where part of a query
 		if (sSelect.eCondition != null ) {
 			v = add_expression(sSelect.eCondition,u);
-/**
- * @author pmanousi
- * Was: e = add_edge(u, v, EdgeType.EDGE_TYPE_WHERE, "where");
- */
-e = add_edge(semantics, v, EdgeType.EDGE_TYPE_WHERE, "where");
+			/**
+			 * @author pmanousi
+			 * Was: e = add_edge(u, v, EdgeType.EDGE_TYPE_WHERE, "where");
+			 */
+			e = add_edge(semantics, v, EdgeType.EDGE_TYPE_WHERE, "where");
 		}
 		// __________________________________________________________________________________________________  
 		// Visualize the GROUP BY part of a query
 		if ( sSelect.iGroupLen > 0 ) {
 			// add GB node
 			v = add_node("GB", NodeType.NODE_TYPE_GROUP_BY) ;
-/**
- * @author pmanousi
- */
-e = add_edge(semantics, v, EdgeType.EDGE_TYPE_GROUP_BY, "group by") ;
+			e = add_edge(semantics, v, EdgeType.EDGE_TYPE_GROUP_BY, "group by") ;
 			int j = 0;
 			// add edges
 			for (int i = (sSelect.eColumn.length - sSelect.iGroupLen- sSelect.iOrderLen); i < (sSelect.eColumn.length - sSelect.iOrderLen); i++){
@@ -794,11 +774,11 @@ e = add_edge(semantics, v, EdgeType.EDGE_TYPE_GROUP_BY, "group by") ;
 				System.out.println("[Expression Object in add_expression]"+ ex.getMessage() );
 			}
 		case Expression.COLUMN:
-/**
- * @author pmanousi
- * Changed it to work with INPUT schema.
- */
-u=existsInInputSchema(head, expr.getTableName(), expr.getColumnName());
+			/**
+			 * @author pmanousi
+			 * Changed it to work with INPUT schema.
+			 */
+			u=existsInInputSchema(head, expr.getTableName(), expr.getColumnName());
 			break;
 		case Expression.IN:
 			u =  add_node(" IN ", NodeType.NODE_TYPE_OPERAND);
@@ -857,10 +837,10 @@ u=existsInInputSchema(head, expr.getTableName(), expr.getColumnName());
 			arg = add_expression(expr.getArg(),head) ;
 			if (arg!=null)
 			{
-/**
- * @author pmanousi
- * Was: newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op1");
- */
+				/**
+				 * @author pmanousi
+				 * Was: newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op1");
+				 */
 				if(find_relationFrom(arg.getName())==null||arg.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
 				{
 					newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op1");
@@ -875,10 +855,10 @@ u=existsInInputSchema(head, expr.getTableName(), expr.getColumnName());
 			arg = add_expression(expr.getArg2(),head) ;
 			if (arg!=null)
 			{
-/**
- * @author pmanousi
- * Was: newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op2");
- */
+				/**
+				 * @author pmanousi
+				 * Was: newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op2");
+				 */
 				if(find_relationFrom(arg.getName())==null||arg.getType()==NodeType.NODE_TYPE_CONSTANT)
 				{
 					newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op2");
