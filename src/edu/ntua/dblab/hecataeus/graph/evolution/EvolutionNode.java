@@ -145,6 +145,16 @@ static int counter;
 		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType/*, child*/);
 		if(policy!=null)
 				policies.remove(policy);
+		if(eventType.equals(EventType.DELETE_PROVIDER)||eventType.equals(EventType.RENAME_PROVIDER))
+		{
+			if(this.getParentNode()!=null)
+			{
+				if(this.getParentNode().getType().equals(NodeType.NODE_TYPE_RELATION))
+				{
+					return;
+				}
+			}
+		}
 		policies.add(new EvolutionPolicy<EvolutionNode>(eventType/*,child*/,policyType));
 	}
 
@@ -257,7 +267,7 @@ static int counter;
 	 public EvolutionNode<EvolutionEdge> getParentNode() {
 		 for (EvolutionEdge e: this.getInEdges()){
 			 //if node is attribute then 
-			 if (((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA))
+			 if (((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA && e.getFromNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
 				||((this.getType()==NodeType.NODE_TYPE_CONDITION) && (e.getType()==EdgeType.EDGE_TYPE_OPERATOR))
 				||((this.getType()==NodeType.NODE_TYPE_OPERAND) && ((e.getType()==EdgeType.EDGE_TYPE_OPERATOR)
 				||(e.getType()==EdgeType.EDGE_TYPE_WHERE)))

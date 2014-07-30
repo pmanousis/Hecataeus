@@ -170,11 +170,36 @@ public final class HecataeusSQLExtensionParser{
 				}
 				for (int i = 0; i < whateverStarSentences.size(); i++)	//parse first the <module>: on * then <policy>; lines
 				{
+					Collections.sort(whateverStarSentences, new Comparator<String>() {	// We initially put the sentences that contain '*'
+					    public int compare(String a, String b) {
+					    	if((a.contains("RELATION:")==true && b.contains("RELATION:")==false)||(a.contains("VIEW:")==true && b.contains("VIEW:")==false)||(a.contains("QUERY:")==true && b.contains("QUERY:")==false))
+					    	{
+					    		return (-1);
+					    	}
+					    	else if((a.contains("RELATION:")==false && b.contains("RELATION:")==true)||(a.contains("VIEW:")==false && b.contains("VIEW:")==true)||(a.contains("QUERY:")==false && b.contains("QUERY:")==true))
+					    	{
+					    		return (1);
+					    	}
+							return 0;
+					    }
+					});
 					sentence= whateverStarSentences.get(i);
 					//find if it is a module or schema or attribute
 					StringTokenizer token = new StringTokenizer(sentence);
 					String ndName = token.nextToken(":");
-					if(this._graph.findVertexByName(ndName,NodeCategory.MODULE)!=null)
+					if(ndName.equals("RELATION"))
+					{
+						this.parseRelationPolicy(sentence, relationSentences);
+					}
+					else if(ndName.equals("VIEW"))
+					{
+						this.parseViewPolicy(sentence, viewSentences);
+					}
+					else if(ndName.equals("QUERY"))
+					{
+						this.parseQueryPolicy(sentence, querySentences);
+					}
+					else if(this._graph.findVertexByName(ndName,NodeCategory.MODULE)!=null)
 					{
 						this.parseModulePolicy(sentence, whateverSentences);
 					}
@@ -614,6 +639,151 @@ public final class HecataeusSQLExtensionParser{
 			}
 		}
 	}
+	
+	/**
+	 * @author pmanousi
+	 * Sets policy for a global query nodes containing * in event parameter of policy file.
+	 * @param policyStringClause
+	 * @throws HecataeusException
+	 */
+	private void parseQueryPolicy(String policyStringClause, ArrayList<String> querySentences) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String nodeName = policyClause.nextToken(":").trim();
+		//get node on which policy is applied
+		String currentWord = policyClause.nextToken(" ").trim(); 	// It is *
+		currentWord = policyClause.nextToken(" ").trim();
+		//Expect ON keyword
+		if (!(currentWord.equalsIgnoreCase("ON"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: ON");
+		}
+		//Get event type (actually it is *)
+		currentWord = policyClause.nextToken().trim();
+		//Expect THEN keyword
+		currentWord = policyClause.nextToken().trim();
+		if (!(currentWord.equalsIgnoreCase("THEN"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: THEN");
+		}
+		//Get Policy Type
+		currentWord = policyClause.nextToken().trim();
+		PolicyType policyType;
+		try {
+			policyType = PolicyType.toPolicyType(currentWord.toUpperCase());
+		
+		} catch (Exception e) {
+			throw new HecataeusException( "Unknown Policy: " + currentWord); 
+		}
+		if (policyClause.hasMoreTokens()) {
+			throw new HecataeusException( "Unexpected Token: " + policyClause.nextToken());
+			}
+		//add new policy to Node, if not the same exists
+		querySentences.add("QUERY.OUT.SELF: on ADD_ATTRIBUTE then "+policyType.toString());
+		querySentences.add("QUERY.OUT.SELF: on DELETE_SELF then "+policyType.toString());
+		querySentences.add("QUERY.OUT.SELF: on RENAME_SELF then "+policyType.toString());
+		querySentences.add("QUERY.OUT.ATTRIBUTES: on DELETE_SELF then "+policyType.toString());
+		querySentences.add("QUERY.OUT.ATTRIBUTES: on RENAME_SELF then "+policyType.toString());
+		querySentences.add("QUERY.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.OUT.ATTRIBUTES: on RENAME_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.IN.SELF: on DELETE_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.IN.SELF: on RENAME_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.IN.SELF: on ADD_ATTRIBUTE_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.IN.ATTRIBUTES: on DELETE_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.IN.ATTRIBUTES: on RENAME_PROVIDER then "+policyType.toString());
+		querySentences.add("QUERY.SMTX.SELF: on ALTER_SEMANTICS then "+policyType.toString());
+	};
+	
+	/**
+	 * @author pmanousi
+	 * Sets policy for a global view nodes containing * in event parameter of policy file.
+	 * @param policyStringClause
+	 * @throws HecataeusException
+	 */
+	private void parseViewPolicy(String policyStringClause, ArrayList<String> viewSentences) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String nodeName = policyClause.nextToken(":").trim();
+		//get node on which policy is applied
+		String currentWord = policyClause.nextToken(" ").trim(); 	// It is *
+		currentWord = policyClause.nextToken(" ").trim();
+		//Expect ON keyword
+		if (!(currentWord.equalsIgnoreCase("ON"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: ON");
+		}
+		//Get event type (actually it is *)
+		currentWord = policyClause.nextToken().trim();
+		//Expect THEN keyword
+		currentWord = policyClause.nextToken().trim();
+		if (!(currentWord.equalsIgnoreCase("THEN"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: THEN");
+		}
+		//Get Policy Type
+		currentWord = policyClause.nextToken().trim();
+		PolicyType policyType;
+		try {
+			policyType = PolicyType.toPolicyType(currentWord.toUpperCase());
+		
+		} catch (Exception e) {
+			throw new HecataeusException( "Unknown Policy: " + currentWord); 
+		}
+		if (policyClause.hasMoreTokens()) {
+			throw new HecataeusException( "Unexpected Token: " + policyClause.nextToken());
+			}
+		//add new policy to Node, if not the same exists
+		viewSentences.add("VIEW.OUT.SELF: on ADD_ATTRIBUTE then "+policyType.toString());
+		viewSentences.add("VIEW.OUT.SELF: on DELETE_SELF then "+policyType.toString());
+		viewSentences.add("VIEW.OUT.SELF: on RENAME_SELF then "+policyType.toString());
+		viewSentences.add("VIEW.OUT.ATTRIBUTES: on DELETE_SELF then "+policyType.toString());
+		viewSentences.add("VIEW.OUT.ATTRIBUTES: on RENAME_SELF then "+policyType.toString());
+		viewSentences.add("VIEW.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.OUT.ATTRIBUTES: on RENAME_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.IN.SELF: on DELETE_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.IN.SELF: on RENAME_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.IN.SELF: on ADD_ATTRIBUTE_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.IN.ATTRIBUTES: on DELETE_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.IN.ATTRIBUTES: on RENAME_PROVIDER then "+policyType.toString());
+		viewSentences.add("VIEW.SMTX.SELF: on ALTER_SEMANTICS then "+policyType.toString());
+	};
+	
+	/**
+	 * @author pmanousi
+	 * Sets policy for a global relation nodes containing * in event parameter of policy file.
+	 * @param policyStringClause
+	 * @throws HecataeusException
+	 */
+	private void parseRelationPolicy(String policyStringClause, ArrayList<String> relationSentences) throws HecataeusException {
+		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
+		String nodeName = policyClause.nextToken(":").trim();
+		//get node on which policy is applied
+		String currentWord = policyClause.nextToken(" ").trim(); 	// It is *
+		currentWord = policyClause.nextToken(" ").trim();
+		//Expect ON keyword
+		if (!(currentWord.equalsIgnoreCase("ON"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: ON");
+		}
+		//Get event type (actually it is *)
+		currentWord = policyClause.nextToken().trim();
+		//Expect THEN keyword
+		currentWord = policyClause.nextToken().trim();
+		if (!(currentWord.equalsIgnoreCase("THEN"))){
+			throw new HecataeusException( "Unknown Token: " + currentWord + "\nExpected: THEN");
+		}
+		//Get Policy Type
+		currentWord = policyClause.nextToken().trim();
+		PolicyType policyType;
+		try {
+			policyType = PolicyType.toPolicyType(currentWord.toUpperCase());
+		
+		} catch (Exception e) {
+			throw new HecataeusException( "Unknown Policy: " + currentWord); 
+		}
+		if (policyClause.hasMoreTokens()) {
+			throw new HecataeusException( "Unexpected Token: " + policyClause.nextToken());
+			}
+		//add new policy to Node, if not the same exists
+		relationSentences.add("RELATION.OUT.SELF: on ADD_ATTRIBUTE then "+policyType.toString());
+		relationSentences.add("RELATION.OUT.SELF: on DELETE_SELF then "+policyType.toString());
+		relationSentences.add("RELATION.OUT.SELF: on RENAME_SELF then "+policyType.toString());
+		relationSentences.add("RELATION.OUT.ATTRIBUTES: on DELETE_SELF then "+policyType.toString());
+		relationSentences.add("RELATION.OUT.ATTRIBUTES: on RENAME_SELF then "+policyType.toString());
+	};
 	
 	/**
 	 * @author pmanousi
