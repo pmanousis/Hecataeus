@@ -91,9 +91,14 @@ public final class HecataeusSQLExtensionParser{
 		ArrayList<String> whateverSentences = new ArrayList<String>();	//holds policies for specific nodes.
 		ArrayList<String> whateverStarSentences = new ArrayList<String>();	//holds policies containing * for specific modules
 		ArrayList<String> databaseSentences = new ArrayList<String>();	//holds database wide policies (NODE)
+		
 		ArrayList<String> relationSentences = new ArrayList<String>();	//holds database wide policies for relations
 		ArrayList<String> viewSentences = new ArrayList<String>();	//holds database wide policies for views
 		ArrayList<String> querySentences = new ArrayList<String>();	//holds database wide policies for queries
+		
+		ArrayList<String> relationTempSentences = new ArrayList<String>();	//holds database wide policies for relations that are to be concatenated with relationSentences
+		ArrayList<String> viewTempSentences = new ArrayList<String>();	//holds database wide policies for views that are to be concatenated with viewSentences
+		ArrayList<String> queryTempSentences = new ArrayList<String>();	//holds database wide policies for queries that are to be concatenated with querySentences
 		try
 		{
 			BufferedReader reader = new BufferedReader(new FileReader(this._inputFile )); 
@@ -113,15 +118,15 @@ public final class HecataeusSQLExtensionParser{
 					}					
 					else if (nodeName.trim().startsWith("RELATION."))	//check whether it is relation wide policy
 					{
-						relationSentences.add(sentence);
+						relationTempSentences.add(sentence);
 					}
 					else if(nodeName.trim().startsWith("VIEW."))	//check whether it is view wide policy
 					{
-						viewSentences.add(sentence);
+						viewTempSentences.add(sentence);
 					}
 					else if(nodeName.trim().startsWith("QUERY."))	//check whether it is query wide policy
 					{
-						querySentences.add(sentence);
+						queryTempSentences.add(sentence);
 					}
 					else
 					{
@@ -212,6 +217,12 @@ public final class HecataeusSQLExtensionParser{
 						this.parseAttributesPolicy(sentence, whateverSentences);
 					}
 				}
+				relationSentences.addAll(relationTempSentences);
+				relationTempSentences.clear();
+				viewSentences.addAll(viewTempSentences);
+				viewTempSentences.clear();
+				querySentences.addAll(queryTempSentences);
+				queryTempSentences.clear();
 				for (int i = 0; i < relationSentences.size(); i++)	//parse first the global policies
 				{
 					sentence = relationSentences.get(i);

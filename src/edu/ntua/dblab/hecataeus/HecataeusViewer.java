@@ -2884,9 +2884,6 @@ private VisualTotalClusters vtc;
 			return subLayout;
 		}
 	}
-	
-	
-	
 
 	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
 		VisualGraph Sub = sub;
