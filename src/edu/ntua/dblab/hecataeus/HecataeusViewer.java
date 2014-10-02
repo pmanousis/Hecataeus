@@ -391,6 +391,11 @@ private VisualTotalClusters vtc;
 			eventManagerGui.UPDATE();
 			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
+		/** Not good but it is the only way to make it work. */
+		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
+		HecataeusViewer.this.getLayoutPositions();
+		centerAt(((VisualGraph)getActiveViewer().getGraphLayout().getGraph()).getCenter());
+		zoomToWindow(getActiveViewer());
 	}
 	
 	
@@ -2698,11 +2703,7 @@ private VisualTotalClusters vtc;
 		HecataeusViewer.this.getLayoutPositions();
 		centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 		zoomToWindow(activeViewer);
-
-		List<VisualNode> topLogicalNodes= logicalGraph.getVertices(NodeCategory.MODULE);
-		VisualGraph topLogicalGraph= logicalGraph.toGraph(topLogicalNodes);
-
-
+		
 	//	layout.setTopLayoutGraph(topLogicalGraph);
 		//set the module-level layout
 	//	layout.setTopLayoutType(topLayoutType);

@@ -33,6 +33,7 @@ public enum VisualLayoutType {
 	ZoomedLayoutForModules,
 	ConcentricCircleLayout,
 	ClustersonaCircleLayout,
+	ClustersonaCircleLayoutForInit,
 	ConcentricCirclesClusterLayout,
 	/*ConcentricCirclesClusterLayoutV2,
 	ConcentricCirclesClusterLayoutV3,*/
@@ -166,6 +167,8 @@ public enum VisualLayoutType {
 			case ClustersonaCircleLayout:
 				HecataeusInputDialog d1 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualClustersOnACircleLayout(g, d1.getC());
+			case ClustersonaCircleLayoutForInit:
+				return new VisualClustersOnACircleLayout(g, 1);
 			case ConcentricCirclesClusterLayout:
 				HecataeusInputDialog d2 = new HecataeusInputDialog(HecataeusViewer.getHecFrame(), "Clustering Parameter");
 				return new VisualConcentricCirlesClustersLayout(g, d2.getC());

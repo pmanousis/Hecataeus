@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Collections;
 import java.util.Comparator;
 
-import sun.org.mozilla.javascript.Node;
 import edu.ntua.dblab.hecataeus.HecataeusException;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
@@ -149,7 +147,7 @@ public final class HecataeusSQLExtensionParser{
 		}
 		try
 		{
-			if ((relationSentences.size()+viewSentences.size()+querySentences.size()+whateverSentences.size()+databaseSentences.size()+whateverStarSentences.size())<=0)
+			if ((relationTempSentences.size()+viewTempSentences.size()+queryTempSentences.size()+whateverSentences.size()+databaseSentences.size()+whateverStarSentences.size())<=0)
 			{
 				throw new Exception("Input file is not in the correct format or empty file");
 			}
