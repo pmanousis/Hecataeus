@@ -469,7 +469,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	
 	
 	protected void placeMultyViews(ArrayList<VisualNode> mv, double cx, double cy , double l0Rad){
-		TreeMap<Double, VisualNode> myViews = new TreeMap<Double, VisualNode>(sortViewsById(mv));
+//		TreeMap<Double, VisualNode> myViews = new TreeMap<Double, VisualNode>(sortViewsById(mv));
 		TreeMap<Double, ArrayList<VisualNode>>  myV = new TreeMap<Double, ArrayList<VisualNode>> ();
 		
 		if(mv.size()>1){
@@ -549,7 +549,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	 * @return
 	 */
 	protected ArrayList<VisualNode> outQ(List<VisualNode> nodes){
-		int queriesInCluster = 0;
 		ArrayList<VisualNode> q = new ArrayList<VisualNode>();
 		for(VisualNode v : nodes){
 			if(v.getType() == NodeType.NODE_TYPE_QUERY){

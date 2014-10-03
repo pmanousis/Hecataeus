@@ -1,17 +1,12 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import clusters.EngineConstructs.Cluster;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.uci.ics.jung.algorithms.shortestpath.Distance;
-import edu.uci.ics.jung.graph.Hypergraph;
+
+@SuppressWarnings({ "serial", "rawtypes" })
 class SortedArrayList extends ArrayList{
 
-
-	@SuppressWarnings("unchecked")
 	public ArrayList<clusters.EngineConstructs.Cluster> insertSorted(ArrayList<clusters.EngineConstructs.Cluster> unsortedCl, double[][] dist) {
 		
 		ArrayList<clusters.EngineConstructs.Cluster> sorted = new ArrayList<clusters.EngineConstructs.Cluster>();

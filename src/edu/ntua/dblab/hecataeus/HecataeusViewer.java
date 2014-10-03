@@ -102,7 +102,7 @@ public class HecataeusViewer {
 	protected HecataeusProjectConfiguration projectConf;
 	protected HecataeusPolicyManagerGUI policyManagerGui;
 	protected HecataeusEventManagerGUI eventManagerGui;
-	protected HecataeusFileColorListGUI fileColorListGui;
+	protected HecataeusFileStractureGUI filesTreeGui;
 	public static HecataeusClusterMap hecMap;
 	protected VisualNode epilegmenosKombos;
 	protected JTabbedPane managerTabbedPane;
@@ -379,9 +379,8 @@ private VisualTotalClusters vtc;
 			vfc.setFileNames(fileNames);
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
 			
-			
-			fileColorListGui.createPanel(this.graph);
-			fileColorListGui.repaint();
+			filesTreeGui.createPanel(projectConf.curPath+"SQLS/");
+			filesTreeGui.repaint();
 			policyManagerGui.UPDATE();
 			//TODO theloun allages edw
 			//get new layout's positions
@@ -2378,13 +2377,13 @@ private VisualTotalClusters vtc;
 		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
-		fileColorListGui = new HecataeusFileColorListGUI(this);
+		filesTreeGui = new HecataeusFileStractureGUI();
 		hecMap = new HecataeusClusterMap(this);
 		
 		JPanel panel_map = new JPanel();
 		managerTabbedPane.addTab("Map", null, hecMap, null);
 		JPanel panel_colors = new JPanel();
-		managerTabbedPane.addTab("Colors", null, fileColorListGui, null);
+		managerTabbedPane.addTab("Project File Stracture", null, filesTreeGui, null);
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createTitledBorder("PMG"));
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
