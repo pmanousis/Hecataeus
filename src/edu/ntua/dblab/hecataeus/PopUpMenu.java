@@ -15,14 +15,11 @@ public class PopUpMenu extends JPopupMenu{
 	protected HecataeusPopupGraphMousePlugin hpgmp;
 	protected PopUpClickListener test;
 	public PopUpMenu(){
-
 		test =  new PopUpClickListener();
 		hpgmp = new HecataeusPopupGraphMousePlugin();
 		popZoom = new JMenuItem("ZOOM");
-		//popSelect = new JMenu("SELECT");
 		popSelect = new JMenuItem("SELECT");
 		add(popZoom);
 		add(popSelect);
-		
 	}
 }

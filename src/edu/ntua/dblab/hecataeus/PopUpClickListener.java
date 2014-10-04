@@ -79,7 +79,7 @@ public class PopUpClickListener extends MouseAdapter{
 			menu.show(e.getComponent(), e.getX(), e.getY());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected void handlePopup(MouseEvent e) {
 		hpgmp = new HecataeusPopupGraphMousePlugin();
@@ -105,7 +105,6 @@ public class PopUpClickListener extends MouseAdapter{
 					menu.popZoom.addActionListener(zoomToNewModuleTab());
 					menu.popSelect.addActionListener(selectNode());
 				}
-
 			}
 		}
 	}

@@ -62,7 +62,7 @@ public class HecataeusClusterMap extends JPanel{
 			String name = ""+cl.getClusterId();
 			String label;
 			label = cl.getClusterLabel(cl);
-			VisualNode node = new VisualNode(name, NodeType.NODE_TYPE_CLUSTER);
+			VisualNode node = new VisualNode(name, NodeType.NODE_TYPE_CLUSTER, null);
 			Point2D loc = new Point2D.Double(cl.getCenterXOfCluster(),cl.getCenterYOfCluster());
 			node.setNodeSize(cl.getClusterSize(cl));
 			node.setLocation(loc);

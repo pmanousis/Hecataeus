@@ -1,7 +1,5 @@
 package edu.ntua.dblab.hecataeus;
 
-
-
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
@@ -41,19 +39,16 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
-import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -128,17 +123,11 @@ public class HecataeusViewer {
 	protected Viewers VisualizationViewer;
 	protected MouseListener ml;
 	protected VisualNodeStroke<Integer,Number> vsh;
-	public JList fileColorList;
-//	private DefaultListModel<String> listModel;
-//	private JPanel panel_3;
 	public static  List<VisualGraph> graphs;
-private VisualTotalClusters vtc;
-	
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
-	//	myViewer = new HecataeusViewer(new VisualGraph());
 		try {
 			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
 				if ("Nimbus".equals(info.getName())) {
@@ -161,30 +150,7 @@ private VisualTotalClusters vtc;
 			}
 		});
 	}
-	
 
-//	public void startHecataeus(){
-//		try {
-//			for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-//				if ("Nimbus".equals(info.getName())) {
-//					UIManager.setLookAndFeel(info.getClassName());
-//					break;
-//				}
-//			}
-//		} catch (Exception e) {
-//		}
-//		
-//		EventQueue.invokeLater(new Runnable() {
-//			public void run() {
-//				try {
-//					HecataeusViewer window = new HecataeusViewer(new VisualGraph());
-//					window.frame.setVisible(true);
-//				} catch (Exception e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//	}
 	
 	/**
 	 * Create the application.
@@ -201,7 +167,6 @@ private VisualTotalClusters vtc;
 		// the layout
 		layout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		layout.setSize(prefferedSize);
-//		subLayout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);	
 		VisualizationViewer = new Viewers();
 		vv = VisualizationViewer.SetViewers(layout, this);
 		vv.setName("Architecture Graph");
@@ -233,7 +198,7 @@ private VisualTotalClusters vtc;
 			eventManagerGui.UPDATE();
 		}
 		else
-		{	//Should never happen but just in case.
+		{	// When map or file system structure are displayed.
 			policyManagerGui.UPDATE();
 			eventManagerGui.UPDATE();
 		}
@@ -282,16 +247,16 @@ private VisualTotalClusters vtc;
 		}
 	}
 	
+	public void relationSelectScriptFiles(List<String> files)
+	{
+		this.filesTreeGui.relationSelectScriptFiles(files);
+	}
 	
 	/**
 	 * @author pmanousi
 	 * Opens an existing project.
 	 */
 	private void openProject(){
-
-//		JFileChooser chooser = new JFileChooser(projectConf.curPath+"/OTHER");
-//		if ((chooser.showSaveDialog(frame)) == JFileChooser.OPEN_DIALOG) {
-			
 		FileDialog fd=new FileDialog((Dialog)null, "Select the project you want to open.", FileDialog.LOAD);
 		fd.setDirectory(projectConf.curPath);
 		fd.setVisible(true);
@@ -308,16 +273,12 @@ private VisualTotalClusters vtc;
 				FileFilterImpl filter = new FileFilterImpl("xml");
 				chooser2.addChoosableFileFilter(filter);
 				int option = chooser2.showOpenDialog(content);
-//				String Name = HecataeusPopupGraphMousePlugin.Gname();
 				if (option == JFileChooser.APPROVE_OPTION)
 				{
 					File file = chooser2.getSelectedFile();
 					graph = graph.importFromXML(file);
 					this.graphs.add(graph);
-					//TODO theloun allages edw
-					//pass the location of the vertices to the layout of the graph
 					HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
-			//		layout = new VisualLayout(graph);
 					
 
 
@@ -342,15 +303,7 @@ private VisualTotalClusters vtc;
 						reader.processFile(new File(projectConf.curPath+projectConf.sqls.get(i)));
 						graph = reader.getParsedGraph();
 						this.graphs.add(graph);
-						//TODO theloun allages edw
-//						GraphZoomScrollPane test = new MyPane(vv, graph);
-//						test.setSize(5000, 5000);
-//
-//						tabbedPane.setTabComponentAt(countOpenTabs, test);
-//						
 						HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
-						
-					///	layout = new VisualLayout(graph);
 					}
 					catch (IOException e1) {}
 					catch (SQLException e1) {}
@@ -382,7 +335,6 @@ private VisualTotalClusters vtc;
 			filesTreeGui.createPanel(projectConf.curPath+"SQLS/");
 			filesTreeGui.repaint();
 			policyManagerGui.UPDATE();
-			//TODO theloun allages edw
 			//get new layout's positions
 			HecataeusViewer.this.getLayoutPositions();
 			HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
@@ -431,14 +383,6 @@ private VisualTotalClusters vtc;
 				}
 				projectConf.writeConfig();
 				graph = reader.getParsedGraph();
-				//TODO theloun allages edw
-				// set the layout of the graph
-//				HecataeusViewer.this.setLayout(layout.getTopLayoutType(),layout.getSubLayoutType());
-				//get new layout's positions
-//				HecataeusViewer.this.getLayoutPositions();	
-//				HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-				//HecataeusViewer.this.centerAt(containerLayout.getGraph().getCenter());
-//				HecataeusViewer.this.zoomToWindow();
 				frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			} catch (IOException e1) {
 				frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -519,8 +463,6 @@ private VisualTotalClusters vtc;
 					try {
 						frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 						//get the location of the vertices from the layout of the graph
-//TODO thelei allagi						
-						//HecataeusViewer.this.getLayoutPositions();
 						//TODO: this only saves the logical graph, Fix for physical graph as well
 						layout.getGraph().exportToXML(file);
 						frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -532,8 +474,6 @@ private VisualTotalClusters vtc;
 				try {
 					frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 					//get the location of the vertices from the layout of the graph
-//TODO thelei allagi
-					//HecataeusViewer.this.getLayoutPositions();
 					//TODO: this only saves the logical graph, Fix for physical graph as well
 					layout.getGraph().exportToXML(file);
 					frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -653,15 +593,6 @@ private VisualTotalClusters vtc;
 
 		JMenu mnVisualize = new JMenu("Visualize");
 		menuBar.add(mnVisualize);
-		
-		JRadioButtonMenuItem rdbtnmntmMoveGraph = new JRadioButtonMenuItem("Move Graph");
-		mnVisualize.add(rdbtnmntmMoveGraph);
-		
-		JRadioButtonMenuItem rdbtnmntmPick = new JRadioButtonMenuItem("Pick");
-		rdbtnmntmPick.setSelected(true);
-		mnVisualize.add(rdbtnmntmPick);
-		
-		mnVisualize.addSeparator();
 		
 		JMenuItem mntmZoomIn = new JMenuItem("Zoom in");
 		mntmZoomIn.addActionListener(new ActionListener() {
@@ -788,23 +719,6 @@ private VisualTotalClusters vtc;
 			}
 			mnAlgorithms.add(new AbstractAction(layoutType.toString()) {
 				public void actionPerformed(ActionEvent e) {
-
-					// update the top layout of the graph
-					/*if(layoutType == VisualLayoutType.EdgeBetweennessClustering){
-						VisualEdgeBetweennessClustering.south = new JPanel();
-						frame.getContentPane().add(VisualEdgeBetweennessClustering.south, BorderLayout.SOUTH);
-						frame.validate();
-						frame.repaint();
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-					//	System.out.println("O ACTIVE VIEWER    "  + activeViewer.getName());
-						getLayout(activeViewer).setTopLayoutType(layoutType);   //TODO ksexoriszei ton arxiko apo olous tous allous
-						HecataeusViewer.this.getLayoutPositions();
-						Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-						Point2D c = new Point((int)d.getWidth()/4, (int)d.getHeight()/4);
-						centerAt(c);
-						zoomToWindow(activeViewer);
-					}
-					else{*/
 						vv.setGraphLayout(layout);
 						if(VisualEdgeBetweennessClustering.south!=null){
 							frame.remove(VisualEdgeBetweennessClustering.south);
@@ -817,7 +731,6 @@ private VisualTotalClusters vtc;
 						vv.repaint();
 						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 						zoomToWindow(activeViewer);
-					//}
 				}
 			});
 		}
@@ -952,27 +865,6 @@ private VisualTotalClusters vtc;
 		mnVisualize.add(chckbxmntmNewCheckItem);
 		vv.getRenderContext().setVertexIconTransformer(null);
 		vv.repaint();
-		
-//		JCheckBoxMenuItem chckbxmntmBigNodes = new JCheckBoxMenuItem("Big Nodes");
-//		chckbxmntmBigNodes.setSelected(false);
-//		chckbxmntmBigNodes.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent arg0) {
-//				AbstractButton aButton = (AbstractButton) arg0.getSource();
-//				boolean selected = aButton.getModel().isSelected();
-//				if (selected) {
-//					nodeSize = true;
-//					getActiveViewer().getRenderContext().setVertexShapeTransformer(new ConstantTransformer(new VisualNodeShape()));
-//					getActiveViewer().repaint();
-//				}else{
-//					nodeSize = false;
-//					getActiveViewer().getRenderContext().setVertexShapeTransformer(new ConstantTransformer(new VisualNodeShape()));
-//					getActiveViewer().repaint();
-//				}
-//			}
-//		});
-//		mnVisualize.add(chckbxmntmBigNodes);
-//		vv.repaint();
-		
 		JMenu mnTools = new JMenu("Tools");
 		menuBar.add(mnTools);
 		
@@ -1046,14 +938,6 @@ private VisualTotalClusters vtc;
 		mnTools.addSeparator();
 		
 		JMenuItem mntmModuleSynopsys = new JMenuItem("Module Synopsis");
-		mntmModuleSynopsys.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				/**
-				 * instructions which appear when ask for Help
-				 */
-//				final ModuleChooser p = new ModuleChooser();
-			}
-		});
 		mnTools.add(mntmModuleSynopsys);
 		
 		JMenuItem mntmOutputModuleStructure = new JMenuItem("Output Module Structure");
@@ -1084,275 +968,6 @@ private VisualTotalClusters vtc;
 		
 		JMenu mnManage = new JMenu("Manage");
 		menuBar.add(mnManage);
-		
-//		JMenuItem mntmEvents = new JMenuItem("Events");
-//		mntmEvents.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				NodeChooser ndc = new NodeChooser(NodeChooser.FOR_EVENT);
-//			}
-//		});
-//		mnManage.add(mntmEvents);
-//		
-//		JMenu mnPolicies = new JMenu("Policies");
-//		mnManage.add(mnPolicies);
-//		
-//		mnManage.addSeparator();
-//		
-//		JMenuItem mntmEdit = new JMenuItem("Edit");
-//		mntmEdit.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				NodeChooser ndc = new NodeChooser(NodeChooser.FOR_POLICY);
-//			}
-//		});
-//		mnPolicies.add(mntmEdit);
-//		
-//		JMenuItem mntmShow = new JMenuItem("Show Default");
-//		mntmShow.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				String msg = "";
-//				
-//				for (int i = 0; i < graph.getDefaultPolicyDecsriptions().size(); i++) {
-//					msg += graph.getDefaultPolicyDecsriptions().get(i) + "\n";
-//				}
-//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame,  "Default Policies", msg);
-//			}
-//		});
-//		mnPolicies.add(mntmShow);
-//		
-//		mnPolicies.addSeparator();
-//		
-//		JMenuItem mntmImport = new JMenuItem("Import");
-//		mntmImport.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				JFileChooser chooser = new JFileChooser(projectConf.curPath);
-//				FileFilterImpl filter = new FileFilterImpl("txt");
-//				chooser.addChoosableFileFilter(filter);
-//				int option = chooser.showOpenDialog(content);
-//				if (option == JFileChooser.APPROVE_OPTION) {
-//					File file = chooser.getSelectedFile();
-//					HecataeusSQLExtensionParser parser = new HecataeusSQLExtensionParser(graph, file);
-//					try {
-//						parser.processFile();
-//					} catch (HecataeusException ex) {
-//						final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Error importing Policies", ex.getMessage());
-//					}
-//					vv.repaint();
-////					vvContainer.repaint();
-//				}
-//			}
-//		});
-//		mnPolicies.add(mntmImport);
-//		
-//		JMenuItem mntmExport = new JMenuItem("Export");
-//		mntmExport.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				JFileChooser chooser = new JFileChooser(projectConf.curPath);
-//
-//				FileFilterImpl filter = new FileFilterImpl("txt");
-//				chooser.addChoosableFileFilter(filter);
-//				int option = chooser.showSaveDialog(content);
-//				if (option == JFileChooser.APPROVE_OPTION) {
-//
-//					String fileDescription = chooser.getSelectedFile().getAbsolutePath();
-//					if (!fileDescription.endsWith("txt"))
-//						fileDescription += ".txt";		
-//					
-//					File file = new File(fileDescription);
-//
-//					if (file.exists()) {
-//						int response = JOptionPane
-//								.showConfirmDialog(
-//										null,
-//										"The file will be overriden! Do you agree? Answer with y or n",
-//										"Warning!", JOptionPane.YES_NO_OPTION,
-//										JOptionPane.WARNING_MESSAGE);
-//						if (response == 0)
-//							try {
-//								frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//								layout.getGraph().exportPoliciesToFile(file);
-//								frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//								JOptionPane.showMessageDialog(null,"The file was created successfully","Information",JOptionPane.INFORMATION_MESSAGE);
-//							} catch (RuntimeException e1) {
-//								// TODO Auto-generated catch block
-//								e1.printStackTrace();
-//							}
-//						else
-//							;
-//					} else {
-//						try {
-//							frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//							layout.getGraph().exportPoliciesToFile(file);
-//							frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-//							JOptionPane.showMessageDialog(null,"The file was created successfully","Information",JOptionPane.INFORMATION_MESSAGE);
-//						} catch (RuntimeException e1) {
-//							e1.printStackTrace();
-//						}
-//					}
-//					projectConf.curPath = chooser.getSelectedFile().getPath();
-//				}
-//			}
-//		});
-//		mnPolicies.add(mntmExport);
-		
-//		JMenu mnOutputEventsHandin = new JMenu("Output Events Flooding");
-//		mnManage.add(mnOutputEventsHandin);
-//		
-//		JMenuItem mntmPerEvent = new JMenuItem("Per Event");
-//		mntmPerEvent.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
-//				
-//				String msg = "";
-//				int countEvents = 0;
-//				for (VisualNode v : activeGraph.getVertices()) {
-//					if (v.getHasEvents()) {
-//						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
-//							countEvents++;
-//							
-//							msg += "Event " + countEvents + ": "
-//									+ event.getEventType().toString() + "\tOn "
-//									+ event.getEventNode().getName() + "\n";
-//							msg += "Module\tNode Name\tNode Type\tStatus\n";
-//							// set status =NO_Status
-//							for (VisualNode n : graph.getVertices()) {
-//								n.setStatus(StatusType.NO_STATUS, true);
-//							}
-//							// run algo
-//							activeGraph.initializeChange(event);
-//							// output
-//							for (VisualNode node : activeGraph.getVertices(NodeCategory.MODULE)) {
-//								for (VisualNode evNode : activeGraph.getModule(node)) {
-//									if (evNode.getStatus() != StatusType.NO_STATUS) {
-//										msg += graph.getTopLevelNode(evNode).getName()
-//										+ "\t"
-//										+ evNode.getName()
-//										+ "\t"
-//										+ evNode.getType().toString()
-//										+ "\t"
-//										+ evNode.getStatus().toString() + "\n";
-//									}
-//								}
-//							}
-//							msg += "--------------------------------------------------------\t";
-//							msg += "--------------------------------------------------------\t";
-//							msg += "--------------------------------------------------------\t";
-//							msg += "--------------------------------------------------------\n";
-//						}
-//					}
-//
-//				}
-//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame,  "Output Events ", msg);
-//			}
-//		});
-//		mnOutputEventsHandin.add(mntmPerEvent);
-//		
-//		JMenuItem mntmTotal = new JMenuItem("Total");
-//		mntmTotal.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
-//				String msg = "";
-//				int countEvents = 0;
-//				msg += "EventID\tEventtype\tEventNode\tNodekey\tModule\tNode Name\tNode Type\tStatus\n";
-//
-//				for (VisualNode v : activeGraph.getVertices()) {
-//					if (v.getHasEvents()) {
-//						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
-//							
-//
-//							countEvents++;
-//							 
-//							
-//							String strEvent = "Event " + countEvents + "\t"
-//									+ event.getEventType().toString() + "\t"
-//									+ event.getEventNode().getName();
-//							// set status =NO_Status
-//							for (VisualNode n : activeGraph.getVertices()) {
-//								n.setStatus(StatusType.NO_STATUS, true);
-//							}
-//							// run algo
-//							activeGraph.initializeChange(event);
-//							// output
-//							for (VisualNode node : activeGraph.getVertices(NodeCategory.MODULE)) {
-//								for (VisualNode evNode : activeGraph.getModule(node)) {
-//										if (evNode.getStatus() != StatusType.NO_STATUS) {
-//											msg += strEvent
-//													+ "\t"
-//													+ graph.getKey(evNode)
-//													+ "\t"
-//													+ graph.getTopLevelNode(evNode).getName()
-//													+ "\t"
-//													+ evNode.getName()
-//													+ "\t"
-//													+ evNode.getType().toString()
-//													+ "\t"
-//													+ evNode.getStatus().toString() + "\n";
-//										}
-//									}
-//							}
-//						}
-//					}
-//
-//				}
-//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Output Events ", msg);
-//			}
-//		});
-//		mnOutputEventsHandin.add(mntmTotal);
-//		
-//		JMenuItem mntmModulesTotalAfected = new JMenuItem("Modules Total Affected");
-//		mntmModulesTotalAfected.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				final VisualGraph activeGraph=(VisualGraph) HecataeusViewer.getActiveViewer().getGraphLayout().getGraph();
-//				String msg = "";
-//				int countEvents = 0;
-//				msg += "Nodekey\tModule\tNode Name\tNode Type\tAffected\n";
-//				List<VisualNode> modules = activeGraph.getVertices(NodeCategory.MODULE);
-//				int[] affectedModules = new int[modules.size()];
-//				
-//				for (VisualNode v : activeGraph.getVertices()) {
-//					if (v.getHasEvents()) {
-//						for (EvolutionEvent<VisualNode> event : v.getEvents()) {
-//							int r=1; 
-//							//uncomment and enter here the occurrences of attribute additions 
-////							if (v.getName().equals("S4") && event.getEventType()==EventType.ADD_ATTRIBUTE)
-////								r = 58;
-////							if (v.getName().equals("S1") && event.getEventType()==EventType.ADD_ATTRIBUTE)
-////								r = 14;
-////							
-//
-//							for (int i = 0; i < r; i++) {
-//								// set status =NO_Status
-//								for (VisualNode n : activeGraph.getVertices()) {
-//									n.setStatus(StatusType.NO_STATUS, true);
-//								}
-//								// run algo
-//								activeGraph.initializeChange(event);
-//								// output
-//								for (VisualNode evNode : modules) {
-//									if (evNode.getStatus() != StatusType.NO_STATUS)
-//										affectedModules[modules.indexOf(evNode)]++;
-//								}
-//
-//							}
-//						}
-//					}
-//				}
-//				for (VisualNode evNode : modules) {
-//					msg +=graph.getKey(evNode)
-//					+ "\t"
-//					+ graph.getTopLevelNode(evNode).getName()
-//					+ "\t"
-//					+ evNode.getName()
-//					+ "\t"
-//					+ evNode.getType().toString()
-//					+ "\t"
-//					+ affectedModules[modules.indexOf(evNode)] + "\n";
-//				}
-//
-//				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Output Events ", msg);
-//			}
-//		});
-//		mnOutputEventsHandin.add(mntmModulesTotalAfected);
-		
 		JMenuItem mntmClearAllPolicies = new JMenuItem("Clear All Policies");
 		mntmClearAllPolicies.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1368,7 +983,6 @@ private VisualTotalClusters vtc;
 					}
 					//empty default policies definitions
 					graph.getDefaultPolicyDecsriptions().clear();
-					//repaint
 					vv.repaint();
 //					vvContainer.repaint();
 				}
@@ -1407,7 +1021,6 @@ private VisualTotalClusters vtc;
 				for (VisualEdge edge : graph.getEdges()) {
 					edge.setStatus(StatusType.NO_STATUS, true);
 				}
-
 				vv.repaint();
 //				vvContainer.repaint();
 			}
@@ -1440,22 +1053,6 @@ private VisualTotalClusters vtc;
 			}
 		});
 		mnManage.add(mntmInversePolicies);
-		
-//		JMenuItem mntmPropagateAll = new JMenuItem("Propagate All");
-//		mntmPropagateAll.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				for (VisualNode v : graph.getVertices()) {
-//					if (v.getHasPolicies()) {
-//						for (EvolutionPolicy<VisualNode> p : v.getPolicies()) {
-//							p.setPolicyType(PolicyType.PROPAGATE);
-//						}
-//					}
-//				}
-//				vv.repaint();
-////				vvContainer.repaint();
-//			}
-//		});
-//		mnManage.add(mntmPropagateAll);
 		
 		JMenu mnMetsics = new JMenu("Metrics");
 		menuBar.add(mnMetsics);
@@ -1628,7 +1225,6 @@ private VisualTotalClusters vtc;
 				message += "Area used by graph: "  +area;
 				message += "\nTotal area occupied by clusters: "+vtc.getTotalArea();
 				message += "\nPersent% "+ Math.round(((100*vtc.getTotalArea())/area)* 100) / 100;
-				
 				//JOptionPane.showMessageDialog(frame, message, "Total used space", JOptionPane.INFORMATION_MESSAGE );
 				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Total used space", message);
 			}
@@ -2052,7 +1648,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxDegreeNode.getName();
 					message += "\nDegree: " + degree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxDegreeNode));
 				}
@@ -2077,7 +1672,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxDegreeNode.getName();
 					message += "\nIn Degree: " + degree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxDegreeNode));
 				}
@@ -2102,7 +1696,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxDegreeNode.getName();
 					message += "\nOut Degree: " + degree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxDegreeNode));
 				}
@@ -2131,7 +1724,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxStrengthNode.getName();
 					message += "\nDegree: " + strength;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxStrengthNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxStrengthNode));
 				}
@@ -2157,7 +1749,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxStrengthNode.getName();
 					message += "\nDegree: " + strength;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxStrengthNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxStrengthNode));
 				}
@@ -2182,7 +1773,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxStrengthNode.getName();
 					message += "\nDegree: " + strength;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxStrengthNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxStrengthNode));
 				}
@@ -2209,7 +1799,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxWDegreeNode.getName();
 					message += "\nWeighted Degree: " + maxwDegree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxWDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxWDegreeNode));
 				}
@@ -2238,7 +1827,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxTDegreeNode.getName();
 					message += "\nDegree: " + maxTDegree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxTDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxTDegreeNode));
 				}
@@ -2264,7 +1852,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxTDegreeNode.getName();
 					message += "\nDegree: " + maxTDegree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxTDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxTDegreeNode));
 				}
@@ -2290,7 +1877,6 @@ private VisualTotalClusters vtc;
 					String message = "Node: " + maxTDegreeNode.getName();
 					message += "\nDegree: " + maxTDegree;
 					JOptionPane.showMessageDialog(content, message);
-//					centerAt(maxTDegreeNode.getLocation());
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxTDegreeNode));
 				}
@@ -2304,9 +1890,7 @@ private VisualTotalClusters vtc;
 		JMenuItem mntmContents = new JMenuItem("Contents");
 		mntmContents.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/**
-				 * instructions which appear when ask for Help
-				 */
+				/** instructions which appear when ask for Help */
 				final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Contents", "resources/briefhelp.html", HecataeusMessageDialog.HTML_FILE);
 			}
 		});
@@ -2315,9 +1899,7 @@ private VisualTotalClusters vtc;
 		JMenuItem mntmColorIndex = new JMenuItem("Color Index");
 		mntmColorIndex.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/**
-				 * instructions which appear when ask for Color Inedx
-				 */
+				/** instructions which appear when ask for Color Inedx */
 				final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Color Index", "resources/colorindex.html", HecataeusMessageDialog.HTML_FILE);
 			}
 		});
@@ -2326,9 +1908,7 @@ private VisualTotalClusters vtc;
 		JMenuItem mntmImportExternalPolicy = new JMenuItem("Import External Policy File");
 		mntmImportExternalPolicy.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/**
-				 * instructions which appear when ask for Import external policy file
-				 */
+				/** instructions which appear when ask for Import external policy file */
 				final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Instructions for importing policies from file", "resources/ImportPolicyFile.html", HecataeusMessageDialog.HTML_FILE);
 			}
 		});
@@ -2339,9 +1919,7 @@ private VisualTotalClusters vtc;
 		JMenuItem mntmAboutHecataeus = new JMenuItem("About Hecataeus");
 		mntmAboutHecataeus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				/**
-				 * instructions which appear when ask for Credits
-				 */
+				/** instructions which appear when ask for Credits */
 				final HecataeusMessageDialog p = new HecataeusMessageDialog(frame, "Credits", "resources/credits.html", HecataeusMessageDialog.HTML_FILE);
 			}
 		});
@@ -2352,7 +1930,6 @@ private VisualTotalClusters vtc;
 
 		splitPane.setOneTouchExpandable(true);
 		
-		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(BorderFactory.createTitledBorder("Visual"));
 
@@ -2362,7 +1939,6 @@ private VisualTotalClusters vtc;
 			public void stateChanged(ChangeEvent arg0) {
 				sourceTabbedPane = (JTabbedPane) arg0.getSource();
 				sourceTabbedPaneIndex = sourceTabbedPane.getSelectedIndex();
-//				System.out.println("Tab changed to: " + sourceTabbedPane.getTitleAt(sourceTabbedPaneIndex));
 			}
 		});
 		splitPane.setLeftComponent(tabbedPane);
@@ -2380,30 +1956,14 @@ private VisualTotalClusters vtc;
 		filesTreeGui = new HecataeusFileStractureGUI(this);
 		hecMap = new HecataeusClusterMap(this);
 		
-		JPanel panel_map = new JPanel();
 		managerTabbedPane.addTab("Map", null, hecMap, null);
-		JPanel panel_colors = new JPanel();
-		managerTabbedPane.addTab("Project File Stracture", null, filesTreeGui, null);
+		managerTabbedPane.addTab("Project File Structure", null, filesTreeGui, null);
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createTitledBorder("PMG"));
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
-		JPanel panel_2 = new JPanel();
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
-//		splitPane.setDividerLocation(1);
 		splitPane.setResizeWeight(0.75);
 	}
-	
-	private JPanel createToolsPanel()
-	  {
-	    JPanel panel = new JPanel();
-	    panel.setBorder(BorderFactory.createTitledBorder("TOOLS"));
-	    
-	    Border b1 = BorderFactory.createTitledBorder("Tools");
-	    panel.setSize(600, 10);
-	    return panel;
-	  }
-	
-
 	
 	/**
 	 * Class for filtering files sql and DDL files in File chooser 
@@ -2411,9 +1971,6 @@ private VisualTotalClusters vtc;
 	 *
 	 */
 	private class FileFilterImpl extends FileFilter {
-
-		private String TYPE_UNKNOWN = "Type Unknown";
-		private String HIDDEN_FILE = "Hidden File";
 
 		private Hashtable<String, FileFilterImpl> filters = null;
 		private String description = null;
@@ -2703,73 +2260,8 @@ private VisualTotalClusters vtc;
 		centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 		zoomToWindow(activeViewer);
 		
-	//	layout.setTopLayoutGraph(topLogicalGraph);
-		//set the module-level layout
-	//	layout.setTopLayoutType(topLayoutType);
-		//create the sub graphs
-//		for (VisualNode topNode : topLogicalNodes) {
-//			List<VisualNode> subGraphNodes = logicalGraph.getModule(topNode);
-//			subGraphNodes.remove(topNode);
-//			VisualGraph subGraph =  logicalGraph.toGraph(subGraphNodes);
-//	
-//
-//	//		layout.setSubLayoutGraph(topNode, subGraph);
-//		}
-		//set the low-level layout
-	//	layout.setSubLayoutType(subLayoutType);
-		
-		//create the physical graph with only container and module nodes
-//		List<VisualNode> physicalNodes= graph.getVertices(NodeCategory.CONTAINER);
-//		physicalNodes.addAll(graph.getVertices(NodeCategory.MODULE));
-//		VisualGraph physicalGraph= graph.toGraph(physicalNodes);
-		// pass the graph to the layout 
-		//containerLayout.setGraph(physicalGraph);
-		//create the top layout graph
-//		List<VisualNode> topPhysicalNodes= physicalGraph.getVertices(NodeCategory.CONTAINER);
-//		VisualGraph topPhysicalGraph= physicalGraph.toGraph(topPhysicalNodes);
-		//containerLayout.setTopLayoutGraph(topPhysicalGraph);
-		//set the module-level layout
-		//containerLayout.setTopLayoutType(topLayoutType);
-		//create the sub graphs
-//		for (VisualNode topNode : topPhysicalNodes) {
-//			List<VisualNode> subGraphNodes = physicalGraph.getModule(topNode);
-//			subGraphNodes.remove(topNode);
-//			VisualGraph subGraph =  physicalGraph.toGraph(subGraphNodes);
-//			//containerLayout.setSubLayoutGraph(topNode, subGraph);
-//		}
-		//set the low-level layout
-		//containerLayout.setSubLayoutType(subLayoutType);
-
-		
-//		List<VisualNode> physicalNodes= graph.getVertices(NodeCategory.CONTAINER);
-//		VisualGraph containerGraph= graph.toGraph(physicalNodes);
-//		for (VisualNode node1: containerGraph.getVertices()) {
-//			for (VisualNode node2: containerGraph.getVertices()) {
-//				if (!node1.equals(node2) && graph.isConnected(graph.getModule(node1), graph.getModule(node2))) {
-//					VisualEdge newEdge = new VisualEdge("from",EdgeType.EDGE_TYPE_FROM, node1, node2); 
-//					containerGraph.addEdge(newEdge);
-//				}				
-//			}
-//		}
-//				
-//		GraphCollapser collapser = new GraphCollapser(graph);
-//	//	 pass the graph to the layout 
-//		VisualGraph g = (VisualGraph) collapser.collapse(graph, containerGraph);
-//		containerLayout.setGraph(graph);
-//	//	set the module-level layout
-//		containerLayout.setTopLayoutType(containerLayout.getTopLayoutType());
-//	//	set the low-level layout
-//		containerLayout.setSubLayoutType(containerLayout.getSubLayoutType());
-//		
 		VisualNodeVisible showAll = (VisualNodeVisible)  activeViewer.getRenderContext().getVertexIncludePredicate();
 		showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.MODULE);
-
-		
-		
-//		gpapas not needed here......
-		//vv.repaint();
-//		vvContainer.repaint();
-		
 	}
 	
 	/**
@@ -2780,10 +2272,6 @@ private VisualTotalClusters vtc;
 		for (VisualNode node:gr.getVertices()) {
 			gr.setLocation(node, layout.transform(node));
 		}
-		//gr = (VisualGraph) containerLayout.getGraph();
-		//for (VisualNode node:gr.getVertices()) {
-		//	gr.setLocation(node, containerLayout.transform(node));
-		//}
 	}
 
 	/**
@@ -2801,16 +2289,6 @@ private VisualTotalClusters vtc;
 			layout.setLocation(node, gr.getLocation(node));
 		}
 		 
-//		gr = (VisualGraph) containerLayout.getGraph();
-//		// first update location of top - level node
-//		for (VisualNode node: containerLayout.getDelegate().getGraph().getVertices()) {
-//			layout.setLocation(node, gr.getLocation(node));
-//		}
-//		 //then update locations of all other nodes
-//		for (VisualNode node: gr.getVertices()) {
-//			containerLayout.setLocation(node, gr.getLocation(node));
-//		}
-				
 	}
 	
 	/**
@@ -2819,10 +2297,6 @@ private VisualTotalClusters vtc;
 	 * @param Point to center at
 	 */
 	protected void centerAt(Point2D layoutPoint) {
-		
-		/*Point2D screenPoint = vv.getRenderContext().getMultiLayerTransformer().transform(Point2D layoutPoint);
-		Point2D layoutPoint = vv.getRenderContext().getMultiLayerTransformer().inverseTransform(Point2D screenPoint);
-		 */
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 		activeViewer.getRenderContext().getMultiLayerTransformer().setToIdentity();
 		Point2D vvCenter = activeViewer.getRenderContext().getMultiLayerTransformer().inverseTransform(activeViewer.getCenter());
@@ -2912,7 +2386,6 @@ private VisualTotalClusters vtc;
 		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
 		
 		activeViewer = this.getActiveViewer();
-		//vv1.getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 		vv1.repaint();
 		this.zoomToWindow(vv1);
 	}
@@ -2932,7 +2405,6 @@ private VisualTotalClusters vtc;
 	 *
 	 */
 	private final class NodeChooser extends JDialog {
-
 		protected JComboBox comboBoxNode;
 		protected JComboBox comboBoxChildNode;
 		protected JComboBox comboBoxEvent;

@@ -28,7 +28,6 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private double nodeSize; // used only for node type cluster
 	private Color nodeColor;
 	private String label; //used only for node type cluster
-	private String fileName;
 	public int size;
 	
 	
@@ -43,7 +42,6 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.nodeColor = new Color(255,255,255);
 		this.nodeSize = 0.0;
 		this.label = "";
-		this.fileName = "";
 	}
 	
 	public void setLocation(Point2D loc){
@@ -86,22 +84,21 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	}
 	
 	public void setFileName(String name){
-		this.fileName = name;
+		super.setFileName(name);
 	}
 	
 	public String getFileName(){
-		return this.fileName;
+		return (super.getFileName());
 	}
 	
-	public VisualNode(String name, NodeType type) {
-		super(name, type);
+	public VisualNode(String name, NodeType type, String fileName) {
+		super(name, type, fileName);
 		this.location = new Point2D.Double();
 		this.lastChildLocation = new Point2D.Double();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
 		this.nodeSize = 0.0;
 		this.label = "";
-		this.fileName = "";
 	}
 	
 	
@@ -148,7 +145,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setNodeColor(this.nodeColor);
 		node.setNodeSize(this.nodeSize);
 		node.setLocation(this.getLocation());
-		node.setFileName(this.fileName);
+		node.setFileName(this.getFileName());
 		return node;
 	}
 

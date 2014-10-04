@@ -5,16 +5,15 @@
 package edu.ntua.dblab.hecataeus;
 
 import java.awt.event.InputEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
-import javax.swing.JRadioButtonMenuItem;
 
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
@@ -94,47 +93,6 @@ protected HecataeusViewer viewer;
  * Changed from "Graph" to "Visualize"
  */
         	modeMenu = new JMenu("Visualize");
-			
-            final JRadioButtonMenuItem transformingButton =
-/**
- * @author pmanousi
- * Changed from "Move" to "Move Graph"
- */
-                new JRadioButtonMenuItem("Move Graph");
-            transformingButton.addItemListener(new ItemListener() {
-                public void itemStateChanged(ItemEvent e) {
-                    if(e.getStateChange() == ItemEvent.SELECTED) {
-                        setMode(Mode.TRANSFORMING);
-                    }
-                }});
-            
-            final JRadioButtonMenuItem pickingButton =
-                new JRadioButtonMenuItem("Pick");
-            pickingButton.addItemListener(new ItemListener() {
-                public void itemStateChanged(ItemEvent e) {
-                    if(e.getStateChange() == ItemEvent.SELECTED) {
-                        setMode(Mode.PICKING);
-                    }
-                }});
-			
-            ButtonGroup radio = new ButtonGroup();
-            radio.add(transformingButton);
-            radio.add(pickingButton);
-/** @author pmanousi transformingButton.setSelected(true);*/
-            pickingButton.setSelected(true);
-            modeMenu.add(transformingButton);
-            modeMenu.add(pickingButton);
-            modeMenu.setToolTipText("Menu for setting Mouse Mode");
-            addItemListener(new ItemListener() {
-				public void itemStateChanged(ItemEvent e) {
-					if(e.getStateChange() == ItemEvent.SELECTED) {
-						if(e.getItem() == Mode.TRANSFORMING) {
-							transformingButton.setSelected(true);
-						} else if(e.getItem() == Mode.PICKING) {
-							pickingButton.setSelected(true);
-						} 
-					}
-				}});
         }
         return modeMenu;
     }
@@ -156,7 +114,6 @@ protected HecataeusViewer viewer;
 				List<VisualNode> module = g.getModule(node);
 				for (VisualNode child : module) {
 					child.setVisible(!child.getVisible());
-						
 				}
 				node.setVisible(true);
 			}
@@ -168,6 +125,22 @@ protected HecataeusViewer viewer;
 				node.setVisible(true);
 			}
 			
+		}
+		if(me.getClickCount()==1 && me.getButton()==MouseEvent.BUTTON1)
+		{	// TODO: report...
+			if(node.getType()==NodeType.NODE_TYPE_RELATION)
+			{
+				List<String> filenames=new ArrayList<String>();
+				for(EvolutionEdge inEdge: node.getInEdges())
+				{
+					if(filenames.contains(inEdge.getFromNode().getFileName())==false)
+					{
+						filenames.add(inEdge.getFromNode().getFileName());
+					}
+				}
+				filenames.remove(node.getFileName());
+				this.viewer.relationSelectScriptFiles(filenames);
+			}
 		}
 	}
 	

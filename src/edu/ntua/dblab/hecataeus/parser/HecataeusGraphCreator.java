@@ -59,8 +59,8 @@ public class HecataeusGraphCreator{
 		HGraph = graph ;
 	}
 
-	private VisualNode add_node(String Label, NodeType Type) {
-		VisualNode v = new VisualNode(Label, Type);
+	private VisualNode add_node(String Label, NodeType Type, String fileName) {
+		VisualNode v = new VisualNode(Label, Type, fileName);
 		v.setPath(path);														//added by sgerag
 		v.setLine(line);
 		HGraph.addVertex(v);
@@ -74,31 +74,31 @@ public class HecataeusGraphCreator{
 	}
 
 	//sgerag modification: return type (boolean--->HecataeusEvolutionNode)
-	public VisualNode add_table(Table tTable, String definition) throws SQLException {
+	public VisualNode add_table(Table tTable, String definition, String fileName) throws SQLException {
 		try {
 			VisualNode u  ;
 			VisualNode v  ;
 			VisualEdge e  ;
 			// Add the relation node
-			u = add_node(tTable.getName(), NodeType.NODE_TYPE_RELATION);
+			u = add_node(tTable.getName(), NodeType.NODE_TYPE_RELATION, fileName);
 			u.setSQLDefinition(definition);
 			/**
 			* @author pmanousi start
 			* Make a new node called tableName+" OUTPUT" and my table hits this node, later attributes will hit outputNode.
 			*/
-			VisualNode outputNode=add_node(u.getName()+"_SCHEMA", NodeType.NODE_TYPE_OUTPUT);
+			VisualNode outputNode=add_node(u.getName()+"_SCHEMA", NodeType.NODE_TYPE_OUTPUT, fileName);
 			e=add_edge(u, outputNode, EdgeType.EDGE_TYPE_OUTPUT,"OUT_S");
 			// Add the attribute nodes
 			for (int i = 0; i < tTable.getColumnCount();i++) {
 				// Add new attribute node and a new edge with the relation node
-				v = add_node(tTable.getColumnName(i), NodeType.NODE_TYPE_ATTRIBUTE);
+				v = add_node(tTable.getColumnName(i), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				/**
 				 * @author pmanousi
 				 * Changed edges to hit outputNode.
 				 */
 				e = add_edge(outputNode, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 			}
-			addTableConstraints(tTable);
+			addTableConstraints(tTable, fileName);
 			return u;								//added by sgerag
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -106,12 +106,12 @@ public class HecataeusGraphCreator{
 		}
 	}
 
-	private void addTableConstraints(Table  tTable) {
+	private void addTableConstraints(Table  tTable, String fileName) {
 		try { 
 			// Add constraints
 			for (int i=0;i<tTable.getConstraints().size();i++){
 				Constraint c = (Constraint) tTable.getConstraints().get(i);
-				VisualNode w =  addConstraintNode(tTable, c);
+				VisualNode w =  addConstraintNode(tTable, c, fileName);
 			}
 		}
 		catch(Exception e)
@@ -121,12 +121,12 @@ public class HecataeusGraphCreator{
 	}
 
 
-	private  VisualNode addConstraintNode(Table tTable, Constraint cConstraint){
+	private  VisualNode addConstraintNode(Table tTable, Constraint cConstraint, String fileName){
 		VisualNode u;
 		int cols[] ; 
 		if (cConstraint.getType() == Constraint.PRIMARY_KEY) {
 			//add constraint node
-			u = add_node(tTable.getName() + ".PK",NodeType.NODE_TYPE_CONDITION);
+			u = add_node(tTable.getName() + ".PK",NodeType.NODE_TYPE_CONDITION, fileName);
 			//for each column in constraint node create edges
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
@@ -138,7 +138,7 @@ public class HecataeusGraphCreator{
 			return u;
 		} else if (cConstraint.getType()==Constraint.UNIQUE)  {
 			//add constraint node
-			u = add_node(tTable.getName() + ".UC",NodeType.NODE_TYPE_CONDITION);
+			u = add_node(tTable.getName() + ".UC",NodeType.NODE_TYPE_CONDITION, fileName);
 			//for each column in constraint node create edges
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
@@ -150,7 +150,7 @@ public class HecataeusGraphCreator{
 			return u;
 		} else if (cConstraint.getType()==Constraint.NOT_NULL) {
 			//add constraint node
-			u = add_node(tTable.getName() + ".NC",NodeType.NODE_TYPE_CONDITION);
+			u = add_node(tTable.getName() + ".NC",NodeType.NODE_TYPE_CONDITION, fileName);
 			//for each column in constraint node create edges
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
@@ -162,7 +162,7 @@ public class HecataeusGraphCreator{
 			return u;
 		} else if (cConstraint.getType()==Constraint.FOREIGN_KEY) {
 			//add constraint node
-			u = add_node(tTable.getName() +  ".FK", NodeType.NODE_TYPE_CONDITION);
+			u = add_node(tTable.getName() +  ".FK", NodeType.NODE_TYPE_CONDITION, fileName);
 			//for each column in detail table create edges from attributes nodes to fk node
 			tTable = cConstraint.getRef();
 			cols = cConstraint.getRefColumns();
@@ -224,11 +224,11 @@ public class HecataeusGraphCreator{
 	}
 	
 	
-	public boolean add_query(Select sSelect, String definition) throws SQLException{
+	public boolean add_query(Select sSelect, String definition, String fileName) throws SQLException{
 		try {
 			queries++;
-			VisualNode   u = add_node("Q" + queries, NodeType.NODE_TYPE_QUERY);
-			this.createQuery(u, sSelect, false);
+			VisualNode   u = add_node("Q" + queries, NodeType.NODE_TYPE_QUERY, fileName);
+			this.createQuery(u, sSelect, false, fileName);
 			u.setSQLDefinition(definition);
 		} catch (RuntimeException e) {
 			e.printStackTrace();
@@ -237,10 +237,10 @@ public class HecataeusGraphCreator{
 		return true;
 	}
 
-	public boolean add_view(Select sSelect, String view_name, String definition) throws SQLException{
+	public boolean add_view(Select sSelect, String view_name, String definition, String fileName) throws SQLException{
 		try {
-			VisualNode u = add_node(view_name, NodeType.NODE_TYPE_VIEW);
-			this.createQuery(u, sSelect, false);
+			VisualNode u = add_node(view_name, NodeType.NODE_TYPE_VIEW, fileName);
+			this.createQuery(u, sSelect, false, fileName);
 			u.setSQLDefinition(definition);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -256,7 +256,7 @@ public class HecataeusGraphCreator{
 	 * @param fileNode
 	 * @exception SQLException
 	 */
-	private void addBlock(Block block,VisualNode fileNode) throws SQLException{
+	private void addBlock(Block block,VisualNode fileNode, String fileName) throws SQLException{
 		try{
 			VisualNode blockNode=null;
 			boolean emptyBlock=true;
@@ -266,7 +266,7 @@ public class HecataeusGraphCreator{
 				line=block.getLine();
 				
 				if (!blockHasEmptyChildren(block)){
-					blockNode=add_node("ANONYMOUS_BLOCK_"+anon_blocks,NodeType.NODE_TYPE_ANONYMOUS_BLOCK);
+					blockNode=add_node("ANONYMOUS_BLOCK_"+anon_blocks,NodeType.NODE_TYPE_ANONYMOUS_BLOCK, fileName);
 					emptyBlock=false;
 				}
 			}
@@ -278,7 +278,7 @@ public class HecataeusGraphCreator{
 				StoredProcedure proc=(StoredProcedure)block;
 				line=block.getLine();
 				if (!blockHasEmptyChildren(block)){
-					blockNode=add_node(proc.getName(),NodeType.NODE_TYPE_STORED_PROCEDURE);
+					blockNode=add_node(proc.getName(),NodeType.NODE_TYPE_STORED_PROCEDURE, fileName);
 					emptyBlock=false;
 				}
 			}
@@ -286,7 +286,7 @@ public class HecataeusGraphCreator{
 				StoredFunction func=(StoredFunction)block;
 				line=block.getLine();
 				if (!blockHasEmptyChildren(block)){
-					blockNode=add_node(func.getName(),NodeType.NODE_TYPE_STORED_FUNCTION);
+					blockNode=add_node(func.getName(),NodeType.NODE_TYPE_STORED_FUNCTION, fileName);
 					emptyBlock=false;
 				}
 			}
@@ -294,7 +294,7 @@ public class HecataeusGraphCreator{
 				Trigger trig=(Trigger)block;
 				line=block.getLine();
 				if (!blockHasEmptyChildren(block)){
-					blockNode=add_node(trig.getName(),NodeType.NODE_TYPE_TRIGGER);
+					blockNode=add_node(trig.getName(),NodeType.NODE_TYPE_TRIGGER, fileName);
 					emptyBlock=false;
 				}
 			}
@@ -302,7 +302,7 @@ public class HecataeusGraphCreator{
 				Package pack=(Package)block;
 				line=block.getLine();
 				if (!blockHasEmptyChildren(block)){	
-					blockNode=add_node(pack.getName(),NodeType.NODE_TYPE_PACKAGE);
+					blockNode=add_node(pack.getName(),NodeType.NODE_TYPE_PACKAGE, fileName);
 					emptyBlock=false;
 				}
 			}
@@ -311,15 +311,15 @@ public class HecataeusGraphCreator{
 				EmbeddedStatement emb=(EmbeddedStatement)block;
 				line=block.getLine();
 				if (!blockHasEmptyChildren(block)){
-					blockNode=add_node("EMBEDDED_"+embeddeds,NodeType.NODE_TYPE_EMBEDDED_STATEMENT);
+					blockNode=add_node("EMBEDDED_"+embeddeds,NodeType.NODE_TYPE_EMBEDDED_STATEMENT, fileName);
 					emptyBlock=false;
 				}
 			}
 			//visualize nested blocks
 			Vector<Block> blocks=block.getBlocks();
 			for (Block bl:blocks){
-				if (!(block instanceof Script))		addBlock(bl,blockNode);
-				else	addBlock(bl,fileNode);
+				if (!(block instanceof Script))		addBlock(bl,blockNode, fileName);
+				else	addBlock(bl,fileNode, fileName);
 			}
 			if (!(block instanceof Script) && !emptyBlock){
 				add_edge(fileNode,blockNode,EdgeType.EDGE_TYPE_CONTAINS,"contains");
@@ -330,13 +330,13 @@ public class HecataeusGraphCreator{
 				if (nod instanceof Relation){
 					Relation rel=((Relation)nod);
 					line=rel.getLine();
-					stmtNode=this.add_table(rel.getTable(),rel.getDefinition());
+					stmtNode=this.add_table(rel.getTable(),rel.getDefinition(), fileName);
 				}
 				else if (nod instanceof View){
 					View view=((View)nod);
 					line=view.getLine();
-					stmtNode=add_node(view.getName(), NodeType.NODE_TYPE_VIEW);
-					this.createQuery(stmtNode,view.getSelect(),false);
+					stmtNode=add_node(view.getName(), NodeType.NODE_TYPE_VIEW, fileName);
+					this.createQuery(stmtNode,view.getSelect(),false, fileName);
 					stmtNode.setSQLDefinition(view.getDefinition());
 				}
 				else if (nod instanceof PlainSQL){
@@ -344,27 +344,27 @@ public class HecataeusGraphCreator{
 					line=plain.getLine();
 					if (plain.getOperator()==SpecificOperator.SELECT){
 						queries++;
-						if (plain.isSelectInto()) stmtNode=add_node(plain.getName(),NodeType.NODE_TYPE_QUERY);
-						else	stmtNode=add_node("Q"+queries, NodeType.NODE_TYPE_QUERY);
-						this.createQuery(stmtNode,plain.getSelect(),false);
+						if (plain.isSelectInto()) stmtNode=add_node(plain.getName(),NodeType.NODE_TYPE_QUERY, fileName);
+						else	stmtNode=add_node("Q"+queries, NodeType.NODE_TYPE_QUERY, fileName);
+						this.createQuery(stmtNode,plain.getSelect(),false, fileName);
 						stmtNode.setSQLDefinition(plain.getDefinition());
 					}
 					else if (plain.getOperator()==SpecificOperator.INSERT){
 						inserts++;
-						stmtNode=add_node("I"+inserts,NodeType.NODE_TYPE_INSERT);
-						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode=add_node("I"+inserts,NodeType.NODE_TYPE_INSERT, fileName);
+						this.createQuery(stmtNode,plain.getSelect(),false, fileName);
 						stmtNode.setSQLDefinition(plain.getDefinition());
 					}
 					else if (plain.getOperator()==SpecificOperator.DELETE){
 						deletes++;
-						stmtNode=add_node("D"+deletes,NodeType.NODE_TYPE_DELETE);
-						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode=add_node("D"+deletes,NodeType.NODE_TYPE_DELETE, fileName);
+						this.createQuery(stmtNode,plain.getSelect(),false, fileName);
 						stmtNode.setSQLDefinition(plain.getDefinition());
 					}
 					else if (plain.getOperator()==SpecificOperator.UPDATE){
 						updates++;
-						stmtNode=add_node("U"+updates,NodeType.NODE_TYPE_UPDATE);
-						this.createQuery(stmtNode,plain.getSelect(),false);
+						stmtNode=add_node("U"+updates,NodeType.NODE_TYPE_UPDATE, fileName);
+						this.createQuery(stmtNode,plain.getSelect(),false, fileName);
 						stmtNode.setSQLDefinition(plain.getDefinition());
 					}
 				}
@@ -373,28 +373,28 @@ public class HecataeusGraphCreator{
 					line=cur.getLine();
 					if (cur.getId()==0){
 						//static cursor
-						stmtNode=add_node(cur.getName(),NodeType.NODE_TYPE_CURSOR);
+						stmtNode=add_node(cur.getName(),NodeType.NODE_TYPE_CURSOR, fileName);
 					}
 					else {
 						//dynamic cursor
-						stmtNode=add_node(cur.getName()+"_"+cur.getId(),NodeType.NODE_TYPE_CURSOR);
+						stmtNode=add_node(cur.getName()+"_"+cur.getId(),NodeType.NODE_TYPE_CURSOR, fileName);
 					}
-					this.createQuery(stmtNode,cur.getSelect(),false);
+					this.createQuery(stmtNode,cur.getSelect(),false, fileName);
 					stmtNode.setSQLDefinition(cur.getDefinition());
 				}
 				else if (nod instanceof Variable){
 					Variable var=((Variable)nod);
 					line=var.getLine();
-					stmtNode=add_node(var.getName(),NodeType.NODE_TYPE_VARIABLE);
-					this.createQuery(stmtNode,var.getSelect(),false);
+					stmtNode=add_node(var.getName(),NodeType.NODE_TYPE_VARIABLE, fileName);
+					this.createQuery(stmtNode,var.getSelect(),false, fileName);
 					stmtNode.setSQLDefinition(var.getDefinition());
 				}
 				else if (nod instanceof Assignment){
 					assignments++;
 					Assignment assig=((Assignment)nod);
 					line=assig.getLine();
-					stmtNode=add_node("A"+assignments,NodeType.NODE_TYPE_ASSIGNMENT);
-					this.createQuery(stmtNode,assig.getSelect(),false);
+					stmtNode=add_node("A"+assignments,NodeType.NODE_TYPE_ASSIGNMENT, fileName);
+					this.createQuery(stmtNode,assig.getSelect(),false, fileName);
 					stmtNode.setSQLDefinition(assig.getDefinition());
 				}
 				else if (nod instanceof MergeInto){
@@ -426,14 +426,14 @@ public class HecataeusGraphCreator{
 	 * @param plain
 	 * @exception SQLException
 	 */
-	public boolean addFile(FileContainer file) throws SQLException{
+	public boolean addFile(FileContainer file, String fileName) throws SQLException{
 		try {
 			path=file.getPath();
 			VisualNode fileNode=null;
 			Vector<Block> blcks=file.getBlocks();
-			if (!blcks.isEmpty())	fileNode=add_node(file.getName(),NodeType.NODE_TYPE_FILE);
+			if (!blcks.isEmpty())	fileNode=add_node(file.getName(),NodeType.NODE_TYPE_FILE, fileName);
 			for (Block block:blcks){
-				addBlock(block,fileNode);
+				addBlock(block,fileNode, fileName);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
@@ -464,7 +464,7 @@ public class HecataeusGraphCreator{
 	 * @author pmanousi
 	 * We check to see if a node already exists in any of the input nodes.  If not we create it and hang it in the table or view it should be getting input from.
 	 */
-	private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName)
+	private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName, String fileName)
 	{
 		VisualNode x=null;
 		VisualEdge e=null;
@@ -480,7 +480,7 @@ public class HecataeusGraphCreator{
 						return(in.getOutEdges().get(j).getToNode());
 					}
 				}
-				x=add_node(nodeName, NodeType.NODE_TYPE_ATTRIBUTE);
+				x=add_node(nodeName, NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				e=add_edge(in, x, EdgeType.EDGE_TYPE_INPUT, "S");
 				for(int j=0;j<in.getOutEdges().size();j++)
 				{
@@ -502,7 +502,7 @@ public class HecataeusGraphCreator{
 		return(x);
 	}
 	
-	private void createQuery(VisualNode u, Select sSelect, boolean nested) throws SQLException{
+	private void createQuery(VisualNode u, Select sSelect, boolean nested, String fileName) throws SQLException{
 		Expression expression;
 		String GroupByLabel = null;
 		// TableFilter ta
@@ -510,8 +510,8 @@ public class HecataeusGraphCreator{
 		VisualNode w = null ;
 		VisualNode x = null ;
 		VisualNode input=null;
-		VisualNode output=add_node(u.getName()+"_OUT", NodeType.NODE_TYPE_OUTPUT);
-		VisualNode semantics=add_node(u.getName()+"_SMTX", NodeType.NODE_TYPE_SEMANTICS);
+		VisualNode output=add_node(u.getName()+"_OUT", NodeType.NODE_TYPE_OUTPUT, fileName);
+		VisualNode semantics=add_node(u.getName()+"_SMTX", NodeType.NODE_TYPE_SEMANTICS, fileName);
 		VisualEdge e;
 		e=add_edge(u, output, EdgeType.EDGE_TYPE_OUTPUT,u.getName()+"OUT_S");
 		e=add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS,u.getName()+"SMTX_S");
@@ -532,7 +532,7 @@ public class HecataeusGraphCreator{
 		for (int i = 0; i < sSelect.tFilter.length; i++) {
 			if ( selfJoinedTables[i] != null)
 			{
-				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getName(), NodeType.NODE_TYPE_INPUT);
+				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getName(), NodeType.NODE_TYPE_INPUT, fileName);
 				e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
 			}
 			else
@@ -541,7 +541,7 @@ public class HecataeusGraphCreator{
 				 * @author pmanousi
 				 * Create new schema, also change the from edge from input to table_schema instead of from query to table.
 				 */
-				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getTable().getName(), NodeType.NODE_TYPE_INPUT);
+				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getTable().getName(), NodeType.NODE_TYPE_INPUT, fileName);
 				e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
 			}
 			e = add_edge(input.getInEdges().get(0).getFromNode(), find_relationFrom(sSelect.tFilter[i].getTable().getName()).getInEdges().get(0).getFromNode(), EdgeType.EDGE_TYPE_USES, "uses");			
@@ -554,19 +554,19 @@ public class HecataeusGraphCreator{
 			// SHOULD ADD CHECK FOR ALIAS FOR SELF JOIN QUERIES
 			// Type COLUMN
 			if (expression.getType()== Expression.COLUMN) {
-				v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE) ;
+				v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName) ;
 				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
-				x=existsInInputSchema(u, expression.getTableName(), expression.getColumnName());
+				x=existsInInputSchema(u, expression.getTableName(), expression.getColumnName(), fileName);
 				e = add_edge(v,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
 			}
 			// Type VALUE
 			if (expression.getType()== Expression.VALUE) {
 				try{
 					if (expression.getAlias()==""){
-						v = add_node(expression.getValue().toString(), NodeType.NODE_TYPE_ATTRIBUTE) ;
+						v = add_node(expression.getValue().toString(), NodeType.NODE_TYPE_ATTRIBUTE, fileName) ;
 					}else{
-						v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE) ;
-						VisualNode v1 = add_node(expression.getValue().toString(), NodeType.NODE_TYPE_CONSTANT) ;
+						v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName) ;
+						VisualNode v1 = add_node(expression.getValue().toString(), NodeType.NODE_TYPE_CONSTANT, fileName) ;
 						e = add_edge(v, v1, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
 					}
 				e = add_edge(u, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
@@ -580,15 +580,15 @@ public class HecataeusGraphCreator{
 				//add a recursive method for nested functions
 				Function function = expression.getFunction();
 				if (expression.getAlias()== "")
-					v = add_node(function.getName(), NodeType.NODE_TYPE_ATTRIBUTE);
+					v = add_node(function.getName(), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				else 
-					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE);
-				w = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION) ;
+					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
+				w = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION, fileName) ;
 				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
 				e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING,"map-select");
 				e= add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, function.getName());
 				for (int j = 0; j <function.eArg.length ; j++) {
-					VisualNode arg =add_expression(function.eArg[j],u);
+					VisualNode arg =add_expression(function.eArg[j],u, fileName);
 					e = add_edge(w,	arg, EdgeType.EDGE_TYPE_MAPPING, "op"+(j+1)) ;
 				}
 			}
@@ -618,10 +618,10 @@ public class HecataeusGraphCreator{
 				default: break;
 				}
 				if (expression.getAlias()== "")
-					v = add_node(strFunction, NodeType.NODE_TYPE_ATTRIBUTE);
+					v = add_node(strFunction, NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				else 
-					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE);
-				w = add_node(strFunction, NodeType.NODE_TYPE_FUNCTION) ;
+					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
+				w = add_node(strFunction, NodeType.NODE_TYPE_FUNCTION, fileName) ;
 				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
 				e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
 				e=add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, strFunction);
@@ -662,7 +662,7 @@ public class HecataeusGraphCreator{
 							 * @author pmanousi
 							 * Create INPUT schema nodes if they don't exist and fix their edges to output of table.
 							 */
-							x=existsInInputSchema(u, sSelect.tFilter[tblIndex].getTable().getName(), sSelect.tFilter[tblIndex].getTable().getColumnName(l));
+							x=existsInInputSchema(u, sSelect.tFilter[tblIndex].getTable().getName(), sSelect.tFilter[tblIndex].getTable().getColumnName(l), fileName);
 						}
 					}	
 					//if we have func(*)
@@ -679,7 +679,7 @@ public class HecataeusGraphCreator{
 								 * @author pmanousi
 								 * Create INPUT schema nodes if they don't exist and fix their edges to output of table.
 								 */
-								x=existsInInputSchema(u, sSelect.tFilter[l].getTable().getName(), sSelect.tFilter[l].getTable().getColumnName(j));
+								x=existsInInputSchema(u, sSelect.tFilter[l].getTable().getName(), sSelect.tFilter[l].getTable().getColumnName(j), fileName);
 							}
 						}
 					}
@@ -694,7 +694,7 @@ public class HecataeusGraphCreator{
 						 * @author pmanousi
 						 * Changed to work with output node of table.
 						 */
-						x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName());
+						x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName(), fileName);
 					e = add_edge(w,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select");
 					break;
 				default : 
@@ -702,7 +702,7 @@ public class HecataeusGraphCreator{
 					 * @author pmanousi
 					 * Changed to work with output node of table.
 					 */
-					x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName());
+					x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName(), fileName);
 					break;
 				}
 			}
@@ -710,7 +710,7 @@ public class HecataeusGraphCreator{
 		// __________________________________________________________________________________________________  
 		// Visualize the where part of a query
 		if (sSelect.eCondition != null ) {
-			v = add_expression(sSelect.eCondition,u);
+			v = add_expression(sSelect.eCondition,u, fileName);
 			/**
 			 * @author pmanousi
 			 * Was: e = add_edge(u, v, EdgeType.EDGE_TYPE_WHERE, "where");
@@ -721,52 +721,52 @@ public class HecataeusGraphCreator{
 		// Visualize the GROUP BY part of a query
 		if ( sSelect.iGroupLen > 0 ) {
 			// add GB node
-			v = add_node("GB", NodeType.NODE_TYPE_GROUP_BY) ;
+			v = add_node("GB", NodeType.NODE_TYPE_GROUP_BY, fileName) ;
 			e = add_edge(semantics, v, EdgeType.EDGE_TYPE_GROUP_BY, "group by") ;
 			int j = 0;
 			// add edges
 			for (int i = (sSelect.eColumn.length - sSelect.iGroupLen- sSelect.iOrderLen); i < (sSelect.eColumn.length - sSelect.iOrderLen); i++){
 				j++;
 				GroupByLabel = "group by" + j;
-				x = add_expression(sSelect.eColumn[i],u);
+				x = add_expression(sSelect.eColumn[i],u, fileName);
 				e = add_edge(v, x, EdgeType.EDGE_TYPE_GROUP_BY, GroupByLabel);
 			}
 		}
 	}
 	
-	private VisualNode  add_expression(Expression expr, VisualNode head){
+	private VisualNode  add_expression(Expression expr, VisualNode head, String fileName){
 		VisualNode u=null;
 		switch (expr.getType()){
 		case Expression.NOT:
-			u = add_node(" != ", NodeType.NODE_TYPE_OPERAND);
+			u = add_node(" != ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.EQUAL:
-			u =  add_node(" = ", NodeType.NODE_TYPE_OPERAND);		
+			u =  add_node(" = ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.BIGGER_EQUAL:
-			u =  add_node(" >= ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" >= ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.BIGGER:
-			u =  add_node(" > ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" > ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.SMALLER:
-			u = add_node(" < ", NodeType.NODE_TYPE_OPERAND);
+			u = add_node(" < ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.SMALLER_EQUAL:
-			u =  add_node(" <= ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" <= ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.NOT_EQUAL:
-			u =  add_node(" <> ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" <> ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.VALUELIST:
-			u =  add_node(" ValueList ", NodeType.NODE_TYPE_CONSTANT);
+			u =  add_node(" ValueList ", NodeType.NODE_TYPE_CONSTANT, fileName);
 			break;
 		case Expression.VALUE:
 			try{
 				if (expr.getValue()==null){
-					u =  add_node("NULL", NodeType.NODE_TYPE_CONSTANT);
+					u =  add_node("NULL", NodeType.NODE_TYPE_CONSTANT, fileName);
 				}else {
-					u =  add_node(expr.getValue().toString(), NodeType.NODE_TYPE_CONSTANT);
+					u =  add_node(expr.getValue().toString(), NodeType.NODE_TYPE_CONSTANT, fileName);
 				}
 				break;
 			}
@@ -778,43 +778,43 @@ public class HecataeusGraphCreator{
 			 * @author pmanousi
 			 * Changed it to work with INPUT schema.
 			 */
-			u=existsInInputSchema(head, expr.getTableName(), expr.getColumnName());
+			u=existsInInputSchema(head, expr.getTableName(), expr.getColumnName(), fileName);
 			break;
 		case Expression.IN:
-			u =  add_node(" IN ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" IN ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.EXISTS:
-			u =  add_node(" EXISTS ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" EXISTS ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.AND:
-			u =  add_node(" AND ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" AND ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.OR:
-			u =  add_node(" OR ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" OR ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.CONCAT:
-			u =  add_node(" || ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" || ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.ADD:
-			u =  add_node(" + ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" + ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.SUBTRACT:
-			u =  add_node(" - ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" - ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.MULTIPLY:
-			u =  add_node(" * ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" * ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.DIVIDE:
-			u =  add_node(" / ", NodeType.NODE_TYPE_OPERAND);
+			u =  add_node(" / ", NodeType.NODE_TYPE_OPERAND, fileName);
 			break;
 		case Expression.CASEWHEN:
-			u =  add_node(" CASEWHEN ", NodeType.NODE_TYPE_FUNCTION);
+			u =  add_node(" CASEWHEN ", NodeType.NODE_TYPE_FUNCTION, fileName);
 			break;
 		case Expression.QUERY:
 			try {
 				queries++;
-				u = add_node("Q" + queries, NodeType.NODE_TYPE_QUERY);
-				this.createQuery(u, expr.sSelect, true);
+				u = add_node("Q" + queries, NodeType.NODE_TYPE_QUERY, fileName);
+				this.createQuery(u, expr.sSelect, true, fileName);
 				break;
 			} catch (Exception e) {
 				System.out.println("[Error in subquery]"+e.getMessage());
@@ -822,9 +822,9 @@ public class HecataeusGraphCreator{
 		case Expression.FUNCTION:
 			// Type Function
 			Function function = expr.getFunction();
-			u = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION) ;
+			u = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION, fileName) ;
 			for (int j = 0; j <function.eArg.length ; j++) {
-				VisualNode arg =add_expression(function.eArg[j],head);
+				VisualNode arg =add_expression(function.eArg[j],head, fileName);
 				VisualEdge e = add_edge(u,	arg, EdgeType.EDGE_TYPE_OPERATOR, "op"+(j+1)) ;
 			}
 			break;
@@ -834,7 +834,7 @@ public class HecataeusGraphCreator{
 		VisualEdge newedge ;
 		VisualNode arg ;
 		if (expr.getArg()!=null) {
-			arg = add_expression(expr.getArg(),head) ;
+			arg = add_expression(expr.getArg(),head, fileName) ;
 			if (arg!=null)
 			{
 				/**
@@ -852,7 +852,7 @@ public class HecataeusGraphCreator{
 			}
 		}
 		if (expr.getArg2()!=null) {
-			arg = add_expression(expr.getArg2(),head) ;
+			arg = add_expression(expr.getArg2(),head, fileName);
 			if (arg!=null)
 			{
 				/**
@@ -890,11 +890,11 @@ public class HecataeusGraphCreator{
 	}
 	
 
-	private void CopyTable(String tblName, String tblAlias) {
+	private void CopyTable(String tblName, String tblAlias, String fileName) {
 		//get src relation
 		VisualNode srcTable = find_relation(tblName) ;
 		//create table alias node
-		VisualNode aliasTable =  new VisualNode(tblAlias, NodeType.NODE_TYPE_RELATION);
+		VisualNode aliasTable =  new VisualNode(tblAlias, NodeType.NODE_TYPE_RELATION, fileName);
 		// add node to graph
 		HGraph.addVertex(aliasTable);
 		aliasTable.setSQLDefinition(srcTable.getSQLDefinition());
@@ -903,7 +903,7 @@ public class HecataeusGraphCreator{
 		//  for each attribute in source table create new attribute nodes
 		for (EvolutionEdge edgeAttribute: srcTable.getOutEdges()) {
 			if (edgeAttribute.getType()==EdgeType.EDGE_TYPE_SCHEMA)  {
-				VisualNode aliasAttr =  new VisualNode(edgeAttribute.getToNode().getName(),NodeType.NODE_TYPE_ATTRIBUTE);
+				VisualNode aliasAttr =  new VisualNode(edgeAttribute.getToNode().getName(),NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				HGraph.addVertex(aliasAttr);
 				this.add_edge(aliasTable, aliasAttr, EdgeType.EDGE_TYPE_SCHEMA,"S");
 				//if map select is added between the alias attributes and the source attributes

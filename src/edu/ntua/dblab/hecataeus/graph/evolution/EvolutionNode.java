@@ -18,6 +18,7 @@ public double ID=0.0;
 static int counter;
 
 	private String _Name = null;
+	private String _FileName = null;
 	private NodeType _Type ;
 	private int _frequency = 0;
 	
@@ -38,8 +39,9 @@ static int counter;
 		ID=counter;
 	}
 
-	public EvolutionNode(String Name, NodeType Type) {
-		this._Name= Name;
+	public EvolutionNode(String Name, NodeType Type, String FileName) {
+		this._Name = Name;
+		this._FileName = FileName;
 		this._Type = Type;
 		this._outEdges = new ArrayList<E>();
 		this._inEdges = new ArrayList<E>();
@@ -47,6 +49,20 @@ static int counter;
 		this._events = new EvolutionEvents();
 		counter++;
 		ID=counter;
+	}
+	
+	/**
+	 * Returns the name of the file
+	 */
+	public String getFileName() {
+		return this._FileName;
+	}
+	
+	/**
+	 * Sets the filename
+	 */
+	public void setFileName(String fname) {
+		this._FileName=fname;
 	}
 
 	/**

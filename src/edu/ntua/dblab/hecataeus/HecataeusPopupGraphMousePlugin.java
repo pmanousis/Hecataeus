@@ -12,6 +12,7 @@ import javax.swing.JPopupMenu;
 
 import org.apache.commons.collections15.Factory;
 
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
@@ -48,14 +49,12 @@ public class HecataeusPopupGraphMousePlugin extends EditingPopupGraphMousePlugin
 	public HecataeusPopupGraphMousePlugin() {
 		super(new Factory<VisualNode>() {
 			public VisualNode create() {
-				
 				return new VisualNode();
 			}
 		}, new Factory<VisualEdge>() {
 			public VisualEdge create() {
 				return new VisualEdge();
 			}
-			
 		});
 	}
 	
