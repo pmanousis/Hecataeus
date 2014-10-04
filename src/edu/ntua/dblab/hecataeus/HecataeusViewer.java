@@ -2377,7 +2377,7 @@ private VisualTotalClusters vtc;
 		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
-		filesTreeGui = new HecataeusFileStractureGUI();
+		filesTreeGui = new HecataeusFileStractureGUI(this);
 		hecMap = new HecataeusClusterMap(this);
 		
 		JPanel panel_map = new JPanel();

@@ -9,28 +9,48 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.picking.PickedState;
+
 public class HecataeusFileStractureGUI extends JPanel 
 {
-  protected JTree  m_tree;
-  protected DefaultTreeModel m_model;
-  protected JTextField m_display;
+	protected JTree  m_tree;
+	protected DefaultTreeModel m_model;
+	protected JTextField m_display;
+	protected HecataeusViewer viewer;
+	protected VisualizationViewer vv;
+	protected VisualGraph g;
 
-  public HecataeusFileStractureGUI()
-  {
-    super();
-  }
+	public HecataeusFileStractureGUI(HecataeusViewer v)
+	{
+		super();
+		this.viewer=v;
+		vv=this.viewer.getActiveViewer();
+		g=this.viewer.graph;
+	}
   
   public void createPanel(String folder)
   {
+	VisualFileColor vfs = new VisualFileColor();
+	HashMap<String, Color> FileColor = new HashMap<String, Color>(vfs.getFileColorMap());
     DefaultMutableTreeNode top = new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder));
     DefaultMutableTreeNode node;
     File fld=new File(folder);
     File[] roots =  fld.listFiles();
     for (int k=0; k<roots.length; k++)
     {
-      node = new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, new FileNode(roots[k])));
-      top.add(node);
-      node.add( new DefaultMutableTreeNode(new Boolean(true)));
+    	Color value = null;
+    	value = FileColor.get(roots[k].getAbsoluteFile().getName());
+    	CreateIcon ic=new CreateIcon();
+    	ic.myCreateIcon(value);
+    	node = new DefaultMutableTreeNode(new IconData(ic, null, new FileNode(roots[k])));
+    	top.add(node);
+    	node.add(new DefaultMutableTreeNode(new Boolean(true)));
     }
     m_model = new DefaultTreeModel(top);
     m_tree = new JTree(m_model);
@@ -99,20 +119,33 @@ public class HecataeusFileStractureGUI extends JPanel
         public void treeCollapsed(TreeExpansionEvent event) {}
     }
 
+    
+    /**
+    * Used for highlighting of modules when a file is clicked in Colors tab.
+    * @author pmanousi
+    */
+
+    
 
   class DirSelectionListener implements TreeSelectionListener 
   {
     public void valueChanged(TreeSelectionEvent event)
     {
-      DefaultMutableTreeNode node = getTreeNode(
-        event.getPath());
+      DefaultMutableTreeNode node = getTreeNode(event.getPath());
       FileNode fnode = getFileNode(node);
-      //TODO:
-      System.err.println(fnode.getFile().getAbsolutePath());
-      if (fnode != null)
-        m_display.setText(fnode.getFile().getAbsolutePath());
-      else
-        m_display.setText("");
+	  
+	  PickedState<VisualNode> pickedVertexState = vv.getPickedVertexState();
+	  pickedVertexState.clear();
+	  if(pickedVertexState != null)
+	  {
+		  for(VisualNode v : g.getVertices())
+		  {
+			  if(fnode!=null && v.getFileName().equals(fnode.getFile().getName()))
+			  {
+				  pickedVertexState.pick(v, true);
+			  }
+		  }
+	  }
     }
   }
 }
@@ -254,8 +287,7 @@ class FileNode
 
   public boolean expand(DefaultMutableTreeNode parent)
   {
-    DefaultMutableTreeNode flag = 
-      (DefaultMutableTreeNode)parent.getFirstChild();
+    DefaultMutableTreeNode flag = (DefaultMutableTreeNode)parent.getFirstChild();
     if (flag==null)    // No flag
       return false;
     Object obj = flag.getUserObject();
@@ -295,6 +327,7 @@ class FileNode
     for (int i=0; i<v.size(); i++)
     {
       FileNode nd = (FileNode)v.elementAt(i);
+      // TODO: expand to new colour?
       IconData idata = new IconData(new CreateIcon(), new CreateIcon(), nd);
       DefaultMutableTreeNode node = new DefaultMutableTreeNode(idata);
       parent.add(node);
@@ -343,24 +376,30 @@ class FileNode
 
 class CreateIcon implements Icon
 {
-	    private int width = 32;
-	    private int height = 32;
-	    private BasicStroke stroke = new BasicStroke(4);
+    private int width = 32;
+    private int height = 32;
+    private BasicStroke stroke = new BasicStroke(32);
+    Color color;
+    
+    public void myCreateIcon(Color c)
+    {
+    	color=c;
+    }
 
-		public void paintIcon(Component c, Graphics g, int x, int y)
-	    {
-	        Graphics2D g2d = (Graphics2D) g.create();
-	        g2d.setColor(Color.RED);	// TODO: change color.
-	        g2d.setStroke(stroke);
-      	g2d.drawRect(1, 1, width-1, height-1);
-	        g2d.dispose();
-	    }
+	public void paintIcon(Component c, Graphics g, int x, int y)
+    {
+        Graphics2D g2d = (Graphics2D) g.create();
+        g2d.setColor(color);
+        g2d.setStroke(stroke);
+        g2d.drawLine(0, height/2, width, height/2);
+        g2d.dispose();
+    }
 
-	    public int getIconWidth() {
-	        return width;
-	    }
+    public int getIconWidth() {
+        return width;
+    }
 
-	    public int getIconHeight() {
-	        return height;
-	    }
-	}
+    public int getIconHeight() {
+        return height;
+    }
+}
