@@ -27,6 +27,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import javafx.scene.control.SplitPane;
+
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -46,12 +48,15 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+
+import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
 
 import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
@@ -107,6 +112,9 @@ public class HecataeusViewer {
 	public static JFrame frame;
 	public static boolean nodeSize;
 	public static HecataeusViewer myViewer;
+/**@author pmanousi Needed for informing user. */
+	protected JTextArea informationArea;
+
 	// the scale object for zoom capabilities 
 	private final ScalingControl scaler = new CrossoverScalingControl();
 	
@@ -183,10 +191,6 @@ public class HecataeusViewer {
 		initialize();
 	}
 
-
-
-	
-	
 	public void updateManagers()
 	{
 		if(managerTabbedPane.getSelectedComponent()==policyManagerGui)
@@ -247,9 +251,9 @@ public class HecataeusViewer {
 		}
 	}
 	
-	public void relationSelectScriptFiles(List<String> files)
+	public void setTextToInformationArea(String text)
 	{
-		this.filesTreeGui.relationSelectScriptFiles(files);
+		informationArea.setText(text);
 	}
 	
 	/**
@@ -333,21 +337,13 @@ public class HecataeusViewer {
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
 			
 			filesTreeGui.createPanel(projectConf.curPath+"SQLS/");
-			filesTreeGui.repaint();
 			policyManagerGui.UPDATE();
-			//get new layout's positions
-			HecataeusViewer.this.getLayoutPositions();
-			HecataeusViewer.this.centerAt(layout.getGraph().getCenter());
-			HecataeusViewer.this.zoomToWindow(vv);
 			eventManagerGui.UPDATE();
 			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 		/** Not good but it is the only way to make it work. */
 		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
-		HecataeusViewer.this.getLayoutPositions();
-		centerAt(((VisualGraph)getActiveViewer().getGraphLayout().getGraph()).getCenter());
-		zoomToWindow(getActiveViewer());
 		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
@@ -492,17 +488,16 @@ public class HecataeusViewer {
 		frame = new JFrame();
 		frame.setTitle("HECATAEUS");
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize();
-		frame.setSize(new Dimension(2004, 1053));
+		frame.setSize(prefferedSize);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setIconImage(new ImageIcon(frameIconUrl).getImage());
 		frame.getContentPane().setLayout(new MigLayout("", "[grow,fill]", "[984.00]15[]"));
 
-		frame.setSize(prefferedSize);
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		
+
 		content = frame.getContentPane();
-		
+
 		JMenu mnNewMenu = new JMenu("Project");
 		menuBar.add(mnNewMenu);
 		
@@ -556,8 +551,7 @@ public class HecataeusViewer {
 			}
 		});
 		mnNewMenu.add(mntmCloseProject);
-		
-		
+
 		JMenuItem mntmExportClusterData = new JMenuItem("Export Cluster Data");
 		mntmExportClusterData.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -594,8 +588,7 @@ public class HecataeusViewer {
 			}
 		});
 		mnNewMenu.add(mntmExportClusterData);
-		
-		
+
 		JMenuItem mntmSaveProject = new JMenuItem("Save Project");
 		mntmSaveProject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1091,8 +1084,7 @@ public class HecataeusViewer {
 		});
 		
 		mnNodes.add(mntmAll);
-		
-		
+
 		JMenuItem mntmRelations = new JMenuItem("Relations");
 		mntmRelations.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1196,7 +1188,6 @@ public class HecataeusViewer {
 			}
 		});
 		mnMetsics.add(mntmGraphEdgeData);
-		
 		
 		JMenuItem mntmGraphSpace = new JMenuItem("Graph Space");
 		mntmGraphSpace.addActionListener(new ActionListener() {
@@ -1631,7 +1622,6 @@ public class HecataeusViewer {
 					JOptionPane.showMessageDialog(content, message);
 					final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 					centerAt(activeViewer.getGraphLayout().transform(maxEntropyNode));
-//					centerAt(maxEntropyNode.getLocation());
 				}
 			}
 		});
@@ -1936,42 +1926,53 @@ public class HecataeusViewer {
 		
 		JSplitPane splitPane = new JSplitPane();
 		frame.getContentPane().add(splitPane, "cell 0 0,growy");
-
-		splitPane.setOneTouchExpandable(true);
+		splitPane.setOneTouchExpandable(false);
+		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		
+		JSplitPane rightSplitPane = new JSplitPane();
+		rightSplitPane.setOneTouchExpandable(false);
+		rightSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		
+		//JSplitPane useCasesPane=new JSplitPane();
+		//useCasesPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		
+		informationArea = new JTextArea();
+		rightSplitPane.setBottomComponent(informationArea);
+
+		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(BorderFactory.createTitledBorder("Visual"));
-
 		tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-		
 		tabbedPane.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
 				sourceTabbedPane = (JTabbedPane) arg0.getSource();
 				sourceTabbedPaneIndex = sourceTabbedPane.getSelectedIndex();
 			}
 		});
-		splitPane.setLeftComponent(tabbedPane);
-		
+		//leftSplitPane.setLeftComponent(tabbedPane);
 		JPanel panel_1 = new JPanel();
-		
 		tabbedPane.addTab("Architecture Graph", null, panel_1, null);
-
-		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-
-		splitPane.setRightComponent(managerTabbedPane);
 		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
 		filesTreeGui = new HecataeusFileStractureGUI(this);
 		hecMap = new HecataeusClusterMap(this);
 		
-		managerTabbedPane.addTab("Map", null, hecMap, null);
-		managerTabbedPane.addTab("Project File Structure", null, filesTreeGui, null);
-		JPanel panel = new JPanel();
-		panel.setBorder(BorderFactory.createTitledBorder("PMG"));
+		//managerTabbedPane.addTab("Map", null, hecMap, null);
+		//managerTabbedPane.addTab("Project File Structure", null, filesTreeGui, null);
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
 		splitPane.setResizeWeight(0.75);
+		
+		rightSplitPane.setTopComponent(managerTabbedPane);
+		rightSplitPane.setBottomComponent(informationArea);
+		JSplitPane leftSplitPane= new JSplitPane();
+		leftSplitPane.setLeftComponent(filesTreeGui);
+		leftSplitPane.setRightComponent(tabbedPane);
+		leftSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		leftSplitPane.setDividerLocation(0.5);
+		splitPane.setLeftComponent(leftSplitPane);
+		splitPane.setRightComponent(rightSplitPane);
 	}
 	
 	/**
@@ -2389,12 +2390,9 @@ public class HecataeusViewer {
 		vv1.setName(onoma);
 		viewers.add(vv1);
 		tabbedPane.addTab(onoma, null, myPane, "New Tab");
-		VisualizationViewer<VisualNode, VisualEdge> activeViewer = this.getActiveViewer();
 		countOpenTabs++;		
 		tabbedPane.setSelectedIndex(countOpenTabs);
 		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
-		
-		activeViewer = this.getActiveViewer();
 		vv1.repaint();
 		this.zoomToWindow(vv1);
 	}

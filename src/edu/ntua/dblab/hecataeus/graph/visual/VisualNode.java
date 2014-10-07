@@ -4,12 +4,9 @@
  */
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-
 import java.awt.Color;
-import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import edu.ntua.dblab.hecataeus.HecataeusModalGraphMouse;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
@@ -23,7 +20,6 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 
 	private double angle;
 	private Point2D location;
-	private Point2D lastChildLocation;
 	private Boolean isVisible  = true;
 	private double nodeSize; // used only for node type cluster
 	private Color nodeColor;
@@ -37,7 +33,6 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	public VisualNode(){
 		super();
 		this.location = new Point2D.Double();
-		this.lastChildLocation = new Point2D.Double();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
 		this.nodeSize = 0.0;
@@ -94,7 +89,6 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	public VisualNode(String name, NodeType type, String fileName) {
 		super(name, type, fileName);
 		this.location = new Point2D.Double();
-		this.lastChildLocation = new Point2D.Double();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
 		this.nodeSize = 0.0;

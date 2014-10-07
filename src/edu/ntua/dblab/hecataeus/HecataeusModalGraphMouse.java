@@ -127,7 +127,8 @@ protected HecataeusViewer viewer;
 			
 		}
 		if(me.getClickCount()==1 && me.getButton()==MouseEvent.BUTTON1)
-		{	// TODO: report...
+		{
+			this.viewer.setTextToInformationArea("");
 			if(node.getType()==NodeType.NODE_TYPE_RELATION)
 			{
 				List<String> filenames=new ArrayList<String>();
@@ -139,7 +140,13 @@ protected HecataeusViewer viewer;
 					}
 				}
 				filenames.remove(node.getFileName());
-				this.viewer.relationSelectScriptFiles(filenames);
+				String eol=System.getProperty("line.separator");
+				String output=new String();
+				for(String filename: filenames)
+				{
+					output+=filename+eol;
+				}
+				this.viewer.setTextToInformationArea("Scripts using this relation:"+eol+output);
 			}
 		}
 	}

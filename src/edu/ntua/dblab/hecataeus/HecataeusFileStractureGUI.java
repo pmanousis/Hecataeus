@@ -25,7 +25,6 @@ public class HecataeusFileStractureGUI extends JPanel
 	protected HecataeusViewer viewer;
 	protected VisualizationViewer vv;
 	protected VisualGraph g;
-	protected JTextArea informationArea;
 	DefaultMutableTreeNode top;
 
 	public HecataeusFileStractureGUI(HecataeusViewer v)
@@ -34,17 +33,6 @@ public class HecataeusFileStractureGUI extends JPanel
 		this.viewer=v;
 		this.vv=this.viewer.getActiveViewer();
 		this.g=this.viewer.graph;
-	}
-	
-	public void relationSelectScriptFiles(List<String> filenames)
-	{
-		String eol=System.getProperty("line.separator");
-		String files=new String();
-		for(String filename: filenames)
-		{
-			files+=filename+eol;
-		}
-		informationArea.setText("Scripts that use this relation:"+eol+files);
 	}
   
 	public void createPanel(String folder)
@@ -76,15 +64,12 @@ public class HecataeusFileStractureGUI extends JPanel
 		m_tree.setShowsRootHandles(true);
 		m_tree.setEditable(false);
 		JScrollPane s = new JScrollPane();
-		s.getViewport().add(m_tree);
+		JPanel content = new JPanel(new GridBagLayout());
+	    content.add(s);
 		s.setVisible(true);
-		s.setSize(getParent().getWidth(), getParent().getHeight());
-		informationArea = new JTextArea();
-		JScrollPane jscp=new JScrollPane(informationArea);
-		JSplitPane jsp=new JSplitPane(JSplitPane.VERTICAL_SPLIT, s, jscp);
-		jsp.setDividerLocation(this.viewer.getHecFrame().getHeight()/2);
-		
-		this.add(jsp);
+		s.getViewport().add(m_tree);
+		setLayout(new BorderLayout());
+        add(content);
 	}
 
 	DefaultMutableTreeNode getTreeNode(TreePath path)
@@ -146,6 +131,7 @@ public class HecataeusFileStractureGUI extends JPanel
 	{
 		public void valueChanged(TreeSelectionEvent event)
 		{
+			viewer.setTextToInformationArea("");
 			DefaultMutableTreeNode node = getTreeNode(event.getPath());
 			FileNode fnode = getFileNode(node);
 			PickedState<VisualNode> pickedVertexState = vv.getPickedVertexState();
