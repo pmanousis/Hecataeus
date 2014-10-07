@@ -22,9 +22,11 @@ public class VisualNodeFont implements Transformer<VisualNode, Font>{
 	{
 		NodeType type = (v.getType());
 
-		if (type.getCategory()== NodeCategory.MODULE
-				||type.getCategory()== NodeCategory.CONTAINER)
+		if (type.getCategory()== NodeCategory.MODULE ||type.getCategory()== NodeCategory.CONTAINER)
+		{	// TODO: check if I can have the zoom level to set the size, too.
+			//return new Font(font.getFamily(), Font.PLAIN ,font.getSize());
 			return new Font(font.getFamily(), Font.PLAIN ,font.getSize());
+		}
 		else
 			return font;
 	}

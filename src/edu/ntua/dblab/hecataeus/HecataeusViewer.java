@@ -343,10 +343,12 @@ public class HecataeusViewer {
 			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}
 		/** Not good but it is the only way to make it work. */
+		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
 		HecataeusViewer.this.getLayoutPositions();
 		centerAt(((VisualGraph)getActiveViewer().getGraphLayout().getGraph()).getCenter());
 		zoomToWindow(getActiveViewer());
+		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
 	
@@ -516,6 +518,17 @@ public class HecataeusViewer {
 		mntmOpenProject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openProject();
+				frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+				zoomToWindow(activeViewer);
+				frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
 		mnNewMenu.add(mntmOpenProject);
@@ -617,12 +630,8 @@ public class HecataeusViewer {
 		mntmZoomInWindow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-				Dimension d = ((VisualGraph)activeViewer.getGraphLayout().getGraph()).getSize();
-				//centerAt(new Point2D.Double(d.width/2, d.height/2));
 				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-				
 				zoomToWindow(activeViewer);
-				
 			}
 		});
 		mnVisualize.add(mntmZoomInWindow);

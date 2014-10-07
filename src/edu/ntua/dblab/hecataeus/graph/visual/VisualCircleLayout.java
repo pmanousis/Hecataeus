@@ -14,11 +14,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel;
 
 /**
  * @author eva
@@ -250,7 +253,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
         if(qRad <= relationRad){
         	qRad = relationRad+40;
         }
-        
+                
         if(rc.isEmpty()){
         	placeQueries(qc, cx, cy, qRad, qc.size());
         	placeRelations(vc, cx, cy);

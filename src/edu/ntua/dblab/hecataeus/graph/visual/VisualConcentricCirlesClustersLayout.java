@@ -153,12 +153,12 @@ public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
 		//System.out.println("Cluster TIMER " + clusterTimer.toString());
 		//end clustering
 		//begin visualization
-		StopWatch visTimer = new StopWatch();
-		visTimer.start();
+		//StopWatch visTimer = new StopWatch();
+		//visTimer.start();
 		CirclingCusters();
-		visTimer.stop();
+		//visTimer.stop();
 		//System.out.println("Visualization TIMER " + visTimer.toString());
-		System.out.print(clusterTimer.toString() + "\t" + visTimer.toString() + "\t");
+		//System.out.print(clusterTimer.toString() + "\t" + visTimer.toString() + "\t");
 		//end visualization
 		HecataeusViewer.hecMap.createMap();
 

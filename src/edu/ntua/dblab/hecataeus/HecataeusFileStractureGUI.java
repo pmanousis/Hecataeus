@@ -370,7 +370,7 @@ class CreateIcon implements Icon
 {
     private int width = 32;
     private int height = 32;
-    private BasicStroke stroke = new BasicStroke(32);
+    private BasicStroke stroke = new BasicStroke(2);
     Color color;
     
     public void myCreateIcon(Color c)
@@ -383,7 +383,16 @@ class CreateIcon implements Icon
         Graphics2D g2d = (Graphics2D) g.create();
         g2d.setColor(color);
         g2d.setStroke(stroke);
-        g2d.drawLine(0, height/2, width, height/2);
+        Polygon p =new Polygon();
+        p.addPoint(0,27);
+        p.addPoint(0,10);
+        p.addPoint(5,5);
+        p.addPoint(18,5);
+        p.addPoint(23,10);
+        p.addPoint(30,10);
+        p.addPoint(32,12);
+        p.addPoint(32,27);
+        g2d.fillPolygon(p);
         g2d.dispose();
     }
 
