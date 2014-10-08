@@ -22,12 +22,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
-
-import javafx.scene.control.SplitPane;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -56,8 +55,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import com.sun.java.swing.plaf.gtk.GTKConstants.Orientation;
-
 import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
@@ -76,6 +73,7 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualGraphEdgeCrossings;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeIcon;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeLabel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
@@ -114,6 +112,7 @@ public class HecataeusViewer {
 	public static HecataeusViewer myViewer;
 /**@author pmanousi Needed for informing user. */
 	protected JTextArea informationArea;
+	protected JSplitPane leftSplitPane;
 
 	// the scale object for zoom capabilities 
 	private final ScalingControl scaler = new CrossoverScalingControl();
@@ -344,6 +343,7 @@ public class HecataeusViewer {
 		/** Not good but it is the only way to make it work. */
 		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
+		leftSplitPane.setDividerLocation(0.40);
 		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
@@ -515,13 +515,14 @@ public class HecataeusViewer {
 				openProject();
 				frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				try {
-					Thread.sleep(100);
+					Thread.sleep(1);
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
+				centerAt(findRightmostPoint(activeViewer));
+				//centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 				zoomToWindow(activeViewer);
 				frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
@@ -708,6 +709,7 @@ public class HecataeusViewer {
 		});
 		mnShow.add(mntmNodesWithEvent);
 		
+		
 		final JMenu mnAlgorithms = new JMenu("Algorithms");
 		
 		for (final VisualLayoutType layoutType : VisualLayoutType.values()) {
@@ -865,6 +867,27 @@ public class HecataeusViewer {
 			}
 		});
 		mnVisualize.add(chckbxmntmNewCheckItem);
+		
+		mnVisualize.addSeparator();
+		JCheckBoxMenuItem mntmRelationLabels = new JCheckBoxMenuItem("Relation Labels On");
+		mntmRelationLabels.setSelected(false);
+		mntmRelationLabels.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent event) {
+				AbstractButton aButton = (AbstractButton) event.getSource();
+				boolean selected = aButton.getModel().isSelected();
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = getActiveViewer();
+				VisualNodeLabel vnl=new VisualNodeLabel();
+				if (selected)
+					vnl.setVisibility(true);
+				else
+					vnl.setVisibility(false);
+				activeViewer.getRenderContext().setVertexLabelTransformer(vnl);
+				activeViewer.repaint();
+			}
+		});
+		mnVisualize.add(mntmRelationLabels);
+		
 		vv.getRenderContext().setVertexIconTransformer(null);
 		vv.repaint();
 		JMenu mnTools = new JMenu("Tools");
@@ -1956,6 +1979,12 @@ public class HecataeusViewer {
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
 		filesTreeGui = new HecataeusFileStractureGUI(this);
+		
+		JPanel leftPane = new JPanel();
+		leftPane.setBorder(BorderFactory.createTitledBorder("File system"));
+		leftPane.add(filesTreeGui);
+		filesTreeGui.setSize(leftPane.getSize());
+		
 		hecMap = new HecataeusClusterMap(this);
 		
 		//managerTabbedPane.addTab("Map", null, hecMap, null);
@@ -1966,8 +1995,8 @@ public class HecataeusViewer {
 		
 		rightSplitPane.setTopComponent(managerTabbedPane);
 		rightSplitPane.setBottomComponent(informationArea);
-		JSplitPane leftSplitPane= new JSplitPane();
-		leftSplitPane.setLeftComponent(filesTreeGui);
+		leftSplitPane = new JSplitPane();
+		leftSplitPane.setLeftComponent(leftPane);
 		leftSplitPane.setRightComponent(tabbedPane);
 		leftSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		leftSplitPane.setDividerLocation(0.5);
@@ -2226,18 +2255,30 @@ public class HecataeusViewer {
 				Point2D p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
 				while (!r.contains(p)) 
 					{
-					scaler.scale(activeViewer, 1 / 1.2f, vvcenter);
+					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
 					try {
-						Thread.sleep(1);
+						Thread.sleep(5);
 					} catch (InterruptedException ex) {
 					}
 				}
 			}
 		}
-		tabbedPane.setComponentAt(getActiveTab(),new GraphZoomScrollPane(currentViewer));
+		tabbedPane.setComponentAt(getActiveTab(),new GraphZoomScrollPane(activeViewer));
 	}
-
+	
+	private Point2D findRightmostPoint(VisualizationViewer<VisualNode, VisualEdge> currentViewer){
+		final VisualizationViewer<VisualNode, VisualEdge> activeViewer;
+		activeViewer = currentViewer;
+		Shape r = activeViewer.getBounds();
+		Point2D p = activeViewer.getCenter();
+		for (VisualNode jungNode: activeViewer.getGraphLayout().getGraph().getVertices()) {
+			if (jungNode.getVisible() && p.getX()> activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode)).getX()) {
+				p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
+			}
+		}
+		return(p);
+	}
 	
 	/**
 	 * sets the layout of the graph 

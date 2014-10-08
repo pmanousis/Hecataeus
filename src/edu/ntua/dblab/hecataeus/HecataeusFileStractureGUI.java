@@ -3,15 +3,9 @@ package edu.ntua.dblab.hecataeus;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
-
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
-
-import org.apache.commons.lang3.ArrayUtils;
-
-import jdk.nashorn.internal.ir.LiteralNode.ArrayLiteralNode.ArrayUnit;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
@@ -26,6 +20,7 @@ public class HecataeusFileStractureGUI extends JPanel
 	protected VisualizationViewer vv;
 	protected VisualGraph g;
 	DefaultMutableTreeNode top;
+	JPanel content;
 
 	public HecataeusFileStractureGUI(HecataeusViewer v)
 	{
@@ -33,6 +28,7 @@ public class HecataeusFileStractureGUI extends JPanel
 		this.viewer=v;
 		this.vv=this.viewer.getActiveViewer();
 		this.g=this.viewer.graph;
+		content = new JPanel(new GridBagLayout());
 	}
   
 	public void createPanel(String folder)
@@ -48,7 +44,14 @@ public class HecataeusFileStractureGUI extends JPanel
 			Color value = null;
 			value = FileColor.get(roots[k].getAbsoluteFile().getName());
 			CreateIcon ic=new CreateIcon();
-			ic.myCreateIcon(value);
+			if(roots[k].isFile())
+			{
+				ic.myCreateIcon(value,"file");
+			}
+			else if(roots[k].isDirectory())
+			{
+				ic.myCreateIcon(value,"folder");
+			}
 			node = new DefaultMutableTreeNode(new IconData(ic, null, new FileNode(roots[k])));
 			top.add(node);
 			node.add(new DefaultMutableTreeNode(new Boolean(true)));
@@ -64,7 +67,6 @@ public class HecataeusFileStractureGUI extends JPanel
 		m_tree.setShowsRootHandles(true);
 		m_tree.setEditable(false);
 		JScrollPane s = new JScrollPane();
-		JPanel content = new JPanel(new GridBagLayout());
 	    content.add(s);
 		s.setVisible(true);
 		s.getViewport().add(m_tree);
@@ -181,9 +183,13 @@ class IconCellRenderer extends JLabel implements TreeCellRenderer
 		{
 			IconData idata = (IconData)obj;
 			if (expanded)
-			setIcon(idata.getExpandedIcon());
+			{
+				setIcon(idata.getExpandedIcon());
+			}
 			else
-			setIcon(idata.getIcon());
+			{
+				setIcon(idata.getIcon());
+			}
 		}
 		else
 			setIcon(null);
@@ -308,12 +314,11 @@ class FileNode
 		for (int i=0; i<v.size(); i++)
 		{
 			FileNode nd = (FileNode)v.elementAt(i);
-			// TODO: expand to new colour?
 			IconData idata = new IconData(new CreateIcon(), new CreateIcon(), nd);
 			DefaultMutableTreeNode node = new DefaultMutableTreeNode(idata);
 			parent.add(node);
 			if (nd.hasSubDirs())
-			node.add(new DefaultMutableTreeNode(new Boolean(true)));
+				node.add(new DefaultMutableTreeNode(new Boolean(true)));
 		}
 		return true;
 	}
@@ -358,10 +363,12 @@ class CreateIcon implements Icon
     private int height = 32;
     private BasicStroke stroke = new BasicStroke(2);
     Color color;
+    String type;
     
-    public void myCreateIcon(Color c)
+    public void myCreateIcon(Color c, String t)
     {
     	color=c;
+    	type=t;
     }
 
 	public void paintIcon(Component c, Graphics g, int x, int y)
@@ -370,14 +377,25 @@ class CreateIcon implements Icon
         g2d.setColor(color);
         g2d.setStroke(stroke);
         Polygon p =new Polygon();
-        p.addPoint(0,27);
-        p.addPoint(0,10);
-        p.addPoint(5,5);
-        p.addPoint(18,5);
-        p.addPoint(23,10);
-        p.addPoint(30,10);
-        p.addPoint(32,12);
-        p.addPoint(32,27);
+        if(type=="file")
+        {
+        	p.addPoint(0,27);
+	        p.addPoint(0,10);
+	        p.addPoint(17,10);
+	        p.addPoint(20,13);
+	        p.addPoint(20,27);
+        }
+        else // if(type=="folder")
+        {
+	        p.addPoint(0,27);
+	        p.addPoint(0,10);
+	        p.addPoint(5,5);
+	        p.addPoint(18,5);
+	        p.addPoint(23,10);
+	        p.addPoint(30,10);
+	        p.addPoint(32,12);
+	        p.addPoint(32,27);
+        }
         g2d.fillPolygon(p);
         g2d.dispose();
     }
