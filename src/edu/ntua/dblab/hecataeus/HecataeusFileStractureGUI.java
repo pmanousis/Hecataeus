@@ -3,9 +3,11 @@ package edu.ntua.dblab.hecataeus;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
+
 import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
+
 import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
@@ -19,8 +21,8 @@ public class HecataeusFileStractureGUI extends JPanel
 	protected HecataeusViewer viewer;
 	protected VisualizationViewer vv;
 	protected VisualGraph g;
+	protected JScrollPane s; 
 	DefaultMutableTreeNode top;
-	JPanel content;
 
 	public HecataeusFileStractureGUI(HecataeusViewer v)
 	{
@@ -28,15 +30,13 @@ public class HecataeusFileStractureGUI extends JPanel
 		this.viewer=v;
 		this.vv=this.viewer.getActiveViewer();
 		this.g=this.viewer.graph;
-		content = new JPanel(new GridBagLayout());
 	}
-  
-	public void createPanel(String folder)
+	
+	private DefaultMutableTreeNode createNodes(String folder)
 	{
 		VisualFileColor vfs = new VisualFileColor();
 		HashMap<String, Color> FileColor = new HashMap<String, Color>(vfs.getFileColorMap());
-		top = new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder));
-		DefaultMutableTreeNode node;
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder));
 		File fld=new File(folder);
 		File[] roots =  fld.listFiles();
 		for (int k=0; k<roots.length; k++)
@@ -47,15 +47,21 @@ public class HecataeusFileStractureGUI extends JPanel
 			if(roots[k].isFile())
 			{
 				ic.myCreateIcon(value,"file");
+				node.add(new DefaultMutableTreeNode(new IconData(ic, null, new FileNode(roots[k]))));
 			}
 			else if(roots[k].isDirectory())
 			{
 				ic.myCreateIcon(value,"folder");
+				node.add(createNodes(roots[k].getAbsolutePath()));
 			}
-			node = new DefaultMutableTreeNode(new IconData(ic, null, new FileNode(roots[k])));
-			top.add(node);
-			node.add(new DefaultMutableTreeNode(new Boolean(true)));
 		}
+		return node;
+	}
+  
+	public void createPanel(String folder)
+	{
+		top=createNodes(folder);
+		
 		m_model = new DefaultTreeModel(top);
 		m_tree = new JTree(m_model);
 		m_tree.putClientProperty("JTree.lineStyle", "Angled");
@@ -66,12 +72,10 @@ public class HecataeusFileStractureGUI extends JPanel
 		m_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION); 
 		m_tree.setShowsRootHandles(true);
 		m_tree.setEditable(false);
-		JScrollPane s = new JScrollPane();
-	    content.add(s);
+		s = new JScrollPane(m_tree);
+		s.setPreferredSize(new Dimension(300, viewer.getHeight()));
 		s.setVisible(true);
-		s.getViewport().add(m_tree);
-		setLayout(new BorderLayout());
-        add(content);
+        add(s);
 	}
 
 	DefaultMutableTreeNode getTreeNode(TreePath path)

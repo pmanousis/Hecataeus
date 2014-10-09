@@ -111,8 +111,9 @@ public class HecataeusViewer {
 	public static boolean nodeSize;
 	public static HecataeusViewer myViewer;
 /**@author pmanousi Needed for informing user. */
-	protected JTextArea informationArea;
-	protected JSplitPane leftSplitPane;
+	private JTextArea informationArea;
+	private JSplitPane leftSplitPane;
+	private JSplitPane rightSplitPane; 
 
 	// the scale object for zoom capabilities 
 	private final ScalingControl scaler = new CrossoverScalingControl();
@@ -156,6 +157,11 @@ public class HecataeusViewer {
 				}
 			}
 		});
+	}
+	
+	public int getHeight()
+	{
+		return (this.eventManagerGui.getHeight()+this.informationArea.getHeight());
 	}
 
 	
@@ -343,7 +349,6 @@ public class HecataeusViewer {
 		/** Not good but it is the only way to make it work. */
 		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
-		leftSplitPane.setDividerLocation(0.40);
 		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
@@ -1952,12 +1957,9 @@ public class HecataeusViewer {
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		
-		JSplitPane rightSplitPane = new JSplitPane();
+		rightSplitPane = new JSplitPane();
 		rightSplitPane.setOneTouchExpandable(false);
 		rightSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		
-		//JSplitPane useCasesPane=new JSplitPane();
-		//useCasesPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		
 		informationArea = new JTextArea();
 		rightSplitPane.setBottomComponent(informationArea);
@@ -1972,7 +1974,6 @@ public class HecataeusViewer {
 				sourceTabbedPaneIndex = sourceTabbedPane.getSelectedIndex();
 			}
 		});
-		//leftSplitPane.setLeftComponent(tabbedPane);
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Architecture Graph", null, panel_1, null);
 		
@@ -1987,8 +1988,6 @@ public class HecataeusViewer {
 		
 		hecMap = new HecataeusClusterMap(this);
 		
-		//managerTabbedPane.addTab("Map", null, hecMap, null);
-		//managerTabbedPane.addTab("Project File Structure", null, filesTreeGui, null);
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
 		splitPane.setResizeWeight(0.75);
@@ -1999,7 +1998,7 @@ public class HecataeusViewer {
 		leftSplitPane.setLeftComponent(leftPane);
 		leftSplitPane.setRightComponent(tabbedPane);
 		leftSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		leftSplitPane.setDividerLocation(0.5);
+		leftSplitPane.setDividerLocation(300);
 		splitPane.setLeftComponent(leftSplitPane);
 		splitPane.setRightComponent(rightSplitPane);
 	}
