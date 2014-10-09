@@ -189,7 +189,7 @@ public class HecataeusSQLParser{
 			
 			reader.close();
 			
-			graphCreator.addFile(file, f.getName());
+			graphCreator.addFile(file, f);
 		}
 		catch (IOException e){
 			System.out.println("File Not Found {1}:" + e.getMessage().toString());			

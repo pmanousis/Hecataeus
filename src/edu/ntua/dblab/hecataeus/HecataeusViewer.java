@@ -55,6 +55,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
+import jdk.nashorn.internal.runtime.regexp.joni.constants.NodeStatus;
 import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
@@ -112,8 +113,6 @@ public class HecataeusViewer {
 	public static HecataeusViewer myViewer;
 /**@author pmanousi Needed for informing user. */
 	private JTextArea informationArea;
-	private JSplitPane leftSplitPane;
-	private JSplitPane rightSplitPane; 
 
 	// the scale object for zoom capabilities 
 	private final ScalingControl scaler = new CrossoverScalingControl();
@@ -328,10 +327,10 @@ public class HecataeusViewer {
 						for(VisualEdge e : edges){
 							if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
 								if(e.getFromNode().getType() == NodeType.NODE_TYPE_FILE){
-									if(!fileNames.contains(e.getFromNode().getName())){
-										fileNames.add(e.getFromNode().getName());
+									if(!fileNames.contains(e.getFromNode().getFileName())){
+										fileNames.add(e.getFromNode().getFileName());
 									}
-									v.setFileName(e.getFromNode().getName());
+									v.setFile(e.getFromNode().getFile());
 								}
 							}
 						}
@@ -350,6 +349,25 @@ public class HecataeusViewer {
 		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
 		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
+	
+	public void showImpact()
+	{
+		this.tabbedPane.setSelectedIndex(0);
+		VisualizationViewer<VisualNode, VisualEdge> activeViewer = getActiveViewer();
+		VisualNodeVisible showAll = (VisualNodeVisible) activeViewer.getRenderContext().getVertexIncludePredicate();
+		showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.STATUS);
+		activeViewer.repaint();
+		String info=new String();
+		String eol=System.getProperty("line.separator");
+		for(VisualNode v: graph.getVertices())
+		{
+			if(v.getStatus() != StatusType.NO_STATUS)
+			{
+				info+=eol+v.getName();
+			}
+		}
+		informationArea.setText("Nodes that were affected by the change:"+info);
 	}
 	
 	
@@ -1956,14 +1974,13 @@ public class HecataeusViewer {
 		frame.getContentPane().add(splitPane, "cell 0 0,growy");
 		splitPane.setOneTouchExpandable(false);
 		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		
+		JSplitPane leftSplitPane;
+		JSplitPane rightSplitPane; 
 		rightSplitPane = new JSplitPane();
 		rightSplitPane.setOneTouchExpandable(false);
 		rightSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		
 		informationArea = new JTextArea();
 		rightSplitPane.setBottomComponent(informationArea);
-
 		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(BorderFactory.createTitledBorder("Visual"));
@@ -1976,22 +1993,17 @@ public class HecataeusViewer {
 		});
 		JPanel panel_1 = new JPanel();
 		tabbedPane.addTab("Architecture Graph", null, panel_1, null);
-		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
 		filesTreeGui = new HecataeusFileStractureGUI(this);
-		
 		JPanel leftPane = new JPanel();
 		leftPane.setBorder(BorderFactory.createTitledBorder("File system"));
 		leftPane.add(filesTreeGui);
 		filesTreeGui.setSize(leftPane.getSize());
-		
 		hecMap = new HecataeusClusterMap(this);
-		
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
 		splitPane.setResizeWeight(0.75);
-		
 		rightSplitPane.setTopComponent(managerTabbedPane);
 		rightSplitPane.setBottomComponent(informationArea);
 		leftSplitPane = new JSplitPane();
@@ -2257,7 +2269,7 @@ public class HecataeusViewer {
 					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
 					try {
-						Thread.sleep(5);
+						Thread.sleep(1);
 					} catch (InterruptedException ex) {
 					}
 				}

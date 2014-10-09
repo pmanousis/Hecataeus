@@ -6,6 +6,7 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.io.File;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
@@ -78,16 +79,20 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		return this.label;
 	}
 	
-	public void setFileName(String name){
-		super.setFileName(name);
+	public void setFile(File fName){
+		super.setFile(fName);
+	}
+	
+	public File getFile(){
+		return(super.getFile());
 	}
 	
 	public String getFileName(){
 		return (super.getFileName());
 	}
 	
-	public VisualNode(String name, NodeType type, String fileName) {
-		super(name, type, fileName);
+	public VisualNode(String name, NodeType type, File fName) {
+		super(name, type, fName);
 		this.location = new Point2D.Double();
 		this.angle = 0.0;
 		this.nodeColor = new Color(255,255,255);
@@ -139,7 +144,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setNodeColor(this.nodeColor);
 		node.setNodeSize(this.nodeSize);
 		node.setLocation(this.getLocation());
-		node.setFileName(this.getFileName());
+		node.setFile(this.getFile());
 		return node;
 	}
 

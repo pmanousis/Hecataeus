@@ -23,6 +23,7 @@ public class HecataeusFileStractureGUI extends JPanel
 	protected VisualGraph g;
 	protected JScrollPane s; 
 	DefaultMutableTreeNode top;
+	boolean firstTime=true;
 
 	public HecataeusFileStractureGUI(HecataeusViewer v)
 	{
@@ -36,13 +37,22 @@ public class HecataeusFileStractureGUI extends JPanel
 	{
 		VisualFileColor vfs = new VisualFileColor();
 		HashMap<String, Color> FileColor = new HashMap<String, Color>(vfs.getFileColorMap());
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder));
+		DefaultMutableTreeNode node=null;
+		if(firstTime)
+		{
+			firstTime=false;
+			node= new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder.substring(0, folder.indexOf("SQLS/"))));
+		}
+		else
+		{
+			node= new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder.substring(folder.indexOf("SQLS/")+5)));
+		}
 		File fld=new File(folder);
 		File[] roots =  fld.listFiles();
 		for (int k=0; k<roots.length; k++)
 		{
 			Color value = null;
-			value = FileColor.get(roots[k].getAbsoluteFile().getName());
+			value = FileColor.get(roots[k].getAbsolutePath());
 			CreateIcon ic=new CreateIcon();
 			if(roots[k].isFile())
 			{
@@ -146,7 +156,7 @@ public class HecataeusFileStractureGUI extends JPanel
 			{
 				for(VisualNode v : g.getVertices())
 				{
-					if(fnode!=null && v.getFileName().equals(fnode.getFile().getName()))
+					if(fnode!=null && v.getFileName().equals(fnode.getFile().getAbsolutePath()))
 					{
 						pickedVertexState.pick(v, true);
 					}

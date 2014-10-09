@@ -4,6 +4,7 @@
  */
 package edu.ntua.dblab.hecataeus.graph.evolution;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public double ID=0.0;
 static int counter;
 
 	private String _Name = null;
-	private String _FileName = null;
+	private File _File = null;
 	private NodeType _Type ;
 	private int _frequency = 0;
 	
@@ -39,9 +40,9 @@ static int counter;
 		ID=counter;
 	}
 
-	public EvolutionNode(String Name, NodeType Type, String FileName) {
+	public EvolutionNode(String Name, NodeType Type, File fName) {
 		this._Name = Name;
-		this._FileName = FileName;
+		this._File = fName;
 		this._Type = Type;
 		this._outEdges = new ArrayList<E>();
 		this._inEdges = new ArrayList<E>();
@@ -55,14 +56,21 @@ static int counter;
 	 * Returns the name of the file
 	 */
 	public String getFileName() {
-		return this._FileName;
+		return this._File.getAbsolutePath();
 	}
 	
 	/**
-	 * Sets the filename
+	 * Returns the file
 	 */
-	public void setFileName(String fname) {
-		this._FileName=fname;
+	public File getFile() {
+		return this._File;
+	}
+	
+	/**
+	 * Sets the file
+	 */
+	public void setFile(File fName) {
+		this._File=fName;
 	}
 
 	/**

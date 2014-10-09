@@ -4,6 +4,7 @@
  */
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -59,8 +60,8 @@ public class HecataeusGraphCreator{
 		HGraph = graph ;
 	}
 
-	private VisualNode add_node(String Label, NodeType Type, String fileName) {
-		VisualNode v = new VisualNode(Label, Type, fileName);
+	private VisualNode add_node(String Label, NodeType Type, File fName) {
+		VisualNode v = new VisualNode(Label, Type, fName);
 		v.setPath(path);														//added by sgerag
 		v.setLine(line);
 		HGraph.addVertex(v);
@@ -74,7 +75,7 @@ public class HecataeusGraphCreator{
 	}
 
 	//sgerag modification: return type (boolean--->HecataeusEvolutionNode)
-	public VisualNode add_table(Table tTable, String definition, String fileName) throws SQLException {
+	public VisualNode add_table(Table tTable, String definition, File fileName) throws SQLException {
 		try {
 			VisualNode u  ;
 			VisualNode v  ;
@@ -106,7 +107,7 @@ public class HecataeusGraphCreator{
 		}
 	}
 
-	private void addTableConstraints(Table  tTable, String fileName) {
+	private void addTableConstraints(Table  tTable, File fileName) {
 		try { 
 			// Add constraints
 			for (int i=0;i<tTable.getConstraints().size();i++){
@@ -121,7 +122,7 @@ public class HecataeusGraphCreator{
 	}
 
 
-	private  VisualNode addConstraintNode(Table tTable, Constraint cConstraint, String fileName){
+	private  VisualNode addConstraintNode(Table tTable, Constraint cConstraint, File fileName){
 		VisualNode u;
 		int cols[] ; 
 		if (cConstraint.getType() == Constraint.PRIMARY_KEY) {
@@ -224,7 +225,7 @@ public class HecataeusGraphCreator{
 	}
 	
 	
-	public boolean add_query(Select sSelect, String definition, String fileName) throws SQLException{
+	public boolean add_query(Select sSelect, String definition, File fileName) throws SQLException{
 		try {
 			queries++;
 			VisualNode   u = add_node("Q" + queries, NodeType.NODE_TYPE_QUERY, fileName);
@@ -237,7 +238,7 @@ public class HecataeusGraphCreator{
 		return true;
 	}
 
-	public boolean add_view(Select sSelect, String view_name, String definition, String fileName) throws SQLException{
+	public boolean add_view(Select sSelect, String view_name, String definition, File fileName) throws SQLException{
 		try {
 			VisualNode u = add_node(view_name, NodeType.NODE_TYPE_VIEW, fileName);
 			this.createQuery(u, sSelect, false, fileName);
@@ -256,7 +257,7 @@ public class HecataeusGraphCreator{
 	 * @param fileNode
 	 * @exception SQLException
 	 */
-	private void addBlock(Block block,VisualNode fileNode, String fileName) throws SQLException{
+	private void addBlock(Block block,VisualNode fileNode, File fileName) throws SQLException{
 		try{
 			VisualNode blockNode=null;
 			boolean emptyBlock=true;
@@ -426,7 +427,7 @@ public class HecataeusGraphCreator{
 	 * @param plain
 	 * @exception SQLException
 	 */
-	public boolean addFile(FileContainer file, String fileName) throws SQLException{
+	public boolean addFile(FileContainer file, File fileName) throws SQLException{
 		try {
 			path=file.getPath();
 			VisualNode fileNode=null;
@@ -464,7 +465,7 @@ public class HecataeusGraphCreator{
 	 * @author pmanousi
 	 * We check to see if a node already exists in any of the input nodes.  If not we create it and hang it in the table or view it should be getting input from.
 	 */
-	private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName, String fileName)
+	private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName, File fileName)
 	{
 		VisualNode x=null;
 		VisualEdge e=null;
@@ -502,7 +503,7 @@ public class HecataeusGraphCreator{
 		return(x);
 	}
 	
-	private void createQuery(VisualNode u, Select sSelect, boolean nested, String fileName) throws SQLException{
+	private void createQuery(VisualNode u, Select sSelect, boolean nested, File fileName) throws SQLException{
 		Expression expression;
 		String GroupByLabel = null;
 		// TableFilter ta
@@ -734,7 +735,7 @@ public class HecataeusGraphCreator{
 		}
 	}
 	
-	private VisualNode  add_expression(Expression expr, VisualNode head, String fileName){
+	private VisualNode  add_expression(Expression expr, VisualNode head, File fileName){
 		VisualNode u=null;
 		switch (expr.getType()){
 		case Expression.NOT:
@@ -890,7 +891,7 @@ public class HecataeusGraphCreator{
 	}
 	
 
-	private void CopyTable(String tblName, String tblAlias, String fileName) {
+	private void CopyTable(String tblName, String tblAlias, File fileName) {
 		//get src relation
 		VisualNode srcTable = find_relation(tblName) ;
 		//create table alias node

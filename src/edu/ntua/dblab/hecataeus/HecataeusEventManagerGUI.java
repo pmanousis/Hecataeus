@@ -240,6 +240,7 @@ public class HecataeusEventManagerGUI extends JPanel
 			this.viewer.getArchitectureGraphActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
 			this.viewer.getArchitectureGraphActiveViewer().repaint();
 			this.viewer.policyManagerGui.loadPolicy();
+			this.viewer.showImpact();
 		}
 	}
 
