@@ -33,6 +33,7 @@ import org.xml.sax.SAXParseException;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 //import edu.uci.ics.jung.graph.Vertex;
 
@@ -146,6 +147,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		String eFromNode = null;
 		String eToNode = null;
 		String nSQLDefinition = null;
+		StatusType status=null;
 		try {
 	        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -180,11 +182,18 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	
 	                NodeList textNameList = NameElement.getChildNodes();
 	                nName = ((Node)textNameList.item(0)).getNodeValue();
+	                
+	                //-------                    
+	                NodeList StatusList = firstNodeElement.getElementsByTagName("Status");
+	                Element StatusElement = (Element)StatusList.item(0);
+	
+	                NodeList textStatusList = StatusElement.getChildNodes();
+	                status = StatusType.toStatus(((Node)textStatusList.item(0)).getNodeValue());
 	
 	                //----                    
 	                NodeList TypeList = firstNodeElement.getElementsByTagName("Type");
 	                Element TypeElement = (Element)TypeList.item(0);
-	
+	                
 	                NodeList textTypeList = TypeElement.getChildNodes();
 	                nType = ((Node)textTypeList.item(0)).getNodeValue();
 /** @author pmanousi ID NOW NOT NEEDED (TopologicalTravel) */
@@ -207,6 +216,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					VisualNode v = new VisualNode();
 					v.setName(nName);
 					v.setType(NodeType.valueOf(nType));
+					v.setStatus(status, true);
 //					v.setLocation(new Point2D.Double(nodeX,nodeY));
 					this.setLocation(v,new Point2D.Double(nodeX,nodeY));
 					v.setSQLDefinition(nSQLDefinition);
@@ -313,7 +323,9 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	 * @return  the node location
 	 */
 	public Point2D getLocation(VisualNode v){
-		return this.nodeLocations.get(v); 
+		if(this.nodeLocations.get(v)!=null)
+			return this.nodeLocations.get(v);
+		return (new Point2D.Double());
 	}
 	
 	public VisualGraph toGraph(List<VisualNode> nodes){
@@ -324,8 +336,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	}
 	
 	public void exportToXML(File file) {
-		
-		
 			try {
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -352,6 +362,12 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					Element elementName = document.createElement("Name");
 					elementName.appendChild(document.createTextNode(v.getName()));
 					elementHnode.appendChild(elementName);
+					
+					// write element status
+					Element elementStatus = document.createElement("Status");
+					elementStatus.appendChild(document.createTextNode(v.getStatus().toString()));
+					elementHnode.appendChild(elementStatus);
+					
 					// write element type
 					Element elementType = document.createElement("Type");
 					elementType.appendChild(document.createTextNode(v.getType().toString()));

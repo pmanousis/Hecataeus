@@ -29,7 +29,7 @@ public enum StatusType {
 		return name();
 	}
 
-	public StatusType toStatus(String value) {
+	public static StatusType toStatus(String value) {
 		try {
             return valueOf(value);
         } 

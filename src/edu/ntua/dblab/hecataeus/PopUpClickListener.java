@@ -137,20 +137,21 @@ public class PopUpClickListener extends MouseAdapter{
 				return size;
 			}
 		}
+		
 
 	protected AbstractAction zoomToNewModuleTab(){
 		return new AbstractAction("Zoom -> Module level") {
 			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();
 			public void actionPerformed(ActionEvent e) {
-				VisualGraph sub;
+				String onoma=new String();
 				List<VisualNode> parent = new ArrayList<VisualNode>();
 				//get parentNode
 				for(final VisualNode node :pickedNodes) {
 					parent.addAll(graph.getModule(node));
+					onoma+=node.getName()+" ";
 				}
 				VisualGraph GV = new VisualGraph(graph.toGraph(parent));
-				sub =  new VisualGraph(GV);
-				HecataeusViewer.myViewer.zoomToModuleTab(parent, sub);
+				HecataeusViewer.myViewer.zoomToModuleTab(parent, GV, onoma.trim());
 			}
 		};
 	}

@@ -354,10 +354,7 @@ public class HecataeusViewer {
 	public void showImpact()
 	{
 		this.tabbedPane.setSelectedIndex(0);
-		VisualizationViewer<VisualNode, VisualEdge> activeViewer = getActiveViewer();
-		VisualNodeVisible showAll = (VisualNodeVisible) activeViewer.getRenderContext().getVertexIncludePredicate();
-		showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.STATUS);
-		activeViewer.repaint();
+		showAffected();
 		String info=new String();
 		String eol=System.getProperty("line.separator");
 		for(VisualNode v: graph.getVertices())
@@ -2420,28 +2417,45 @@ public class HecataeusViewer {
 			return subLayout;
 		}
 	}
+	
+	private void showAffected()
+	{
+		List<VisualNode> modulesWithStatus=new ArrayList<VisualNode>();
+		for(VisualNode v : graph.getVertices(NodeCategory.MODULE))
+		{
+			if(v.getStatus()!=StatusType.NO_STATUS)
+			{
+				modulesWithStatus.addAll(graph.getModule(v));
+			}
+		}
+		List<VisualNode> toRM=new ArrayList<VisualNode>();
+		for(VisualNode v:modulesWithStatus)
+		{
+			if(v.getStatus()==StatusType.NO_STATUS)
+			{
+				toRM.add(v);
+			}
+		}
+		for(VisualNode v : toRM)
+		{
+			modulesWithStatus.remove(v);
+		}
+		VisualGraph GV = new VisualGraph(graph.toGraph(modulesWithStatus));
+		HecataeusViewer.myViewer.zoomToModuleTab(modulesWithStatus, GV, "Impact analysis");
+	}
 
-	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub){	
-		VisualGraph Sub = sub;
-		this.graphs.add(Sub);
-		
-		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
+	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub, String name){	
+		this.graphs.add(sub);
+		subLayout = new VisualAggregateLayout(sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
-		Sub.setViewerToGraph(vv1);
-		subLayout = new VisualAggregateLayout(Sub, VisualLayoutType.ZoomedLayoutForModules, VisualLayoutType.ZoomedLayoutForModules);
+		sub.setViewerToGraph(vv1);
+		subLayout = new VisualAggregateLayout(sub, VisualLayoutType.ZoomedLayoutForModules, VisualLayoutType.ZoomedLayoutForModules);
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane myPane = new GraphZoomScrollPane(vv1);
 		vv1.setGraphLayout(subLayout);
-		String onoma="";
-		onoma+=subNodes.get(0).getName();
-		for(int i=1;i<subNodes.size();i++){
-			if(subNodes.get(i).getType().getCategory() == NodeCategory.MODULE){
-				onoma+="-"+subNodes.get(i).getName();
-			}
-		}
-		vv1.setName(onoma);
+		vv1.setName(name);
 		viewers.add(vv1);
-		tabbedPane.addTab(onoma, null, myPane, "New Tab");
+		tabbedPane.addTab(name, null, myPane, "New Tab");
 		countOpenTabs++;		
 		tabbedPane.setSelectedIndex(countOpenTabs);
 		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
