@@ -436,7 +436,7 @@ public class HecataeusPolicyManagerGUI extends JPanel
 			this.policyType.add("BLOCK");
 			this.policyType.add("PROMPT");
 			
-			if(this.policyEditor.getText().contains(this.epilegmenosKombos.getName()+": ")==true)
+			if(this.epilegmenosKombos!=null && this.policyEditor.getText().contains(this.epilegmenosKombos.getName()+": ")==true)
 			{
 				if(this.epilegmenosKombos.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
 				{

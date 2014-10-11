@@ -33,13 +33,9 @@ public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdg
 		super(VisualLayoutType.getLayoutFor(graph, topLayoutType));
 		this.graph = graph;
 		this.topLayoutGraph = graph;
-		this.setSize(this.graph.getSize());
 		this.topLayoutType = topLayoutType;
 		this.subLayoutType = subLayoutType;
-//		this.subGraphs = new HashMap<VisualNode, VisualGraph>();
 		this.subGraphs = new TreeMap<VisualNode, VisualGraph>();
-		
-		
 	}
 	
 	/***

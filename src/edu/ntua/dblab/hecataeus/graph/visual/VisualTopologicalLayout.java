@@ -3,11 +3,14 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.sun.scenario.effect.Offset;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
@@ -22,7 +25,11 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	public static int cntView = 100;
 	public static int cnt4 = 0;
 	public static int cnt5 = 0;
-	
+	private Point2D.Double OFFSET = new Point2D.Double();
+	private Orientation orientation;
+	VisualGraph graph;
+	double maxXForInputSchemata;
+
 	public enum Orientation{
 		RIGHT2LEFT,
 		DOWN2TOP,
@@ -34,13 +41,6 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		;
 	}
 	
-	private Point2D.Double OFFSET = new Point2D.Double();
-//	private List<Point2D> listOfKnown = new ArrayList<Point2D>();
-	
-	private Orientation orientation;
-	
-	VisualGraph graph;
-	
     /**
      * Creates an instance for the specified graph and size with default orientation
      */
@@ -48,6 +48,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	super(graph);
     	this.graph = (VisualGraph) graph;
     	this.orientation = Orientation.RIGHT2LEFT;
+    	this.size=((VisualGraph)graph).getSize();
     }
 	/**
      * Creates an instance for the specified graph and orientation
@@ -56,6 +57,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
     	super(graph);
     	this.graph = (VisualGraph) graph;
     	this.orientation = orientation;
+   		this.size=new Dimension(200, 200);
     }
 
     /**
@@ -375,7 +377,9 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	{
 		for (int i = 0; i < kombos.getInEdges().size(); i++)
 		{
-			if (kombos.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_INPUT)
+			if (kombos.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_INPUT||
+				kombos.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_OUTPUT||
+				kombos.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_SEMANTICS)
 			{
 				return (kombos.getInEdges().get(i).getFromNode());
 			}
@@ -422,33 +426,43 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	 * @param vn The module node.
 	 * @param loc The location to place the module node.
 	 */
-	private void qvZoomedLayoutForModules(VisualNode vn, Point2D loc)
+	private void qvZoomedLayoutForModules(List<VisualNode> vns, Point2D loc)
 	{
 		Point2D.Double OFFSETschemata = new Point2D.Double(140,40);
 		List<VisualNode> schemata = new ArrayList<VisualNode>();
 		Map<VisualNode, Point2D> schemataPositions = new HashMap<VisualNode, Point2D>();
 		Point2D.Double lastOfOutput = new Point2D.Double(0,0);
 		VisualNode mn=null;
+		VisualNode vn = null;
+		for(VisualNode v:vns)
+		{
+			if(v.getType().getCategory()==NodeCategory.MODULE)
+			{
+				vn=v;
+				break;
+			}
+		}
+		
 		super.setLocation(vn, loc);
 		vn.setLocation(loc);	// NOTE: this is not error, both are needed since super.setLocation does not set location to VisualNode and vn.setLocation does not set correct the location for the visual representation.
 		//Draw schema nodes.
 		for(int i=0;i<vn.getOutEdges().size();i++)
 		{	// First we have OUT.
-			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_OUTPUT)
+			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_OUTPUT && vns.contains(vn.getOutEdges().get(i).getToNode()))
 			{
 				schemata.add(vn.getOutEdges().get(i).getToNode());
 			}
 		}
 		for(int i=0;i<vn.getOutEdges().size();i++)
 		{	// Then SMTX.
-			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_SEMANTICS)
+			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_SEMANTICS && vns.contains(vn.getOutEdges().get(i).getToNode()))
 			{
 				schemata.add(vn.getOutEdges().get(i).getToNode());
 			}
 		}
 		for(int i=0;i<vn.getOutEdges().size();i++)
 		{	// Finally INs.
-			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_INPUT)
+			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_INPUT && vns.contains(vn.getOutEdges().get(i).getToNode()))
 			{
 				schemata.add(schemata.size(),vn.getOutEdges().get(i).getToNode());
 			}
@@ -473,7 +487,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 					loc.setLocation(smtxloc);	// Move to inputs.
 					break;
 				case NODE_TYPE_INPUT:
-					double maxXForInputSchemata = loc.getY();
+					maxXForInputSchemata = loc.getY();
 					for(VisualNode key : schemataPositions.keySet())
 					{
 						if(key.getType()==NodeType.NODE_TYPE_INPUT)
@@ -523,25 +537,28 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 					}
 					for(VisualEdge e : n.getOutEdges())
 					{	// Input attributes connected to output.
-						super.setLocation(e.getToNode(), new Point2D.Double(outloc.getX(),outloc.getY()+OFFSETschemata.getY()));
-						e.getToNode().setLocation(new Point2D.Double(outloc.getX(),outloc.getY()+OFFSETschemata.getY()));
-						outloc.setLocation(new Point2D.Double(outloc.getX(),outloc.getY()+OFFSETschemata.getY()));
-						lastOfOutput.setLocation(outloc);
-						VisualNode outputValueNode=e.getToNode();
-						for(VisualEdge eo : outputValueNode.getOutEdges())
+						if(vns.contains(e.getToNode()))
 						{
-							VisualNode inNd=eo.getToNode();
-							if(inNd.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
-							{	// Attribute
-								VisualNode inpNode=paterasKombos(inNd);
-								Point2D inloc=inpNode.getLocation();
-								inloc.setLocation(inloc.getX(),outloc.getY());
-								super.setLocation(inNd, inloc);
-								inNd.setLocation(inloc);
-							}
-							else
-							{	// Aggregate function?
-								
+							super.setLocation(e.getToNode(), new Point2D.Double(outloc.getX(),outloc.getY()+OFFSETschemata.getY()));
+							e.getToNode().setLocation(new Point2D.Double(outloc.getX(),outloc.getY()+OFFSETschemata.getY()));
+							outloc.setLocation(new Point2D.Double(outloc.getX(),outloc.getY()+OFFSETschemata.getY()));
+							lastOfOutput.setLocation(outloc);
+							VisualNode outputValueNode=e.getToNode();
+							for(VisualEdge eo : outputValueNode.getOutEdges())
+							{
+								VisualNode inNd=eo.getToNode();
+								if(inNd.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
+								{	// Attribute
+									VisualNode inpNode=paterasKombos(inNd);
+									Point2D inloc=inpNode.getLocation();
+									inloc.setLocation(inloc.getX(),outloc.getY());
+									super.setLocation(inNd, inloc);
+									inNd.setLocation(inloc);
+								}
+								else
+								{	// Aggregate function?
+									
+								}
 							}
 						}
 					}
@@ -562,35 +579,41 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 					}
 					for(VisualEdge e : n.getOutEdges())
 					{
-						if(e.getType()==EdgeType.EDGE_TYPE_GROUP_BY)
-						{	// Group by clause
-							super.setLocation(e.getToNode(), new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
-							e.getToNode().setLocation(new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
-						}
-						else if(e.getType()==EdgeType.EDGE_TYPE_WHERE)
-						{	// Where clause
-							VisualNode smtxBegin=e.getToNode();
-							smtxloc.setLocation(new Point2D.Double(smtxloc.getX(),smtxloc.getY()+OFFSETschemata.getY()));
-							smtxTreeSetLocation(smtxBegin, smtxloc);
-						}
-						else
-						{	// Aggregate functions that were not set?
-							super.setLocation(e.getToNode(), new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
-							e.getToNode().setLocation(new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
+						if(vns.contains(e.getToNode()))
+						{
+							if(e.getType()==EdgeType.EDGE_TYPE_GROUP_BY)
+							{	// Group by clause
+								super.setLocation(e.getToNode(), new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
+								e.getToNode().setLocation(new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
+							}
+							else if(e.getType()==EdgeType.EDGE_TYPE_WHERE)
+							{	// Where clause
+								VisualNode smtxBegin=e.getToNode();
+								smtxloc.setLocation(new Point2D.Double(smtxloc.getX(),smtxloc.getY()+OFFSETschemata.getY()));
+								smtxTreeSetLocation(smtxBegin, smtxloc);
+							}
+							else
+							{	// Aggregate functions that were not set?
+								super.setLocation(e.getToNode(), new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
+								e.getToNode().setLocation(new Point2D.Double(smtxloc.getX(),smtxloc.getY()-OFFSET.getY()));
+							}
 						}
 					}
 					break;
 				case NODE_TYPE_INPUT:
 					for(VisualEdge ve: n.getOutEdges())
 					{
-						if(ve.getToNode().getLocation().equals(new Point2D.Double(0,0)))
+						if(vns.contains(ve.getToNode()))
 						{
-							VisualNode inpNode=paterasKombos(ve.getToNode());
-							Point2D inloc=inpNode.getLocation();
-							inloc.setLocation(inloc.getX(),lastOfOutput.getY()+OFFSET.getY());
-							super.setLocation(ve.getToNode(), inloc);
-							ve.getToNode().setLocation(inloc);
-							lastOfOutput.setLocation(inloc);
+							if(ve.getToNode().getLocation().equals(new Point2D.Double(0,0)))
+							{
+								VisualNode inpNode=paterasKombos(ve.getToNode());
+								Point2D inloc=inpNode.getLocation();
+								inloc.setLocation(inloc.getX(),lastOfOutput.getY()+OFFSET.getY());
+								super.setLocation(ve.getToNode(), inloc);
+								ve.getToNode().setLocation(inloc);
+								lastOfOutput.setLocation(inloc);
+							}
 						}
 					}
 					break;
@@ -603,22 +626,37 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	/***
 	 * Recursive function to draw (if possible) the relation modules in straight lines.
 	 * @author pmanousi
-	 * @param vn The visual node that is to be drawn (initially it is the module visual node).
+	 * @param vns The visual nodes that are to be drawn.
 	 * @param loc The location in which the node should be drawn.
 	 */
-	private void relationSetLocation(VisualNode vn, Point2D loc)
+	private void relationSetLocation(List<VisualNode> vns, Point2D loc)
 	{
+		VisualNode vn=null;
+		for(VisualNode v: vns)
+		{
+			if(v.getType().getCategory()==NodeCategory.MODULE)
+			{
+				vn=v;
+				break;
+			}
+		}
+		if(vn==null)
+		{
+			vn=vns.get(0);
+		}
 		VisualNode mn=null;
 		super.setLocation(vn, loc);
 		vn.setLocation(loc);	// NOTE: this is not error, both are needed since super.setLocation does not set location to VisualNode and vn.setLocation does not set correct the location for the visual representation.
-		Point2D mloc=new Point2D.Double(loc.getX()+OFFSET.getX(),loc.getY());
+		Point2D mloc=new Point2D.Double(loc.getX(),loc.getY()+OFFSET.getY());
 		for(int i=0;i<vn.getOutEdges().size();i++)
 		{
 			mn=vn.getOutEdges().get(i).getToNode();
 			if(mn.getLocation().equals(new Point2D.Double(0,0)))
 			{
-				relationSetLocation(mn, mloc);
-				mloc.setLocation(mloc.getX(),mloc.getY()+OFFSET.getY());
+				List<VisualNode> tmpvns=new ArrayList<VisualNode>();
+				tmpvns.add(mn);
+				relationSetLocation(tmpvns, mloc);
+				mloc.setLocation(mloc.getX()-OFFSET.getX(),mloc.getY());
 			}
 		}
 	}
@@ -633,33 +671,47 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
 		int attrnum=0;
+		int modnum=1;
 		for(VisualNode n : nodes)
 		{
 			if(n.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
 			{
 				attrnum++;
 			}
+			if(n.getType().getCategory()==NodeCategory.MODULE)
+			{
+				modnum++;
+			}
 		}
-		OFFSET.setLocation(new Point2D.Double(this.getSize().width/2,this.getSize().height/attrnum));
-		VisualNode moduleNode = null;
+		OFFSET.setLocation(new Point2D.Double(size.width/modnum,size.height/attrnum));
+		nodes.sort(new CustomComparator());
 		for(int i=0;i<nodes.size();i++)
 		{	// Find module node to start graph from there.
 			if(nodes.get(i).getType().getCategory()==NodeCategory.MODULE)
 			{
-				moduleNode=nodes.get(i);
-				break;
+				if(nodes.get(i).getType()==NodeType.NODE_TYPE_RELATION)
+				{	// this will be the last one to be drawn.
+					location.setLocation(maxXForInputSchemata*2+OFFSET.getX(), initialPosition.getY());
+					relationSetLocation(graph.getModule(nodes.get(i)), location);
+				}
+				else
+				{
+					qvZoomedLayoutForModules(graph.getModule(nodes.get(i)), location);
+					location.setLocation(initialPosition.getX(), location.getY()+OFFSET.getY()*2);
+				}
 			}
 		}
-		if(moduleNode.getType()==NodeType.NODE_TYPE_RELATION)
-		{
-			relationSetLocation(moduleNode, location);
-		}
-		else
-		{
-			qvZoomedLayoutForModules(moduleNode, location);
-		}
 	}
-
+	
+	private class CustomComparator implements Comparator<VisualNode> {
+	    @Override
+	    public int compare(VisualNode o1, VisualNode o2) {
+	        if(o1.getType()==NodeType.NODE_TYPE_RELATION)
+	        	return(1);
+	        return(-1);
+	    }
+	}
+	
 	/***
 	 * initialize the locations of nodes 
 	 * according to the topological sort layout, starting from the up side 

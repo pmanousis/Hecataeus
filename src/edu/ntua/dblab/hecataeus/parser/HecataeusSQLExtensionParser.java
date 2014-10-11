@@ -1026,7 +1026,10 @@ public final class HecataeusSQLExtensionParser{
 		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
 		VisualNode node;
-		node = this._graph.findVertexByName(nodeName);
+		if(nodeName.contains("."))
+			node = this._graph.findVertexByNameParent(nodeName);
+		else
+			node = this._graph.findVertexByName(nodeName);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
 		if (node.getType().getCategory().equals(NodeCategory.MODULE))
