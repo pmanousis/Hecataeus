@@ -144,7 +144,7 @@ protected HecataeusViewer viewer;
 				String output=new String();
 				for(String filename: filenames)
 				{
-					output+=filename+eol;
+					output+=filename.substring(filename.indexOf(viewer.projectConf.projectName)+viewer.projectConf.projectName.length()+5)+eol;
 				}
 				this.viewer.setTextToInformationArea("Scripts using this relation:"+eol+output);
 			}

@@ -299,6 +299,7 @@ static int counter;
 				||((this.getType()==NodeType.NODE_TYPE_GROUP_BY) && (e.getType()==EdgeType.EDGE_TYPE_GROUP_BY))
 				||(this.getType()==NodeType.NODE_TYPE_FUNCTION)
 				|| (this.getType()==NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
+				|| (this.getType()==NodeType.NODE_TYPE_ATTRIBUTE && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
 				|| (this.getType()==NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT))
 				|| (this.getType()==NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS))
 			 )

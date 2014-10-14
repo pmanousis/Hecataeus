@@ -33,36 +33,43 @@ public class HecataeusFileStractureGUI extends JPanel
 		this.g=this.viewer.graph;
 	}
 	
-	private DefaultMutableTreeNode createNodes(String folder)
+	private DefaultMutableTreeNode createNodes(String folder, Color color)
 	{
 		VisualFileColor vfs = new VisualFileColor();
 		HashMap<String, Color> FileColor = new HashMap<String, Color>(vfs.getFileColorMap());
 		DefaultMutableTreeNode node=null;
+		CreateIcon ic=new CreateIcon();
 		if(firstTime)
 		{
 			firstTime=false;
-			node= new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder.substring(0, folder.indexOf("SQLS/"))));
+			ic.setAttributesOfIcon(color, "folder");
+			node= new DefaultMutableTreeNode(new IconData(ic, null, folder.substring(0, folder.indexOf("SQLS/"))));
 		}
 		else
 		{
-			node= new DefaultMutableTreeNode(new IconData(new CreateIcon(), null, folder.substring(folder.indexOf("SQLS/")+5)));
+			ic.setAttributesOfIcon(color, "folder");
+			String folderName=folder.substring(folder.indexOf("SQLS/")+5);
+			if(folderName.contains("/"))
+			{
+				folderName=folderName.substring(folderName.lastIndexOf("/")+1);
+			}
+			node= new DefaultMutableTreeNode(new IconData(ic, null, folderName));
 		}
 		File fld=new File(folder);
 		File[] roots =  fld.listFiles();
 		for (int k=0; k<roots.length; k++)
 		{
-			Color value = null;
-			value = FileColor.get(roots[k].getAbsolutePath());
-			CreateIcon ic=new CreateIcon();
+			Color value = FileColor.get(roots[k].getAbsolutePath());
+			ic=new CreateIcon();
 			if(roots[k].isFile())
 			{
-				ic.myCreateIcon(value,"file");
+				ic.setAttributesOfIcon(value,"file");
 				node.add(new DefaultMutableTreeNode(new IconData(ic, null, new FileNode(roots[k]))));
 			}
 			else if(roots[k].isDirectory())
 			{
-				ic.myCreateIcon(value,"folder");
-				node.add(createNodes(roots[k].getAbsolutePath()));
+				ic.setAttributesOfIcon(value,"folder");
+				node.add(createNodes(roots[k].getAbsolutePath(), value));
 			}
 		}
 		return node;
@@ -70,8 +77,7 @@ public class HecataeusFileStractureGUI extends JPanel
   
 	public void createPanel(String folder)
 	{
-		top=createNodes(folder);
-		
+		top=createNodes(folder, null);
 		m_model = new DefaultTreeModel(top);
 		m_tree = new JTree(m_model);
 		m_tree.putClientProperty("JTree.lineStyle", "Angled");
@@ -82,8 +88,9 @@ public class HecataeusFileStractureGUI extends JPanel
 		m_tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION); 
 		m_tree.setShowsRootHandles(true);
 		m_tree.setEditable(false);
+		m_tree.setRootVisible(false);
 		s = new JScrollPane(m_tree);
-		s.setPreferredSize(new Dimension(450, 430 )); // TODO: WTF? viewer.getHeight()));
+		s.setPreferredSize(new Dimension(450, 430 ));
 		s.setVisible(true);
         add(s);
 	}
@@ -379,7 +386,7 @@ class CreateIcon implements Icon
     Color color;
     String type;
     
-    public void myCreateIcon(Color c, String t)
+    public void setAttributesOfIcon(Color c, String t)
     {
     	color=c;
     	type=t;

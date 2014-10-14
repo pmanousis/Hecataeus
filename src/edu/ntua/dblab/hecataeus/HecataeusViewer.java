@@ -371,7 +371,14 @@ public class HecataeusViewer {
 		{
 			if(v.getStatus() != StatusType.NO_STATUS)
 			{
-				info+=eol+v.getName();
+				if(v.getType().getCategory()==NodeCategory.MODULE)
+				{
+					info+=eol+v.getName();
+				}
+				else
+				{
+					info+=eol+v.getParentNode().getName()+"."+v.getName();
+				}
 			}
 		}
 		informationArea.setText("Nodes that were affected by the change:"+info);
@@ -2319,7 +2326,7 @@ public class HecataeusViewer {
 				}
 			}
 		}
-		jtp.setComponentAt(getActiveTab(),new GraphZoomScrollPane(activeViewer));
+		jtp.setComponentAt(getActiveTab(jtp),new GraphZoomScrollPane(activeViewer));
 	}
 	
 	/**
@@ -2440,8 +2447,11 @@ public class HecataeusViewer {
 		return null;
 	}
 	
-	public static int getActiveTab(){
-		return sourceTabbedPaneIndex;
+	public static int getActiveTab(JTabbedPane jtp){
+		if(jtp==sourceTabbedPane)
+			return sourceTabbedPaneIndex;
+		else
+			return summaryGraphSourceTabbedPaneIndex;
 	}
 	
 	public VisualAggregateLayout getLayout(VisualizationViewer<VisualNode, VisualEdge> activeViewer){
