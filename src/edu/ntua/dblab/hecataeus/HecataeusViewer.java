@@ -123,6 +123,7 @@ public class HecataeusViewer {
 /**@author pmanousi Needed for informing user. */
 	private JTextArea informationArea;
 	private JLabel informationAreaLabel;
+	public JPanel informationPanel;
 
 	// the scale object for zoom capabilities 
 	private final ScalingControl scaler = new CrossoverScalingControl();
@@ -170,7 +171,7 @@ public class HecataeusViewer {
 	
 	public int getHeight()
 	{
-		return (this.eventManagerGui.getHeight()+this.informationAreaLabel.getHeight()+this.informationArea.getHeight());
+		return (this.tabbedPane.getHeight());
 	}
 
 	
@@ -351,6 +352,7 @@ public class HecataeusViewer {
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
 			
 			filesTreeGui.createPanel(projectConf.curPath+"SQLS/");
+			filesTreeGui.setVisible(true);
 			policyManagerGui.UPDATE();
 			eventManagerGui.UPDATE();
 			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
@@ -552,14 +554,15 @@ public class HecataeusViewer {
 				openProject();
 				frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				try {
-					Thread.sleep(1);
+					Thread.sleep(10);
 				} catch (InterruptedException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
 				zoomToWindow(activeViewer,summaryGraphSourceTabbedPane);
+				frame.setVisible(true);
+			    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
@@ -1983,35 +1986,7 @@ public class HecataeusViewer {
 		});
 		mnHelp.add(mntmAboutHecataeus);
 
-		JSplitPane splitPane = new JSplitPane();
-		frame.getContentPane().add(splitPane, "cell 0 0,growy");
-		splitPane.setOneTouchExpandable(false);
-		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		JSplitPane centerSplitPane;
-		JSplitPane rightSplitPane; 
-		rightSplitPane = new JSplitPane();
-		rightSplitPane.setOneTouchExpandable(false);
-		rightSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		JPanel rightInformationArea=new JPanel();
-		rightInformationArea.setLayout(new GridBagLayout());
-		GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        informationAreaLabel = new JLabel("Information Area"); 
-        rightInformationArea.add(informationAreaLabel, gbc);
-		informationArea = new JTextArea();
-		JScrollPane informationScrollArea = new JScrollPane (informationArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-		informationArea.setSize(informationArea.getMaximumSize());
-		gbc.gridy = 1;
-		gbc.weightx=1.;
-		gbc.weighty=1.;
-		gbc.fill=GridBagConstraints.BOTH;
-		rightInformationArea.add(informationScrollArea, gbc);
-		rightSplitPane.setBottomComponent(rightInformationArea);
 		managerTabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		
-		
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.setBorder(BorderFactory.createTitledBorder("Visual"));
@@ -2040,31 +2015,74 @@ public class HecataeusViewer {
 		
 		policyManagerGui = new HecataeusPolicyManagerGUI(projectConf,this);
 		eventManagerGui = new HecataeusEventManagerGUI(this);
-		filesTreeGui = new HecataeusFileStractureGUI(this);
 		
+		// Left "summary & use case" part
 		JSplitPane leftSplitPane = new JSplitPane();
-		JPanel staticPanel = new JPanel();
-		staticPanel.setBorder(BorderFactory.createTitledBorder("File system"));
-		staticPanel.add(filesTreeGui);
-		filesTreeGui.setSize(staticPanel.getSize());
-		leftSplitPane.setTopComponent(staticPanel);
-		leftSplitPane.setBottomComponent(summaryGraphTabbedPane);
 		leftSplitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		leftSplitPane.setDividerLocation(480);
-		
-		hecMap = new HecataeusClusterMap(this);
 		managerTabbedPane.addTab("Policy", null, policyManagerGui, null);
 		managerTabbedPane.addTab("Event", null, eventManagerGui, null);
-		splitPane.setResizeWeight(0.75);
-		rightSplitPane.setTopComponent(managerTabbedPane);
+		leftSplitPane.setResizeWeight(1.);
+		leftSplitPane.setTopComponent(summaryGraphTabbedPane);
+		leftSplitPane.setBottomComponent(managerTabbedPane);
+		leftSplitPane.setMinimumSize(new Dimension(480, this.getHeight()));
+		leftSplitPane.setPreferredSize(new Dimension(480, this.getHeight()));
+		leftSplitPane.setMaximumSize(new Dimension(480, this.getHeight()));
+
+		// Right "static & information" part
+		informationPanel=new JPanel();
+		informationPanel.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        informationAreaLabel = new JLabel("Information Area"); 
+        informationPanel.add(informationAreaLabel, gbc);
+		informationArea = new JTextArea();
+		JScrollPane informationScrollArea = new JScrollPane (informationArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		informationArea.setSize(informationArea.getMaximumSize());
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx=1.;
+		gbc.weighty=2.;
+		gbc.fill=GridBagConstraints.BOTH;
+		informationPanel.add(informationScrollArea, gbc);
+		JPanel fileSystemPanel = new JPanel();
+		fileSystemPanel.setBorder(BorderFactory.createTitledBorder("File system"));
+		filesTreeGui = new HecataeusFileStractureGUI(this);
+		fileSystemPanel.add(filesTreeGui);
+		filesTreeGui.setSize(fileSystemPanel.getSize());
+		gbc.gridx = 0;
+        gbc.gridy = 0;
+		JPanel rightPanel = new JPanel();
+		rightPanel.setLayout(new GridBagLayout());
+		rightPanel.add(fileSystemPanel, gbc);
+		gbc.gridx = 0;
+		gbc.gridy = 1;
+		gbc.weightx=1.;
+		gbc.weighty=1.;
+		gbc.fill=GridBagConstraints.BOTH;
+		rightPanel.add(informationPanel, gbc);
+		rightPanel.setMinimumSize(new Dimension(350, this.getHeight()));
+		rightPanel.setPreferredSize(new Dimension(350, this.getHeight()));
+		rightPanel.setMaximumSize(new Dimension(350, this.getHeight()));
+		
+		// Center "zoom" part
+		JSplitPane centerSplitPane;
 		centerSplitPane = new JSplitPane();
 		centerSplitPane.setLeftComponent(leftSplitPane);
 		centerSplitPane.setRightComponent(tabbedPane);
 		centerSplitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-		centerSplitPane.setDividerLocation(500);
+		centerSplitPane.setResizeWeight(0);
+		
+		// All together
+		JSplitPane splitPane = new JSplitPane();
+		frame.getContentPane().add(splitPane, "cell 0 0,growy");
+		splitPane.setOneTouchExpandable(false);
+		splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		hecMap = new HecataeusClusterMap(this);
 		splitPane.setLeftComponent(centerSplitPane);
-		splitPane.setRightComponent(rightSplitPane);
-	}
+		splitPane.setRightComponent(rightPanel);
+		splitPane.setResizeWeight(1);
+		}
 	
 	/**
 	 * Class for filtering files sql and DDL files in File chooser 
@@ -2320,7 +2338,7 @@ public class HecataeusViewer {
 					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
 					try {
-						Thread.sleep(10);
+						Thread.sleep(20);
 					} catch (InterruptedException ex) {
 					}
 				}

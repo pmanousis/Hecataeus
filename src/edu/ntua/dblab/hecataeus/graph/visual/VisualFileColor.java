@@ -7,25 +7,26 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class VisualFileColor {
 	protected static List<String> files;
 	protected static HashMap<String, Color> FileColor;
+	private static int paceOfRecoloring;
 	
-	public VisualFileColor(){}
+	public VisualFileColor(){
+		paceOfRecoloring=1;
+	}
 	
 	public void setFileNames(List<String> files){
-		this.files = new ArrayList<String>(files);
-		this.FileColor = new HashMap<String, Color>(setColorForFiles(this.files));
+		VisualFileColor.files = new ArrayList<String>(files);
+		VisualFileColor.FileColor = new HashMap<String, Color>(setColorForFiles(VisualFileColor.files));
 	}
 	
 	protected Color getColorForFile(String fileName){
-		return this.FileColor.get(fileName);
+		return VisualFileColor.FileColor.get(fileName);
 	}
 	
 	public HashMap<String, Color> getFileColorMap(){
-		return this.FileColor;
+		return VisualFileColor.FileColor;
 	}
 	
 	private HashMap<String, Color> setColorForFiles(List<String> fileNames){
@@ -57,7 +58,7 @@ public class VisualFileColor {
 		Collections.sort(foldersAndFiles);
 		int cnt=0;
 		for(String pf : foldersAndFiles)	// Colorize
-		{	// TODO: Use recolorize for files of folders.
+		{	// Use recolorize for files of folders.
 			Color c=null;
 			if(pf.contains("/"))
 			{	// take your parents color
@@ -69,7 +70,7 @@ public class VisualFileColor {
 			}
 			else
 			{	// since your father had a color, just change it a little bit
-				FileColor.put(prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf, recolorize(c, cnt%7));
+				FileColor.put(prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf, recolorize(c, cnt));
 			}
 			cnt++;
 		}
@@ -77,8 +78,14 @@ public class VisualFileColor {
 	}
 	
 	private Color recolorize(Color c, int counter)
-	{	// TODO: return better colors (not only brighter)? 
-		c=c.brighter();
+	{
+		int color=c.getRGB();
+		for(int i=0; i<counter; i++)
+		{
+			color+=paceOfRecoloring;
+		}
+		c=new Color(color%16777215);
+		paceOfRecoloring++;
 		return(c);
 	}
 	

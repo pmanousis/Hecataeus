@@ -90,7 +90,7 @@ public class HecataeusFileStractureGUI extends JPanel
 		m_tree.setEditable(false);
 		m_tree.setRootVisible(false);
 		s = new JScrollPane(m_tree);
-		s.setPreferredSize(new Dimension(450, 430 ));
+		s.setPreferredSize(new Dimension(320, this.viewer.getHeight()-this.viewer.informationPanel.getHeight()-50));
 		s.setVisible(true);
         add(s);
 	}

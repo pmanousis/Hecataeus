@@ -146,7 +146,7 @@ protected HecataeusViewer viewer;
 				{
 					output+=filename.substring(filename.indexOf(viewer.projectConf.projectName)+viewer.projectConf.projectName.length()+5)+eol;
 				}
-				this.viewer.setTextToInformationArea("Scripts using this relation:"+eol+output);
+				this.viewer.setTextToInformationArea("Scripts using relation "+node.getName()+":"+eol+output);
 			}
 		}
 	}
