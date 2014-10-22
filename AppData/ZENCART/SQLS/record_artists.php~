@@ -1,0 +1,2 @@
+./admin/record_artists.php:  $artists_query_raw = "select * from " . TABLE_RECORD_ARTISTS . " order by artists_name";
+

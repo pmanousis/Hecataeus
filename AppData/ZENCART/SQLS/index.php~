@@ -1,0 +1,3 @@
+ ./admin/index.php:  $counter_query = "select startdate, counter from " . TABLE_COUNTER;
+./admin/index.php:  $counter_query = "select startdate, counter, session_counter from " . TABLE_COUNTER_HISTORY . " order by startdate DESC limit 10";
+

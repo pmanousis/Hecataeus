@@ -1,0 +1,4 @@
+select * from  users where username = 0;
+
+select * from  users  where user_email = 0;
+

@@ -5,6 +5,7 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Paint;
 
 import org.apache.commons.collections15.Transformer;
@@ -20,6 +21,8 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
 {
     protected PickedInfo<VisualNode> picked;
     
+    protected final static float dark_value = 0.8f;
+    protected final static float light_value = 0.2f;
     public VisualNodeColor(PickedInfo<VisualNode> pi)
     {
         this.picked = pi;
@@ -27,13 +30,19 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
    
     public Paint transform(VisualNode v)
     {
-        if (picked.isPicked(v))
+    	float alpha = 0.7f;
+    	if (picked.isPicked(v))
         {
-            return Color.CYAN; 
+        	return new Color (64,224,208);
+        	//return Color.cyan;
+            //return (Paint) new GradientVertexRenderer<Integer, Number>( new Color(175,224,0), new Color(133,170,173), true); 
         }
         else
         {	
         	StatusType status = (v.getStatus());
+//        	Color dark = new Color(0, 0, dark_value, alpha);
+//        	Color light = new Color(0, 0, light_value, alpha);
+    //    	return new GradientPaint( 0, 0, dark, 10, 0, light, true);
         	
 /*pmanousi 	if (status==StatusType.TO_DELETE)
         		return Color.RED;
@@ -45,7 +54,7 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
         		return Color.GREEN;
         	else if (status==StatusType.TO_RENAME)
         		return Color.ORANGE;
-        	else */if (status==StatusType.PROPAGATE)
+//        	else */ if (status==StatusType.PROPAGATE)
         		return Color.RED;
         	else if (status==StatusType.BLOCKED)
         		return Color.BLACK;
@@ -102,20 +111,20 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
                 		return new Color(100,255,50);
                 	else if (type==NodeType.NODE_TYPE_ATTRIBUTE)
                 		return Color.LIGHT_GRAY;
-/**
- * @author pmanousi
- */
-else if (type==NodeType.NODE_TYPE_INPUT)
-	return Color.BLUE;
-else if (type==NodeType.NODE_TYPE_OUTPUT)
-	return Color.ORANGE;
-else if (type==NodeType.NODE_TYPE_SEMANTICS)
-	return Color.MAGENTA;
+					/**
+					 * @author pmanousi
+					 */
+					else if (type==NodeType.NODE_TYPE_INPUT)
+						return Color.BLUE;
+					else if (type==NodeType.NODE_TYPE_OUTPUT)
+						return Color.ORANGE;
+					else if (type==NodeType.NODE_TYPE_SEMANTICS)
+						return Color.MAGENTA;
+					else if(type == NodeType.NODE_TYPE_CLUSTER)
+						return new Color(0.3f,0.9f,0.6f, alpha); //67,205,128
                 	else return Color.WHITE;
                 }
         	}
-
         }
-            
     }
 }

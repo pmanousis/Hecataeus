@@ -1,0 +1,8 @@
+./admin/categories.php:            $sql = "select products_id from " . TABLE_PRODUCTS_TO_CATEGORIES . " where categories_id='" . $categories[$i]['id'] . "'";
+./admin/categories.php:        $sql = "select * from " . TABLE_PRODUCT_TYPES_TO_CATEGORY . "
+./admin/categories.php:        $sql = "select parent_id from " . TABLE_CATEGORIES . "
+./admin/categories.php:          $sql = "select * from " . TABLE_PRODUCT_TYPES_TO_CATEGORY . "
+./admin/categories.php:          $sql = "select products_id from " . TABLE_PRODUCTS_TO_CATEGORIES . " where categories_id='" . $categories[$i]['id'] . "'";
+./admin/categories.php:  $sql = "select type_id, type_name from " . TABLE_PRODUCT_TYPES;
+./admin/categories.php:    $sql = "select * from " . TABLE_PRODUCT_TYPES_TO_CATEGORY . "
+

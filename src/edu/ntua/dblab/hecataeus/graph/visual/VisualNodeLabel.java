@@ -4,16 +4,41 @@ import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
 
 public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
 
+	private boolean visible;
 	/**
      * Returns the label of the node
      */
     public String transform(VisualNode v) {
-    	switch (v.getType().getCategory()) {
-    	/*case SCHEMA:
-    		return "";*/ 
+    	switch (v.getType()) {
+    	//case NODE_TYPE_RELATION:
+    	//	return v.getName();
+    	//default: return(v.toString()); 
+//    	case NODE_TYPE_RELATION:
+//    		String test = " " + v.getNodeAngle();
+//    		return test;
+//    	case NODE_TYPE_QUERY:
+//    		String test1 = " " + v.getNodeAngle();
+//    		return test1;
+    	//default: return(v.toString()); 
+    	
+    	case NODE_TYPE_CLUSTER:
+    		return v.getNodeLabel();
+    	case NODE_TYPE_RELATION:
+    	{
+    		if(this.visible==true && v.getInEdges().size()>1)
+    			return v.getName();
+    		else
+    			return("");
+    	}
+		case NODE_TYPE_QUERY:
+    	case NODE_TYPE_VIEW:
+    		return("");
     	default: return(v.toString()); 
     	}
-    	
     }
     
+    public void setVisibility(boolean tf)
+    {
+    	this.visible=tf;
+    }
 }

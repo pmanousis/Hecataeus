@@ -1,0 +1,2 @@
+SELECT t.* FROM TAXON t;
+--

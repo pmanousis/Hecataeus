@@ -1,0 +1,2 @@
+--SELECT SG_Sequence_Rank.nextval INTO pk FROM DUAL;
+--SELECT SG_Sequence_Rank.nextval INTO pk FROM DUAL;

@@ -1,0 +1,1 @@
+--SELECT SG_SEQUENCE_Fea.nextval INTO :new.Oid FROM DUAL;

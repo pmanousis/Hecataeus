@@ -4,29 +4,28 @@
  */
 package edu.ntua.dblab.hecataeus;
 
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.JMenu;
+
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.uci.ics.jung.visualization.control.GraphMouseListener;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.AnimatedPickingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.GraphMouseListener;
 import edu.uci.ics.jung.visualization.control.RotatingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ScalingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.ShearingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.control.TranslatingGraphMousePlugin;
-
-import java.awt.event.InputEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.util.List;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JMenu;
-import javax.swing.JRadioButtonMenuItem;
 
 
 public class HecataeusModalGraphMouse extends DefaultModalGraphMouse<VisualNode,VisualEdge> 
@@ -76,15 +75,15 @@ protected HecataeusViewer viewer;
     	setMode(Mode.PICKING);
     }
 
-/**
- * @author pmanousi
- * @param v The viewer that has epilegmenosKobmos.
- */
-public void HecataeusViewerPM(HecataeusViewer v)
-{
-   	this.viewer=v;
-   	popupEditingPlugin.HecataeusViewerPM(this.viewer);
-}
+	/**
+	 * @author pmanousi
+	 * @param v The viewer that has epilegmenosKobmos.
+	 */
+	public void HecataeusViewerPM(HecataeusViewer v)
+	{
+	   	this.viewer=v;
+	   	popupEditingPlugin.HecataeusViewerPM(this.viewer);
+	}
     
        
     public JMenu getModeMenu() {
@@ -94,47 +93,6 @@ public void HecataeusViewerPM(HecataeusViewer v)
  * Changed from "Graph" to "Visualize"
  */
         	modeMenu = new JMenu("Visualize");
-			
-            final JRadioButtonMenuItem transformingButton =
-/**
- * @author pmanousi
- * Changed from "Move" to "Move Graph"
- */
-                new JRadioButtonMenuItem("Move Graph");
-            transformingButton.addItemListener(new ItemListener() {
-                public void itemStateChanged(ItemEvent e) {
-                    if(e.getStateChange() == ItemEvent.SELECTED) {
-                        setMode(Mode.TRANSFORMING);
-                    }
-                }});
-            
-            final JRadioButtonMenuItem pickingButton =
-                new JRadioButtonMenuItem("Pick");
-            pickingButton.addItemListener(new ItemListener() {
-                public void itemStateChanged(ItemEvent e) {
-                    if(e.getStateChange() == ItemEvent.SELECTED) {
-                        setMode(Mode.PICKING);
-                    }
-                }});
-			
-            ButtonGroup radio = new ButtonGroup();
-            radio.add(transformingButton);
-            radio.add(pickingButton);
-/** @author pmanousi transformingButton.setSelected(true);*/
-            pickingButton.setSelected(true);
-            modeMenu.add(transformingButton);
-            modeMenu.add(pickingButton);
-            modeMenu.setToolTipText("Menu for setting Mouse Mode");
-            addItemListener(new ItemListener() {
-				public void itemStateChanged(ItemEvent e) {
-					if(e.getStateChange() == ItemEvent.SELECTED) {
-						if(e.getItem() == Mode.TRANSFORMING) {
-							transformingButton.setSelected(true);
-						} else if(e.getItem() == Mode.PICKING) {
-							pickingButton.setSelected(true);
-						} 
-					}
-				}});
         }
         return modeMenu;
     }
@@ -146,14 +104,16 @@ public void HecataeusViewerPM(HecataeusViewer v)
 	 *  the subgraph of the module    
 	 */
 	public void graphClicked(VisualNode node, MouseEvent me) {
-		if (me.getClickCount()==2) {
-			
+		if (me.getClickCount()==2 && me.getButton()== MouseEvent.BUTTON1) {
+			HecataeusViewer testV = viewer;
+			@SuppressWarnings("unchecked")
 			VisualizationViewer<VisualNode,VisualEdge> vv = (VisualizationViewer<VisualNode,VisualEdge>) me.getSource();
 			VisualGraph g = (VisualGraph) vv.getGraphLayout().getGraph();
-			if (node.getType().getCategory()==NodeCategory.MODULE||node.getType().getCategory()==NodeCategory.INOUTSCHEMA) {
+//			System.out.println("oi komboi    "   + g);
+			if (node.getType().getCategory()== NodeCategory.MODULE||node.getType().getCategory()== NodeCategory.INOUTSCHEMA) {
 				List<VisualNode> module = g.getModule(node);
 				for (VisualNode child : module) {
-						child.setVisible(!child.getVisible());
+					child.setVisible(!child.getVisible());
 				}
 				node.setVisible(true);
 			}
@@ -166,6 +126,29 @@ public void HecataeusViewerPM(HecataeusViewer v)
 			}
 			
 		}
+		if(me.getClickCount()==1 && me.getButton()==MouseEvent.BUTTON1)
+		{
+			this.viewer.setTextToInformationArea("");
+			if(node.getType()==NodeType.NODE_TYPE_RELATION)
+			{
+				List<String> filenames=new ArrayList<String>();
+				for(EvolutionEdge inEdge: node.getInEdges())
+				{
+					if(filenames.contains(inEdge.getFromNode().getFileName())==false)
+					{
+						filenames.add(inEdge.getFromNode().getFileName());
+					}
+				}
+				filenames.remove(node.getFileName());
+				String eol=System.getProperty("line.separator");
+				String output=new String();
+				for(String filename: filenames)
+				{
+					output+=filename.substring(filename.indexOf(viewer.projectConf.projectName)+viewer.projectConf.projectName.length()+5)+eol;
+				}
+				this.viewer.setTextToInformationArea("Scripts using relation "+node.getName()+":"+eol+output);
+			}
+		}
 	}
 	
 	@Override
@@ -176,7 +159,10 @@ public void HecataeusViewerPM(HecataeusViewer v)
 
 	@Override
 	public void graphReleased(VisualNode v, MouseEvent me) {
-	
+		PopUpClickListener pucl = new PopUpClickListener();
+		if(me.getButton() == MouseEvent.BUTTON3){
+			pucl.doPop(me);
+		}
 	}
 }
 

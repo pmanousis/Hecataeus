@@ -4,8 +4,11 @@
  */
 package edu.ntua.dblab.hecataeus.graph.evolution;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 
 /**
  * @author  George Papastefanatos
@@ -16,14 +19,16 @@ public double ID=0.0;
 static int counter;
 
 	private String _Name = null;
+	private File _File = null;
 	private NodeType _Type ;
 	private int _frequency = 0;
 	
 	private EvolutionPolicies  _policies = null;
 	private EvolutionEvents _events = null;
-	protected List<E> _outEdges = null;
-	protected List<E> _inEdges = null;
+	public List<E> _outEdges = null;
+	public List<E> _inEdges = null;
 	private StatusType _status = StatusType.NO_STATUS;
+	
 
 	public EvolutionNode() {
 		// just create the node and set afterwards its properties
@@ -35,8 +40,9 @@ static int counter;
 		ID=counter;
 	}
 
-	public EvolutionNode(String Name, NodeType Type) {
-		this._Name= Name;
+	public EvolutionNode(String Name, NodeType Type, File fName) {
+		this._Name = Name;
+		this._File = fName;
 		this._Type = Type;
 		this._outEdges = new ArrayList<E>();
 		this._inEdges = new ArrayList<E>();
@@ -44,6 +50,27 @@ static int counter;
 		this._events = new EvolutionEvents();
 		counter++;
 		ID=counter;
+	}
+	
+	/**
+	 * Returns the name of the file
+	 */
+	public String getFileName() {
+		return this._File.getAbsolutePath();
+	}
+	
+	/**
+	 * Returns the file
+	 */
+	public File getFile() {
+		return this._File;
+	}
+	
+	/**
+	 * Sets the file
+	 */
+	public void setFile(File fName) {
+		this._File=fName;
 	}
 
 	/**
@@ -142,6 +169,16 @@ static int counter;
 		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType/*, child*/);
 		if(policy!=null)
 				policies.remove(policy);
+		if(eventType.equals(EventType.DELETE_PROVIDER)||eventType.equals(EventType.RENAME_PROVIDER))
+		{
+			if(this.getParentNode()!=null)
+			{
+				if(this.getParentNode().getType().equals(NodeType.NODE_TYPE_RELATION))
+				{
+					return;
+				}
+			}
+		}
 		policies.add(new EvolutionPolicy<EvolutionNode>(eventType/*,child*/,policyType));
 	}
 
@@ -247,5 +284,28 @@ static int counter;
 	public void setLine(int line) {								/*added by sgerag*/	
 		this._line=line;
 	}
+
+	 /**
+	  * used for finding the parent of a node (query, view, relation)
+	  **/
+	 public EvolutionNode<EvolutionEdge> getParentNode() {
+		 for (EvolutionEdge e: this.getInEdges()){
+			 //if node is attribute then 
+			 if (((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA && e.getFromNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
+				||((this.getType()==NodeType.NODE_TYPE_CONDITION) && (e.getType()==EdgeType.EDGE_TYPE_OPERATOR))
+				||((this.getType()==NodeType.NODE_TYPE_OPERAND) && ((e.getType()==EdgeType.EDGE_TYPE_OPERATOR)
+				||(e.getType()==EdgeType.EDGE_TYPE_WHERE)))
+				||(this.getType()==NodeType.NODE_TYPE_CONSTANT)
+				||((this.getType()==NodeType.NODE_TYPE_GROUP_BY) && (e.getType()==EdgeType.EDGE_TYPE_GROUP_BY))
+				||(this.getType()==NodeType.NODE_TYPE_FUNCTION)
+				|| (this.getType()==NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
+				|| (this.getType()==NodeType.NODE_TYPE_ATTRIBUTE && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
+				|| (this.getType()==NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT))
+				|| (this.getType()==NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS))
+			 )
+				 return (EvolutionNode<EvolutionEdge>) e.getFromNode();
+		 }
+		 return null;
+	 }
 	
 }

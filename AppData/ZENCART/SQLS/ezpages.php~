@@ -1,0 +1,2 @@
+./admin/ezpages.php:    $pages_query_raw = "select * from " . TABLE_EZPAGES . $ez_order_by;
+

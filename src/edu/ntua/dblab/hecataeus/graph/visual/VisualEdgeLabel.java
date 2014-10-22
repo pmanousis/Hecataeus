@@ -13,7 +13,8 @@ public class VisualEdgeLabel extends ToStringLabeller<VisualEdge> {
 		case EDGE_TYPE_INPUT:
 		case EDGE_TYPE_SEMANTICS:
 			return "";
-		default: return e.toString(); 
+		default: return "";
+		//default: return e.toString(); 
 		}
 	}
 

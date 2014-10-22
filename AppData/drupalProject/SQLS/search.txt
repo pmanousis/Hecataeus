@@ -1,0 +1,10 @@
+SELECT COUNT(*) FROM  mynode  WHERE status = 1
+SELECT COUNT(*) FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND n.status = 1 AND d.sid IS NULL OR d.reindex <> 0;
+SELECT COUNT(*) FROM  mynode  WHERE status = 1
+SELECT COUNT(*) FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND n.status = 1 AND d.sid IS NULL OR d.reindex <> 0;
+SELECT n.nid FROM  mynode  n ,  search_dataset  d WHERE d.type = 'mynode' AND d.sid = n.nid AND d.sid IS NULL OR d.reindex <> 0 ORDER BY d.reindex ASC, n.nid ASC;
+SELECT SUM(score) FROM  search_index  WHERE word = 0;
+SELECT t.word AS realword, i.word FROM  search_total  t ,  search_index  i WHERE t.word = i.word AND i.word IS NULL;
+SELECT title, nid, vid FROM  mynode  WHERE nid = 0;
+SELECT nid, caption FROM  search_mynode_links  WHERE sid = 0 AND type = 0;
+SELECT caption FROM  search_mynode_links  WHERE nid = 0;

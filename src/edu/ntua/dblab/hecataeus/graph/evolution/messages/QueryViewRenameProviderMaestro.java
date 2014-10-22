@@ -5,8 +5,8 @@ import java.util.PriorityQueue;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.MetriseisRewrite;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 public class QueryViewRenameProviderMaestro<V extends EvolutionNode<E>,E extends EvolutionEdge> extends MaestroAbstract<V,E>
 {

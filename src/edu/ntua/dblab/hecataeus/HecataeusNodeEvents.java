@@ -19,10 +19,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 
-
-
-import edu.ntua.dblab.hecataeus.graph.evolution.*;
-import edu.ntua.dblab.hecataeus.graph.visual.*;
+import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvents;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
+import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 

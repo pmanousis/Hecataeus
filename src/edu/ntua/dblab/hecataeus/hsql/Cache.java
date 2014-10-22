@@ -17,8 +17,12 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
-import java.io.*;
-import java.sql.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.sql.SQLException;
 
 class Cache {
 	private RandomAccessFile rFile;

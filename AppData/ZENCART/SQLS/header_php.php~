@@ -1,0 +1,11 @@
+select countries_id, countries_name from countries ;
+select zone_id, zone_name from zones; 
+select code, name from languages;
+select title, code from currencies;
+
+SELECT pages_id FROM EZPAGES WHERE status_header = 1 and sidebox_sort_order <> 0 ;
+./includes/modules/pages/page/header_php.php://  $pages_order_query = "SELECT pages_id FROM " . TABLE_EZPAGES . " WHERE status = 1 and horizontal_sort_order <> 0 ORDER BY horizontal_sort_order, pages_title";
+./includes/modules/pages/page/header_php.php:$pages_order_query = "SELECT * FROM " . TABLE_EZPAGES . " WHERE status_footer = 1 and footer_sort_order <> 0 and alt_url_external = '' ORDER BY footer_sort_order, pages_title";
+
+SELECT * FROM  ORDERS;
+SELECT last_modified from CONFIGURATION;

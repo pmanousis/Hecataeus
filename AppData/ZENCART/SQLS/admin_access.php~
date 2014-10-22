@@ -1,0 +1,16 @@
+
+./admin/includes/functions/admin_access.php:  $sql = 'SELECT admin_id from ' . TABLE_ADMIN . '
+./admin/includes/functions/admin_access.php:  $sql = 'SELECT a.*, p.profile_name FROM ' . TABLE_ADMIN . ' a
+./admin/includes/functions/admin_access.php:  $sql = "select admin_id, admin_name, admin_email, admin_pass, pwd_last_change_date, reset_token, failed_logins, lockout_expires, admin_profile from " . TABLE_ADMIN . " where admin_name = :adminname:  LIMIT 1";
+./admin/includes/functions/admin_access.php:  $sql = "select admin_name from " . TABLE_ADMIN . " where admin_id = :adminid:  LIMIT 1";
+./admin/includes/functions/admin_access.php:  $sql = "SELECT admin_pass, prev_pass1, prev_pass2, prev_pass3 FROM " . TABLE_ADMIN . "
+./admin/includes/functions/admin_access.php:  $sql = "SELECT admin_id FROM " . TABLE_ADMIN . "
+./admin/includes/functions/admin_access.php:    $sql = 'SELECT * FROM ' . TABLE_ADMIN_PROFILES;
+./admin/includes/functions/admin_access.php:  $sql = "SELECT profile_name FROM " . TABLE_ADMIN_PROFILES . " WHERE profile_id = :profile:";
+./admin/includes/functions/admin_access.php:  $sql = "SELECT * FROM " . TABLE_PRODUCT_TYPES . " WHERE type_handler != 'product'";
+./admin/includes/functions/admin_access.php:  $sql = "SELECT page_key FROM " . TABLE_ADMIN_PAGES_TO_PROFILES . " WHERE profile_id = :profile:";
+./admin/includes/functions/admin_access.php:  $sql = "SELECT admin_id FROM " . TABLE_ADMIN . " WHERE admin_profile = :profile:";
+./admin/includes/functions/admin_access.php:      $sql = "SELECT profile_id FROM " . TABLE_ADMIN_PROFILES . " WHERE profile_name = :name:";
+./admin/includes/functions/admin_access.php:  $sql = "SELECT menu_key, language_key FROM " . TABLE_ADMIN_MENUS . " ORDER BY sort_order";
+./admin/includes/functions/admin_access.php:  $sql = "SELECT page_key FROM " . TABLE_ADMIN_PAGES . " WHERE page_key = :page_key:";
+

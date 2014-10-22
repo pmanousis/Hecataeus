@@ -8,7 +8,7 @@ package edu.ntua.dblab.hecataeus.parser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Vector;
 
 import edu.ntua.dblab.hecataeus.hsql.Channel;
 import edu.ntua.dblab.hecataeus.hsql.Database;

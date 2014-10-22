@@ -1,0 +1,122 @@
+
+
+
+SELECT info FROM  system  WHERE name = 0 AND type = 0;
+SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
+SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
+
+SELECT mlid, menu_name FROM  menu_links  ml WHERE ml.router_path = 0 AND module = 'system';
+SELECT filename, name, type, status, schema_version, weight FROM  system  WHERE type = 0;
+SELECT * FROM  system  WHERE type = 0;
+SELECT fid FROM  file_managed  WHERE status <> 0 AND timestamp < 0;
+SELECT df.dfid, df.format, df.type, df.locked FROM  date_formats  df WHERE df.dfid = 0;
+SELECT format, type, language FROM  date_format_locale ;
+SELECT dft.type, dft.title, dft.locked FROM  date_format_type  dft ORDER BY dft.title;
+SELECT df.dfid, df.format, df.type, df.locked, dfl.language FROM  date_formats  df ,  date_format_locale  dfl WHERE df.format = dfl.format AND df.type = dfl.type ORDER BY df.type, df.format;
+SELECT 1 FROM  date_format_locale  WHERE type = 0 AND language = 0;
+SELECT COUNT(item_id) FROM  queue  WHERE name = 0;
+SELECT data, item_id FROM  queue  q WHERE expire = 0 AND name = 0 ORDER BY created ASC;
+
+SELECT rid FROM  role_permission  WHERE permission = 0;
+
+SELECT rid FROM  role_permission  WHERE permission = 0;
+SELECT theme, status, region, weight, visibility, pages FROM  block  WHERE module = 'system' AND delta = 'navigation';
+
+SELECT menu_name, mlid FROM  menu_links  WHERE link_path = 'admin/config' AND module = 'system';
+
+SELECT aid FROM  actions  WHERE parameters <> '0';
+SELECT * FROM  actions  WHERE aid = 0;
+
+SELECT bid, info FROM  block_custom  ORDER BY info
+SELECT body, format FROM  block_custom  WHERE bid = 0;
+SELECT * FROM  block_custom  WHERE bid = 0;
+SELECT  b.* FROM  block  b ,  block_role  r WHERE b.module = r.module AND b.delta = r.delta AND b.status = 1 AND b.custom <> 0 AND (r.rid IN (0 ) OR r.rid IS NULL) ORDER BY b.weight, b.module;
+SELECT 1 FROM  block  WHERE theme = 0;
+SELECT * FROM  block  WHERE theme = 0;
+SELECT * FROM  block  WHERE module = 0 AND delta = 0;
+SELECT module, delta, rid FROM  block_role ;
+SELECT name FROM  system  WHERE type = 'theme' AND status = 1;
+SELECT bid FROM  block_custom  WHERE info = 0;
+SELECT format FROM  block_custom  WHERE bid = 0;
+SELECT 1 FROM  block_role  WHERE module = 0 AND delta = 0;
+SELECT bid FROM  block_custom  WHERE info = 0;
+SELECT bid FROM  block_custom  WHERE info = 0;
+SELECT bid FROM  block_custom  WHERE info = 0;
+SELECT bid FROM  block_custom  WHERE info = 0;
+SELECT bid FROM  block  WHERE module = 0 AND delta = 0;
+
+SELECT 1 FROM  block  WHERE theme NOT IN (0 );
+SELECT * FROM  block  WHERE theme = 0;
+SELECT * FROM  block  WHERE theme = 0;
+
+SELECT s.name FROM  system  s ,  block  b WHERE s.name = b.theme AND s.type = 'theme' GROUP by s.name;
+SELECT format FROM  filter_format ;
+SELECT region FROM  block  WHERE module = 0 AND delta = 0 AND theme = 0;
+SELECT rid FROM  block_role  WHERE module = 0 AND delta = 0;
+SELECT 1 FROM  block_custom  WHERE bid <> 0 AND info = 0;
+SELECT 1 FROM  block_custom  WHERE info = 0;
+
+SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language = 0  ORDER BY pid ASC;
+SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language IN (0 , 0 ) ORDER BY language ASC, pid ASC;
+SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language IN (0 , 0 ) ORDER BY language DESC, pid ASC;
+SELECT alias FROM  url_alias  WHERE source = 0 AND language = 0  ORDER BY pid DESC;
+SELECT alias FROM  url_alias  WHERE source = 0 AND language IN (0 , 0 ) ORDER BY language DESC, pid DESC;
+SELECT alias FROM  url_alias  WHERE source = 0 AND language IN (0 , 0 ) ORDER BY language ASC, pid DESC;
+SELECT source FROM  url_alias  WHERE alias = 0 AND language = 0  ORDER BY pid DESC;
+SELECT source FROM  url_alias  WHERE alias = 0 AND language IN (0 , 0 ) ORDER BY language DESC, pid DESC;
+SELECT source FROM  url_alias  WHERE alias = 0 AND language IN (0 ,0 ) ORDER BY language ASC, pid DESC;
+
+SELECT name, type, status FROM  system  WHERE status = 1 AND type IN ('module');
+
+SELECT COUNT(*) FROM  users  WHERE data LIKE 0;
+--SELECT MAX(aid) FROM  actions_aid ;
+SELECT MAX(uid) FROM  users ;
+SELECT MAX(bid) FROM  batch ;
+SELECT name FROM  system  WHERE type = 'module' AND schema_version <> 0 ORDER BY weight ASC, name ASC;
+SELECT COUNT(*) FROM  flood  WHERE event = 0 AND identifier = 0 AND timestamp > 0;
+SELECT callback, parameters FROM  actions  WHERE aid = 0;
+SELECT aid, type, callback, parameters, label FROM  actions ;
+SELECT aid FROM  actions  WHERE parameters <> '0';
+SELECT aid, callback, label FROM  actions  WHERE parameters = '0';
+SELECT aid, label FROM  actions  WHERE callback IN (0 );
+SELECT aid, type, callback, parameters, label FROM  actions  WHERE aid = 0;
+
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT * FROM  menu_links  WHERE link_path = 0 ;
+SELECT mlid FROM  menu_links  WHERE plid = 0;
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT menu_name FROM  menu_links  WHERE expanded <> 0 GROUP BY menu_name;
+SELECT * FROM  menu_links  WHERE link_path = 0  AND module = 0 AND customized = 0;
+SELECT menu_name FROM  menu_links  WHERE router_path = 0  AND module = 'system';
+SELECT COUNT( nid) FROM  node ;
+SELECT * FROM  system  WHERE type = 'module';
+SELECT * FROM  registry_file ;
+--SELECT COUNT(*) FROM pg_proc WHERE proname = 'rand';
+SELECT name, schema_version FROM  system  WHERE type = 0;
+SELECT expire, value FROM  semaphore  WHERE name = 0;
+SELECT batch FROM  batch  WHERE bid = 0 AND token = 0;
+SELECT data, item_id FROM  queue  q WHERE name = 0 ORDER BY item_id ASC;
+SELECT data FROM  queue  q WHERE name = 0 ORDER BY item_id ASC;
+SELECT u.*, s.* FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.ssid = 0;
+SELECT u.*, s.* FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.sid = 0 AND s.uid = 0;
+SELECT u.*, s.* FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.sid = 0;
+SELECT r.rid, r.name FROM  role  r , users_roles  ur WHERE ur.rid = r.rid AND ur.uid = 0;
+
+--SELECT lid FROM  locales_source  WHERE source = 0 AND context = 0 AND textgroup = 0;
+--SELECT COUNT(lid) FROM  locales_target  WHERE lid = 0 AND language = 0;
+--SELECT lid, location FROM  locales_source  WHERE source = 0 AND context = 0 AND textgroup = 'default';
+--SELECT s.lid, s.source, s.context, s.location, t.translation, t.plid, t.plural FROM  locales_source  s ,  locales_target  t WHERE s.lid = t.lid AND t.language ='' AND s.textgroup = 0 ORDER BY t.plid, t.plural;
+--SELECT s.lid, s.source, s.context, s.location, t.plid, t.plural FROM  locales_source  s ,  locales_target  t WHERE  s.lid = t.lid AND s.textgroup = 0 ORDER BY t.plid, t.plural;
+--SELECT s.lid, s.source, s.context, t.translation FROM  locales_source  s ,  locales_target  t WHERE s.lid = t.lid AND t.language = '' AND s.location LIKE '.js' AND s.textgroup = 0;
+
+SELECT name, filename FROM  system  WHERE status = 1;
+SELECT 1 FROM  date_format_locale  WHERE language = 0 AND type = 0;
+SELECT name, filename FROM  system  WHERE status = 1 AND bootstrap = 1 AND type = 'module' ORDER BY weight ASC, name ASC;
+SELECT * FROM  system  WHERE type = 'theme' OR (type = 'module' AND status = 1) ORDER BY weight ASC, name ASC;
+SELECT status FROM  system  WHERE type = 0 AND name = 0;
+SELECT value FROM  variable  WHERE name = 0;
+SELECT filename FROM  system  WHERE name = 0 AND type = 0;
+SELECT name, value FROM  variable ;
+
+SELECT filename FROM  registry  WHERE name = 0 AND type = 0;

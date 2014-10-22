@@ -1,15 +1,14 @@
 package edu.ntua.dblab.hecataeus;
 
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,20 +22,25 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.plaf.FileChooserUI;
+
+import org.apache.commons.collections15.functors.ConstantTransformer;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeColor;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeFont;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeLabel;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
+import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 @SuppressWarnings("serial")
 public class HecataeusEventManagerGUI extends JPanel
@@ -68,8 +72,7 @@ public class HecataeusEventManagerGUI extends JPanel
 		pickNodeBtn.addActionListener(new ActionListener()
 		{
 			@Override
-			public void actionPerformed(ActionEvent e)
-            {
+			public void actionPerformed(ActionEvent e){
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = viewer.getActiveViewer();
 				// obtain user input from JOptionPane input dialog
 				String nodeName = JOptionPane.showInputDialog( "The name of node to find: ");
@@ -108,10 +111,6 @@ public class HecataeusEventManagerGUI extends JPanel
 				SHOWIMPACT();
             }
         });
-		
-		
-		
-		
 		
 		multipleEvetns=new JButton("Pick file of events");
 		multipleEvetns.addActionListener(new ActionListener()
@@ -179,11 +178,6 @@ public class HecataeusEventManagerGUI extends JPanel
 
 		});
 		
-		
-		
-		
-		
-		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill=GridBagConstraints.BOTH;
 		c.gridy=0;
@@ -215,13 +209,14 @@ public class HecataeusEventManagerGUI extends JPanel
 
 	protected void SHOWIMPACT()
 	{
-		TopologicalTravel pmtt=new TopologicalTravel(this.viewer);
+		TopologicalTravel pmtt=new TopologicalTravel(this.viewer.graphs.get(0));
 		pmtt.travel();
 		if(this.epilegmenosKombos!=null)
 		{
+			this.epilegmenosKombos=this.viewer.graphs.get(0).findVertexByNameParent(this.selectedNodeLbl.getText()); /** @author pmanousi Because of many panes, we need to say specifically to run events on the first one, with the original graph. */
 			EvolutionEvent<VisualNode> event =new EvolutionEvent<VisualNode>(EventType.toEventType((String)this.eventCombo.getSelectedItem()));
 			event.setEventNode(this.epilegmenosKombos);
-			VisualGraph agraph = (VisualGraph)this.viewer.graph;
+			VisualGraph agraph = (VisualGraph)this.viewer.graphs.get(0);
 /**
  * @author pmanousi
  * IMHO: This should better be a tree with all events that produced new graphs at a Manager in HecataeusViewer.
@@ -229,22 +224,23 @@ public class HecataeusEventManagerGUI extends JPanel
 			this.viewer.saveXmlForWhatIf(event.toString(), this.selectedNodeLbl.getText());
 /**
  * @author pmanousi
- * For reports.			
+ * For reports, if needed uncomment			
  */
-try
-{
-    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
-    out.print(viewer.projectConf.projectName+", "+viewer.policyManagerGui.currentPolicyFilename.substring(viewer.policyManagerGui.currentPolicyFilename.indexOf("/")+1)+", ");
-    out.close();
-} catch (IOException e)
-{}
+//			try
+//			{
+//			    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
+//			    out.print(viewer.projectConf.projectName+", "+viewer.policyManagerGui.currentPolicyFilename.substring(viewer.policyManagerGui.currentPolicyFilename.indexOf("/")+1)+", ");
+//			    out.close();
+//			} catch (IOException e)
+//			{}
+			
 			agraph.initializeChange(event);
-			//set the layout of the graph
-			this.viewer.setLayout(VisualLayoutType.Right2LeftTopologicalLayout, VisualLayoutType.Top2DownTopologicalLayout);
 			//get new layout's positions
 			this.viewer.getLayoutPositions();
-			this.viewer.getActiveViewer().repaint();
+			this.viewer.getArchitectureGraphActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
+			this.viewer.getArchitectureGraphActiveViewer().repaint();
 			this.viewer.policyManagerGui.loadPolicy();
+			this.viewer.showImpact();
 		}
 	}
 

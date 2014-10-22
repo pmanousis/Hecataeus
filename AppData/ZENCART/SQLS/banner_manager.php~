@@ -1,0 +1,3 @@
+./admin/banner_manager.php:  $banners_query_raw = "select banners_id, banners_title, banners_image, banners_group, status, expires_date, expires_impressions, date_status_change, date_scheduled, date_added, banners_open_new_windows, banners_on_ssl, banners_sort_order from " . TABLE_BANNERS . " order by banners_title, banners_group";
+./admin/banner_manager.php:   $banners_query_raw = "select banners_id, banners_title, banners_image, banners_group, status, expires_date, expires_impressions, date_status_change, date_scheduled, date_added, banners_open_new_windows, banners_on_ssl, banners_sort_order from " . TABLE_BANNERS . " order by banners_title, banners_group";
+

@@ -15,6 +15,9 @@ public class EvolutionEdge{
     private EvolutionNode<? extends EvolutionEdge> _ToNode = null;
     private EvolutionPolicies _policies = null;
 	private StatusType _status = StatusType.NO_STATUS;
+	
+	private boolean highlight = false;
+	
       
     public EvolutionEdge() {
     	// just create the edge and set afterwards its properties
@@ -26,6 +29,17 @@ public class EvolutionEdge{
         this._FromNode =   fromNode;
         this._ToNode =   toNode;
         this._policies = new EvolutionPolicies();
+    }
+    
+    
+    
+    
+    public void setHighlight(boolean hi){
+    	this.highlight = hi;
+    }
+    
+    public boolean getHilight(){
+    	return this.highlight;
     }
     
     /* (non-Javadoc)

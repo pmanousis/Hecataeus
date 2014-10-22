@@ -5,12 +5,16 @@
 package edu.ntua.dblab.hecataeus.parser;
 
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.io.*;
-
 
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.hsql.*;
+import edu.ntua.dblab.hecataeus.hsql.Channel;
+import edu.ntua.dblab.hecataeus.hsql.Database;
+import edu.ntua.dblab.hecataeus.hsql.User;
 import edu.ntua.dblab.hecataeus.parser.AnonymousBlock.typeStartsWith;
 import edu.ntua.dblab.hecataeus.parser.EmbeddedStatement.SpecificEmbedded;
 
@@ -185,7 +189,7 @@ public class HecataeusSQLParser{
 			
 			reader.close();
 			
-			graphCreator.addFile(file);
+			graphCreator.addFile(file, f);
 		}
 		catch (IOException e){
 			System.out.println("File Not Found {1}:" + e.getMessage().toString());			

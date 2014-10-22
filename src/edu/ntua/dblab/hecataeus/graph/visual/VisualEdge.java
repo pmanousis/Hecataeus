@@ -4,7 +4,8 @@
  */
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.*;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 
 /**
  * The class implements a visual edge of the graph
@@ -38,5 +39,17 @@ public class VisualEdge extends EvolutionEdge{
         return (VisualNode) super.getToNode();
     }
     
-    
+
+    public VisualEdge clone(){
+    	
+    	VisualEdge edge = new VisualEdge();
+    	
+    	edge.setName(this.getName());
+    	edge.setFromNode(this.getFromNode());
+    	edge.setToNode(this.getToNode());
+    	edge.setPolicies(this.getPolicies());
+    	edge.setStatus(this.getStatus(), true);
+    	edge.setType(this.getType());
+    	return edge;
+    }
 }

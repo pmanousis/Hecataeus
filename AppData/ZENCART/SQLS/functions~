@@ -1,0 +1,17 @@
+./includes/functions/functions_lookups.php:    $the_categories_image_query= "select categories_image from " . TABLE_CATEGORIES . " where categories_id= '" . $what_am_i . "'";
+./includes/functions/functions_lookups.php:    $the_categories_name_query= "select categories_name from " . TABLE_CATEGORIES_DESCRIPTION . " where categories_id= '" . $who_am_i . "' and language_id= '" . $_SESSION['languages_id'] . "'";
+./includes/functions/functions_lookups.php:      $sql = "select products_type from " . TABLE_PRODUCTS . " where products_id='" . $lookup . "'";
+./includes/functions/functions_lookups.php:      $sql = "select type_handler from " . TABLE_PRODUCT_TYPES . " where type_id = '" . $type_lookup->fields['products_type'] . "'";
+./includes/functions/functions_lookups.php:      $sql = "select configuration_key, configuration_value from " . TABLE_PRODUCT_TYPE_LAYOUT . " where configuration_key='" . $zv_key . "'";
+./includes/functions/functions_lookups.php:        $sql = "select configuration_key, configuration_value from " . TABLE_CONFIGURATION . " where configuration_key='" . $zv_key . "'";
+./includes/functions/functions_categories.php:    $category_query_raw = "select categories_id from " . TABLE_PRODUCTS_TO_CATEGORIES . "
+./includes/functions/functions_categories.php:        $parent_categories_query = "select parent_id from " . TABLE_CATEGORIES . "
+./includes/functions/functions_categories.php:      $parent_categories_query = "select parent_id from " . TABLE_CATEGORIES . "
+./includes/functions/functions_categories.php:      $sql = "select categories_id from " . TABLE_CATEGORIES . "
+./includes/functions/functions_general.php:    $coupons_query = "SELECT * FROM " . TABLE_COUPON_RESTRICT . "
+./includes/functions/functions_general.php:    $product_query = "SELECT products_model FROM " . TABLE_PRODUCTS . "
+./includes/functions/functions_general.php:      $sql = "SELECT * FROM " . TABLE_COUPON_RESTRICT . "
+./includes/functions/functions_general.php:    $sql = "SELECT * FROM " . TABLE_COUPON_RESTRICT . "
+./includes/functions/functions_general.php:    $zp_sql = "select * from " . TABLE_GET_TERMS_TO_FILTER;
+./includes/functions/functions_email.php:      $sql = "select customers_email_format from " . TABLE_CUSTOMERS . " where customers_email_address= :custEmailAddress:";
+

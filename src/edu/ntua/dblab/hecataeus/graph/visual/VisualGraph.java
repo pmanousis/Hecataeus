@@ -4,17 +4,14 @@
  */
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-
-//import edu.uci.ics.jung.graph.Vertex;
-
+import java.awt.Dimension;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,275 +30,40 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import java.awt.Dimension;
-import java.awt.geom.Point2D;
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
+import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+//import edu.uci.ics.jung.graph.Vertex;
 
 public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
-	
-       
-    /**
-	 * 
-	 */
+	protected VisualizationViewer<VisualNode, VisualEdge> myViewer;
+    protected List<VisualNode> myNodes;
+    
 	private static final long serialVersionUID = 1L;
 
 	public VisualGraph() {
-    }
-   
-	 
-//	/**
-//	*  gets the EvolutionGraph and visualizes it
-//	*  
-//	**/
-//	public void setHierarchicalLayout(){
-//		
-//		/*
-//		 * @param graphLastPosition = the start location of the graph
-//		 */
-//		Point2D initialLocation = new Point2D.Double(1000,0);
-//		/*
-//		 * @param relationOFFSET = offset from the last vertex of the relation tree
-//		 */
-//		final Point2D relationOFFSET = new Point2D.Double(0,50);
-//		//holds the nodes that have been located, they must be drawn once
-//		List<VisualNode> nodesLocated = new ArrayList<VisualNode>();
-//		for (VisualNode relationNode : this.getVertices()) {
-//			if (relationNode.getType()==NodeType.NODE_TYPE_RELATION) {
-//				//set relation node location
-//				relationNode.setLocation(initialLocation.getX(),initialLocation.getY());
-//				nodesLocated.add(relationNode);
-//				//draw the relation tree
-//				initialLocation = this.drawHierarchical(relationNode,nodesLocated);
-//				//set the location of the next relation
-//				initialLocation.setLocation(initialLocation.getX()+relationOFFSET.getX(), initialLocation.getY()+relationOFFSET.getY());
-//				
-//			}
-//		}
-//		
-//	}
-//	
-//	/**
-//	*   For each relation draws the whole hierarchical JungGraph 
-//	**/
-//	private Point2D drawHierarchical(VisualNode parentNode, List<VisualNode> nodesLocated){
-//
-//		/*
-//		 * OFFSET 
-//		 */
-//		final Point2D OFFSET = new Point2D.Double(-100,0);
-//
-//		/*
-//		 * holds the last position of child nodes (attribute, operand,etc.) 
-//		 * of each relation,query, view
-//		 */
-//		Point2D childGraphLocation = parentNode.getLocation();
-//		
-//		/*
-//		 * holds the position of the last query or view drawn
-//		 */
-//		Point2D treeGraphLocation = parentNode.getLocation();
-//
-//		/*
-//		 * draw the subgraph of the relation,query,view
-//		 */
-//		childGraphLocation = this.draw_subGraph(parentNode, nodesLocated);
-//
-//		//get each query, view dependent on the relation
-//		for(VisualEdge edge: this.getInEdges(parentNode)){
-//			if (edge.getType()==EdgeType.EDGE_TYPE_FROM){
-//				VisualNode dependentNode = (VisualNode)edge.getFromNode();
-//				//if it has not been located
-//				if (!nodesLocated.contains(dependentNode)){
-//					//set location of the dependent node
-//					dependentNode.setLocation(parentNode.getLocation().getX() + OFFSET.getX(), treeGraphLocation.getY() + OFFSET.getY());
-//					nodesLocated.add(dependentNode);
-//					//draw its graph
-//					treeGraphLocation = this.drawHierarchical(dependentNode, nodesLocated);
-//				}
-//			}
-//		}
-//		//return the position with the longest distance Y from the parent node
-//		return (treeGraphLocation.getY()> childGraphLocation.getY()?treeGraphLocation:childGraphLocation);
-//		
-//	
-//	}
-//	
-//	/**
-//	*  gets the EvolutionGraph and visualizes it
-//	*  
-//	**/
-//	public void setTreeLayout(){
-//		
-//		/*
-//		 * @param initialPosition = the start location of the graph
-//		 */
-//		Point2D initialLocation = new Point2D.Double(800,200);
-//				
-//		/*
-//		 * @param relationOFFSET = offset from the last vertex of the relation tree
-//		 */
-//		final Point2D relationOFFSET = new Point2D.Double(0,100);
-//		//holds the nodes that have been located, they must be drawn once
-//		List<VisualNode> nodesLocated = new ArrayList<VisualNode>();
-//		for (VisualNode relationNode: this.getVertices()) {
-//			if (relationNode.getType()==NodeType.NODE_TYPE_RELATION) {
-//				//draw the relation tree
-//				initialLocation = this.drawTree(relationNode,initialLocation, nodesLocated);
-//				//set the location of the next relation
-//				initialLocation.setLocation(initialLocation.getX()+relationOFFSET.getX(), relationNode.getLastChildLocation().getY()+relationOFFSET.getY());
-//				
-//			}
-//		}
-//		 
-//	}
-//	
-//	/**
-//	*   For each relation draws the whole tree JungGraph 
-//	 * @param startLocation
-//	**/
-//	private Point2D drawTree(VisualNode curNode, Point2D startLocation, List<VisualNode> nodesLocated){
-//
-//		/*
-//		 * OFFSET 
-//		 */
-//		final Point2D OFFSET = new Point2D.Double(-300,100);
-//
-//		/*
-//		 * holds the location of the first child in the parent node's subgraph
-//		 */
-//		Point2D firstChildLocation = new Point2D.Double(startLocation.getX()+OFFSET.getX(),startLocation.getY());
-//		
-//		/*
-//		 * holds the location of the last child in the parent node's subgraph
-//		 */
-//		Point2D lastChildLocation = new Point2D.Double(startLocation.getX()+OFFSET.getX(),startLocation.getY());
-//		
-//		/*
-//		 * holds the location of the current child drawn
-//		 */
-//		Point2D curChildLocation = new Point2D.Double(startLocation.getX()+OFFSET.getX(),startLocation.getY());				
-//		
-//		//holds the number of childs parsed
-//		int k=0;
-//		//get each query, view dependent on the relation
-//		for(VisualEdge edge: this.getInEdges(curNode)){
-//			if (edge.getType()==EdgeType.EDGE_TYPE_FROM){
-//				VisualNode dependentNode = (VisualNode) this.findVertex(edge.getFromNode().getKey());
-//				//if it has not been located
-//				if (!nodesLocated.contains(dependentNode)){
-//					k++;
-//					//draw its graph
-//					curChildLocation = this.drawTree(dependentNode, curChildLocation, nodesLocated);
-//					if (k==1)
-//						firstChildLocation.setLocation(dependentNode.getLocation().getX(),dependentNode.getLocation().getY());
-//					//reset the location of the next child node, hold the same x for all child node in the same level
-//					curChildLocation.setLocation(dependentNode.getLocation().getX(), dependentNode.getLastChildLocation().getY()+OFFSET.getY());
-//					//set the current child node location
-//					lastChildLocation.setLocation(dependentNode.getLocation().getX(),dependentNode.getLocation().getY());
-//				}
-//			}
-//		}
-//		
-//		//set relation node location
-//		curNode.setLocation(startLocation.getX(),(firstChildLocation.getY()+lastChildLocation.getY())/2);
-//		nodesLocated.add(curNode);
-//		
-//		/*
-//		 * draw the subgraph of the relation,query,view
-//		 */
-//		this.draw_subGraph(curNode, nodesLocated);
-//		//return the location of the node
-//		return curNode.getLocation();
-//	
-//	}
-//	
-//	/**
-//	*   draws the JungGraph Subgraph given a parentNode (relation, query, view)
-//	**/
-//	private Point2D draw_subGraph(VisualNode parentNode, List<VisualNode> nodesLocated){
-//		
-//
-//		final Double xConditionOffset = new Double(0);
-//		final Double yConditionOffset = new Double(10);
-//		final Double xAttributeOffset = new Double(0);
-//		final Double yAttributeOffset = new Double(10);
-//		final Double xConstantOffset = new Double(-5);
-//		final Double yConstantOffset = new Double(5);
-//		final Double xGroupByOffset = new Double(-10);
-//		final Double yGroupByOffset = new Double(20);
-//		final Double xOperandOffset = new Double(-20);		
-//		final Double yOperandOffset = new Double(10);
-//		final Double xFunctionOffset = new Double(-20);		
-//		final Double yFunctionOffset = new Double(10);
-//		
-//		// initial locations of nodes
-//		Double xCondition = parentNode.getLocation().getX()+30;
-//		Double yCondition = parentNode.getLocation().getY();
-//		Double xAttribute = parentNode.getLocation().getX()-50;
-//		Double yAttribute = parentNode.getLocation().getY()+50;
-//		Double xGroupBy = new Double(-50);
-//		Double yGroupBy = new Double(30);
-//		Double xOperand = parentNode.getLocation().getX();
-//		Double yOperand = parentNode.getLocation().getY();
-//		Double xFunction = new Double(-50);		
-//		Double yFunction = new Double(10);
-//		Double xConstant = parentNode.getLocation().getX();	
-//		Double yConstant = parentNode.getLocation().getY()+50;		
-//		
-//		//holds position of lastNode 
-//		Point2D returnLocation = new Point2D.Double(parentNode.getLocation().getX(),parentNode.getLocation().getY());
-//		//for each query, relation, view get the subgraph
-//		List<VisualNode> subGraph = this.getModule(parentNode);
-//		//get each VisualNode after the parentNode s>=1
-//		for(VisualNode v : subGraph){
-//			if (!(v==null)&&!nodesLocated.contains(v)){
-//				if (v.getType()==NodeType.NODE_TYPE_ATTRIBUTE) {
-//					xAttribute = xAttribute + xAttributeOffset;
-//					yAttribute = yAttribute + yAttributeOffset;
-//					v.setLocation(xAttribute,yAttribute);
-//				}else if (v.getType()==NodeType.NODE_TYPE_CONDITION){
-//					xCondition = xCondition + xConditionOffset;
-//					yCondition = yCondition + yConditionOffset;
-//					v.setLocation(xCondition,yCondition);
-//				}else if (v.getType()==NodeType.NODE_TYPE_OPERAND){
-//					//get first incident node
-//					VisualEdge incidentEdge = v.getInEdges().get(0);
-//					VisualNode incidentNode = incidentEdge.getFromNode();
-//					if (incidentEdge.getName().equals("op1")){
-//						xOperand = incidentNode.getLocation().getX()+ xOperandOffset;
-//						yOperand = incidentNode.getLocation().getY()+ yOperandOffset;
-//					}else if (incidentEdge.getName().equals("op2")){
-//						xOperand = incidentNode.getLocation().getX()+ xOperandOffset;
-//						yOperand = incidentNode.getLocation().getY()- yOperandOffset;
-//					}else{
-//						xOperand = incidentNode.getLocation().getX()+ xOperandOffset;
-//						yOperand = incidentNode.getLocation().getY()+ yOperandOffset;
-//					}
-//					v.setLocation(xOperand,yOperand);
-//				}else if (v.getType()==NodeType.NODE_TYPE_GROUP_BY){
-//					VisualNode incidentNode = v.getInEdges().get(0).getFromNode();
-//					xGroupBy = incidentNode.getLocation().getX()+xGroupByOffset;
-//					yGroupBy = incidentNode.getLocation().getY()+yGroupByOffset;
-//					v.setLocation(xGroupBy,yGroupBy);
-//				}else if (v.getType()==NodeType.NODE_TYPE_CONSTANT){
-//					VisualNode incidentNode = v.getInEdges().get(0).getFromNode();
-//					xConstant = incidentNode.getLocation().getX()+ xConstantOffset;
-//					yConstant = incidentNode.getLocation().getY()+ yConstantOffset;
-//					v.setLocation(xConstant,yConstant);
-//				}else if (v.getType()==NodeType.NODE_TYPE_FUNCTION){
-//					VisualNode incidentNode = v.getInEdges().get(0).getFromNode();
-//					xFunction = incidentNode.getLocation().getX()+xFunctionOffset;
-//					yFunction = incidentNode.getLocation().getY()+yFunctionOffset;
-//					v.setLocation(xFunction,yFunction);
-//				}
-//				nodesLocated.add(v);
-//				returnLocation =(returnLocation.getY()>v.getLocation().getY()?returnLocation:v.getLocation());
-//				
-//			}
-//    	}
-//		parentNode.setLastChildLocation(returnLocation.getX(), returnLocation.getY());
-//		return parentNode.getLastChildLocation();
-//    	
-//    }
+	}
+
+	public VisualGraph(VisualGraph subGraph){
+		File file = new File(UUID.randomUUID().toString());
+		subGraph.exportToXML(file);
+		this.importFromXML(file);
+		file.delete();
+	}
+	
+	public VisualGraph(VisualizationViewer<VisualNode, VisualEdge> viewer){
+		this.myViewer = viewer;
+	}
+	
+	public void setViewerToGraph(VisualizationViewer<VisualNode, VisualEdge> viewer){
+		this.myViewer = viewer;
+	}
+	
+	public VisualizationViewer<VisualNode, VisualEdge> getMyViewer(){
+		return this.myViewer;
+	}
 	
 	/**
 	 * returns the dimension of the graph layout 
@@ -311,17 +73,17 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	 * @return the dimension of the graph
 	 */
 	public Dimension getSize(){
+		// return new Dimension(1200, 800);
 		if (this.getVertexCount()>0) {
-			
 			//initialize coords with first vertex location
-			VisualNode v = this.getVertices().get(0); 
+			VisualNode v = new VisualNode();
+			v = this.getVertices().get(0); 
+//			VisualNode v = this.getVertices().get(0); 
+//			myNodes.add(v);
 			double minX = this.getLocation(v).getX();
 			double minY = this.getLocation(v).getY();
 			double maxX = this.getLocation(v).getX();
 			double maxY = this.getLocation(v).getY();
-			
-			
-
 			for (VisualNode jungNode: this.getVertices()) {
 				if (jungNode.getVisible()) {
 					Point2D p = this.getLocation(jungNode);
@@ -332,7 +94,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 				}
 			}
 
-			/*return new Dimension((int)(maxX-minX),(int)(maxY-minY));*/
+			return new Dimension((int)(maxX-minX),(int)(maxY-minY));
 		}
 		//else return default
 		return new Dimension(1200, 800);
@@ -372,10 +134,9 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	} 
 	
 	public VisualGraph importFromXML(File file) {
-
 		//holds the current key of the graph
 		int currentKey = this.getKeyGenerator();
-
+		myNodes = new ArrayList<VisualNode>();
 		String nKey = null;
 		String nName = null;
 		String nType = null;
@@ -386,9 +147,8 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		String eFromNode = null;
 		String eToNode = null;
 		String nSQLDefinition = null;
-				
+		StatusType status=null;
 		try {
-	
 	        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 	        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
 	        Document doc = docBuilder.parse (file);
@@ -422,11 +182,18 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	
 	                NodeList textNameList = NameElement.getChildNodes();
 	                nName = ((Node)textNameList.item(0)).getNodeValue();
+	                
+	                //-------                    
+	                NodeList StatusList = firstNodeElement.getElementsByTagName("Status");
+	                Element StatusElement = (Element)StatusList.item(0);
+	
+	                NodeList textStatusList = StatusElement.getChildNodes();
+	                status = StatusType.toStatus(((Node)textStatusList.item(0)).getNodeValue());
 	
 	                //----                    
 	                NodeList TypeList = firstNodeElement.getElementsByTagName("Type");
 	                Element TypeElement = (Element)TypeList.item(0);
-	
+	                
 	                NodeList textTypeList = TypeElement.getChildNodes();
 	                nType = ((Node)textTypeList.item(0)).getNodeValue();
 /** @author pmanousi ID NOW NOT NEEDED (TopologicalTravel) */
@@ -445,11 +212,11 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	                }else
 	                	nSQLDefinition="";
 
-
 					// add node
 					VisualNode v = new VisualNode();
 					v.setName(nName);
 					v.setType(NodeType.valueOf(nType));
+					v.setStatus(status, true);
 //					v.setLocation(new Point2D.Double(nodeX,nodeY));
 					this.setLocation(v,new Point2D.Double(nodeX,nodeY));
 					v.setSQLDefinition(nSQLDefinition);
@@ -458,7 +225,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					this.setKey(v,currentKey+new Integer(nKey));
 					v.ID=nID;
 
-					
+					myNodes.add(v);
 					
 	            }//end of if clause
 	
@@ -517,105 +284,6 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	            }//end of if clause
 	
 	        }//end of for loop for edges
-	        
-/*	        // find the policies (if any exists) for nodes
-	        NodeList listOfPolicies = doc.getElementsByTagName("HPolicies");
-	        Element PoliciesElement = (Element)listOfPolicies.item(0);
-	    	
-	        listOfPolicies = PoliciesElement.getElementsByTagName("HPolicy");
-	        
-    		if (listOfPolicies.getLength()>0) {
-            	for(int i=0; i<listOfPolicies.getLength() ; i++){
-
-            		Node firstPolicy = listOfPolicies.item(i);
-            		if(firstPolicy.getNodeType() == Node.ELEMENT_NODE){
-
-            			Element firstPolicyElement = (Element)firstPolicy;
-
-            			//-------                    
-            			NodeList HNodeList = firstPolicyElement.getElementsByTagName("HNode");
-            			Element HNodeElement = (Element)HNodeList.item(0);
-
-            			NodeList textHNodeList = HNodeElement.getChildNodes();
-            			String nHNode = ((Node)textHNodeList.item(0)).getNodeValue();
-
-            			//-------                    
-            			NodeList HEventList = firstPolicyElement.getElementsByTagName("HEvent");
-            			Element HEventElement = (Element)HEventList.item(0);
-
-            			NodeList HEventNodeList = HEventElement.getElementsByTagName("HEventNode");
-            			Element HEventNodeElement = (Element)HEventNodeList.item(0);
-
-            			NodeList textHEventNodeList = HEventNodeElement.getChildNodes();
-            			String nHEventNode = ((Node)textHEventNodeList.item(0)).getNodeValue();
-            			
-            			NodeList HEventTypeList = HEventElement.getElementsByTagName("HEventType");
-            			Element HEventTypeElement = (Element)HEventTypeList.item(0);
-
-            			NodeList textHEventTypeList = HEventTypeElement.getChildNodes();
-            			String nHEventType = ((Node)textHEventTypeList.item(0)).getNodeValue();
-            
-            			//----                    
-            			NodeList HPolicyTypeList = firstPolicyElement.getElementsByTagName("HPolicyType");
-            			Element HPolicyTypeElement = (Element)HPolicyTypeList.item(0);
-
-            			NodeList textHPolicyTypeList = HPolicyTypeElement.getChildNodes();
-            			String nHPolicyType = ((Node)textHPolicyTypeList.item(0)).getNodeValue();
-
-            			VisualNode HNode = this.findVertex(currentKey+new Integer(nHNode));
-            			VisualNode HEventNode = this.findVertex(currentKey+new Integer(nHEventNode));
-            			EventType HEventType = EventType.toEventType(nHEventType);
-            			PolicyType HPolicyType = PolicyType.toPolicyType(nHPolicyType);
-
-            			HNode.addPolicy(HEventType, HEventNode, HPolicyType);
-            		}//end of if clause
-
-            	}//end of for loop for policies
-
-            }//end of if policies exist
-    		
-    		//get events
-	        NodeList listOfEvents = doc.getElementsByTagName("HEvents");
-	        Element EventsElement = (Element)listOfEvents.item(0);
-	    	
-	        listOfEvents = EventsElement.getElementsByTagName("HEvent");
-			
-            if (listOfEvents.getLength()>0) {
-            	for(int i=0; i<listOfEvents.getLength() ; i++){
-            		Node firstEvent = listOfEvents.item(i);
-            		if(firstEvent.getNodeType() == Node.ELEMENT_NODE){
-            			Element firstEventElement = (Element)firstEvent;
-
-            			//-------                    
-            			NodeList HNodeList = firstEventElement.getElementsByTagName("HNode");
-            			Element HNodeElement = (Element)HNodeList.item(0);
-
-            			NodeList textHNodeList = HNodeElement.getChildNodes();
-            			String nHNode = ((Node)textHNodeList.item(0)).getNodeValue();
-
-            			//-------                    
-            			NodeList HEventNodeList = firstEventElement.getElementsByTagName("HEventNode");
-            			Element HEventNodeElement = (Element)HEventNodeList.item(0);
-
-            			NodeList textHEventNodeList = HEventNodeElement.getChildNodes();
-            			String nHEventNode = ((Node)textHEventNodeList.item(0)).getNodeValue();
-            			
-            			//-------                    
-            			NodeList HEventTypeList = firstEventElement.getElementsByTagName("HEventType");
-            			Element HEventTypeElement = (Element)HEventTypeList.item(0);
-
-            			NodeList textHEventTypeList = HEventTypeElement.getChildNodes();
-            			String nHEventType = ((Node)textHEventTypeList.item(0)).getNodeValue();
-            			
-            			VisualNode HNode = this.findVertex(currentKey+new Integer(nHNode));
-            			VisualNode HEventNode = this.findVertex(currentKey+new Integer(nHEventNode));
-            			EventType HEventType = EventType.toEventType(nHEventType);
-            			
-            			HNode.addEvent(HEventType);            			
-            		}
-            	}//end of for loop for events
-            }//end of if events exist
-*/
             //get the last element - graph keygenerator
             NodeList keyGen = doc.getElementsByTagName("HKeyGen");
             Element keyGenElement = (Element)keyGen.item(0);
@@ -655,7 +323,9 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 	 * @return  the node location
 	 */
 	public Point2D getLocation(VisualNode v){
-		return this.nodeLocations.get(v); 
+		if(this.nodeLocations.get(v)!=null)
+			return this.nodeLocations.get(v);
+		return (new Point2D.Double());
 	}
 	
 	public VisualGraph toGraph(List<VisualNode> nodes){
@@ -665,10 +335,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		return subGraph;
 	}
 	
-	
 	public void exportToXML(File file) {
-		
-		
 			try {
 				DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -695,6 +362,12 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					Element elementName = document.createElement("Name");
 					elementName.appendChild(document.createTextNode(v.getName()));
 					elementHnode.appendChild(elementName);
+					
+					// write element status
+					Element elementStatus = document.createElement("Status");
+					elementStatus.appendChild(document.createTextNode(v.getStatus().toString()));
+					elementHnode.appendChild(elementStatus);
+					
 					// write element type
 					Element elementType = document.createElement("Type");
 					elementType.appendChild(document.createTextNode(v.getType().toString()));
@@ -741,63 +414,7 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 					// end element HEdge
 				}
 				rootElement.appendChild(elementHedges);
-				
-				
-/*				// write policies
-				Element elementHPolicies = document.createElement("HPolicies");
-				// write events
-				Element elementHEvents = document.createElement("HEvents");
-				
-				for (VisualNode v : this.getVertices()) {
-					for (EvolutionPolicy<VisualNode> p: v.getPolicies()) {
-						//start tag HPolicy
-						Element elementHPolicy = document.createElement("HPolicy");
-						elementHPolicies.appendChild(elementHPolicy);
-						//write Node having the policy
-						Element elementHNode = document.createElement("HNode");
-						elementHNode.appendChild(document.createTextNode(this.getKey(v).toString()));
-						elementHPolicy.appendChild(elementHNode);
-						//write event handled by the policy
-						Element elementEvent = document.createElement("HEvent");
-						elementHPolicy.appendChild(elementEvent);
-						
-						Element elementEventNode = document.createElement("HEventNode");
-						elementEventNode.appendChild(document.createTextNode(this.getKey(p.getSourceEvent().getEventNode()).toString()));
-						elementEvent.appendChild(elementEventNode);
-						
-						Element elementEventType = document.createElement("HEventType");
-						elementEventType.appendChild(document.createTextNode(p.getSourceEvent().getEventType().toString()));
-						elementEvent.appendChild(elementEventType);
-						//write policy type
-						Element elementPolicyType = document.createElement("HPolicyType");
-						elementPolicyType.appendChild(document.createTextNode(p.getPolicyType().toString()));
-						elementHPolicy.appendChild(elementPolicyType);
-						// end element HPolicy
-					}
-					for (EvolutionEvent<VisualNode> e : v.getEvents()) {
-						//write element event
-						Element elementHEvent = document.createElement("HEvent");
-						elementHEvents.appendChild(elementHEvent);
-						//write Node having the event
-						Element elementHNode = document.createElement("HNode");
-						elementHNode.appendChild(document.createTextNode(this.getKey(v).toString()));
-						elementHEvent.appendChild(elementHNode);
-						
-						Element elementEventNode = document.createElement("HEventNode");
-						elementEventNode.appendChild(document.createTextNode(this.getKey(e.getEventNode()).toString()));
-						elementHEvent.appendChild(elementEventNode);
-						Element elementEventType = document.createElement("HEventType");
-						elementEventType.appendChild(document.createTextNode(e.getEventType().toString()));
-						elementHEvent.appendChild(elementEventType);
-						// end element HEvent
-						
-					}
-				}
-				rootElement.appendChild(elementHPolicies);
-				rootElement.appendChild(elementHEvents);
-			
-	*/
-				//
+
 				Element elementHKeyGen = document.createElement("HKeyGen");
 				elementHKeyGen.appendChild(document.createTextNode((new Integer(this.getKeyGenerator()).toString())));
 				rootElement.appendChild(elementHKeyGen);
@@ -823,6 +440,14 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
 		
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
 	public List<VisualEdge> getInEdges(VisualNode vertex)
     {
         return new ArrayList<VisualEdge>(super.getInEdges(vertex));
@@ -843,7 +468,8 @@ public class VisualGraph extends EvolutionGraph<VisualNode,VisualEdge>{
     	return new ArrayList<VisualEdge>(super.getEdges());
     }
     
-  
-    
+    public List<VisualNode> getNodes(){
+    	return myNodes;
+    }
 	
 }

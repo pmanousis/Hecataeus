@@ -1,0 +1,2 @@
+./admin/group_pricing.php:  $groups_query_raw = "select * from " . TABLE_GROUP_PRICING;
+

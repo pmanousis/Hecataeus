@@ -1,0 +1,3 @@
+./admin/template_select.php:        $sql = "select * from " . TABLE_TEMPLATE_SELECT . " where template_language = :lang:";
+./admin/template_select.php:  $template_query_raw = "select * from " . TABLE_TEMPLATE_SELECT;
+

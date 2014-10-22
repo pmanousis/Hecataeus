@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLExtensionParser;
@@ -424,14 +425,18 @@ public class HecataeusPolicyManagerGUI extends JPanel
 					pateras=this.epilegmenosKombos.getInEdges().get(i).getFromNode();
 				}
 			}
-			
-			this.epilegmenosKombosLabel.setText(this.epilegmenosKombosLabel.getText()+pateras.getName()+"."+this.epilegmenosKombos.getName());
+			if(epilegmenosKombos.getType().getCategory()== NodeCategory.MODULE){
+				this.epilegmenosKombosLabel.setText(this.epilegmenosKombos.getName());
+			}
+			else{
+				this.epilegmenosKombosLabel.setText(this.epilegmenosKombosLabel.getText()+pateras.getName()+"."+this.epilegmenosKombos.getName());
+			}
 			ChangeEventsComboBox();
 			this.policyType.add("PROPAGATE");
 			this.policyType.add("BLOCK");
 			this.policyType.add("PROMPT");
 			
-			if(this.policyEditor.getText().contains(this.epilegmenosKombos.getName()+": ")==true)
+			if(this.epilegmenosKombos!=null && this.policyEditor.getText().contains(this.epilegmenosKombos.getName()+": ")==true)
 			{
 				if(this.epilegmenosKombos.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
 				{
@@ -476,11 +481,11 @@ public class HecataeusPolicyManagerGUI extends JPanel
 		this.eventType.clear();
 		this.eventTypeCb.removeAllItems();
 		ArrayList<edu.ntua.dblab.hecataeus.graph.evolution.EventType>temp;
+		this.epilegmenosKombos = PopUpClickListener.clickedVertex;
 		if(this.epilegmenosKombos==null)
 		{
 			return;	
 		}
-		
 		VisualNode pateras=null;			
 		for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 		{
@@ -492,29 +497,27 @@ public class HecataeusPolicyManagerGUI extends JPanel
 				pateras=this.epilegmenosKombos.getInEdges().get(i).getFromNode();
 			}
 		}
-		
 		temp=edu.ntua.dblab.hecataeus.graph.evolution.EventType.values(this.epilegmenosKombos.getType());
-		
-		
-		for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
-		{
-			if(pateras.getType()==NodeType.NODE_TYPE_RELATION)
+		if(pateras != null){
+			for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 			{
-				temp.remove(EventType.DELETE_PROVIDER);
-				temp.remove(EventType.RENAME_PROVIDER);
-				temp.remove(EventType.ADD_ATTRIBUTE_PROVIDER);
+				if(pateras.getType()==NodeType.NODE_TYPE_RELATION)
+				{
+					temp.remove(EventType.DELETE_PROVIDER);
+					temp.remove(EventType.RENAME_PROVIDER);
+					temp.remove(EventType.ADD_ATTRIBUTE_PROVIDER);
+				}
+				if(this.epilegmenosKombos.getType()!=NodeType.NODE_TYPE_OUTPUT&&pateras.getType()==NodeType.NODE_TYPE_INPUT)
+				{
+					temp.remove(EventType.DELETE_SELF);
+					temp.remove(EventType.RENAME_SELF);
+				}
 			}
-			if(this.epilegmenosKombos.getType()!=NodeType.NODE_TYPE_OUTPUT&&pateras.getType()==NodeType.NODE_TYPE_INPUT)
+			for(int i=0;i<temp.size();i++)
 			{
-				temp.remove(EventType.DELETE_SELF);
-				temp.remove(EventType.RENAME_SELF);
+				this.eventType.add(temp.get(i).toString());
 			}
 		}
-		for(int i=0;i<temp.size();i++)
-		{
-			this.eventType.add(temp.get(i).toString());
-		}
-
 		this.validate();
 		this.repaint();
 	}

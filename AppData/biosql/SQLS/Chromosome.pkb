@@ -1,0 +1,2 @@
+--SELECT t.* FROM SG_CHROMOSOME t;
+--SELECT SG_Sequence.nextval INTO pk FROM DUAL;

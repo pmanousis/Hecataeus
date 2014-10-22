@@ -1,0 +1,2 @@
+SELECT t.* FROM SEQFEATURE t;
+--SELECT SG_Sequence_FeaA.nextval INTO pk FROM DUAL;

@@ -1,0 +1,2 @@
+./admin/stats_products_lowstock.php:  $products_query_raw = "select p.products_id, pd.products_name, p.products_quantity, p.products_type from " . TABLE_PRODUCTS . " p, " . TABLE_PRODUCTS_DESCRIPTION . " pd where p.products_id = pd.products_id and pd.language_id='" . $_SESSION['languages_id'] . "' order by p.products_quantity, pd.products_name";
+

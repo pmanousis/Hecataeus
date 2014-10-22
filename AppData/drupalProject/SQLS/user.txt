@@ -1,0 +1,27 @@
+SELECT COUNT(uid) FROM  users ;
+SELECT uid, pass FROM  users  WHERE uid > 0 ORDER BY uid;
+SELECT COUNT(uid) FROM  users ;
+SELECT uid FROM  users  ORDER BY uid;
+SELECT timezone FROM  users  WHERE uid = 0; -- SELECT timezone_name FROM  users  WHERE uid = 0;
+SELECT format FROM  filter_format ;
+SELECT COUNT(*) FROM  users  WHERE picture <> '0';
+SELECT uid, picture FROM  users  WHERE picture <> '0' AND uid > 0 ORDER BY uid;
+SELECT COUNT(*) FROM  users  u WHERE u.picture <> 0;
+SELECT f.*, u.uid as user_uid FROM  users  u ,  file_managed  f WHERE u.picture = f.fid AND u.picture <> 0 AND u.uid > 0 ORDER BY u.uid;
+SELECT uid FROM  authmap  WHERE authname = 0;
+SELECT r.rid, r.name, ur.uid FROM  role  r ,  users_roles  ur WHERE ur.rid = r.rid AND ur.uid IN (0 );
+SELECT MAX(uid) FROM  users ;
+SELECT rid, permission FROM  role_permission  WHERE rid IN (0 )
+SELECT uid, name FROM  users  WHERE status <> 0 AND access <> 0 ORDER BY created DESC;
+SELECT COUNT( s.uid) FROM  sessions  s WHERE s.timestamp >= 0 AND s.uid > 0;
+SELECT u.uid, u.name, MAX(s.timestamp) AS max_timestamp FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.timestamp >= 0 AND s.uid > 0 GROUP BY u.uid, u.name ORDER BY max_timestamp DESC;
+SELECT module, authname FROM  authmap  WHERE authname = 0;
+SELECT * FROM  users  WHERE name = 0 AND status = 1;
+SELECT name FROM  role  WHERE rid = 0;
+SELECT uid, name, picture, data FROM  users  WHERE uid IN (0 );
+SELECT COUNT(*) FROM  sessions ;
+SELECT COUNT(*) FROM  sessions  WHERE uid = 0;
+SELECT COUNT(*) FROM  sessions  WHERE uid =  0 AND sid = 0 AND timestamp = 0;
+SELECT MAX(uid) FROM  users ;
+SELECT rid FROM  users_roles  WHERE uid = 0;
+SELECT COUNT(uid) FROM  users ;

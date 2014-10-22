@@ -18,10 +18,9 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
-import java.sql.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * Database is the root class for Hypersonic SQL database.

@@ -1,0 +1,1 @@
+SELECT * FROM counter_history WHERE 1 GROUP BY startdate;
