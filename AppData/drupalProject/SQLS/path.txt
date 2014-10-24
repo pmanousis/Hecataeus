@@ -1,4 +1,0 @@
-SELECT 1 FROM  url_alias  WHERE language <> 0;
-SELECT COUNT(alias) FROM  url_alias  WHERE pid <> 0 AND alias = 0 AND language = 0;
-SELECT pid FROM  url_alias  WHERE alias = 0;
-SELECT tid FROM  taxonomy_term_data  WHERE name = 0;

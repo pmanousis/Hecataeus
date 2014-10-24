@@ -1,7 +1,0 @@
-SELECT format FROM  filter_format ;
-SELECT * FROM actions;
-SELECT * FROM mycomment;
-select * from system;
-select * from mynode;
-select * from mybloc;
-select * from batch;

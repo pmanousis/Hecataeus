@@ -127,6 +127,8 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		final AggregateLayout<VisualNode, VisualEdge> layout = new AggregateLayout<VisualNode, VisualEdge>(new VisualClustersOnACircleLayout((VisualGraph)graph, endC));
 		
 		HecataeusViewer.getActiveViewer().setGraphLayout(layout);
+		//TODO: FIX THIS
+		HecataeusViewer.getActiveViewerZOOM().setGraphLayout(layout);
 		// i use the same transformers used on other layouts
 		HecataeusViewer.vv.getRenderContext().setVertexFillPaintTransformer(MapTransformer.<VisualNode,Paint>getInstance(vertexPaints));
 		
@@ -165,6 +167,8 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 		public void itemStateChanged(ItemEvent e) {
 			cluster(layout, edgeBetweennessSlider.getValue(), e.getStateChange() == ItemEvent.SELECTED);
 			HecataeusViewer.getActiveViewer().repaint();
+			//TODO: FIX THIS
+			HecataeusViewer.getActiveViewerZOOM().repaint();
 		}});
 		
 		
@@ -180,6 +184,9 @@ public class VisualEdgeBetweennessClustering  extends VisualCircleLayout{
 					eastControls.repaint();
 					HecataeusViewer.getActiveViewer().validate();
 					HecataeusViewer.getActiveViewer().repaint();
+					//TODO: FIX THIS
+					HecataeusViewer.getActiveViewerZOOM().validate();
+					HecataeusViewer.getActiveViewerZOOM().repaint();
 				}
 			}
 		});

@@ -1,0 +1,10 @@
+SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language = 0  ORDER BY pid ASC;
+SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language IN (0 , 0 ) ORDER BY language ASC, pid ASC;
+SELECT source, alias FROM  url_alias  WHERE source IN (0 ) AND language IN (0 , 0 ) ORDER BY language DESC, pid ASC;
+SELECT alias FROM  url_alias  WHERE source = 0 AND language = 0  ORDER BY pid DESC;
+SELECT alias FROM  url_alias  WHERE source = 0 AND language IN (0 , 0 ) ORDER BY language DESC, pid DESC;
+SELECT alias FROM  url_alias  WHERE source = 0 AND language IN (0 , 0 ) ORDER BY language ASC, pid DESC;
+SELECT source FROM  url_alias  WHERE alias = 0 AND language = 0  ORDER BY pid DESC;
+SELECT source FROM  url_alias  WHERE alias = 0 AND language IN (0 , 0 ) ORDER BY language DESC, pid DESC;
+SELECT source FROM  url_alias  WHERE alias = 0 AND language IN (0 ,0 ) ORDER BY language ASC, pid DESC;
+SELECT * FROM menu_router WHERE path = 0;

@@ -1,0 +1,4 @@
+SELECT format FROM  filter_format ;
+SELECT format FROM  filter_format WHERE name = 0 ;
+SELECT * FROM  filter_format ;
+SELECT format FROM  filter_format ;

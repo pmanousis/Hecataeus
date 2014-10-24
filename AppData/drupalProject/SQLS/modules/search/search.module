@@ -1,0 +1,5 @@
+SELECT nid, caption FROM  search_mynode_links  WHERE sid = 0 AND type = 0;
+SELECT caption FROM  search_mynode_links  WHERE nid = 0;
+SELECT title, nid, vid FROM  mynode  WHERE nid = 0;
+SELECT t.word AS realword, i.word FROM  search_total  t ,  search_index  i WHERE t.word = i.word AND i.word IS NULL;
+SELECT SUM(score) FROM  search_index  WHERE word = 0;

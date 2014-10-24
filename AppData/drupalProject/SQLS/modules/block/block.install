@@ -1,0 +1,2 @@
+SELECT s.name FROM  system  s ,  mybloc  b WHERE s.name = b.theme AND s.type = 'theme' GROUP by s.name;
+block.install~

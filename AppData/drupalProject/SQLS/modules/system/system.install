@@ -1,0 +1,3 @@
+SELECT theme, status, region, weight, visibility, pages FROM  mybloc  WHERE module = 'system' AND delta = 'navigation';
+SELECT rid FROM  role_permission  WHERE permission = 0;
+SELECT rid FROM  role_permission  WHERE permission = 0;

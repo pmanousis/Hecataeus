@@ -1,0 +1,2 @@
+SELECT * FROM  mynode_type ;
+SELECT format FROM  filter_format ;

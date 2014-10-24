@@ -1,2 +1,0 @@
-SELECT COUNT(*) FROM  mynode  WHERE tnid = 0 ;
-SELECT nid FROM  mynode  WHERE tnid = 0 ORDER BY translate ASC, nid ASC;

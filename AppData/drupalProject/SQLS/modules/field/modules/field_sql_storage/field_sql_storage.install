@@ -1,0 +1,1 @@
+SELECT etid, type FROM field_config_entity_type;

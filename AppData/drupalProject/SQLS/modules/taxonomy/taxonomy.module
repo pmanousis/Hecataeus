@@ -1,0 +1,2 @@
+SELECT name, machine_name, vid FROM  taxonomy_vocabulary ;
+SELECT t.tid FROM  taxonomy_term_data  t ,  taxonomy_term_hierarchy  th WHERE th.tid = t.tid AND t.vid = 0 AND th.parent = 0;

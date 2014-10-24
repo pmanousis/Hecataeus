@@ -175,6 +175,8 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 			}
 		}
 		HecataeusViewer.getActiveViewer().repaint();
+		//TODO: FIX THIS
+		HecataeusViewer.getActiveViewerZOOM().repaint();
 	}
 	
 	@Override
@@ -188,6 +190,9 @@ public class VisualConcetricCirclesClustersLayoutV2 extends VisualCircleLayout{
 		CirclingCusters();
 		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 		HecataeusViewer.getActiveViewer().repaint();
+		//TODO: FIX THIS
+		HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewerZOOM().getPickedVertexState()));
+		HecataeusViewer.getActiveViewerZOOM().repaint();
 		HecataeusViewer.hecMap.createMap();
 	}
 

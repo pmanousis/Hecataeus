@@ -1,0 +1,4 @@
+SELECT mlid FROM  menu_links  WHERE module = 'system' AND router_path = 'user/logout';
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0;
+SELECT menu_name FROM  menu_links  WHERE menu_name = 0 ;

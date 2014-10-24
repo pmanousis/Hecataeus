@@ -85,7 +85,7 @@ public class HecataeusClusterMap extends JPanel{
 		pr.setVertexLabelTransformer(new VisualNodeLabel());
 		myViewer.getRenderer().getVertexLabelRenderer().setPosition(Position.AUTO);
 		pr.setVertexFontTransformer(new VisualNodeFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9)));
-		pr.setVertexFillPaintTransformer(new VisualNodeColor(myViewer.getPickedVertexState()));
+		//pr.setVertexFillPaintTransformer(new VisualNodeColor(myViewer.getPickedVertexState()));
 		pr.setVertexShapeTransformer(new VisualNodeShape());
 		pr.setVertexIncludePredicate(new VisualNodeVisible());
 		myViewer.getRenderContext().getMultiLayerTransformer().addChangeListener(myViewer);

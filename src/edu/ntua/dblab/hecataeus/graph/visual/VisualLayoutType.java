@@ -79,7 +79,7 @@ public enum VisualLayoutType {
 			case ZoomedLayoutForModules:
 				return "Zoomed Layout For Modules";*/
 			case ConcentricCircleLayout:
-				return "ConcentricCircleLayout";
+				return "Concentric Circle Layout";
 			case ClustersonaCircleLayout:
 				return "Clusters on a Circle";
 			case ConcentricCirclesClusterLayout:

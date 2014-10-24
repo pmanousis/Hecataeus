@@ -1,0 +1,11 @@
+SELECT * FROM  mybloc  WHERE theme = 0;
+SELECT * FROM  mybloc  WHERE theme = 0;
+SELECT 1 FROM  mybloc  WHERE theme NOT IN (0 );
+SELECT bid FROM  mybloc  WHERE module = 0 AND delta = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;
+SELECT 1 FROM  mybloc_role  WHERE module = 0 AND delta = 0;
+SELECT format FROM  mybloc_custom  WHERE bid = 0;
+SELECT bid FROM  mybloc_custom  WHERE info = 0;

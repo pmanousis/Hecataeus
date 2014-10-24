@@ -37,7 +37,7 @@ public class HecataeusInputDialog extends JDialog{
 		content.setLayout(null);
 		
 		
-		JLabel lblPouNaStamataei = new JLabel("Poso ksena tha einai ta clusters");
+		JLabel lblPouNaStamataei = new JLabel("Cluster disjointness");
 		lblPouNaStamataei.setBounds(12, 12, 351, 30);
 		content.add(lblPouNaStamataei);
 		
@@ -77,9 +77,12 @@ public class HecataeusInputDialog extends JDialog{
 		btnOk.setBounds(269, 179, 117, 30);
 		content.add(btnOk);
 		
-		JLabel lblDen = new JLabel("0 - den kanei clusters 1 - ola ta clusters einai ksena");
+		JLabel lblDen = new JLabel("0 - No clustering");
+		JLabel lblDen2 = new JLabel("1 - Clusters exclusively separated");
 		lblDen.setBounds(12, 36, 374, 30);
+		lblDen2.setBounds(12, 60, 374, 30);
 		content.add(lblDen);
+		content.add(lblDen2);
 		this.setLocationRelativeTo(owner);
 		this.setVisible(true);
 	}

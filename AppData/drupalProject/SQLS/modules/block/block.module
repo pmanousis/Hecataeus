@@ -1,0 +1,2 @@
+SELECT name FROM  system  WHERE type = 'theme' AND status = 1;
+block.module~
