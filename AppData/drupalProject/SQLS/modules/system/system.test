@@ -1,0 +1,3 @@
+SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
+SELECT * FROM  system  WHERE type = 'theme' ORDER BY name;
+SELECT info FROM  system  WHERE name = 0 AND type = 0;

@@ -193,10 +193,11 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 			drawCircles(relations, relationRadius);
 			drawCircles(views, viewRadius);
 			drawCircles(queries, queryRadius);
-			
-			
 			HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 			HecataeusViewer.getActiveViewer().repaint();
+			//TODO: FIX THSI
+			HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewerZOOM().getPickedVertexState()));
+			HecataeusViewer.getActiveViewerZOOM().repaint();
 		}
 	}
 	

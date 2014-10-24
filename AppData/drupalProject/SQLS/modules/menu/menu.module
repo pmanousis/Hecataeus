@@ -1,0 +1,7 @@
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND menu_name = 0  AND module = 'menu' ORDER BY mlid ASC;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu' AND menu_name IN (0 ) ORDER BY mlid ASC;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND module = 'menu';
+SELECT * FROM  menu_custom;
+SELECT mlid FROM  menu_links  WHERE link_path = 0 AND plid = 0;
+SELECT * FROM  menu_custom;
+SELECT mlid AS plid, menu_name FROM  menu_links  WHERE link_path = 'admin/structure/menu' AND module = 'system';

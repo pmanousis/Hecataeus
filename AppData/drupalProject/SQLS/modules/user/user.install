@@ -1,0 +1,10 @@
+SELECT f.*, u.uid as user_uid FROM  users  u ,  file_managed  f WHERE u.picture = f.fid AND u.picture <> 0 AND u.uid > 0 ORDER BY u.uid;
+SELECT uid, name, picture, data FROM  users  WHERE uid IN (0 );
+SELECT COUNT(*) FROM  users  WHERE picture <> '0';
+SELECT COUNT(*) FROM  users  u WHERE u.picture <> 0;
+SELECT format FROM  filter_format ;
+SELECT timezone FROM  users  WHERE uid = 0; -- SELECT timezone_name FROM  users  WHERE uid = 0;
+SELECT uid FROM  users  ORDER BY uid;
+SELECT COUNT(uid) FROM  users ;
+SELECT uid, pass FROM  users  WHERE uid > 0 ORDER BY uid;
+SELECT COUNT(uid) FROM  users ;

@@ -1,17 +1,14 @@
 package edu.ntua.dblab.hecataeus;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FileDialog;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -25,7 +22,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -59,7 +55,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import jdk.nashorn.internal.runtime.regexp.joni.constants.NodeStatus;
 import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
@@ -91,7 +86,6 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 
-
 public class HecataeusViewer {
 	
 	// a dummy counter for tabs  
@@ -105,7 +99,7 @@ public class HecataeusViewer {
 	protected HecataeusProjectConfiguration projectConf;
 	protected HecataeusPolicyManagerGUI policyManagerGui;
 	protected HecataeusEventManagerGUI eventManagerGui;
-	protected HecataeusFileStractureGUI filesTreeGui;
+	protected HecataeusFileStructureGUI filesTreeGui;
 	public static HecataeusClusterMap hecMap;
 	protected VisualNode epilegmenosKombos;
 	protected JTabbedPane managerTabbedPane;
@@ -179,13 +173,10 @@ public class HecataeusViewer {
 	 * Create the application.
 	 */
 	public HecataeusViewer(VisualGraph inGraph) {
-		
 		projectConf=new HecataeusProjectConfiguration();
 		this.graph = inGraph;
-		this.myViewer = myViewer;
 		graphs = new ArrayList<VisualGraph>();
 		Dimension prefferedSize = Toolkit.getDefaultToolkit().getScreenSize(); 
-
 		viewers = new ArrayList<VisualizationViewer<VisualNode, VisualEdge>>() ;
 		// the layout
 		layout = new VisualAggregateLayout(graph, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
@@ -193,6 +184,11 @@ public class HecataeusViewer {
 		VisualizationViewer = new Viewers();
 		vv = VisualizationViewer.SetViewers(layout, this);
 		vv.setName("Summary Graph");
+		viewers.add(vv);
+		
+		//TODO: FIX THIS
+		vv = VisualizationViewer.SetViewers(layout, this);
+		vv.setName("Zoom");
 		viewers.add(vv);
 		/**
 		 * @author pmanousi
@@ -298,9 +294,6 @@ public class HecataeusViewer {
 					graph = graph.importFromXML(file);
 					this.graphs.add(graph);
 					HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
-					
-
-
 					//in the XML file case, the locations are also defined and they must pass to the graph.
 					HecataeusViewer.this.setLayoutPositions();
 					selection=true;
@@ -350,17 +343,22 @@ public class HecataeusViewer {
 			}
 			vfc.setFileNames(fileNames);
 			frame.setTitle(frameTitle + " - "+projectConf.projectName);
-			
 			filesTreeGui.createPanel(projectConf.curPath+"SQLS/");
 			filesTreeGui.setVisible(true);
 			policyManagerGui.UPDATE();
 			eventManagerGui.UPDATE();
 			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			
+			/** Not good but it is the only way to make it work. */
+			frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
+			frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));	
+			getActiveViewer().getRenderContext().setVertexIconTransformer(null);
+			getActiveViewer().repaint();
+			//TODO: FIX THIS
+			getActiveViewerZOOM().getRenderContext().setVertexIconTransformer(null);
+			getActiveViewerZOOM().repaint();
 		}
-		/** Not good but it is the only way to make it work. */
-		frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		getLayout(getActiveViewer()).setTopLayoutType(VisualLayoutType.ClustersonaCircleLayoutForInit);
-		frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 	}
 	
 	public void showImpact()
@@ -552,6 +550,8 @@ public class HecataeusViewer {
 		mntmOpenProject.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				openProject();
+				frame.setVisible(true);
+			    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 				try {
 					Thread.sleep(10);
@@ -560,9 +560,8 @@ public class HecataeusViewer {
 					e1.printStackTrace();
 				}
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
-				zoomToWindow(activeViewer,summaryGraphSourceTabbedPane);
-				frame.setVisible(true);
-			    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
+				//TODO: FIX THIS
+				zoomToWindow(activeViewer,null);
 				frame.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			}
 		});
@@ -655,6 +654,9 @@ public class HecataeusViewer {
 			public void actionPerformed(ActionEvent e) {
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 				scaler.scale(activeViewer, 1 / 1.1f, activeViewer.getCenter());
+				//TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
+				scaler.scale(activeViewerZOOM, 1 / 1.1f, activeViewerZOOM.getCenter());
 			}
 		});
 		mnVisualize.add(mntmZoomOut);
@@ -664,7 +666,10 @@ public class HecataeusViewer {
 			public void actionPerformed(ActionEvent e) {
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 				centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-				zoomToWindow(activeViewer,summaryGraphSourceTabbedPane);
+				//TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
+				centerAt(((VisualGraph)activeViewerZOOM.getGraphLayout().getGraph()).getCenter());
+				zoomToWindow(activeViewer,null);
 			}
 		});
 		mnVisualize.add(mntmZoomInWindow);
@@ -684,6 +689,11 @@ public class HecataeusViewer {
 				System.out.println("active viewer Top-Level Nodes  " + activeViewer.getName());
 				activeViewer.repaint();
 				//vvContainer.repaint();
+				//TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = getActiveViewerZOOM();
+				VisualNodeVisible showAllZOOM = (VisualNodeVisible) activeViewerZOOM.getRenderContext().getVertexIncludePredicate();
+				showAllZOOM.setVisibleLevel(graph.getVertices(),VisibleLayer.MODULE);
+				activeViewerZOOM.repaint();
 			}
 		});
 		mnShow.add(mntmToplevelNodes);
@@ -708,6 +718,11 @@ public class HecataeusViewer {
 				showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.SEMANTICS);
 				System.out.println("active viewer Low-Level Nodes  " + activeViewer.getName());
 				activeViewer.repaint();
+				//TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = getActiveViewerZOOM();
+				VisualNodeVisible showAllZOOM = (VisualNodeVisible)  activeViewerZOOM.getRenderContext().getVertexIncludePredicate();
+				showAllZOOM.setVisibleLevel(graph.getVertices(),VisibleLayer.SEMANTICS);
+				activeViewerZOOM.repaint();
 			}
 		});
 		mnShow.add(mntmLowlevelNodes);
@@ -722,6 +737,11 @@ public class HecataeusViewer {
 				VisualNodeVisible showAll = (VisualNodeVisible) activeViewer.getRenderContext().getVertexIncludePredicate();
 				showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.STATUS);
 				activeViewer.repaint();
+				//TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = getActiveViewerZOOM();
+				VisualNodeVisible showAllZOOM = (VisualNodeVisible) activeViewerZOOM.getRenderContext().getVertexIncludePredicate();
+				showAllZOOM.setVisibleLevel(graph.getVertices(),VisibleLayer.STATUS);
+				activeViewerZOOM.repaint();
 			}
 		});
 		mnShow.add(mntmNodesWithStatus);
@@ -756,7 +776,7 @@ public class HecataeusViewer {
 			{
 				mnAlgorithms.addSeparator();
 			}
-			if(layoutType.equals(VisualLayoutType.ZoomedLayoutForModules))
+			if(layoutType.equals(VisualLayoutType.ZoomedLayoutForModules)||layoutType.equals(VisualLayoutType.ClustersonaCircleLayoutForInit))
 			{
 				continue;
 			}
@@ -773,7 +793,8 @@ public class HecataeusViewer {
 						HecataeusViewer.this.getLayoutPositions();
 						vv.repaint();
 						centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-						zoomToWindow(activeViewer,summaryGraphSourceTabbedPane);
+						// TODO: FIX THIS
+						zoomToWindow(activeViewer,null);
 				}
 			});
 		}
@@ -789,7 +810,8 @@ public class HecataeusViewer {
 				// FIXME: restore original layout
 				HecataeusViewer.this.getLayoutPositions();
 				HecataeusViewer.this.centerAt(graph.getCenter());
-				HecataeusViewer.this.zoomToWindow(activeViewer,summaryGraphSourceTabbedPane);
+				// TODO: FIX THIS
+				HecataeusViewer.this.zoomToWindow(activeViewer,null);
 			}
 		});
 		mnAlgorithms.add(mntmRevert);
@@ -899,9 +921,15 @@ public class HecataeusViewer {
 				if (selected) {
 					getActiveViewer().getRenderContext().setVertexIconTransformer(new VisualNodeIcon());
 					getActiveViewer().repaint();
+					//TODO: FIX THIS
+					getActiveViewerZOOM().getRenderContext().setVertexIconTransformer(new VisualNodeIcon());
+					getActiveViewerZOOM().repaint();
 				} else {
 					getActiveViewer().getRenderContext().setVertexIconTransformer(null);
 					getActiveViewer().repaint();
+					//TODO: FIX THIS
+					getActiveViewerZOOM().getRenderContext().setVertexIconTransformer(null);
+					getActiveViewerZOOM().repaint();
 				}
 			}
 		});
@@ -923,6 +951,10 @@ public class HecataeusViewer {
 					vnl.setVisibility(false);
 				activeViewer.getRenderContext().setVertexLabelTransformer(vnl);
 				activeViewer.repaint();
+				//TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = getActiveViewerZOOM();
+				activeViewerZOOM.getRenderContext().setVertexLabelTransformer(vnl);
+				activeViewerZOOM.repaint();
 			}
 		});
 		mnVisualize.add(mntmRelationLabels);
@@ -936,15 +968,17 @@ public class HecataeusViewer {
 		mntmFindNodes.setAccelerator(KeyStroke.getKeyStroke("control F"));
 		mntmFindNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//TODO: FIX THIS
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
 				// obtain user input from JOptionPane input dialogs
-				String nodeNames = JOptionPane
-						.showInputDialog( "The name of nodes to find (separated with ,): ");
+				String nodeNames = JOptionPane.showInputDialog( "The name of nodes to find (separated with ,): ");
 				StringTokenizer token = new StringTokenizer("");
 				if (nodeNames != null) {
 					token = new StringTokenizer(nodeNames);
 				}
 				activeViewer.getPickedVertexState().clear();
+				activeViewerZOOM.getPickedVertexState().clear();
 				VisualNode v = null;
 
 				while (token.hasMoreTokens()) {
@@ -957,11 +991,19 @@ public class HecataeusViewer {
 								v = u;
 							}
 					}
+					//TODO: FIX THIS	
+						for (VisualNode u : activeViewerZOOM.getGraphLayout().getGraph().getVertices()) {
+							if (u.getName().equals(name.trim().toUpperCase()) && u.getVisible()) {
+								activeViewerZOOM.getPickedVertexState().pick(u, true);
+								v = u;
+							}
+					}
 				}
 				if (v != null)
 				{
 //					centerAt(v.getLocation());
 					centerAt(activeViewer.getGraphLayout().transform(v));
+					centerAt(activeViewerZOOM.getGraphLayout().transform(v));
 					epilegmenosKombos=v;
 					updateManagers();
 				}
@@ -2047,7 +2089,7 @@ public class HecataeusViewer {
 		informationPanel.add(informationScrollArea, gbc);
 		JPanel fileSystemPanel = new JPanel();
 		fileSystemPanel.setBorder(BorderFactory.createTitledBorder("File system"));
-		filesTreeGui = new HecataeusFileStractureGUI(this);
+		filesTreeGui = new HecataeusFileStructureGUI(this);
 		fileSystemPanel.add(filesTreeGui);
 		filesTreeGui.setSize(fileSystemPanel.getSize());
 		gbc.gridx = 0;
@@ -2294,7 +2336,8 @@ public class HecataeusViewer {
 	 * @param file
 	 */
 	private void writeJPEGImage(File file) {
-		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
+		//TODO: FIX THIS
+		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewerZOOM();
 		int width = activeViewer.getWidth();
 		int height = activeViewer.getHeight();
 
@@ -2344,17 +2387,23 @@ public class HecataeusViewer {
 				}
 			}
 		}
-		jtp.setComponentAt(getActiveTab(jtp),new GraphZoomScrollPane(activeViewer));
+		if(jtp==null)
+		{
+			summaryGraphSourceTabbedPane.setComponentAt(summaryGraphSourceTabbedPaneIndex, new GraphZoomScrollPane(this.getActiveViewer()));
+			sourceTabbedPane.setComponentAt(sourceTabbedPaneIndex, new GraphZoomScrollPane(this.getActiveViewerZOOM()));
+		}
+		else
+		{
+			jtp.setComponentAt(getActiveTab(jtp),new GraphZoomScrollPane(activeViewer));
+		}
 	}
 	
 	/**
 	 * sets the layout of the graph 
 	 */
 	protected void setLayout(VisualLayoutType topLayoutType, VisualLayoutType subLayoutType) {
-		
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
 		final VisualLayoutType layoutType = VisualLayoutType.ConcentricCircleLayout;
-
 		//create the logical graph with only module, schema and semantics nodes
 		List<VisualNode> logicalNodes= graph.getVertices(NodeCategory.MODULE);
 		logicalNodes.addAll(graph.getVertices(NodeCategory.SCHEMA));
@@ -2364,11 +2413,9 @@ public class HecataeusViewer {
  */
 		logicalNodes.addAll(graph.getVertices(NodeCategory.INOUTSCHEMA));
 		VisualGraph logicalGraph = graph.toGraph(logicalNodes);
-
 		// pass the graph to the layout 
 		layout.setGraph(logicalGraph);
 		//create the top layout graph
-		
 		/**
 		 * @author evakont	
 		 * the intial layout is ConcentricCircleLayout
@@ -2376,8 +2423,8 @@ public class HecataeusViewer {
 		getLayout(activeViewer).setTopLayoutType(layoutType);
 		HecataeusViewer.this.getLayoutPositions();
 		centerAt(((VisualGraph)activeViewer.getGraphLayout().getGraph()).getCenter());
-		zoomToWindow(activeViewer,summaryGraphSourceTabbedPane);
-		
+		//TODO: FIX THIS
+		zoomToWindow(activeViewer,null);
 		VisualNodeVisible showAll = (VisualNodeVisible)  activeViewer.getRenderContext().getVertexIncludePredicate();
 		showAll.setVisibleLevel(graph.getVertices(),VisibleLayer.MODULE);
 	}
@@ -2434,6 +2481,41 @@ public class HecataeusViewer {
 		};
 		Thread thread = new Thread(animator);
 		thread.start();
+		//TODO: FIX THIS
+		final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
+		activeViewerZOOM.getRenderContext().getMultiLayerTransformer().setToIdentity();
+		Point2D vvCenterZOOM = activeViewerZOOM.getRenderContext().getMultiLayerTransformer().inverseTransform(activeViewerZOOM.getCenter());
+		final double dxZOOM = (vvCenterZOOM.getX() - layoutPoint.getX()) / 5;
+		final double dyZOOM = (vvCenterZOOM.getY() - layoutPoint.getY()) / 5;
+
+		Runnable animatorZOOM = new Runnable() {
+			public void run() {
+				for (int i = 0; i < 5; i++) {
+					activeViewerZOOM.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).translate(dxZOOM, dyZOOM);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException ex) {
+					}
+				}
+			}
+		};
+		Thread threadZOOM = new Thread(animatorZOOM);
+		threadZOOM.start();
+	}
+	
+	public static VisualizationViewer<VisualNode, VisualEdge> getActiveViewerZOOM(){
+		String tabName = sourceTabbedPane.getTitleAt(0);
+		if(viewers.size()>0){
+			for(VisualizationViewer<VisualNode, VisualEdge> vr : viewers){
+				if(vr.getName().equals(tabName)){
+					return vr;
+				}
+			}
+		}
+		else{
+			return vv;
+		}
+		return null;
 	}
 	
 	public static VisualizationViewer<VisualNode, VisualEdge> getActiveViewer(){
@@ -2508,16 +2590,13 @@ public class HecataeusViewer {
 
 	protected void zoomToModuleTab(List<VisualNode> subNodes, VisualGraph sub, String name){	
 		this.graphs.add(sub);
-		subLayout = new VisualAggregateLayout(sub, VisualLayoutType.StaticLayout, VisualLayoutType.StaticLayout);
-		vv1 = VisualizationViewer.SetViewers(subLayout, this);
-		sub.setViewerToGraph(vv1);
 		subLayout = new VisualAggregateLayout(sub, VisualLayoutType.ZoomedLayoutForModules, VisualLayoutType.ZoomedLayoutForModules);
 		vv1 = VisualizationViewer.SetViewers(subLayout, this);
 		GraphZoomScrollPane myPane = new GraphZoomScrollPane(vv1);
 		vv1.setGraphLayout(subLayout);
 		vv1.setName(name);
 		viewers.add(vv1);
-		tabbedPane.addTab(name, null, myPane, "New Tab");
+		tabbedPane.addTab(name, null, myPane, name);
 		countOpenTabs++;		
 		tabbedPane.setSelectedIndex(countOpenTabs);
 		tabbedPane.setTabComponentAt(countOpenTabs,new HecataeusButtonTabComponent(tabbedPane));
@@ -2633,6 +2712,14 @@ public class HecataeusViewer {
 						if (mode == NodeChooser.FOR_POLICY) {
 							HecataeusNodePolicies ndp = new HecataeusNodePolicies(
 									activeViewer, node);
+						}
+						//TODO: FIX THIS
+						final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.this.getActiveViewerZOOM();
+						if (mode == NodeChooser.FOR_EVENT) {
+							HecataeusNodeEvents nde = new HecataeusNodeEvents(activeViewerZOOM, node);
+						}
+						if (mode == NodeChooser.FOR_POLICY) {
+							HecataeusNodePolicies ndp = new HecataeusNodePolicies(activeViewerZOOM, node);
 						}
 						dispose();
 					}

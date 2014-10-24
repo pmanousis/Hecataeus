@@ -1,0 +1,1 @@
+SELECT fc.type, fci.field_name, fci.entity_type, fci.bundle FROM  field_config_instance  fci ,  field_config  fc WHERE fc.id = fci.field_id AND fc.active = 1 AND fc.storage_active = 1 AND fc.deleted = 0 AND fci.deleted = 0;

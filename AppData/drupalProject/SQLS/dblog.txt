@@ -1,9 +1,0 @@
-SELECT DISTINCT(type) FROM  watchdog  ORDER BY type;
-SELECT w.*, u.name, u.uid FROM  watchdog  w ,  users  u WHERE w.uid = u.uid AND w.wid = 0;
-SELECT value FROM  variable  WHERE name = 0 ;
-SELECT COUNT(wid) FROM  watchdog ;
-SELECT COUNT(wid) FROM  watchdog ;
-SELECT wid FROM  watchdog  WHERE uid = 0;
-SELECT COUNT(*) FROM  watchdog ;
-SELECT COUNT(*) FROM  watchdog ;
-SELECT COUNT(*) FROM  watchdog ;

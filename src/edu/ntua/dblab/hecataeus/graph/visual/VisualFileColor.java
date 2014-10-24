@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 public class VisualFileColor {
 	protected static List<String> files;
 	protected static HashMap<String, Color> FileColor;
-	private static int paceOfRecoloring;
+	private static List<colorDepth> fName;
 	
 	public VisualFileColor(){
-		paceOfRecoloring=1;
+		fName=new ArrayList<colorDepth>();
 	}
 	
 	public void setFileNames(List<String> files){
@@ -70,35 +71,69 @@ public class VisualFileColor {
 			}
 			else
 			{	// since your father had a color, just change it a little bit
-				FileColor.put(prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf, recolorize(c, cnt));
+				FileColor.put(prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf, recolorize(c, cnt, prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf));
 			}
 			cnt++;
 		}
 		return FileColor;
 	}
 	
-	private Color recolorize(Color c, int counter)
+	private Color recolorize(Color c, int counter, String folderName)
 	{
 		int color=c.getRGB();
-		for(int i=0; i<counter; i++)
+		colorDepth index = null;
+		int paceOfRecoloring=1;
+		for(Iterator<colorDepth> i=fName.iterator(); i.hasNext();)
 		{
-			color+=paceOfRecoloring;
+			index=i.next();
+			if(index.fn.equals(folderName.substring(0, folderName.lastIndexOf("/"))))
+			{
+				index.pace++;
+				paceOfRecoloring=index.pace;
+				break;
+			}
+		}
+		if(paceOfRecoloring==1)
+		{
+			index=new colorDepth(folderName.substring(0, folderName.lastIndexOf("/")),1);
+			fName.add(index);
+		}
+		
+		for(int i=0; i<paceOfRecoloring; i++)
+		{
+			color+=4;
+			color+=2*128;
+			//color+=4*128*128;
 		}
 		c=new Color(color%16777215);
-		paceOfRecoloring++;
 		return(c);
+//		return(c.brighter());
 	}
 	
 	private Color getColor(int c){
 		switch (c){
-		case 0: return new Color(16, 78, 139);
-		case 1: return new Color(255,102,102);
-		case 2: return new Color(255,178,102);
-		case 3: return new Color(178,255,102);
-		case 4: return new Color(102,178,255);
-		case 5: return new Color(178,102,255);
-		case 6: return new Color(255,102,102);
+		case 0: return new Color(200,181,200);	// Purple
+		//case 1: return new Color(102,178,255);	// Light Blue
+		case 1: return new Color(10,70,137);	// Dark Blue
+		case 2: return new Color(178,255,102);	// Nice Green
+		case 3: return new Color(255,178, 102);	// Orange
+		//case 3: return new Color(127,80,55);	// Brown
+		case 4: return new Color(16, 78, 139);	// Mildy Dark Blue
+		case 5: return new Color(127,63,0);	// Dark Orange
+		case 6: return new Color(255,102,178);	// Darker Purple?
 		default : return new Color(0,0,0);
 		}
+	}
+}
+
+class colorDepth
+{
+	String fn;
+	int pace;
+	
+	public colorDepth(String f, int p)
+	{
+		this.fn=f;
+		this.pace=p;
 	}
 }

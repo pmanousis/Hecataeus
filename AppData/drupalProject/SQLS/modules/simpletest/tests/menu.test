@@ -1,0 +1,4 @@
+SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0 AND link_path = 0;
+SELECT * FROM  menu_links  WHERE link_title = 0;

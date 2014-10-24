@@ -1,0 +1,3 @@
+SELECT name, filename FROM  system ;
+SELECT name, filename FROM  system ;
+SELECT name FROM  registry  WHERE type = 0 AND filename = 0;

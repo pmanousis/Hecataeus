@@ -1,0 +1,9 @@
+SELECT 1 FROM  date_format_locale  WHERE type = 0 AND language = 0;
+SELECT dft.type, dft.title, dft.locked FROM  date_format_type  dft ORDER BY dft.title;
+SELECT format, type, language FROM  date_format_locale ;
+SELECT df.dfid, df.format, df.type, df.locked FROM  date_formats  df WHERE df.dfid = 0;
+SELECT df.dfid, df.format, df.type, df.locked, dfl.language FROM  date_formats  df ,  date_format_locale  dfl WHERE df.format = dfl.format AND df.type = dfl.type ORDER BY df.type, df.format;
+SELECT fid FROM  file_managed  WHERE status <> 0 AND timestamp < 0;
+SELECT * FROM  system  WHERE type = 0;
+SELECT filename, name, type, status, schema_version, weight FROM  system  WHERE type = 0;
+SELECT mlid, menu_name FROM  menu_links  ml WHERE ml.router_path = 0 AND module = 'system';

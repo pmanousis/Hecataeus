@@ -1,0 +1,12 @@
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT * FROM  menu_links  WHERE link_path = 0 ;
+SELECT mlid FROM  menu_links  WHERE plid = 0;
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT * FROM  menu_links  WHERE mlid = 0;
+SELECT menu_name FROM  menu_links  WHERE expanded <> 0 GROUP BY menu_name;
+SELECT * FROM  menu_links  WHERE link_path = 0  AND module = 0 AND customized = 0;
+SELECT menu_name FROM  menu_links  WHERE router_path = 0  AND module = 'system';
+SELECT * FROM menu_router WHERE path IN (0) ORDER BY fit DESC;
+SELECT * FROM menu_router where path =0;
+SELECT ml.mlid FROM menu_links ml, menu_router mr WHERE ml.router_path = mr.path AND ml.module = 0 AND ml.customized = 0 AND mr.type IN(0);
+SELECT * FROM menu_links ml , menu_router m WHERE ml.router_path = m.path AND ml.menu_name = 0 AND ml.module = 'system' ORDER BY m.number_parts ASC;

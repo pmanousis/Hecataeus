@@ -1,0 +1,8 @@
+SELECT DISTINCT(type) FROM  watchdog  ORDER BY type;
+SELECT value FROM  variable  WHERE name = 0 ;
+SELECT COUNT(wid) FROM  watchdog ;
+SELECT COUNT(wid) FROM  watchdog ;
+SELECT wid FROM  watchdog  WHERE uid = 0;
+SELECT COUNT(*) FROM  watchdog ;
+SELECT COUNT(*) FROM  watchdog ;
+SELECT COUNT(*) FROM  watchdog ;

@@ -142,6 +142,8 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
             }
         }
         HecataeusViewer.getActiveViewer().repaint();
+        //TODO: FIX THIS
+        HecataeusViewer.getActiveViewerZOOM().repaint();
     }
     
     @Override
@@ -167,6 +169,9 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
 		//end visualization
         HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 		HecataeusViewer.getActiveViewer().repaint();
+		//TODO: FIX THIS
+		HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewerZOOM().getPickedVertexState()));
+		HecataeusViewer.getActiveViewerZOOM().repaint();
 		HecataeusViewer.hecMap.createMap();
     }
 

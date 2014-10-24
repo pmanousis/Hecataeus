@@ -1,0 +1,3 @@
+SELECT t.parent FROM  taxonomy_term_hierarchy  t WHERE t.tid = 0 ;
+SELECT * FROM  taxonomy_term_data  t WHERE t.vid = 0 AND t.name = 0 AND t.description = 0 ;
+SELECT COUNT(nid) FROM  mynode ;

@@ -1,0 +1,2 @@
+SELECT pid FROM  url_alias  WHERE alias = 0;
+SELECT tid FROM  taxonomy_term_data  WHERE name = 0;

@@ -136,6 +136,8 @@ public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
 			}
 		}
 		HecataeusViewer.getActiveViewer().repaint();
+		//TODO: FIX THIS
+		HecataeusViewer.getActiveViewerZOOM().repaint();
 	}
 
 	@Override

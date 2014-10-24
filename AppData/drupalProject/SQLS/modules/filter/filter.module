@@ -1,0 +1,2 @@
+SELECT * FROM  filter  ORDER BY weight, module, name;
+SELECT 1 FROM  filter_format  WHERE format = 0 ;

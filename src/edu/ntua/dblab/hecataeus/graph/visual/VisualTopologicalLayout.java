@@ -28,7 +28,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	private Point2D.Double OFFSET = new Point2D.Double();
 	private Orientation orientation;
 	VisualGraph graph;
-	double maxXForInputSchemata;
+	double maxYForInputSchemata;
 
 	public enum Orientation{
 		RIGHT2LEFT,
@@ -469,7 +469,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		}
 		boolean once=true;
 		for(VisualNode n : schemata)
-		{
+		{	// Initially we draw the shema nodes.
 			switch(n.getType())
 			{
 				case NODE_TYPE_OUTPUT:
@@ -487,25 +487,25 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 					loc.setLocation(smtxloc);	// Move to inputs.
 					break;
 				case NODE_TYPE_INPUT:
-					maxXForInputSchemata = loc.getY();
+					maxYForInputSchemata = loc.getY();
 					for(VisualNode key : schemataPositions.keySet())
 					{
 						if(key.getType()==NodeType.NODE_TYPE_INPUT)
 						{	//get max of position?
-							if(schemataPositions.get(key).getY()<maxXForInputSchemata)
+							if(schemataPositions.get(key).getY()<maxYForInputSchemata)
 							{
-								maxXForInputSchemata=schemataPositions.get(key).getY();
+								maxYForInputSchemata=schemataPositions.get(key).getY();
 							}
 						}
 					}
 					if(once==true)
 					{
-						loc.setLocation(loc.getX()+OFFSET.getX()*2,maxXForInputSchemata);
+						loc.setLocation(loc.getX()+OFFSET.getX()*2,maxYForInputSchemata);
 						once=false;
 					}
 					else
 					{
-						loc.setLocation(loc.getX(),maxXForInputSchemata);
+						loc.setLocation(loc.getX(),maxYForInputSchemata);
 					}
 					Point2D inloc=new Point2D.Double(loc.getX()+OFFSETschemata.getX(),loc.getY());
 					super.setLocation(n, inloc);
@@ -518,7 +518,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			}
 		}
 		for(VisualNode n : schemata)
-		{
+		{	// Then we draw their attributes
 			switch(n.getType())
 			{
 				case NODE_TYPE_OUTPUT:
@@ -683,6 +683,10 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 				modnum++;
 			}
 		}
+		if(attrnum==0)
+		{
+			attrnum++;
+		}
 		OFFSET.setLocation(new Point2D.Double(size.width/modnum,size.height/attrnum));
 		nodes.sort(new CustomComparator());
 		for(int i=0;i<nodes.size();i++)
@@ -691,7 +695,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			{
 				if(nodes.get(i).getType()==NodeType.NODE_TYPE_RELATION)
 				{	// this will be the last one to be drawn.
-					location.setLocation(maxXForInputSchemata*2+OFFSET.getX(), initialPosition.getY());
+					location.setLocation(maxYForInputSchemata*2+OFFSET.getX(), initialPosition.getY());
 					relationSetLocation(graph.getModule(nodes.get(i)), location);
 				}
 				else

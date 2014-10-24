@@ -158,6 +158,9 @@ public class VisualHalfCircleClusters extends VisualCircleLayout{
 		halfCircles();
 		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 		HecataeusViewer.getActiveViewer().repaint();
+		//TODO: FIX THIS
+		HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
+		HecataeusViewer.getActiveViewerZOOM().repaint();
 		HecataeusViewer.hecMap.createMap();
 	}
 

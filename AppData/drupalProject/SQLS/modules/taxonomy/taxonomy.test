@@ -1,0 +1,15 @@
+SELECT COUNT(*) FROM  taxonomy_term_data ;
+SELECT COUNT(*) FROM  taxonomy_term_data ;
+SELECT COUNT(*) FROM  taxonomy_term_data ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT COUNT(*) FROM  taxonomy_index  WHERE nid = 0 AND tid = 0 ;
+SELECT format FROM  filter_format ;

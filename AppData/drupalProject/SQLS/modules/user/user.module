@@ -1,0 +1,10 @@
+SELECT uid, name, picture, data FROM  users  WHERE uid IN (0 );
+SELECT name FROM  role  WHERE rid = 0;
+SELECT uid, name FROM  users  WHERE status <> 0 AND access <> 0 ORDER BY created DESC;
+SELECT * FROM  users  WHERE name = 0 AND status = 1;
+SELECT rid, permission FROM  role_permission  WHERE rid IN (0 )
+SELECT u.uid, u.name, MAX(s.timestamp) AS max_timestamp FROM  users  u ,  sessions  s WHERE u.uid = s.uid AND s.timestamp >= 0 AND s.uid > 0 GROUP BY u.uid, u.name ORDER BY max_timestamp DESC;
+SELECT MAX(uid) FROM  users ;
+SELECT r.rid, r.name, ur.uid FROM  role  r ,  users_roles  ur WHERE ur.rid = r.rid AND ur.uid IN (0 );
+SELECT uid FROM  authmap  WHERE authname = 0;
+SELECT module, authname FROM  authmap  WHERE authname = 0;

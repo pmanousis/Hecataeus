@@ -1,0 +1,4 @@
+SELECT data FROM  field_config  WHERE field_name = 0 ;
+SELECT data FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
+SELECT * FROM  field_config_instance  WHERE field_name = 0  AND bundle = 0;
+SELECT * FROM  field_config  WHERE field_name = 0 ;

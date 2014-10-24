@@ -1,0 +1,4 @@
+SELECT COUNT(*) FROM  sessions ;
+SELECT COUNT(*) FROM  sessions  WHERE uid = 0;
+SELECT COUNT(*) FROM  sessions  WHERE uid =  0 AND sid = 0 AND timestamp = 0;
+SELECT MAX(uid) FROM  users ;

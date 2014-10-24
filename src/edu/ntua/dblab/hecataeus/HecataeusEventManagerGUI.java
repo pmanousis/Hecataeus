@@ -96,6 +96,26 @@ public class HecataeusEventManagerGUI extends JPanel
 					epilegmenosKombos=v;
 					UPDATE();
 				}
+				// TODO: FIX THIS
+				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = viewer.getActiveViewerZOOM();
+				// obtain user input from JOptionPane input dialog
+				activeViewerZOOM.getPickedVertexState().clear();
+				v = null;
+				if(nodeName!=null)
+				{
+					for (VisualNode u : viewer.graph.getVertices())
+					{
+						if (u.getName().equals(nodeName.trim().toUpperCase()) && u.getVisible())
+						{
+							activeViewerZOOM.getPickedVertexState().pick(u, true);
+							v = u;
+						}
+					}
+				}
+				if (v != null)
+				{
+					viewer.centerAt(activeViewerZOOM.getGraphLayout().transform(v));
+				}
 			}
         });
 		infoLbl=new JLabel("Selected Node:\n");
