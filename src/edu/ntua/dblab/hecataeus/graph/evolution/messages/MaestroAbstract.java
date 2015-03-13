@@ -187,7 +187,7 @@ public abstract class MaestroAbstract<V extends EvolutionNode<E>,E extends Evolu
 	 * */
 	public void setModuleStatus(Message<V,E> msg)
 	{
-		if(msg.toNode.getStatus()!=StatusType.BLOCKED)
+		if(msg.toNode.getStatus() != StatusType.BLOCKED)
 		{
 			msg.toNode.setStatus(StatusType.PROPAGATE,true);
 		}

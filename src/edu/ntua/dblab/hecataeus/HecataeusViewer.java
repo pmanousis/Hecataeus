@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
@@ -367,23 +368,47 @@ public class HecataeusViewer {
 		showAffected();
 		String info=new String();
 		String eol=System.getProperty("line.separator");
+		List<VisualNode> affected=new ArrayList<VisualNode>();
 		for(VisualNode v: graph.getVertices())
 		{
 			if(v.getStatus() != StatusType.NO_STATUS)
 			{
-				if(v.getType().getCategory()==NodeCategory.MODULE)
-				{
-					info+=eol+v.getName();
-				}
-				else
-				{
-					info+=eol+v.getParentNode().getName()+"."+v.getName();
-				}
+				affected.add(v);
+			}
+		}
+		affected.sort(GroupByFileNameComparator);
+		String initialScript="";
+		for(VisualNode v: affected)
+		{
+			if(initialScript.equals(v.getFileName())==false)
+			{
+				info+=eol+"From script: "+v.getFileName();
+				initialScript=v.getFileName();
+			}
+			if(v.getType()==NodeType.NODE_TYPE_QUERY)
+			{
+				info+=eol+"Query: "+v.getSQLDefinition();
+			}
+			else if(v.getType()==NodeType.NODE_TYPE_VIEW)
+			{
+				info+=eol+"View: "+v.getSQLDefinition();
+			}
+			else if(v.getType()==NodeType.NODE_TYPE_RELATION)
+			{
+				info+=eol+"Relation: "+v.getName();
 			}
 		}
 		informationArea.setText("Nodes that were affected by the change:"+info);
 	}
 	
+	public static Comparator<VisualNode> GroupByFileNameComparator = new Comparator<VisualNode>()
+	{
+		@Override
+		public int compare(VisualNode o1, VisualNode o2)
+		{
+			return(o1.getFileName().compareTo(o2.getFileName()));
+		}
+	};
 	
 	/**
 	 * @author pmanousi
@@ -669,6 +694,7 @@ public class HecataeusViewer {
 				//TODO: FIX THIS
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
 				centerAt(((VisualGraph)activeViewerZOOM.getGraphLayout().getGraph()).getCenter());
+				
 				zoomToWindow(activeViewer,null);
 			}
 		});
@@ -2389,8 +2415,8 @@ public class HecataeusViewer {
 		}
 		if(jtp==null)
 		{
-			summaryGraphSourceTabbedPane.setComponentAt(summaryGraphSourceTabbedPaneIndex, new GraphZoomScrollPane(this.getActiveViewer()));
-			sourceTabbedPane.setComponentAt(sourceTabbedPaneIndex, new GraphZoomScrollPane(this.getActiveViewerZOOM()));
+			summaryGraphSourceTabbedPane.setComponentAt(0, new GraphZoomScrollPane(this.getActiveViewer()));
+			sourceTabbedPane.setComponentAt(0, new GraphZoomScrollPane(this.getActiveViewerZOOM()));
 		}
 		else
 		{

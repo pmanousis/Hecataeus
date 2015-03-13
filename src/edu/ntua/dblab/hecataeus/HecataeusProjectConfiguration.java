@@ -41,42 +41,7 @@ public class HecataeusProjectConfiguration
 	
 	public void setDefaultPolicies()
 	{
-		policy = "QUERY.OUT.SELF: on ADD_ATTRIBUTE then BLOCK;\n" +
-				 "QUERY.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER then BLOCK;\n" +
-				 "QUERY.OUT.SELF: on DELETE_SELF then BLOCK;\n" +
-				 "QUERY.OUT.SELF: on RENAME_SELF then BLOCK;\n" +
-				 "QUERY.OUT.ATTRIBUTES: on DELETE_SELF then BLOCK;\n" +
-				 "QUERY.OUT.ATTRIBUTES: on RENAME_SELF then BLOCK;\n" +
-				 "QUERY.OUT.ATTRIBUTES: on DELETE_PROVIDER then BLOCK;\n" +
-				 "QUERY.OUT.ATTRIBUTES: on RENAME_PROVIDER then BLOCK;\n" +
-				 "QUERY.IN.SELF: on DELETE_PROVIDER then BLOCK;\n" +
-				 "QUERY.IN.SELF: on RENAME_PROVIDER then BLOCK;\n" +
-				 "QUERY.IN.SELF: on ADD_ATTRIBUTE_PROVIDER then BLOCK;\n" +
-				 "QUERY.IN.ATTRIBUTES: on DELETE_PROVIDER then BLOCK;\n" +
-				 "QUERY.IN.ATTRIBUTES: on RENAME_PROVIDER then BLOCK;\n" +
-				 "QUERY.SMTX.SELF: on ALTER_SEMANTICS then BLOCK;\n" +
-				 
-				 "VIEW.OUT.SELF: on ADD_ATTRIBUTE then BLOCK;\n" +
-				 "VIEW.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER then BLOCK;\n" +
-				 "VIEW.OUT.SELF: on DELETE_SELF then BLOCK;\n" +
-				 "VIEW.OUT.SELF: on RENAME_SELF then BLOCK;\n" +
-				 "VIEW.OUT.ATTRIBUTES: on DELETE_SELF then BLOCK;\n" +
-				 "VIEW.OUT.ATTRIBUTES: on RENAME_SELF then BLOCK;\n" +
-				 "VIEW.OUT.ATTRIBUTES: on DELETE_PROVIDER then BLOCK;\n" +
-				 "VIEW.OUT.ATTRIBUTES: on RENAME_PROVIDER then BLOCK;\n" +
-				 "VIEW.IN.SELF: on DELETE_PROVIDER then BLOCK;\n" +
-				 "VIEW.IN.SELF: on RENAME_PROVIDER then BLOCK;\n" +
-				 "VIEW.IN.SELF: on ADD_ATTRIBUTE_PROVIDER then BLOCK;\n" +
-				 "VIEW.IN.ATTRIBUTES: on DELETE_PROVIDER then BLOCK;\n" +
-				 "VIEW.IN.ATTRIBUTES: on RENAME_PROVIDER then BLOCK;\n" +
-				 "VIEW.SMTX.SELF: on ALTER_SEMANTICS then BLOCK;\n" +
-				 
-				 "RELATION.OUT.SELF: on ADD_ATTRIBUTE then BLOCK;\n" +
-				 "RELATION.OUT.SELF: on DELETE_SELF then BLOCK;\n" +
-				 "RELATION.OUT.SELF: on RENAME_SELF then BLOCK;\n" +
-				 "RELATION.OUT.ATTRIBUTES: on DELETE_SELF then BLOCK;\n" +
-				 "RELATION.OUT.ATTRIBUTES: on RENAME_SELF then BLOCK;\n";
-		
+		policy = "NODE: on * then BLOCK;\n";
 		policies.add("POLICIES/DefaultPolicy.plc");
 		writeDefaultPolicy();
 	}

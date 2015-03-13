@@ -451,6 +451,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_OUTPUT && vns.contains(vn.getOutEdges().get(i).getToNode()))
 			{
 				schemata.add(vn.getOutEdges().get(i).getToNode());
+				break;
 			}
 		}
 		for(int i=0;i<vn.getOutEdges().size();i++)
@@ -458,6 +459,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			if(vn.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_SEMANTICS && vns.contains(vn.getOutEdges().get(i).getToNode()))
 			{
 				schemata.add(vn.getOutEdges().get(i).getToNode());
+				break;
 			}
 		}
 		for(int i=0;i<vn.getOutEdges().size();i++)
@@ -546,14 +548,26 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 							VisualNode outputValueNode=e.getToNode();
 							for(VisualEdge eo : outputValueNode.getOutEdges())
 							{
-								VisualNode inNd=eo.getToNode();
-								if(inNd.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
-								{	// Attribute
-									VisualNode inpNode=paterasKombos(inNd);
-									Point2D inloc=inpNode.getLocation();
-									inloc.setLocation(inloc.getX(),outloc.getY());
-									super.setLocation(inNd, inloc);
-									inNd.setLocation(inloc);
+								if(eo.getType().equals(EdgeType.EDGE_TYPE_MAPPING))
+								{
+									VisualNode inNd=eo.getToNode();
+									for(VisualNode inputSchema : schemata)
+									{
+										if(inputSchema.getType().equals(NodeType.NODE_TYPE_INPUT))
+										{
+											for(VisualEdge inputSchemaToInputAttribute: inputSchema.getOutEdges())
+											{
+												if(inputSchemaToInputAttribute.getToNode().equals(inNd))
+												{	// found parent schema node
+													Point2D inloc=e.getToNode().getLocation();
+													inloc.setLocation(inputSchema.getLocation().getX(), e.getToNode().getLocation().getY());
+													super.setLocation(inNd, inloc);
+													inNd.setLocation(inloc);
+												}
+											}
+										}
+									}
+									
 								}
 								else
 								{	// Aggregate function?
@@ -609,7 +623,14 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 							{
 								VisualNode inpNode=paterasKombos(ve.getToNode());
 								Point2D inloc=inpNode.getLocation();
-								inloc.setLocation(inloc.getX(),lastOfOutput.getY()+OFFSET.getY());
+								if(lastOfOutput.equals(new Point2D.Double(0,0))==false)
+								{
+									inloc.setLocation(inloc.getX(),lastOfOutput.getY()+OFFSET.getY());
+								}
+								else
+								{
+									inloc.setLocation(inloc.getX(),inloc.getY()+OFFSET.getY());
+								}
 								super.setLocation(ve.getToNode(), inloc);
 								ve.getToNode().setLocation(inloc);
 								lastOfOutput.setLocation(inloc);
@@ -671,7 +692,7 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
 		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
 		int attrnum=0;
-		int modnum=1;
+		int modnum=0;
 		for(VisualNode n : nodes)
 		{
 			if(n.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
@@ -687,6 +708,11 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		{
 			attrnum++;
 		}
+		if(modnum==0)
+		{
+			modnum++;
+		}
+		
 		OFFSET.setLocation(new Point2D.Double(size.width/modnum,size.height/attrnum));
 		nodes.sort(new CustomComparator());
 		for(int i=0;i<nodes.size();i++)
@@ -695,13 +721,13 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 			{
 				if(nodes.get(i).getType()==NodeType.NODE_TYPE_RELATION)
 				{	// this will be the last one to be drawn.
-					location.setLocation(maxYForInputSchemata*2+OFFSET.getX(), initialPosition.getY());
+					location.setLocation(2.3*(maxYForInputSchemata+OFFSET.getX()), initialPosition.getY());
 					relationSetLocation(graph.getModule(nodes.get(i)), location);
 				}
 				else
 				{
 					qvZoomedLayoutForModules(graph.getModule(nodes.get(i)), location);
-					location.setLocation(initialPosition.getX(), location.getY()+OFFSET.getY()*2);
+					location.setLocation(initialPosition.getX(), location.getY()+OFFSET.getY()*3);
 				}
 			}
 		}

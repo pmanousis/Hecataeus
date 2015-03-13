@@ -185,7 +185,9 @@ public class HecataeusEventManagerGUI extends JPanel
 			        	line=br.readLine();
 			        }
 	            }
-			    catch (Exception ex){}
+			    catch (Exception ex){
+			    	System.err.println("188, "+ex.getLocalizedMessage());
+			    }
 			    finally
 			    {
 					try

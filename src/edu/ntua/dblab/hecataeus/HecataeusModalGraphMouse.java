@@ -7,11 +7,16 @@ package edu.ntua.dblab.hecataeus;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JMenu;
 
+import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
@@ -124,8 +129,8 @@ protected HecataeusViewer viewer;
 				}
 				node.setVisible(true);
 			}
-			
 		}
+		String eol=System.getProperty("line.separator");
 		if(me.getClickCount()==1 && me.getButton()==MouseEvent.BUTTON1)
 		{
 			this.viewer.setTextToInformationArea("");
@@ -140,7 +145,7 @@ protected HecataeusViewer viewer;
 					}
 				}
 				filenames.remove(node.getFileName());
-				String eol=System.getProperty("line.separator");
+				Collections.sort(filenames);
 				String output=new String();
 				for(String filename: filenames)
 				{
@@ -148,8 +153,54 @@ protected HecataeusViewer viewer;
 				}
 				this.viewer.setTextToInformationArea("Scripts using relation "+node.getName()+":"+eol+output);
 			}
+			if(node.getType()==NodeType.NODE_TYPE_QUERY||node.getType()==NodeType.NODE_TYPE_VIEW)
+			{
+				String input=new String();
+				for(VisualEdge ve: node.getInEdges())
+				{
+					if(ve.getType()==EdgeType.EDGE_TYPE_USES)
+					{
+						input+=ve.getFromNode().getName()+" "+ve.getFromNode().getType().toString().replace("NODE_TYPE_", "").toLowerCase()+eol;
+					}
+				}
+				if(input.isEmpty())
+				{
+					input="none";
+				}
+				String output=new String();
+				
+				List<String> outS = new ArrayList<String>();
+				
+				for(VisualEdge ve: node.getOutEdges())
+				{
+					if(ve.getType()==EdgeType.EDGE_TYPE_USES)
+					{
+						//output+=ve.getToNode().getName()+" "+ve.getToNode().getType().toString().replace("NODE_TYPE_", "").toLowerCase()+eol;
+						outS.add(ve.getToNode().getName()+" "+ve.getToNode().getType().toString().replace("NODE_TYPE_", "").toLowerCase());
+					}
+				}
+				Collections.sort(outS);
+				for(String s: outS)
+				{
+					output += s+eol;
+				}
+				if(output.isEmpty())
+				{
+					output="none";
+				}
+				if(node.getType() == NodeType.NODE_TYPE_QUERY)
+				{
+					this.viewer.setTextToInformationArea("Query: "+node.getName()+" uses:"+eol+output);
+				}
+				else
+				{
+					this.viewer.setTextToInformationArea("View: "+node.getName()+" is used by:"+eol+input+eol+"and uses:"+eol+output);
+				}
+			}
 		}
 	}
+	
+	
 	
 	@Override
 	public void graphPressed(VisualNode v, MouseEvent me) {

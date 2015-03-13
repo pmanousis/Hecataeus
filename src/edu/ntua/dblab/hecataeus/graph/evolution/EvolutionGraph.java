@@ -8,6 +8,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private V arxikoModule = null;
 
 	protected static int _KeyGenerator;
 	
@@ -81,14 +83,14 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		{
 			if(fromNode==null)
 			{
-				System.out.println("fromNode=NULL!!! on edge: "+ Edge.getName()+" to node:"+Edge.getToNode());
+				System.out.println("85, fromNode=NULL!!! on edge: "+ Edge.getName()+" to node:"+Edge.getToNode());
 			}
 			else
 			{
-				System.out.println("86 line: "+fromNode.getName());
+				System.out.println("89, line: "+fromNode.getName());
 			}
 		}
-		if (!fromNode.getOutEdges().contains(Edge))
+		else if (!fromNode.getOutEdges().contains(Edge))
 			fromNode.getOutEdges().add(Edge);
 		// add edge to outgoing edges of FromNode
 		V toNode = (V) Edge.getToNode();
@@ -199,31 +201,31 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
  *  get node by its name, after finding his parent
  *  OTHERWISE return node
  **/
-public V findVertexByNameParent(String name) {
-	String parent="";
-	String node="";
-	if(name.contains("."))
-	{
-		parent=name.substring(0, name.indexOf("."));
-		node=name.substring(name.indexOf(".")+1);
-		for (V u: this.getVertices()) {
-			if (u.getName().toUpperCase().equals(parent.toUpperCase())) {
-				for(int i=0;i<u.getOutEdges().size();i++)
-				{
-					if(u.getOutEdges().get(i).getToNode().getName().equals(node.toUpperCase()))
+	public V findVertexByNameParent(String name) {
+		String parent="";
+		String node="";
+		if(name.contains("."))
+		{
+			parent=name.substring(0, name.indexOf("."));
+			node=name.substring(name.indexOf(".")+1);
+			for (V u: this.getVertices()) {
+				if (u.getName().toUpperCase().equals(parent.toUpperCase())) {
+					for(int i=0;i<u.getOutEdges().size();i++)
 					{
-						return (V) (u.getOutEdges().get(i).getToNode());
+						if(u.getOutEdges().get(i).getToNode().getName().equals(node.toUpperCase()))
+						{
+							return (V) (u.getOutEdges().get(i).getToNode());
+						}
 					}
 				}
 			}
 		}
+		else
+		{
+			return(findVertexByName(name));
+		}
+		return null;
 	}
-	else
-	{
-		return(findVertexByName(name));
-	}
-	return null;
-}
 	
 	/**
 	 * @author pmanousi
@@ -284,12 +286,7 @@ public V findVertexByNameParent(String name) {
 	 **/
 	public V getAttributeNode(String TableName, String AttributeName) {
 		for (V u: this.getVertices()) {
-			if (u.getName().toUpperCase().equals(TableName)
-/**
- * @author pmanousi
- * Changed it to work with INOUTSCHEMA
- */
-&&((u.getType().getCategory() == NodeCategory.INOUTSCHEMA)||(u.getType().getCategory() == NodeCategory.MODULE))){
+			if (u.getName().toUpperCase().equals(TableName) &&((u.getType().getCategory() == NodeCategory.INOUTSCHEMA)||(u.getType().getCategory() == NodeCategory.MODULE))){ /** @author pmanousi Changed it to work with INOUTSCHEMA */
 				for (E e :  this.getOutEdges(u)) {
 					if ( this.getDest(e).getName().toUpperCase().equals(AttributeName.toUpperCase()) ) {
 						return this.getDest(e);
@@ -403,295 +400,279 @@ public V findVertexByNameParent(String name) {
 	 *  makes the necessary initializations to execute propagateChanges()
 	 **/
 	public void initializeChange(EvolutionEvent<V> event){
-
-for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
-{	// Clear statuses of nodes.
-	entry.getKey().setStatus(StatusType.NO_STATUS,true);
-}
-for(Entry<E, Pair<V>> entry : this.edges.entrySet())
-{	// Clear statuses of edges.
-	entry.getKey().setStatus(StatusType.NO_STATUS,true);
-}
-
-V node= event.getEventNode();
-V toNode = null;
-V toSchema = null;
-String parameter="";
-switch(node.getType())
-{
-case NODE_TYPE_RELATION:
-case NODE_TYPE_QUERY:
-case NODE_TYPE_VIEW:
-	toNode=node;
-	for(int i=0;i<node.getOutEdges().size();i++)
-	{
-		toSchema= (V) node.getOutEdges().get(i).getToNode();
-		if(toSchema.getType()==NodeType.NODE_TYPE_OUTPUT)
-		{
-			parameter=node.getName();
-			break;
+		
+		setArxikoModule(null);
+		for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
+		{	// Clear statuses of nodes.
+			entry.getKey().setStatus(StatusType.NO_STATUS,true);
 		}
-	}
-	break;
-
-case NODE_TYPE_OUTPUT:
-case NODE_TYPE_SEMANTICS:
-	toSchema=node;
-	for(int i=0;i<node.getInEdges().size();i++)
-	{
-		if(node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_OUTPUT||node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
-		{
-			toNode=(V) node.getInEdges().get(i).getFromNode();
-			break;
-		}
-		parameter=node.getName();
-		if(event.getEventType()==EventType.ADD_ATTRIBUTE)
-		{
-			parameter="";
+		for(Entry<E, Pair<V>> entry : this.edges.entrySet())
+		{	// Clear statuses of edges.
+			entry.getKey().setStatus(StatusType.NO_STATUS,true);
 		}
 		
-	}
-	break;
-
-default:
-	for(int i=0;i<node.getInEdges().size();i++)
-	{
-		if(node.getInEdges().get(i).getFromNode().getType()==NodeType.NODE_TYPE_OUTPUT)
+		V node= event.getEventNode();
+		V toNode = null;
+		V toSchema = null;
+		String parameter="";
+		switch(node.getType())
 		{
-			toSchema=(V) node.getInEdges().get(i).getFromNode();
-			for(int j=0;j<toSchema.getInEdges().size();j++)
+		case NODE_TYPE_RELATION:
+		case NODE_TYPE_QUERY:
+		case NODE_TYPE_VIEW:
+			toNode=node;
+			for(int i=0;i<node.getOutEdges().size();i++)
 			{
-				if(toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_RELATION||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_QUERY||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_VIEW)
+				toSchema= (V) node.getOutEdges().get(i).getToNode();
+				if(toSchema.getType()==NodeType.NODE_TYPE_OUTPUT)
 				{
-					toNode=(V) toSchema.getInEdges().get(j).getFromNode();
+					parameter=node.getName();
+					break;
 				}
 			}
-			parameter=node.getName();
-			if(event.getEventType()==EventType.DELETE_SELF)
+			break;
+		
+		case NODE_TYPE_OUTPUT:
+		case NODE_TYPE_SEMANTICS:
+			toSchema=node;
+			for(int i=0;i<node.getInEdges().size();i++)
 			{
-				event.setEventType(EventType.DELETE_ATTRIBUTE);
+				if(node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_OUTPUT||node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
+				{
+					toNode=(V) node.getInEdges().get(i).getFromNode();
+					break;
+				}
+				parameter=node.getName();
+				if(event.getEventType()==EventType.ADD_ATTRIBUTE)
+				{
+					parameter="";
+				}
+				
 			}
-			else if(event.getEventType()==EventType.RENAME_SELF)
+			break;
+		
+		default:
+			for(int i=0;i<node.getInEdges().size();i++)
 			{
-				event.setEventType(EventType.RENAME_ATTRIBUTE);
+				if(node.getInEdges().get(i).getFromNode().getType()==NodeType.NODE_TYPE_OUTPUT)
+				{
+					toSchema=(V) node.getInEdges().get(i).getFromNode();
+					for(int j=0;j<toSchema.getInEdges().size();j++)
+					{
+						if(toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_RELATION||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_QUERY||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_VIEW)
+						{
+							toNode=(V) toSchema.getInEdges().get(j).getFromNode();
+						}
+					}
+					parameter=node.getName();
+					if(event.getEventType()==EventType.DELETE_SELF)
+					{
+						event.setEventType(EventType.DELETE_ATTRIBUTE);
+					}
+					else if(event.getEventType()==EventType.RENAME_SELF)
+					{
+						event.setEventType(EventType.RENAME_ATTRIBUTE);
+					}
+					break;
+				}
+			}
+			if(toSchema==null)
+			{
+				while(toNode==null)
+				{
+					toSchema=(V) node.getInEdges().get(0).getFromNode();
+					if(toSchema.getType()==NodeType.NODE_TYPE_SEMANTICS)
+					{
+						event.setEventType(EventType.ALTER_SEMANTICS);
+						toNode=(V) toSchema.getInEdges().get(0).getFromNode();
+					}
+				}
 			}
 			break;
 		}
+		Message<V,E> firstMessage=new Message<V,E>(toNode,toSchema,event.getEventType(),parameter);
+		propagateChanges(firstMessage);
 	}
-	if(toSchema==null)
+
+
+	private void setArxikoModule(V toNode)
 	{
-		while(toNode==null)
+		if(arxikoModule == null || toNode == null)
 		{
-			toSchema=(V) node.getInEdges().get(0).getFromNode();
-			if(toSchema.getType()==NodeType.NODE_TYPE_SEMANTICS)
-			{
-				event.setEventType(EventType.ALTER_SEMANTICS);
-				toNode=(V) toSchema.getInEdges().get(0).getFromNode();
-			}
+			arxikoModule=toNode;
 		}
 	}
-	break;
-}
-Message<V,E> firstMessage=new Message<V,E>(toNode,toSchema,event.getEventType(),parameter);
-propagateChanges(firstMessage);
-	}
-
-
 	
 	/**
 	 *  sets the status of the parts of the graph affected by an event
 	 **/
-/** @author pmanousi private void propagateChanges(Queue queue, List<V> nodesVisited) */
-@SuppressWarnings("unused")
-private void propagateChanges(Message<V,E> message)
-{
-V arxikoModule=message.toNode;
-EvolutionGraph<V, E> ograph = new EvolutionGraph<V,E>();
-ograph.vertices.putAll(this.vertices);
-int modulesAffected=0;
-int internalsAffected=0;
-int numberOfModules=0;
-int numberOfNodes=0;
-
-	PriorityQueue<Message<V,E>> queue= new PriorityQueue<Message<V,E>>(1, new MessageCompare());
-	queue.add(message);
-	List<ModuleNode<V,E>> epireasmenoi=new LinkedList<ModuleNode<V,E>>();
-/**
- * @author pmanousi
- * For time count of step 1.
- */
-//StopWatch step1 = new StopWatch();
-//step1.start();
-	while (!queue.isEmpty())
+	@SuppressWarnings("unused")
+	private void propagateChanges(Message<V,E> message)
 	{
-		try
+		setArxikoModule(message.toNode);
+		EvolutionGraph<V, E> ograph = new EvolutionGraph<V,E>();
+		ograph.vertices.putAll(this.vertices);
+		int modulesAffected=0;
+		int internalsAffected=0;
+		int numberOfModules=0;
+		int numberOfNodes=0;
+		PriorityQueue<Message<V,E>> queue= new PriorityQueue<Message<V,E>>(1, new MessageCompare());
+		queue.add(message);
+		List<ModuleNode<V,E>> epireasmenoi=new LinkedList<ModuleNode<V,E>>();
+		StopWatch step1 = new StopWatch();	/** @author pmanousi For time count of step 1. */
+		step1.start();
+		
+		while (!queue.isEmpty())
 		{
-			ModuleMaestro<V,E> maestro = new ModuleMaestro<V,E>(queue);
-			PriorityQueue<Message<V, E>> mins=new PriorityQueue<Message<V,E>>();
-			mins.add(maestro.arxikoMinima.clone());
-			Iterator<Message<V,E>> i=maestro.myQueue.iterator();
-			while(i.hasNext())
+			try
 			{
-				Message<V,E> tmpPMMsg=i.next();
-				if(mins.contains(tmpPMMsg)==false)
+				ModuleMaestro<V,E> maestro = new ModuleMaestro<V,E>(queue);
+				PriorityQueue<Message<V, E>> messages = new PriorityQueue<Message<V,E>>();
+				messages.add(maestro.arxikoMinima.clone());
+				Iterator<Message<V,E>> i = maestro.myQueue.iterator();
+				while(i.hasNext())
 				{
-					mins.add(tmpPMMsg.clone());
+					Message<V,E> tmpPMMsg = i.next();
+					if(messages.contains(tmpPMMsg) == false)
+					{
+						messages.add(tmpPMMsg.clone());
+					}
+				}
+				epireasmenoi.add(new ModuleNode(maestro.arxikoMinima.toNode, messages, message.event));
+				maestro.propagateMessages();	// Status determination
+			}
+			catch(Exception e)
+			{
+			}
+		}
+		step1.stop();	/** @author pmanousi For time count of step 1. */
+		/*
+		 * counting nodes with status! 
+		 */
+		for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
+		{
+			if(entry.getKey().getStatus() != StatusType.NO_STATUS && entry.getKey().getType() != NodeType.NODE_TYPE_OPERAND)
+			{
+				V v = entry.getKey();
+				if(entry.getKey().getType().getCategory() == NodeCategory.MODULE && entry.getKey() != arxikoModule)
+				{
+					modulesAffected++;
+				}
+				else
+				{
+					if(entry.getKey().getType().getCategory() != NodeCategory.INOUTSCHEMA && entry.getKey().getType().getCategory() != NodeCategory.SEMANTICS && entry.getKey().getType().getCategory() != NodeCategory.MODULE)
+					{
+						internalsAffected++;
+					}
 				}
 			}
-			epireasmenoi.add(new ModuleNode(maestro.arxikoMinima.toNode,mins, message.event));
-			maestro.propagateMessages();	// Status determination
 		}
-		catch(Exception e)
+		numberOfModules = this.getVertices(NodeType.NODE_TYPE_QUERY).size() + this.getVertices(NodeType.NODE_TYPE_VIEW).size();
+		numberOfNodes = this.getVertexCount();
+		int relNodes = 0;
+		List<V> rel = this.getVertices(NodeType.NODE_TYPE_RELATION);
+		for(int i = 0; i < rel.size(); i++)
 		{
+			relNodes += 2;
+			V relationProsElegxo = rel.get(i);
+			V schemaProsElegxo = (V) rel.get(i).getOutEdges().get(0).getToNode();
+			relNodes += schemaProsElegxo.getOutEdges().size();
 		}
-	}
-/**
- * @author pmanousi
- * For time count of step 1.
- */
-//step1.stop();
-/*
- * counting nodes with status! 
- */
-for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
-{
-	String name=entry.getKey().getName();
-	if(entry.getKey().getStatus() != StatusType.NO_STATUS && name.contains(" AND ")==false&&name.contains(" OR ")==false)
-	{
-		if(entry.getKey().getType().getCategory()==NodeCategory.MODULE&&entry.getKey()!=arxikoModule)
+
+		for(int k = 0; k < epireasmenoi.size(); k++)
 		{
-			modulesAffected++;
+			epireasmenoi.get(k).setEmeis(epireasmenoi);
 		}
-		else
+		// Check graph for block status
+		StatusType graphStatus = StatusType.PROPAGATE;
+		Iterator<ModuleNode<V,E>> i = epireasmenoi.iterator();
+		StopWatch step2 = new StopWatch();	/** @author pmanousi For time count of step 2. */
+		step2.start();
+		while (i.hasNext())
 		{
-			if(entry.getKey().getType().getCategory()!=NodeCategory.INOUTSCHEMA||entry.getKey().getType().getCategory()!=NodeCategory.SEMANTICS)
+			ModuleNode<V, E> prosElegxo=i.next();
+			if(prosElegxo.getStatus() == StatusType.BLOCKED)
 			{
-				internalsAffected++;
+				graphStatus = StatusType.BLOCKED;
+				prosElegxo.backPropagation();
+				prosElegxo.neededRewrites=0;
 			}
 		}
-	}
-}
-numberOfModules=this.getVertices(NodeType.NODE_TYPE_QUERY).size()+this.getVertices(NodeType.NODE_TYPE_VIEW).size();
-numberOfNodes=this.getVertexCount();
-int relNodes=0;
-List<V> rel=this.getVertices(NodeType.NODE_TYPE_RELATION);
-for(int i=0;i<rel.size();i++)
-{
-	relNodes+=2;
-	V relationProsElegxo=rel.get(i);
-	V schemaProsElegxo=(V) rel.get(i).getOutEdges().get(0).getToNode();
-	relNodes+=schemaProsElegxo.getOutEdges().size();
-}
-
-
-
-	for(int k=0;k<epireasmenoi.size();k++)
-	{
-		epireasmenoi.get(k).setEmeis(epireasmenoi);
-	}
-	// Check graph for block status
-	StatusType st=StatusType.PROPAGATE;
-	Iterator<ModuleNode<V,E>> i=epireasmenoi.iterator();
-/**
- * @author pmanousi
- * For time count of step 2.
- */
-//StopWatch step2 = new StopWatch();
-//step2.start();
-	while (i.hasNext())
-	{
-		ModuleNode<V, E> prosElegxo=i.next();
-		if(prosElegxo.getStatus()==StatusType.BLOCKED)
+		step2.stop();	/** @author pmanousi For time count of step 2. */
+		MetriseisRewrite mr=new MetriseisRewrite();
+		int clonedModules=0;
+		int rewrittenModules=0;
+		StopWatch step3 = new StopWatch();	/** @author pmanousi For time count of step 3. */
+		step3.start();
+	
+		if(graphStatus == StatusType.BLOCKED)
 		{
-			st=StatusType.BLOCKED;
-			prosElegxo.backPropagation();
-			prosElegxo.neededRewrites=0;
-		}
-	}
-/**
- * @author pmanousi
- * For time count of step 2.
- */
-//step2.stop();
-/**
- * @author pmanousi
- * For time count of step 3.
- */
-MetriseisRewrite mr=new MetriseisRewrite();
-int clonedModules=0;
-int rewrittenModules=0;
-StopWatch step3 = new StopWatch();
-//step3.start();
-
-	if(st==StatusType.BLOCKED)
-	{
-		if(message.toNode.getType()==NodeType.NODE_TYPE_RELATION && message.event!=EventType.ADD_ATTRIBUTE)
-		{	// Whatever happens to relation stops there!
-			rewrittenModules=0;
+			if(message.toNode.getType() == NodeType.NODE_TYPE_RELATION && message.event != EventType.ADD_ATTRIBUTE)
+			{	// Whatever happens to relation stops there!
+				rewrittenModules = 0;
+			}
+			else
+			{
+				i=epireasmenoi.iterator();
+				String tempParam = "";
+				while (i.hasNext())
+				{
+					ModuleNode<V, E> prosEpaneggrafi = i.next();
+					if(prosEpaneggrafi.neededRewrites == 1)
+					{	// They move to new version.
+						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
+						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
+						tempParam = m.doRewrite(tempParam, this, step3,mr);
+						rewrittenModules++;
+					}
+					if(prosEpaneggrafi.neededRewrites == 2)
+					{	// They copy themselves and do rewrite on new version.
+						V neos=prosEpaneggrafi.cloneQVModule(this);
+						clonedModules++;
+						Iterator<Message<V, E>> j = prosEpaneggrafi.messages.iterator();
+						while(j.hasNext())
+						{	// messages are for neos node...
+							Message<V, E> n = j.next();
+							for(int k = 0; k < neos.getOutEdges().size(); k++)
+							{
+								if(neos.getOutEdges().get(k).getToNode().getName().equals(n.toSchema.getName().replace(n.toNode.getName(), neos.getName())))
+								{
+									n.toSchema = (V) neos.getOutEdges().get(k).getToNode();
+								}
+							}
+							n.toNode = neos;
+						}
+						prosEpaneggrafi.en = neos;
+						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
+						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
+						tempParam = m.doRewrite(tempParam, this, step3,mr);
+						rewrittenModules++;
+					}
+				}
+			}
 		}
 		else
 		{
 			i=epireasmenoi.iterator();
-			String tempParam="";
+			String tempParam = "";
 			while (i.hasNext())
 			{
-				ModuleNode<V, E> prosEpaneggrafi=i.next();
-				if(prosEpaneggrafi.neededRewrites==1)
-				{	// They move to new version.
-					ModuleMaestroRewrite<V, E> m=new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-					m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
-					tempParam=m.doRewrite(tempParam, this, step3,mr);
-					rewrittenModules++;
-				}
-				if(prosEpaneggrafi.neededRewrites==2)
-				{	// They copy themselves and do rewrite on new version.
-					V neos=prosEpaneggrafi.cloneQVModule(this);
-					clonedModules++;
-					Iterator<Message<V, E>> j = prosEpaneggrafi.messages.iterator();
-					while(j.hasNext())
-					{	// messages are for neos node...
-						Message<V, E> n=j.next();
-						for(int k=0;k<neos.getOutEdges().size();k++)
-						{
-							if(neos.getOutEdges().get(k).getToNode().getName().equals(n.toSchema.getName().replace(n.toNode.getName(), neos.getName())))
-							{
-								n.toSchema=(V) neos.getOutEdges().get(k).getToNode();
-							}
-						}
-						n.toNode=neos;
-					}
-					prosEpaneggrafi.en=neos;
-					ModuleMaestroRewrite<V, E> m=new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-					m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
-					tempParam=m.doRewrite(tempParam, this, step3,mr);
-					rewrittenModules++;
-				}
+				ModuleNode<V, E> prosEpaneggrafi = i.next();
+				
+				ModuleMaestroRewrite<V,E> rewriter = new ModuleMaestroRewrite<V,E>(prosEpaneggrafi.messages);
+				tempParam=rewriter.doRewrite(tempParam, this, step3,mr);	// Rewrite
+				rewrittenModules++;
 			}
 		}
-	}
-	else
-	{
-		String newParameter=new String();
-		for(int j=0;j<epireasmenoi.size();j++)
+		step3.stop();	/** * @author pmanousi For time count of step 3. */
+		try
 		{
-			ModuleMaestroRewrite<V,E> rewriter=new ModuleMaestroRewrite<V,E>(epireasmenoi.get(j).messages);
-			newParameter=rewriter.doRewrite(newParameter, this, step3,mr);	// Rewrite
-			rewrittenModules++;
-		}
+		    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
+		    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules+","+step1.toString()+","+step2.toString()+","+step3.toString());
+		    out.close();
+		} catch (IOException e)
+		{}
 	}
-/**
- * @author pmanousi
- * For time count of step 3.
- */
-//step3.stop();
-//try
-//{
-//    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
-//    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules+","+step1.toString()+","+step2.toString()+","+step3.toString());
-//    out.close();
-//} catch (IOException e)
-//{}
-}
 
 
 	/**

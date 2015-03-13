@@ -8,8 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-
 /**
  * @author  George Papastefanatos
  */
@@ -133,18 +131,24 @@ static int counter;
 		return this._events;
 	}
 	
-	public void setStatus(StatusType status,boolean cl) {
-		if(cl==true)
+	public void setStatus(StatusType status,boolean enforceStatus) {
+		if(enforceStatus==true)
 		{
 			this._status = status;
 		}
-		else
+		else	//check if you are alredy BLOCKED, in which case you remain BLOCKED
 		{
-			if(this._status==StatusType.BLOCKED||status==StatusType.NO_STATUS)
+			if(this._status == StatusType.BLOCKED)
 			{
 				return;
 			}
-			this._status = status;
+			else if(this._status == StatusType.NO_STATUS)
+			{
+				this._status = status;
+			}
+			else if((this._status == StatusType.PROPAGATE)&&(status == StatusType.NO_STATUS)){
+				return;
+			}
 		}
 	}
 	
@@ -307,5 +311,4 @@ static int counter;
 		 }
 		 return null;
 	 }
-	
 }

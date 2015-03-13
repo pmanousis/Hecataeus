@@ -564,6 +564,7 @@ public final class HecataeusSQLExtensionParser{
 			viewSentences.add("VIEW.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
 			viewSentences.add("VIEW.OUT.SELF: on DELETE_SELF then "+plcStr);
 			viewSentences.add("VIEW.OUT.SELF: on RENAME_SELF then "+plcStr);
+			viewSentences.add("VIEW.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER then "+plcStr);
 			viewSentences.add("VIEW.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);
 			viewSentences.add("VIEW.OUT.ATTRIBUTES: on RENAME_SELF then "+plcStr);
 			viewSentences.add("VIEW.OUT.ATTRIBUTES: on DELETE_PROVIDER then "+plcStr);
@@ -575,6 +576,7 @@ public final class HecataeusSQLExtensionParser{
 			viewSentences.add("VIEW.IN.ATTRIBUTES: on RENAME_PROVIDER then "+plcStr);
 			viewSentences.add("VIEW.SMTX.SELF: on ALTER_SEMANTICS then "+plcStr);
 			querySentences.add("QUERY.OUT.SELF: on ADD_ATTRIBUTE then "+plcStr);
+			querySentences.add("QUERY.OUT.SELF: on ADD_ATTRIBUTE_PROVIDER then "+plcStr);
 			querySentences.add("QUERY.OUT.SELF: on DELETE_SELF then "+plcStr);
 			querySentences.add("QUERY.OUT.SELF: on RENAME_SELF then "+plcStr);
 			querySentences.add("QUERY.OUT.ATTRIBUTES: on DELETE_SELF then "+plcStr);

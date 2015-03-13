@@ -103,11 +103,9 @@ public class VisualFileColor {
 		{
 			color+=4;
 			color+=2*128;
-			//color+=4*128*128;
 		}
 		c=new Color(color%16777215);
 		return(c);
-//		return(c.brighter());
 	}
 	
 	private Color getColor(int c){
