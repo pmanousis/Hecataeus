@@ -246,32 +246,46 @@ CREATE TABLE moderation_votes (
   weight smallint NOT NULL ,
   PRIMARY KEY  (mid)
 );
-CREATE TABLE node (
-  nid integer,
-  type varchar(16) NOT NULL ,
-  title varchar(128) NOT NULL ,
+CREATE TABLE users_roles (
   uid integer NOT NULL ,
-  status integer NOT NULL ,
-  created integer NOT NULL ,
-  changed integer NOT NULL ,
-  comment integer NOT NULL ,
-  promote integer NOT NULL ,
-  moderate integer NOT NULL ,
-  teaser varchar(1024) NOT NULL ,
-  body varchar(1024) NOT NULL ,
-  revisions varchar(1024) NOT NULL ,
-  sticky integer NOT NULL ,
-  format smallint NOT NULL ,
-  PRIMARY KEY  (nid)
+  rid integer NOT NULL ,
+  PRIMARY KEY (uid, rid)
 );
-CREATE INDEX node_type_idx ON node(type);
-CREATE INDEX node_title_idx ON node(title,type);
-CREATE INDEX node_status_idx ON node(status);
-CREATE INDEX node_uid_idx ON node(uid);
-CREATE INDEX node_moderate_idx ON node (moderate);
-CREATE INDEX node_promote_status_idx ON node (promote, status);
-CREATE INDEX node_created ON node(created);
-CREATE INDEX node_changed ON node(changed);
+CREATE TABLE variable (
+  name varchar(48) NOT NULL ,
+  value varchar(1024) NOT NULL ,
+  PRIMARY KEY  (name)
+);
+CREATE TABLE vocabulary (
+  vid integer,
+  name varchar(255) NOT NULL ,
+  description varchar(1024) ,
+  help varchar(255) NOT NULL ,
+  relations smallint NOT NULL ,
+  hierarchy smallint NOT NULL ,
+  multiple smallint NOT NULL ,
+  required smallint NOT NULL ,
+  module varchar(255) NOT NULL ,
+  weight smallint NOT NULL ,
+  PRIMARY KEY  (vid)
+);
+CREATE TABLE vocabulary_node_types (
+  vid integer NOT NULL ,
+  type varchar(16) NOT NULL ,
+  PRIMARY KEY (vid, type)
+);
+CREATE TABLE watchdog (
+  wid integer,
+  uid integer NOT NULL ,
+  type varchar(16) NOT NULL ,
+  message varchar(1024) NOT NULL ,
+  severity smallint NOT NULL ,
+  link varchar(255) NOT NULL ,
+  location varchar(128) NOT NULL ,
+  hostname varchar(128) NOT NULL ,
+  timestamp integer NOT NULL ,
+  PRIMARY KEY  (wid)
+);
 CREATE TABLE node_access (
   nid integer,
   gid integer NOT NULL ,
@@ -431,6 +445,32 @@ CREATE TABLE term_synonym (
 );
 CREATE INDEX term_synonym_tid_idx ON term_synonym(tid);
 CREATE INDEX term_synonym_name_idx ON term_synonym(name);
+CREATE TABLE node (
+  nid integer,
+  type varchar(16) NOT NULL ,
+  title varchar(128) NOT NULL ,
+  uid integer NOT NULL ,
+  status integer NOT NULL ,
+  created integer NOT NULL ,
+  changed integer NOT NULL ,
+  comment integer NOT NULL ,
+  promote integer NOT NULL ,
+  moderate integer NOT NULL ,
+  teaser varchar(1024) NOT NULL ,
+  body varchar(1024) NOT NULL ,
+  revisions varchar(1024) NOT NULL ,
+  sticky integer NOT NULL ,
+  format smallint NOT NULL ,
+  PRIMARY KEY  (nid)
+);
+CREATE INDEX node_type_idx ON node(type);
+CREATE INDEX node_title_idx ON node(title,type);
+CREATE INDEX node_status_idx ON node(status);
+CREATE INDEX node_uid_idx ON node(uid);
+CREATE INDEX node_moderate_idx ON node (moderate);
+CREATE INDEX node_promote_status_idx ON node (promote, status);
+CREATE INDEX node_created ON node(created);
+CREATE INDEX node_changed ON node(changed);
 CREATE TABLE users (
   uid integer NOT NULL ,
   name varchar(60) NOT NULL ,
@@ -454,43 +494,9 @@ CREATE TABLE users (
 );
 CREATE INDEX users_changed_idx ON users(changed);
 CREATE SEQUENCE users_uid_seq INCREMENT 1 START 1;
-CREATE TABLE users_roles (
-  uid integer NOT NULL ,
-  rid integer NOT NULL ,
-  PRIMARY KEY (uid, rid)
-);
-CREATE TABLE variable (
-  name varchar(48) NOT NULL ,
-  value varchar(1024) NOT NULL ,
-  PRIMARY KEY  (name)
-);
-CREATE TABLE vocabulary (
-  vid integer,
-  name varchar(255) NOT NULL ,
-  description varchar(1024) ,
-  help varchar(255) NOT NULL ,
-  relations smallint NOT NULL ,
-  hierarchy smallint NOT NULL ,
-  multiple smallint NOT NULL ,
-  required smallint NOT NULL ,
-  module varchar(255) NOT NULL ,
-  weight smallint NOT NULL ,
-  PRIMARY KEY  (vid)
-);
-CREATE TABLE vocabulary_node_types (
-  vid integer NOT NULL ,
-  type varchar(16) NOT NULL ,
-  PRIMARY KEY (vid, type)
-);
-CREATE TABLE watchdog (
-  wid integer,
-  uid integer NOT NULL ,
-  type varchar(16) NOT NULL ,
-  message varchar(1024) NOT NULL ,
-  severity smallint NOT NULL ,
-  link varchar(255) NOT NULL ,
-  location varchar(128) NOT NULL ,
-  hostname varchar(128) NOT NULL ,
-  timestamp integer NOT NULL ,
-  PRIMARY KEY  (wid)
-);
+CREATE VIEW ourView AS
+SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, USERS.status, timezone, language, init, data, picture, nid, type, title, USERS.created, comment, promote, moderate, teaser, body, USERS.changed, revisions, sticky, format
+FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
+CREATE VIEW ourViewN AS
+SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, USERS.status, timezone, language, init, data, picture, nid, type, title, USERS.created, comment, promote, moderate, teaser, body, USERS.changed, revisions, sticky, format
+FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;

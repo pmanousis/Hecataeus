@@ -154,15 +154,25 @@ SELECT v.*, n.type FROM vocabulary v LEFT JOIN vocabulary_node_types n ON v.vid 
 SELECT v.vid, v.*, n.type FROM vocabulary v LEFT JOIN vocabulary_node_types n ON v.vid = n.vid WHERE n.type = '%s' ORDER BY v.weight, v.name;
 SELECT c.nid, c.subject, c.cid, c.timestamp FROM comments c INNER JOIN node n ON n.nid = c.nid WHERE n.status = 1 AND c.status = 0 ORDER BY c.timestamp DESC;
 SELECT n.nid, n.title, n.created FROM node n WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
-SELECT n.nid, n.title, r.teaser, n.created, u.name, u.uid FROM node n INNER JOIN node_revisions r ON n.vid = r.vid INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
-SELECT n.nid, n.title, r.teaser, n.created, u.name, u.uid FROM node n INNER JOIN node_revisions r ON n.vid = r.vid INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.created DESC;
+
+-- SELECT n.nid, n.title, r.teaser, n.created, u.name, u.uid FROM node n INNER JOIN node_revisions r ON n.vid = r.vid INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, r.teaser, ov.created, ov.name, ov.uid FROM ourViewN ov INNER JOIN node_revisions r ON ov.vid = r.vid WHERE ov.type = 'blog' AND ov.status = 1 ORDER BY ov.created DESC;
+
+-- SELECT n.nid, n.title, r.teaser, n.created, u.name, u.uid FROM node n INNER JOIN node_revisions r ON n.vid = r.vid INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, r.teaser, ov.created, ov.name, ov.uid FROM ourViewN ov INNER JOIN node_revisions r ON ov.vid = r.vid WHERE ov.type = 'blog' AND ov.uid = 0 AND ov.status = 1 ORDER BY ov.created DESC;
+
 SELECT t.tid, t.name FROM term_data t WHERE t.vid = 0 AND LOWER(t.name) = LOWER('%%%s%%');
 SELECT cid, thread FROM comments WHERE cid > 0 ORDER BY cid ASC;
 SELECT * FROM aggregator_item WHERE fid = 0 ORDER BY timestamp DESC, iid DESC;
 SELECT i.* FROM aggregator_category_item ci LEFT JOIN aggregator_item i ON ci.iid = i.iid WHERE ci.cid = 0 ORDER BY i.timestamp DESC, i.iid DESC;
 SELECT name FROM users WHERE LOWER(name) = LOWER('%s%%');
-SELECT n.nid, n.title, n.created, u.name FROM node n, users u WHERE n.uid = u.uid AND n.type = '%s' AND n.uid = 0 ORDER BY n.created DESC;
-SELECT n.nid, n.title, r.body, r.format, n.comment, n.created, u.name FROM node n, node_revisions r, users u WHERE n.uid = u.uid AND n.vid = r.vid AND n.type = '%s' AND n.uid = 0 ORDER BY n.created DESC;
+
+-- SELECT n.nid, n.title, n.created, u.name FROM node n, users u WHERE n.uid = u.uid AND n.type = '%s' AND n.uid = 0 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, ov.created, ov.name FROM ourViewN ov WHERE ov.type = '%s' AND ov.uid = 0 ORDER BY ov.created DESC;
+
+-- SELECT n.nid, n.title, r.body, r.format, n.comment, n.created, u.name FROM node n, node_revisions r, users u WHERE n.uid = u.uid AND n.vid = r.vid AND n.type = '%s' AND n.uid = 0 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, r.body, r.format, ov.comment, ov.created, ov.name FROM node_revisions r, ourViewN ov WHERE ov.vid = r.vid AND ov.type = '%s' AND ov.uid = 0 ORDER BY ov.created DESC;
+
 SELECT uid, name FROM users WHERE status != 0 AND access != 0 ORDER BY created DESC;
 SELECT aid, type, status, mask FROM access;
 SELECT a.*, u.name FROM accesslog a LEFT JOIN users u ON a.uid = u.uid WHERE aid = 0;
@@ -295,7 +305,10 @@ SELECT last_comment_timestamp, last_comment_name, comment_count FROM node_commen
 SELECT * FROM comments WHERE cid = 0;
 SELECT * FROM term_data WHERE tid = 0;
 SELECT * FROM term_synonym s, term_data t WHERE t.tid = s.tid AND s.name = '%s';
-SELECT n.nid, n.title, u.uid, u.name FROM node n INNER JOIN node_counter s ON n.nid = s.nid INNER JOIN users u ON n.uid = u.uid WHERE n.status = 1; 
+
+-- SELECT n.nid, n.title, u.uid, u.name FROM node n INNER JOIN node_counter s ON n.nid = s.nid INNER JOIN users u ON n.uid = u.uid WHERE n.status = 1; 
+SELECT ov.nid, ov.title, ov.uid, ov.name FROM node_counter s INNER JOIN ourViewN ov ON s.nid = ov.nid WHERE ov.status = 1; 
+
 SELECT SUM(filesize) FROM files;
 SELECT SUM(filesize) FROM files f INNER JOIN node n ON f.nid = n.nid WHERE n.uid = 0;
 SELECT COUNT(vid) FROM node_revisions WHERE nid = 0;
@@ -322,7 +335,10 @@ SELECT COUNT(n.nid) FROM node n INNER JOIN term_node tn ON n.nid = tn.nid AND tn
 SELECT COUNT(path) AS hits, path, title, AVG(timer) AS average_time, SUM(timer) AS total_time FROM accesslog GROUP BY path, title;
 SELECT (n.nid), n.sticky, n.title, n.created FROM node n INNER JOIN term_node tn ON n.nid = tn.nid WHERE tn.tid IN (0,1) AND n.status = 1 AND n.moderate = 0; 
 SELECT (n.nid), n.title, n.type, n.changed, n.uid, u.name, n.changed, l.last_comment_timestamp AS last_updated, l.comment_count FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid INNER JOIN users u ON n.uid = u.uid LEFT JOIN comments c ON n.nid = c.nid AND (c.status = 0 OR c.status IS NULL) WHERE n.status = 1 AND (n.uid = 0 OR c.uid = 0) ORDER BY last_updated DESC;
-SELECT (n.nid), n.title, n.type, n.changed, n.uid, u.name, n.changed, l.last_comment_timestamp AS last_updated, l.comment_count FROM node n INNER JOIN users u ON n.uid = u.uid INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.status = 1 ORDER BY last_updated DESC;
+
+-- SELECT (n.nid), n.title, n.type, n.changed, n.uid, u.name, n.changed, l.last_comment_timestamp AS last_updated, l.comment_count FROM node n INNER JOIN users u ON n.uid = u.uid INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.status = 1 ORDER BY last_updated DESC;
+SELECT ov.nid, ov.title, ov.type, ov.changed, ov.uid, ov.name, ov.changed, l.last_comment_timestamp AS last_updated, l.comment_count FROM ourView ov INNER JOIN node_comment_statistics l ON ov.nid = l.nid WHERE ov.status = 1 ORDER BY last_updated DESC;
+
 SELECT * FROM url_alias;
 SELECT i.*, f.title AS ftitle, f.link AS flink FROM aggregator_category_item c LEFT JOIN aggregator_item i ON c.iid = i.iid LEFT JOIN aggregator_feed f ON i.fid = f.fid WHERE cid = 0 ORDER BY timestamp DESC, iid DESC;
 SELECT i.*, f.title AS ftitle, f.link AS flink FROM aggregator_item i INNER JOIN aggregator_feed f ON i.fid = f.fid ORDER BY i.timestamp DESC, i.iid DESC;

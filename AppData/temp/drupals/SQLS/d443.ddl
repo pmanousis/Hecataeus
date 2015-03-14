@@ -169,32 +169,6 @@ CREATE TABLE moderation_votes (
   weight smallint NOT NULL ,
   PRIMARY KEY  (mid)
 );
-CREATE TABLE node (
-  nid integer,
-  type varchar(16) NOT NULL ,
-  title varchar(128) NOT NULL ,
-  score integer NOT NULL ,
-  votes integer NOT NULL ,
-  uid integer NOT NULL ,
-  status integer NOT NULL ,
-  created integer NOT NULL ,
-  comment integer NOT NULL ,
-  promote integer NOT NULL ,
-  moderate integer NOT NULL ,
-  users varchar(1024) NOT NULL ,
-  teaser varchar(1024) NOT NULL ,
-  body varchar(1024) NOT NULL ,
-  changed integer NOT NULL ,
-  revisions varchar(1024) NOT NULL ,
-  static integer NOT NULL ,
-  PRIMARY KEY  (nid)
-);
-CREATE INDEX node_type_idx ON node(type);
-CREATE INDEX node_title_idx ON node(title,type);
-CREATE INDEX node_status_idx ON node(status);
-CREATE INDEX node_uid_idx ON node(uid);
-CREATE INDEX node_moderate_idx ON node (moderate);
-CREATE INDEX node_promote_status_idx ON node (promote, status);
 CREATE TABLE node_counter (
   nid integer NOT NULL ,
   totalcount integer NOT NULL ,
@@ -313,28 +287,6 @@ CREATE TABLE term_synonym (
 );
 CREATE INDEX term_synonym_tid_idx ON term_synonym(tid);
 CREATE INDEX term_synonym_name_idx ON term_synonym(name);
-CREATE TABLE users (
-  uid integer NOT NULL ,
-  name varchar(60) NOT NULL ,
-  pass varchar(32) NOT NULL ,
-  mail varchar(64) ,
-  mode smallint NOT NULL ,
-  sort smallint ,
-  threshold smallint ,
-  theme varchar(255) NOT NULL ,
-  signature varchar(255) NOT NULL ,
-  timestamp integer NOT NULL ,
-  status smallint NOT NULL ,
-  timezone varchar(8) ,
-  language char(2) NOT NULL ,
-  init varchar(64) ,
-  data varchar(1024) ,
-  rid integer NOT NULL ,
-  PRIMARY KEY  (uid),
-  UNIQUE (name)
-);
-CREATE INDEX users_timestamp_idx ON users(timestamp);
-CREATE SEQUENCE users_uid_seq INCREMENT 1 START 1;
 CREATE TABLE variable (
   name varchar(48) NOT NULL ,
   value varchar(1024) NOT NULL ,
@@ -363,3 +315,57 @@ CREATE TABLE watchdog (
   timestamp integer NOT NULL ,
   PRIMARY KEY  (wid)
 );
+CREATE TABLE users (
+  uid integer NOT NULL ,
+  name varchar(60) NOT NULL ,
+  pass varchar(32) NOT NULL ,
+  mail varchar(64) ,
+  mode smallint NOT NULL ,
+  sort smallint ,
+  threshold smallint ,
+  theme varchar(255) NOT NULL ,
+  signature varchar(255) NOT NULL ,
+  timestamp integer NOT NULL ,
+  status smallint NOT NULL ,
+  timezone varchar(8) ,
+  language char(2) NOT NULL ,
+  init varchar(64) ,
+  data varchar(1024) ,
+  rid integer NOT NULL ,
+  PRIMARY KEY  (uid),
+  UNIQUE (name)
+);
+CREATE INDEX users_timestamp_idx ON users(timestamp);
+CREATE SEQUENCE users_uid_seq INCREMENT 1 START 1;
+CREATE TABLE node (
+  nid integer,
+  type varchar(16) NOT NULL ,
+  title varchar(128) NOT NULL ,
+  score integer NOT NULL ,
+  votes integer NOT NULL ,
+  uid integer NOT NULL ,
+  status integer NOT NULL ,
+  created integer NOT NULL ,
+  comment integer NOT NULL ,
+  promote integer NOT NULL ,
+  moderate integer NOT NULL ,
+  users varchar(1024) NOT NULL ,
+  teaser varchar(1024) NOT NULL ,
+  body varchar(1024) NOT NULL ,
+  changed integer NOT NULL ,
+  revisions varchar(1024) NOT NULL ,
+  static integer NOT NULL ,
+  PRIMARY KEY  (nid)
+);
+CREATE INDEX node_type_idx ON node(type);
+CREATE INDEX node_title_idx ON node(title,type);
+CREATE INDEX node_status_idx ON node(status);
+CREATE INDEX node_uid_idx ON node(uid);
+CREATE INDEX node_moderate_idx ON node (moderate);
+CREATE INDEX node_promote_status_idx ON node (promote, status);
+CREATE VIEW ourView AS
+SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, timestamp, USERS.status, timezone, language, init, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, NODE.users, teaser, body, changed, revisions, static
+FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
+CREATE VIEW ourViewN AS
+SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, timestamp, USERS.status, timezone, language, init, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, NODE.users, teaser, body, changed, revisions, static
+FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;

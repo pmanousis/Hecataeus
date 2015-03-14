@@ -156,32 +156,35 @@ CREATE TABLE moderation_votes (
   weight smallint NOT NULL ,
   PRIMARY KEY  (mid)
 );
-CREATE TABLE node (
-  nid INTEGER,
-  type varchar(16) NOT NULL ,
-  title varchar(128) NOT NULL ,
-  score integer NOT NULL ,
-  votes integer NOT NULL ,
-  uid integer NOT NULL ,
-  status integer NOT NULL ,
-  created integer NOT NULL ,
-  comment integer NOT NULL ,
-  promote integer NOT NULL ,
-  moderate integer NOT NULL ,
-  users varchar(1024) NOT NULL ,
-  attributes varchar(255) NOT NULL ,
-  teaser varchar(1024) NOT NULL ,
-  body varchar(1024) NOT NULL ,
-  changed integer NOT NULL ,
-  revisions varchar(1024) NOT NULL ,
-  static integer NOT NULL ,
-  PRIMARY KEY  (nid)
+CREATE INDEX users_sid_idx ON users(sid);
+CREATE INDEX users_timestamp_idx ON users(timestamp);
+CREATE TABLE variable (
+  name varchar(32) NOT NULL ,
+  value varchar(1024) NOT NULL ,
+  PRIMARY KEY  (name)
 );
-CREATE INDEX node_type_idx ON node(type);
-CREATE INDEX node_title_idx ON node(title,type);
-CREATE INDEX node_promote_idx ON node(promote);
-CREATE INDEX node_status_idx ON node(status);
-CREATE INDEX node_uid_idx ON node(uid);
+CREATE TABLE vocabulary (
+  vid INTEGER,
+  name varchar(255) NOT NULL ,
+  description varchar(1024) ,
+  relations smallint NOT NULL ,
+  hierarchy smallint NOT NULL ,
+  multiple smallint NOT NULL ,
+  required smallint NOT NULL ,
+  types varchar(1024) ,
+  weight smallint NOT NULL ,
+  PRIMARY KEY  (vid)
+);
+CREATE TABLE watchdog (
+  wid INTEGER,
+  uid integer NOT NULL ,
+  type varchar(16) NOT NULL ,
+  message varchar(1024) NOT NULL ,
+  location varchar(128) NOT NULL ,
+  hostname varchar(128) NOT NULL ,
+  timestamp integer NOT NULL ,
+  PRIMARY KEY  (wid)
+);
 CREATE TABLE page (
   nid integer NOT NULL ,
   link varchar(128) NOT NULL ,
@@ -295,6 +298,32 @@ CREATE TABLE term_synonym (
 );
 CREATE INDEX term_synonym_tid_idx ON term_synonym(tid);
 CREATE INDEX term_synonym_name_idx ON term_synonym(name);
+CREATE TABLE node (
+  nid INTEGER,
+  type varchar(16) NOT NULL ,
+  title varchar(128) NOT NULL ,
+  score integer NOT NULL ,
+  votes integer NOT NULL ,
+  uid integer NOT NULL ,
+  status integer NOT NULL ,
+  created integer NOT NULL ,
+  comment integer NOT NULL ,
+  promote integer NOT NULL ,
+  moderate integer NOT NULL ,
+  users varchar(1024) NOT NULL ,
+  attributes varchar(255) NOT NULL ,
+  teaser varchar(1024) NOT NULL ,
+  body varchar(1024) NOT NULL ,
+  changed integer NOT NULL ,
+  revisions varchar(1024) NOT NULL ,
+  static integer NOT NULL ,
+  PRIMARY KEY  (nid)
+);
+CREATE INDEX node_type_idx ON node(type);
+CREATE INDEX node_title_idx ON node(title,type);
+CREATE INDEX node_promote_idx ON node(promote);
+CREATE INDEX node_status_idx ON node(status);
+CREATE INDEX node_uid_idx ON node(uid);
 CREATE TABLE users (
   uid INTEGER,
   name varchar(60) NOT NULL ,
@@ -320,38 +349,9 @@ CREATE TABLE users (
   PRIMARY KEY  (uid),
   UNIQUE (name)
 );
-CREATE INDEX users_sid_idx ON users(sid);
-CREATE INDEX users_timestamp_idx ON users(timestamp);
-CREATE TABLE variable (
-  name varchar(32) NOT NULL ,
-  value varchar(1024) NOT NULL ,
-  PRIMARY KEY  (name)
-);
-CREATE TABLE vocabulary (
-  vid INTEGER,
-  name varchar(255) NOT NULL ,
-  description varchar(1024) ,
-  relations smallint NOT NULL ,
-  hierarchy smallint NOT NULL ,
-  multiple smallint NOT NULL ,
-  required smallint NOT NULL ,
-  types varchar(1024) ,
-  weight smallint NOT NULL ,
-  PRIMARY KEY  (vid)
-);
-CREATE TABLE watchdog (
-  wid INTEGER,
-  uid integer NOT NULL ,
-  type varchar(16) NOT NULL ,
-  message varchar(1024) NOT NULL ,
-  location varchar(128) NOT NULL ,
-  hostname varchar(128) NOT NULL ,
-  timestamp integer NOT NULL ,
-  PRIMARY KEY  (wid)
-);
 CREATE VIEW ourView AS
-SELECT uid, name, pass, mail, homepage, mode, sort , threshold, theme, signature, timestamp, hostname, status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, users, attributes, teaser, body, changed, revisions, static
+SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, USERS.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, users, attributes, teaser, body, changed, revisions, static
 FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
 CREATE VIEW ourViewN AS
-SELECT uid, name, pass, mail, homepage, mode, sort , threshold, theme, signature, timestamp, hostname, status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, users, attributes, teaser, body, changed, revisions, static
+SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, USERS.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, users, attributes, teaser, body, changed, revisions, static
 FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;

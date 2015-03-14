@@ -120,8 +120,13 @@ SELECT t.tid, COUNT(n.nid) AS c FROM term_node t INNER JOIN node n ON t.nid = n.
 SELECT t.tid, COUNT(n.nid) AS c FROM term_node t, node n WHERE t.nid = n.nid AND n.status = 1 AND n.type = '%s' GROUP BY t.tid;
 SELECT n.nid, t.tid FROM node n, term_node t WHERE n.nid = t.nid AND type = 'forum';
 SELECT c.nid, c.* FROM comments c WHERE c.status = 0 ORDER BY c.timestamp DESC;
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.created DESC;
+
+-- SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, ov.teaser, ov.created, ov.name, ov.uid FROM ourViewN ov WHERE ov.type = 'blog' AND ov.status = 1 ORDER BY ov.created DESC;
+
+-- SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, ov.teaser, ov.created, ov.name, ov.uid FROM ourViewN ov WHERE ov.type = 'blog' AND ov.uid = 0 AND ov.status = 1 ORDER BY ov.created DESC;
+
 SELECT * FROM aggregator_item WHERE fid = 0 ORDER BY timestamp DESC, iid DESC;
 SELECT i.* FROM aggregator_category_item ci LEFT JOIN aggregator_item i ON ci.iid = i.iid WHERE ci.cid = 0 ORDER BY i.timestamp DESC, i.iid DESC;
 SELECT n.nid, c.last_comment_timestamp FROM node n LEFT JOIN node_comment_statistics c ON n.nid = c.nid WHERE n.status = 1 AND n.moderate = 0 AND (n.created > 0 OR n.changed > 0 OR c.last_comment_timestamp > 0) ORDER BY n.created, n.changed, c.last_comment_timestamp ASC;
@@ -152,7 +157,10 @@ SELECT  s.source, t.translation, t.locale FROM locales_source s INNER JOIN local
 SELECT (type) FROM watchdog ORDER BY type;
 SELECT (ur1.uid) FROM users_roles ur1 LEFT JOIN users_roles ur2 ON ur2.uid = ur1.uid WHERE ur1.rid = 0 AND ur2.rid != ur1.rid;
 SELECT (u.uid) FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.timestamp < u.created;
-SELECT (u.uid) FROM node n LEFT JOIN users u ON n.uid = u.uid WHERE n.created < u.created;
+
+-- SELECT (u.uid) FROM node n LEFT JOIN users u ON n.uid = u.uid WHERE n.created < u.created;
+SELECT ov.uid FROM ourView ov WHERE ov.created < ov.created;
+
 SELECT f.*, COUNT(i.iid) AS items FROM aggregator_feed f LEFT JOIN aggregator_item i ON f.fid = i.fid GROUP BY f.fid, f.title, f.url, f.refresh, f.checked, f.link, f.description, f.etag, f.modified, f.image, f.block ORDER BY f.title;
 SELECT f.fid, f.title, f.description, f.image, MAX(i.timestamp) AS last FROM aggregator_feed f LEFT JOIN aggregator_item i ON f.fid = i.fid GROUP BY f.fid, f.title, f.description, f.image;
 SELECT fid, filter FROM moderation_filters ;
@@ -292,7 +300,10 @@ SELECT COUNT(path) AS hits, path, title FROM accesslog GROUP BY path, title;
 SELECT c.subject, c.nid, c.cid, c.comment, c.timestamp, c.status, c.name, c.homepage, u.name AS registered_name, u.uid FROM comments c INNER JOIN users u ON u.uid = c.uid WHERE c.status = 'sth';
 SELECT (n.nid), n.sticky, n.title, n.created FROM node n INNER JOIN term_node tn ON n.nid = tn.nid WHERE tn.tid IN (0,1) AND n.status = 1 ORDER BY n.sticky DESC, n.created DESC;
 SELECT (n.nid), n.title, n.type, n.changed, n.uid, u.name, l.last_comment_timestamp AS last_post, l.comment_count FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid INNER JOIN users u ON n.uid = u.uid LEFT JOIN comments c ON n.nid = c.nid AND (c.status = 0 OR c.status IS NULL) WHERE n.status = 1 AND (n.uid = 0 OR c.uid = 0) ORDER BY last_post DESC;
-SELECT (n.nid), n.title, n.type, n.changed, n.uid, u.name, l.last_comment_timestamp AS last_post, l.comment_count FROM node n INNER JOIN users u ON n.uid = u.uid INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.status = 1 ORDER BY last_post DESC;
+
+-- SELECT (n.nid), n.title, n.type, n.changed, n.uid, u.name, l.last_comment_timestamp AS last_post, l.comment_count FROM node n INNER JOIN users u ON n.uid = u.uid INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.status = 1 ORDER BY last_post DESC;
+SELECT ov.nid, ov.title, ov.type, ov.changed, ov.uid, ov.name, l.last_comment_timestamp AS last_post, l.comment_count FROM ourViewN ov INNER JOIN node_comment_statistics l ON ov.nid = l.nid WHERE ov.status = 1 ORDER BY last_post DESC;
+
 SELECT * FROM url_alias;
 SELECT n.nid FROM node n LEFT JOIN history h ON n.nid = h.nid AND h.uid = 0 INNER JOIN term_node r ON n.nid = r.nid AND r.tid = 0 WHERE n.status = 1 AND n.type = 'forum' AND h.nid IS NULL AND n.created > 0 ORDER BY created;
 SELECT n.nid, n.created FROM node n WHERE n.status = 1 AND n.created > 0 AND n.created < 0 ORDER BY n.created;

@@ -125,7 +125,10 @@ SELECT  s.source, t.translation, t.locale FROM locales_source s INNER JOIN local
 SELECT type FROM watchdog;
 SELECT ur1.uid FROM users_roles ur1 LEFT JOIN users_roles ur2 ON ur2.uid = ur1.uid WHERE ur1.rid = 0 AND ur2.rid != ur1.rid;
 SELECT u.uid FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.timestamp < u.created;
-SELECT u.uid FROM node n LEFT JOIN users u ON n.uid = u.uid WHERE n.created < u.created;
+
+-- SELECT u.uid FROM node n LEFT JOIN users u ON n.uid = u.uid WHERE n.created < u.created;
+SELECT ov.uid FROM ourView ov WHERE ov.created < ov.created; -- older view!!!
+
 SELECT f.*, COUNT(i.iid) AS items FROM aggregator_feed f LEFT JOIN aggregator_item i ON f.fid = i.fid GROUP BY f.fid, f.title, f.url, f.refresh, f.checked, f.link, f.description, f.etag, f.modified, f.image, f.block ORDER BY f.title;
 SELECT f.fid, f.title, f.description, f.image, MAX(i.timestamp) AS last FROM aggregator_feed f LEFT JOIN aggregator_item i ON f.fid = i.fid GROUP BY f.fid;
 SELECT fid, filter FROM moderation_filters ;
@@ -220,7 +223,10 @@ SELECT v.mid, v.vote, MAX(v.weight) AS weight, MAX(r.value) AS value FROM modera
 SELECT w.*, u.name, u.uid FROM watchdog w INNER JOIN users u ON w.uid = u.uid WHERE w.wid = 0;
 SELECT COUNT(c.cid) FROM node n INNER JOIN comments c ON n.nid = c.nid WHERE n.nid = 0 AND timestamp > 0 AND c.status = 0;
 SELECT COUNT(*) FROM comments WHERE status = 0 AND nid = 0;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid;
+
+-- SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid;
+SELECT ov.*, ov.name, ov.uid FROM ourViewN ov;
+
 SELECT uid FROM users WHERE uid > 0 ORDER BY changed DESC;
 SELECT u.uid FROM users u INNER JOIN profile_values v ON u.uid = v.uid WHERE v.fid = 0 ORDER BY u.changed DESC;
 SELECT n.nid, 0, NULL, 0, 0 FROM node n;
@@ -258,7 +264,10 @@ SELECT title, path, url, hostname, uid, timestamp, title FROM accesslog WHERE ho
 SELECT uid, hostname, MAX(timestamp) AS last_hit, COUNT(uid) AS hits FROM accesslog GROUP BY uid, hostname;
 SELECT u.uid, u.name, u.status, u.changed FROM users u WHERE uid != 0;
 SELECT w.*, u.name, u.uid FROM watchdog w INNER JOIN users u ON w.uid = u.uid;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.moderate = 1;
+
+-- SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.moderate = 1;
+SELECT ov.*, ov.name, ov.uid FROM ourViewN ov WHERE ov.moderate = 1;
+
 SELECT totalcount, daycount, timestamp FROM node_counter WHERE nid = 0;
 SELECT isdefault, enabled FROM locales_meta WHERE locale = '%s';
 SELECT COUNT(uid) FROM users WHERE LOWER(name) = '%s';

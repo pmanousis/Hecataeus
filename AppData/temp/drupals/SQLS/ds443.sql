@@ -99,8 +99,13 @@ SELECT i.*, f.title AS ftitle, f.link AS flink FROM item i INNER JOIN feed f ON 
 SELECT nid FROM node WHERE status = '1' AND created > 0 AND created < 0 ORDER BY created;
 SELECT n.nid, n.title FROM node_counter s INNER JOIN node n ON s.nid = n.nid 
 SELECT n.nid, n.title, n.body, n.created, u.name FROM node n, users u WHERE n.uid=u.uid AND n.type = 'blog' AND n.uid = 0 ORDER BY n.created DESC;
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.nid DESC;
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.nid DESC;
+
+-- SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.nid DESC;
+SELECT ov.nid, ov.title, ov.teaser, ov.created, ov.name, ov.uid FROM ourViewN ov WHERE ov.type = 'blog' AND ov.status = 1 ORDER BY ov.nid DESC;
+
+-- SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.nid DESC;
+SELECT ov.nid, ov.title, ov.teaser, ov.created, ov.name, ov.uid FROM ourViewN ov WHERE ov.type = 'blog' AND ov.uid = 0 AND ov.status = 1 ORDER BY ov.nid DESC;
+
 SELECT uid, name FROM users WHERE status != '0' ORDER BY uid DESC;
 SELECT u.*, r.name AS role FROM role r INNER JOIN users u ON r.rid = u.rid WHERE u.status < 3;
 SELECT u.*, s.*, r.name AS role FROM users u INNER JOIN sessions s ON u.uid = s.uid LEFT JOIN role r ON u.rid = r.rid WHERE s.sid = '%s' AND u.status < 3;
@@ -172,8 +177,13 @@ SELECT n.nid, n.title FROM node n INNER JOIN book b ON n.nid = b.nid WHERE b.par
 SELECT n.nid, n.title, n.created, MAX(c.timestamp) AS date_sort, COUNT(c.nid) AS num_comments FROM node n INNER JOIN forum f ON n.nid = f.nid INNER JOIN comments c ON n.nid = c.nid WHERE n.nid = f.nid AND f.tid = 0 AND n.status = 1 GROUP BY n.nid, n.title, n.created 
 SELECT n.nid, n.title, n.status, b.parent FROM node n INNER JOIN book b ON n.nid = b.nid;
 SELECT n.nid, n.title, p.link, p.description FROM page p INNER JOIN node n ON p.nid = n.nid WHERE n.status = '1' AND p.link != '' ORDER BY p.link;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.title = '%%%s%%' AND n.status = 1 ORDER BY n.created DESC;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.title = '%s' AND n.status = 1 ORDER BY n.created DESC;
+
+-- SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.title = '%%%s%%' AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.*, ov.name, ov.uid FROM ourViewN ov WHERE ov.title = '%%%s%%' AND ov.status = 1 ORDER BY ov.created DESC;
+
+-- SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.title = '%s' AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.*, ov.name, ov.uid FROM ourViewN ov WHERE ov.title = '%s' AND ov.status = 1 ORDER BY ov.created DESC;
+
 SELECT p.nid FROM poll p INNER JOIN node n ON p.nid=n.nid WHERE (n.created + p.runtime) < 'time()' AND p.active = '1' AND p.runtime != '0';
 SELECT rid, mid, value FROM moderation_roles ;
 SELECT rid, name FROM role ORDER BY name;
@@ -204,7 +214,10 @@ SELECT nid FROM node WHERE type = 'blog' AND status = 1 ORDER BY nid DESC;
 SELECT nid FROM node WHERE type = 'blog' AND uid = '$account->uid' AND status = 1 ORDER BY nid DESC;
 SELECT nid, type FROM node WHERE promote = 1 AND status = 1 ORDER BY static DESC, created DESC;
 SELECT n.nid, n.title, p.active, SUM(c.chvotes) AS votes FROM node n INNER JOIN poll p ON n.nid=p.nid INNER JOIN poll_choices c ON n.nid=c.nid WHERE type = 'poll' AND status = '1' AND moderate = '0' GROUP BY n.nid, n.title, p.active, n.created ORDER BY n.created DESC;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid;
+
+-- SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid;
+SELECT ov.*, ov.name, ov.uid FROM ourViewN ov;
+
 SELECT c.cid as lno, c.subject as text1, c.comment as text2 FROM comments c WHERE c.status = 0 AND timestamp > 'variable_get(comment_cron_last, 1)';
 SELECT * FROM boxes WHERE bid = 0;
 SELECT * FROM bundle WHERE bid = 0;
@@ -238,7 +251,10 @@ SELECT n.nid, n.title, u.name AS name, u.uid AS uid, n.created AS timestamp, n.c
 SELECT s.nid, s.daycount, s.totalcount, s.timestamp, n.title FROM node_counter s INNER JOIN node n ON s.nid = n.nid;
 SELECT u.uid, u.name, u.status, u.timestamp, r.name AS rolename FROM role r INNER JOIN users u ON r.rid = u.rid WHERE uid != 0;
 SELECT w.*, u.name, u.uid FROM watchdog w INNER JOIN users u ON w.uid = u.uid;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.moderate = 1;
+
+-- SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.moderate = 1;
+SELECT ov.*, ov.name, ov.uid FROM ourViewN ov WHERE ov.moderate = 1;
+
 SELECT COUNT(nid) FROM node WHERE status = 1;
 SELECT COUNT(nid) FROM node WHERE status = 1 AND uid = 0;
 SELECT totalcount, daycount, timestamp FROM node_counter WHERE nid = 0;
