@@ -1,4 +1,4 @@
-SELECT * FROM site WHERE timestamp = 0 OR timestamp + refresh < time();
-SELECT * FROM site WHERE sid = '%s';
+SELECT * FROM site WHERE timestamp = 0 OR timestamp + refresh < 'time()';
+SELECT * FROM site WHERE sid = 0;
 SELECT * FROM site ORDER BY name;
-SELECT * FROM site WHERE timestamp > '' ORDER BY timestamp DESC LIMIT $limit;
+SELECT * FROM site WHERE timestamp > '' ORDER BY timestamp DESC -- LIMIT $limit;
