@@ -1,0 +1,3 @@
+SELECT string, %s FROM {locales} WHERE LENGTH(string) < 75;
+SELECT * FROM {locales} WHERE lid = '$lid';
+SELECT lid, $locale FROM {locales} WHERE string = '%s';

@@ -1,0 +1,7 @@
+SELECT bid, title, info FROM {boxes} ORDER BY title;
+SELECT * FROM {boxes} WHERE bid = %d;
+SELECT * FROM {blocks} ;
+SELECT bid, format FROM {boxes};
+SELECT * FROM {boxes} WHERE bid = %d;
+SELECT * FROM {blocks} WHERE custom = %d ORDER BY module, delta;
+SELECT * FROM {blocks} WHERE (status = 1 OR custom = 1) AND region = %d ;

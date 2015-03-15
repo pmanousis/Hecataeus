@@ -1,0 +1,7 @@
+SELECT COUNT(src) FROM {url_alias} WHERE src = '%s';
+SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s';
+SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s' AND src != '%s';
+SELECT pid FROM {url_alias} WHERE dst = '%s';
+SELECT * FROM {url_alias}';
+SELECT * FROM {url_alias} WHERE pid = %d;
+SELECT COUNT(dst) FROM {url_alias} WHERE pid != %d AND dst = '%s';

@@ -1,0 +1,6 @@
+SELECT s.lid, t.translation FROM {locales_source} s INNER JOIN {locales_target} t ON s.lid = t.lid WHERE s.source = '%s' AND t.locale = '%s';
+SELECT lid, source FROM {locales_source} WHERE source = '%s';
+SELECT lid FROM {locales_source} WHERE source = '%s';
+SELECT s.source, t.translation, t.locale FROM {locales_source} s INNER JOIN {locales_target} t ON s.lid = t.lid WHERE t.locale = '%s' AND LENGTH(s.source) < 75;
+SELECT locale, name, formula, enabled FROM {locales_meta} ORDER BY isdefault DESC, enabled DESC, name ASC;
+SELECT locale FROM {locales_meta} WHERE locale = '%s';

@@ -1,0 +1,2 @@
+SELECT n.*, u.name, u.uid FROM {node} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.title = '%s' AND n.status = 1 ORDER BY n.created DESC;
+SELECT n.*, u.name, u.uid FROM {node} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.title LIKE '%%%s%%' AND n.status = 1 ORDER BY n.created DESC;

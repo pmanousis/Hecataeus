@@ -1,0 +1,5 @@
+SELECT COUNT(nid) FROM {node} WHERE moderate = 1;
+SELECT SUM(vote) FROM {queue} WHERE nid = %d;
+SELECT n.nid, n.title, n.type, u.name, u.uid, SUM(IF(q.uid = %d, 1, 0)) AS voted, SUM(q.vote) AS score FROM {node} n INNER JOIN {users} u ON n.uid = u.uid INNER JOIN {queue} q ON n.nid = q.nid WHERE n.moderate = 1 GROUP BY n.nid, n.title, n.type, u.name, u.uid, q.uid, q.vote;
+SELECT COUNT(n.nid) FROM {node} n INNER JOIN {queue} q ON n.nid = q.nid WHERE n.moderate = 1;
+SELECT uid, vote FROM {queue} WHERE nid = %d;

@@ -1,0 +1,9 @@
+SELECT bid, title, info FROM boxes ORDER BY title;
+SELECT * FROM boxes WHERE bid = '%d';
+SELECT * FROM blocks;
+SELECT * FROM blocks WHERE status > 0 AND region = 0 ORDER BY weight;
+SELECT * FROM blocks WHERE status > 0 AND region = 1 ORDER BY weight;
+SELECT * FROM blocks WHERE status > 0 ORDER BY weight;
+SELECT * FROM boxes WHERE bid = '%s';
+SELECT * FROM blocks WHERE custom = '%d' ORDER BY module, delta;
+SELECT * FROM blocks WHERE custom = '%d' ORDER BY module, delta;

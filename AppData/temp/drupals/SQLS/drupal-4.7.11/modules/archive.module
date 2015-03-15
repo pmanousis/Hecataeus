@@ -1,0 +1,3 @@
+SELECT n.nid, n.created FROM {node} n WHERE n.status = 1 AND n.created > %d AND n.created < %d ORDER BY n.created;
+SELECT n.nid, n.created FROM {node} n WHERE n.status = 1 AND n.created > %d AND n.created < %d ORDER BY n.created;
+SELECT count(n.nid) FROM {node} n WHERE n.status = 1 AND n.created > %d AND n.created < %d ORDER BY n.created;

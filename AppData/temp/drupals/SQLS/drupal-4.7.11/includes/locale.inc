@@ -1,0 +1,18 @@
+SELECT lid FROM {locales_source};
+SELECT isdefault, enabled FROM {locales_meta} WHERE locale = '%s';
+SELECT COUNT(*) AS strings FROM {locales_source};
+SELECT COUNT(*) AS translation FROM {locales_target} WHERE locale = '%s' AND translation != '';
+SELECT locale FROM {locales_meta} WHERE locale = '%s';
+SELECT DISTINCT s.source, t.translation, t.locale FROM {locales_source} s INNER JOIN {locales_target} t ON s.lid = t.lid WHERE s.lid = %d;
+SELECT translation FROM {locales_target} WHERE lid = %d AND locale = '%s';
+SELECT locale FROM {locales_meta} WHERE locale = '%s';
+SELECT lid FROM {locales_source} WHERE source = '%s';
+SELECT lid, translation, plid, plural FROM {locales_target} WHERE lid = %d AND locale = '%s';
+SELECT lid FROM {locales_source} WHERE source = '%s';
+SELECT lid FROM {locales_source} WHERE source = '%s';
+SELECT lid, translation FROM {locales_target} WHERE lid = %d AND locale = '%s';
+SELECT lid FROM {locales_source} WHERE source = '%s';
+SELECT * FROM {locales_meta} WHERE locale = '%s';
+SELECT s.lid, s.source, s.location, t.translation, t.plid, t.plural FROM {locales_source} s INNER JOIN {locales_target} t ON s.lid = t.lid WHERE t.locale = '%s' ORDER BY t.plid, t.plural;
+SELECT s.lid, s.source, s.location, t.plid, t.plural FROM {locales_source} s INNER JOIN {locales_target} t ON s.lid = t.lid ORDER BY t.plid, t.plural;
+SELECT s.source, s.location, s.lid, t.translation, t.locale FROM {locales_source} s INNER JOIN {locales_target} t ON s.lid = t.lid ;

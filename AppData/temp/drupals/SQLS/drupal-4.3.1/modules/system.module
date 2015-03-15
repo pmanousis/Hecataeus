@@ -1,0 +1,1 @@
+SELECT filename, type, status FROM {system} WHERE type = '%s';

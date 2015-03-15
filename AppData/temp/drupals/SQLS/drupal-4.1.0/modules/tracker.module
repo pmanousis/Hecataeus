@@ -1,0 +1,4 @@
+SELECT n.nid, n.title, COUNT(n.nid) AS comments, MAX(c.timestamp) AS last_comment FROM comments c LEFT JOIN node n ON c.nid = n.nid WHERE c.status = 0 AND c.timestamp > $period AND c.uid = '%s' GROUP BY n.nid, n.title ORDER BY last_comment DESC LIMIT 10;
+SELECT n.nid, n.title, COUNT(n.nid) AS comments, MAX(c.timestamp) AS last_comment FROM comments c LEFT JOIN node n ON c.nid = n.nid WHERE c.status = 0 AND c.timestamp > $period GROUP BY n.nid, n.title ORDER BY last_comment DESC LIMIT 10;
+SELECT c.*, u.name FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.timestamp > %d AND c.uid = '%d' AND c.nid = '%d' AND c.status = 0 ORDER BY cid DESC;
+SELECT c.*, u.name FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.timestamp > %d AND c.nid = '%d'AND c.status = 0 ORDER BY cid DESC;

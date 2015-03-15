@@ -1,0 +1,2 @@
+SELECT DISTINCT(n.nid), n.created FROM {node} n '. node_access_join_sql() .' WHERE n.status = 1 AND n.created > %d AND n.created < %d AND '. node_access_where_sql() .' ORDER BY n.created;
+SELECT DISTINCT(n.nid), n.created FROM {node} n '. node_access_join_sql() .' WHERE n.status = 1 AND n.created > %d AND n.created < %d AND '. node_access_where_sql() .' ORDER BY n.created;

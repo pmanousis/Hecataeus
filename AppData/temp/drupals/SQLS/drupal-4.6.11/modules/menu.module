@@ -1,0 +1,3 @@
+SELECT title FROM {menu} WHERE mid = %d;
+SELECT type, title FROM {menu} WHERE mid = %d;
+SELECT * FROM {menu} WHERE mid = %d;

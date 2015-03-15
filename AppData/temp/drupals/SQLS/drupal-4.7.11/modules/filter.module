@@ -1,0 +1,7 @@
+SELECT * FROM {filter_formats} WHERE format = %d;
+SELECT format FROM {filter_formats} WHERE name='%s';
+SELECT MAX(format) AS format FROM {filter_formats};
+SELECT * FROM {filter_formats};
+SELECT cache FROM {filter_formats} WHERE format = %d;
+SELECT * FROM {filters} WHERE format = %d ORDER BY weight ASC;
+SELECT * FROM {filter_formats} WHERE format = %d;

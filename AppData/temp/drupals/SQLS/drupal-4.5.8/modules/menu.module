@@ -1,0 +1,1 @@
+SELECT * FROM {menu} WHERE mid = %d;

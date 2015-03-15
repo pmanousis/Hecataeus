@@ -1,0 +1,15 @@
+SELECT * FROM variable WHERE value NOT LIKE 's';
+SELECT MAX(nid) FROM node;
+SELECT MAX(cid) FROM comments;
+SELECT MAX(tid) FROM term_data;
+SELECT MAX(cid) FROM comments;
+SELECT MAX(vid) FROM vocabulary;
+SELECT n.nid, t.tid FROM node n, term_node t WHERE n.nid = t.nid AND type = 'forum';
+SELECT MAX(bid) FROM bundle;
+SELECT MAX(fid) FROM feed;
+SELECT DISTINCT(nid) FROM {comments} WHERE thread = '';
+SELECT cid, pid FROM {comments} where nid = '%d' ORDER BY timestamp;
+SELECT MAX(uid) FROM {users};
+SELECT nid, path FROM {node} WHERE path != '';
+SELECT nid, path FROM {node} WHERE path != '';
+SELECT MAX(aid) FROM {access};;
