@@ -1,1 +1,1 @@
-SELECT filename, type, status FROM {system} WHERE type = '%s';
+SELECT filename, type, status FROM system WHERE type = '%s';

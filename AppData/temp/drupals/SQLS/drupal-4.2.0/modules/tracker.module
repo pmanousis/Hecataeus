@@ -1,4 +1,4 @@
 SELECT COUNT(nid) FROM node WHERE status = 1 AND uid = '';
 SELECT COUNT(nid) FROM node WHERE status = 1;
-SELECT c.*, u.name FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.uid = %d AND c.nid = %d AND c.status = 0 ORDER BY cid DESC;
-SELECT c.*, u.name FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.nid = %d AND c.status = 0 ORDER BY cid DESC;
+SELECT c.*, u.name FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.uid = 0 AND c.nid = 0 AND c.status = 0 ORDER BY cid DESC;
+SELECT c.*, u.name FROM comments c LEFT JOIN users u ON c.uid = u.uid WHERE c.nid = 0 AND c.status = 0 ORDER BY cid DESC;

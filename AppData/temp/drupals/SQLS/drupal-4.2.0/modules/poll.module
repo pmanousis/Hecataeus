@@ -1,5 +1,5 @@
-SELECT MAX(created) FROM node WHERE type = 'poll' AND status = '1' AND moderate = '0';
-SELECT p.nid FROM poll p LEFT JOIN node n ON p.nid=n.nid WHERE (n.created + p.runtime) < '". time() ."' AND p.active = '1' AND p.runtime != '0';
-SELECT runtime, voters, active FROM poll WHERE nid = %d;
-SELECT chtext, chvotes, chorder FROM poll_choices WHERE nid=%d ORDER BY chorder;
-SELECT n.nid, n.title, p.active, SUM(c.chvotes) AS votes FROM node n LEFT JOIN poll p ON n.nid=p.nid LEFT JOIN poll_choices c ON n.nid=c.nid WHERE type = 'poll' AND status = '1' AND moderate = '0' GROUP BY n.nid, n.title, p.active, n.created ORDER BY n.created DESC;
+SELECT MAX(created) FROM node WHERE type = 'poll' AND status = 1 AND moderate = 0;
+SELECT p.nid FROM poll p LEFT JOIN node n ON p.nid=n.nid WHERE (n.created + p.runtime) < '". time() ."' AND p.active = 1 AND p.runtime != 0;
+SELECT runtime, voters, active FROM poll WHERE nid = 0;
+SELECT chtext, chvotes, chorder FROM poll_choices WHERE nid=0 ORDER BY chorder;
+SELECT n.nid, n.title, p.active, SUM(c.chvotes) AS votes FROM node n LEFT JOIN poll p ON n.nid=p.nid LEFT JOIN poll_choices c ON n.nid=c.nid WHERE type = 'poll' AND status = 1 AND moderate = 0 GROUP BY n.nid, n.title, p.active, n.created ORDER BY n.created DESC;

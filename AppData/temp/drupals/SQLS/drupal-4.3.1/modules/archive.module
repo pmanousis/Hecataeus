@@ -1,2 +1,2 @@
-SELECT created FROM {node} WHERE status = 1 AND created > $start_of_month AND created < $end_of_month;
-SELECT nid FROM {node} WHERE status = '1' AND created > %d ORDER BY created;
+SELECT created FROM node WHERE status = 1 AND created > $start_of_month AND created < $end_of_month;
+SELECT nid FROM node WHERE status = '1' AND created > %d ORDER BY created;
