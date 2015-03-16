@@ -1,1 +1,1 @@
-SELECT * FROM {system};
+SELECT * FROM system;

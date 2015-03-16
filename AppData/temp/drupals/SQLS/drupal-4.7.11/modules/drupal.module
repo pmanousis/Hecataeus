@@ -1,6 +1,6 @@
-SELECT cid FROM {client} WHERE changed < %d;
-SELECT cid FROM {client} WHERE link = '%s';
-SELECT * FROM {client} ORDER BY %s;
-SELECT name, type FROM {system} WHERE status = 1;
-SELECT COUNT(uid) AS count FROM {users};
-SELECT COUNT(nid) AS count FROM {node};
+SELECT cid FROM client WHERE changed < 0;
+SELECT cid FROM client WHERE link = '%s';
+SELECT * FROM client; -- ORDER BY %s;
+SELECT name, type FROM system WHERE status = 1;
+SELECT COUNT(uid) AS cnt FROM users;
+SELECT COUNT(nid) AS cnt FROM node;

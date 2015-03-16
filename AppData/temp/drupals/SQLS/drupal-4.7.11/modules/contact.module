@@ -1,5 +1,5 @@
-SELECT cid, category, recipients, selected FROM {contact} ORDER BY weight, category;
-SELECT * FROM {contact} WHERE cid = %d;
-SELECT category FROM {contact} WHERE cid = %d;
-SELECT cid, category, selected FROM {contact} ORDER BY weight, category;
-SELECT * FROM {contact} WHERE cid = %d;
+SELECT cid, category, recipients, selected FROM contact ORDER BY weight, category;
+SELECT * FROM contact WHERE cid = 0;
+SELECT category FROM contact WHERE cid = 0;
+SELECT cid, category, selected FROM contact ORDER BY weight, category;
+SELECT * FROM contact WHERE cid = 0;

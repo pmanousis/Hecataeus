@@ -1,7 +1,7 @@
-SELECT f.* FROM {files} f WHERE filepath = '%s';
-SELECT SUM(filesize) FROM {files} f INNER JOIN {node} n ON f.nid = n.nid WHERE n.uid = %d;
-SELECT SUM(filesize) FROM {files};
-SELECT COUNT(fid) FROM {file_revisions} WHERE fid = %d;
-SELECT * FROM {files} WHERE nid = %d;
-SELECT COUNT(fid) FROM {file_revisions} WHERE fid = %d;
-SELECT * FROM {files} f INNER JOIN {file_revisions} r ON f.fid = r.fid WHERE r.vid = %d ORDER BY f.fid;
+SELECT f.* FROM files f WHERE filepath = '%s';
+SELECT SUM(filesize) FROM files f INNER JOIN node n ON f.nid = n.nid WHERE n.uid = 0;
+SELECT SUM(filesize) FROM files;
+SELECT COUNT(fid) FROM file_revisions WHERE fid = 0;
+SELECT * FROM files WHERE nid = 0;
+SELECT COUNT(fid) FROM file_revisions WHERE fid = 0;
+SELECT * FROM files f INNER JOIN file_revisions r ON f.fid = r.fid WHERE r.vid = 0 ORDER BY f.fid;

@@ -1,5 +1,5 @@
-SELECT * FROM {menu} WHERE path = 'node/%d';
-SELECT * FROM {menu} WHERE mid = %d;
-SELECT * FROM {menu} WHERE mid = %d;
-SELECT type, title FROM {menu} WHERE mid = %d;
-SELECT title FROM {menu} WHERE mid = %d;
+SELECT * FROM menu WHERE path = 'node/0';
+SELECT * FROM menu WHERE mid = 0;
+SELECT * FROM menu WHERE mid = 0;
+SELECT type, title FROM menu WHERE mid = 0;
+SELECT title FROM menu WHERE mid = 0;
