@@ -128,11 +128,11 @@ public class View extends Statement{
 			System.out.println(message);
 			throw new SQLException(message);
 		}
-		else
+		/*else
 		{
 			System.out.println("[CreateTableForView]The following command executed successfully:");
 			System.out.println(table_def);
-		}
+		}*/
 
 	}
 }

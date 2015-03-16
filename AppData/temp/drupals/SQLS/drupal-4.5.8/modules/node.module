@@ -1,9 +1,9 @@
-SELECT timestamp FROM {history} WHERE uid = '$user->uid' AND nid = %d;
--- SELECT n.*, u.uid, u.name, u.picture, u.data FROM {node} n INNER JOIN {users} u ON u.uid = n.uid WHERE '. implode(' AND ', $cond)));
--- SELECT DISTINCT s.lno as lno, n.title as title, n.created as created, u.uid as uid, u.name as name, s.count as count FROM {search_index} s, {node} n ". node_access_join_sql() ." INNER JOIN {users} u ON n.uid = u.uid WHERE s.lno = n.nid AND s.type = 'node' AND s.word like '%' AND n.status = 1 AND ". node_access_where_sql()));
-SELECT comment FROM {node} WHERE nid = %d;
-SELECT n.*, u.name, u.uid FROM {node} n INNER JOIN {users} u ON n.uid = u.uid ;
-SELECT n.nid FROM {node} n '. node_access_join_sql() .' WHERE '. node_access_where_sql() .' AND n.promote = 1 AND n.status = 1 ORDER BY n.created DESC;
-SELECT DISTINCT(n.nid), n.sticky, n.created FROM {node} n '. node_access_join_sql() .' WHERE n.promote = 1 AND n.status = 1 AND '. node_access_where_sql() .' ORDER BY n.sticky DESC, n.created DESC;
-SELECT n.nid as lno, n.title as text1, n.body as text2 FROM {node} n WHERE n.status = 1 AND moderate = 0 and (created > " . variable_get('node_cron_last', 1) . " or changed > " . variable_get('node_cron_last', 1) . ");
-SELECT COUNT(*) FROM {node_access} WHERE (nid = 0 OR nid = %d) AND CONCAT(realm, gid) IN (0,1);
+SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
+-- SELECT n.*, u.uid, u.name, u.picture, u.data FROM node n INNER JOIN users u ON u.uid = n.uid WHERE '. implode(' AND ', $cond)));
+-- SELECT DISTINCT s.lno as lno, n.title as title, n.created as created, u.uid as uid, u.name as name, s.count as count FROM search_index s, node n ". node_access_join_sql() ." INNER JOIN users u ON n.uid = u.uid WHERE s.lno = n.nid AND s.type = 'node' AND s.word like '%' AND n.status = 1 AND ". node_access_where_sql()));
+SELECT comment FROM node WHERE nid = 0;
+SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid ;
+-- SELECT n.nid FROM node n '. node_access_join_sql() .' WHERE '. node_access_where_sql() .' AND n.promote = 1 AND n.status = 1 ORDER BY n.created DESC;
+-- SELECT DISTINCT(n.nid), n.sticky, n.created FROM node n '. node_access_join_sql() .' WHERE n.promote = 1 AND n.status = 1 AND '. node_access_where_sql() .' ORDER BY n.sticky DESC, n.created DESC;
+SELECT n.nid as lno, n.title as text1, n.body as text2 FROM node n WHERE n.status = 1 AND moderate = 0 and (created > '' or changed > '');
+SELECT COUNT(*) FROM node_access WHERE (nid = 0 OR nid = 0) AND realm IN (0,1) AND gid IN (0,1);

@@ -11,7 +11,7 @@ SELECT url,timestamp FROM accesslog WHERE url <> '%". check_query($_SERVER["HTTP
 SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url <> '' GROUP BY url ORDER BY cnt DESC;
 SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url = '%". check_query($_SERVER["HTTP_HOST"]) ."%' GROUP BY url ORDER BY cnt DESC;
 SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url <> '%". check_query($_SERVER["HTTP_HOST"]) ."%' AND url <> '' GROUP BY url ORDER BY cnt DESC;
-SELECT COUNT(DISTINCT hostname) AS cnt, uid, MAX(timestamp) AS max_timestamp FROM accesslog WHERE timestamp >= 0 GROUP BY uid ORDER BY max_timestamp DESC;
+SELECT COUNT(hostname) AS cnt, uid, MAX(timestamp) AS max_timestamp FROM accesslog WHERE timestamp >= 0 GROUP BY uid ORDER BY max_timestamp DESC;
 SELECT s.nid, n.title, u.uid, u.name FROM statistics s LEFT JOIN node n ON s.nid = n.nid LEFT JOIN users u ON n.uid = u.uid WHERE n.status = 1; -- %s <> '0' AND  ORDER BY %s DESC;
 SELECT totalcount, daycount, timestamp FROM statistics WHERE nid = 0;
 SELECT n.nid, n.title FROM statistics s LEFT JOIN node n ON s.nid = n.nid; -- ORDER BY %s DESC;

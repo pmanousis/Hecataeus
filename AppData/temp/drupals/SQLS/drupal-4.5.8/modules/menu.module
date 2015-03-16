@@ -1,1 +1,1 @@
-SELECT * FROM {menu} WHERE mid = %d;
+SELECT * FROM menu WHERE mid = 0;

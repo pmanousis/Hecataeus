@@ -83,8 +83,8 @@ public class Variable extends Statement{
 				throw new SQLException(message);
 			}
 			
-			System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-			System.out.println("SELECT "+finalSelect);
+			/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+			System.out.println("SELECT "+finalSelect);*/
 			
 			Tokenizer selTokenizer=new Tokenizer(finalSelect);
 			parser=new Parser(d,selTokenizer,channel);
@@ -109,8 +109,8 @@ public class Variable extends Statement{
 				throw new SQLException(message);
 			}
 			
-			System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-			System.out.println("SELECT "+finalSelect);
+			/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+			System.out.println("SELECT "+finalSelect);*/
 			
 			Tokenizer selTokenizer=new Tokenizer(finalSelect);
 			parser=new Parser(d,selTokenizer,channel);

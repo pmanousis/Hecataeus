@@ -1,4 +1,4 @@
-SELECT f.nid, f.* FROM {files} f WHERE filepath = '%s';
-SELECT SUM(f.filesize) FROM {files} f INNER JOIN {node} n ON f.nid = n.nid WHERE uid = %d;
-SELECT SUM(f.filesize) FROM {files} f INNER JOIN {node} n ON f.nid = n.nid;
-SELECT * FROM {files} WHERE nid = %d;
+SELECT f.nid, f.* FROM files f WHERE filepath = '%s';
+SELECT SUM(f.filesize) FROM files f INNER JOIN node n ON f.nid = n.nid WHERE uid = 0;
+SELECT SUM(f.filesize) FROM files f INNER JOIN node n ON f.nid = n.nid;
+SELECT * FROM files WHERE nid = 0;

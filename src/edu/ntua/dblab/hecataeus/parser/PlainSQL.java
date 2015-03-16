@@ -165,8 +165,8 @@ public class PlainSQL extends Statement{
 				throw new SQLException(message);
 			}
 			
-			System.out.println("[CreateTableForSelectInto]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+assig.getLine()+") executed successfully:");
-			System.out.println(eqCreate.toString());
+			/*System.out.println("[CreateTableForSelectInto]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+assig.getLine()+") executed successfully:");
+			System.out.println(eqCreate.toString());*/
 			
 			String select=sentence.replaceAll("INTO(\\s|\n)+(.|\n)*FROM(\\s|\n)+","FROM ");
 			
@@ -186,8 +186,8 @@ public class PlainSQL extends Statement{
 				throw new SQLException(message);
 			}
 			
-			System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-			System.out.println("SELECT "+varSel);
+			/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+			System.out.println("SELECT "+varSel);*/
 			
 			tokenizer=new Tokenizer(varSel);System.out.println("edw:"+varSel);
 			parser=new Parser(d,tokenizer,channel);
@@ -218,8 +218,8 @@ public class PlainSQL extends Statement{
 				throw new SQLException(message);
 			}
 			
-			System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-			System.out.println(finalSelect);
+			/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+			System.out.println(finalSelect);*/
 						
 			//get SELECT
 			while (!tokenizer.getString().equals("SELECT")){}			
@@ -464,8 +464,8 @@ public class PlainSQL extends Statement{
 			throw new SQLException(message);
 		}
 		
-		System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println("SELECT "+finalSelect);
+		/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println("SELECT "+finalSelect);*/
 		
 		//create equivalent select
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
@@ -522,8 +522,8 @@ public class PlainSQL extends Statement{
 			throw new SQLException(message);
 		}
 		
-		System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println("SELECT "+finalSelect);
+		/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println("SELECT "+finalSelect);*/
 		
 		//create the equivalent select statement
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
@@ -636,8 +636,8 @@ public class PlainSQL extends Statement{
 			throw new SQLException(message);
 		}
 		
-		System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println("SELECT "+finalSelect);
+		/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println("SELECT "+finalSelect);*/
 		
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
 		parser=new Parser(d,selTokenizer,channel);

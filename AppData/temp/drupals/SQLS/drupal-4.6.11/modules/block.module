@@ -1,7 +1,7 @@
-SELECT bid, title, info FROM {boxes} ORDER BY title;
-SELECT * FROM {boxes} WHERE bid = %d;
-SELECT * FROM {blocks} ;
-SELECT * FROM {boxes} WHERE bid = %d;
-SELECT pages, visibility, custom, types FROM {blocks} WHERE module = '%s' AND delta = '%s';
-SELECT * FROM {blocks} WHERE status = 1 AND custom != 0 ORDER BY weight, module, delta;
-SELECT * FROM {blocks} WHERE status = 1 AND region IN (%s) ORDER BY weight, module;
+SELECT bid, title, info FROM boxes ORDER BY title;
+SELECT * FROM boxes WHERE bid = 0;
+SELECT * FROM blocks ;
+SELECT * FROM boxes WHERE bid = 0;
+SELECT pages, visibility, custom, types FROM blocks WHERE module = '%s' AND delta = '%s';
+SELECT * FROM blocks WHERE status = 1 AND custom != 0 ORDER BY weight, module, delta;
+SELECT * FROM blocks WHERE status = 1 AND region IN (0,1) ORDER BY weight, module;

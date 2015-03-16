@@ -123,8 +123,8 @@ public class Script extends Block{
 		}
 		
 		Vector<Statement> vec=getStatements();		
-		System.out.println("nodes:"+vec.size());
+		/*System.out.println("nodes:"+vec.size());
 		
-		System.out.println("lines:"+HecataeusSQLParser.totalLines);
+		System.out.println("lines:"+HecataeusSQLParser.totalLines);*/
 	}
 }

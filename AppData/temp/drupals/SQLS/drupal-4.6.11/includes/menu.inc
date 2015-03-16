@@ -1,1 +1,1 @@
-SELECT * FROM {menu} ORDER BY mid ASC;
+SELECT * FROM menu ORDER BY mid ASC;

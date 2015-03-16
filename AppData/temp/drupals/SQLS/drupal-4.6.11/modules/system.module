@@ -1,1 +1,1 @@
-SELECT name, type, status, throttle FROM {system} WHERE type = '%s';
+SELECT name, type, status, throttle FROM system WHERE type = '%s';

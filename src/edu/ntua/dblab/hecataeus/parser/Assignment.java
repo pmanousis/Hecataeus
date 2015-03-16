@@ -88,8 +88,8 @@ public class Assignment extends Statement{
 			throw new SQLException(message);
 		}
 		
-		System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println("SELECT "+eqSelect);
+		/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println("SELECT "+eqSelect);*/
 		
 		tokenizer=new Tokenizer(eqSelect);System.out.println("fetch:"+eqSelect);
 		parser=new Parser(d,tokenizer,channel);

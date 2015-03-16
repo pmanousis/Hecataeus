@@ -62,8 +62,8 @@ public class Relation extends Statement{
 			setDefinition(sentence);
 			setTable(tTable);
 			
-			System.out.println("[ExecuteDLL]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-			System.out.println(sentence.toString());
+			/*System.out.println("[ExecuteDLL]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+			System.out.println(sentence.toString());*/
 		}   
 	}
 }

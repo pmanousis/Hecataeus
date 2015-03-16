@@ -1,5 +1,5 @@
-SELECT * FROM {filter_formats} WHERE format = %d;
-SELECT * FROM {filter_formats};
-SELECT cache FROM {filter_formats} WHERE format = %d;
-SELECT * FROM {filters} WHERE format = %d ORDER BY weight ASC;
-SELECT * FROM {filter_formats} WHERE format = %d;
+SELECT * FROM filter_formats WHERE format = 0;
+SELECT * FROM filter_formats;
+SELECT cache FROM filter_formats WHERE format = 0;
+SELECT * FROM filters WHERE format = 0 ORDER BY weight ASC;
+SELECT * FROM filter_formats WHERE format = 0;

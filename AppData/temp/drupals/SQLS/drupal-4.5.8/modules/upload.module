@@ -1,4 +1,4 @@
--- SELECT * from {files} n " . node_access_join_sql() . " WHERE filepath = '%s' AND ;
-SELECT SUM(f.filesize) FROM {files} f INNER JOIN {node} n ON f.nid = n.nid WHERE uid = %d;
-SELECT SUM(f.filesize) FROM {files} f INNER JOIN {node} n ON f.nid = n.nid;
-SELECT * FROM {files} WHERE nid = %d;
+-- SELECT * from files n " . node_access_join_sql() . " WHERE filepath = '%s' AND ;
+SELECT SUM(f.filesize) FROM files f INNER JOIN node n ON f.nid = n.nid WHERE uid = 0;
+SELECT SUM(f.filesize) FROM files f INNER JOIN node n ON f.nid = n.nid;
+SELECT * FROM files WHERE nid = 0;

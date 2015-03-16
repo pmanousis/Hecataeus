@@ -113,8 +113,8 @@ public class Cursor extends Statement{
 			throw new SQLException(message);
 		}
 		
-		System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println(finalSelect);
+		/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println(finalSelect);*/
 		
 		//get SELECT
 		while (!tokenizer.getString().equals("SELECT")){}
@@ -180,8 +180,8 @@ public class Cursor extends Statement{
 			throw new SQLException(message);
 		}
 		
-		System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println(finalSelect);
+		/*System.out.println("[CreateSQLGraph]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println(finalSelect);*/
 		
 		//get SELECT
 		while (!tokenizer.getString().equals("SELECT")){}		
@@ -205,7 +205,7 @@ public class Cursor extends Statement{
 		
 		d.execute(create,channel);
 		
-		System.out.println("[CreateTableForDynamicCursor]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
-		System.out.println(create.toString());
+		/*System.out.println("[CreateTableForDynamicCursor]The following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") executed successfully:");
+		System.out.println(create.toString());*/
 	}
 }

@@ -1,1 +1,1 @@
-SELECT link, description FROM {page} WHERE nid = %d;
+SELECT link, description FROM page WHERE nid = 0;

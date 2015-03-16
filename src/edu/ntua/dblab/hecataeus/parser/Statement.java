@@ -55,9 +55,9 @@ public abstract class Statement{
 			System.out.println(message);         
 			throw new SQLException(message);
 		}
-		else {
+		/*else {
 			System.out.println("[ValidateSQL]The following command was executed successfully:");
 			System.out.println(sentence);
-		}
+		}*/
 	}
 }

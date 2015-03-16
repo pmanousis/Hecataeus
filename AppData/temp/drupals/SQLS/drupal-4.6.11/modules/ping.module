@@ -1,1 +1,1 @@
-SELECT nid FROM {node} WHERE status = 1 AND moderate = 0 AND (created > '". variable_get('ping_cron_last', time()) ."' OR changed > '". variable_get('ping_cron_last', time()) ."');
+SELECT nid FROM node WHERE status = 1 AND moderate = 0 AND (created > '' OR changed > '');
