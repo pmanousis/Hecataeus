@@ -1,1 +1,1 @@
-SELECT * FROM {url_alias};
+SELECT * FROM url_alias;

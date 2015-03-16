@@ -1,7 +1,7 @@
-SELECT COUNT(src) FROM {url_alias} WHERE src = '%s';
-SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s';
-SELECT COUNT(dst) FROM {url_alias} WHERE dst = '%s' AND src != '%s';
-SELECT * FROM {url_alias};
-SELECT * FROM {url_alias} WHERE pid = '%d';
-SELECT COUNT(src) FROM {url_alias} WHERE pid != '%d' AND src = '%s';
-SELECT COUNT(dst) FROM {url_alias} WHERE pid != '%d' AND dst = '%s';
+SELECT COUNT(src) FROM url_alias WHERE src = '%s';
+SELECT COUNT(dst) FROM url_alias WHERE dst = '%s';
+SELECT COUNT(dst) FROM url_alias WHERE dst = '%s' AND src != '%s';
+SELECT * FROM url_alias;
+SELECT * FROM url_alias WHERE pid = 0;
+SELECT COUNT(src) FROM url_alias WHERE pid != '0' AND src = '%s';
+SELECT COUNT(dst) FROM url_alias WHERE pid != '0' AND dst = '%s';

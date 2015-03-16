@@ -1,2 +1,2 @@
-    $recent_activity = db_fetch_object(db_query("SELECT COUNT(timestamp) AS hits FROM {accesslog} WHERE timestamp >= %d", (time() - 60)));
-      $recent_activity = db_fetch_object(db_query("SELECT COUNT(timestamp) AS hits FROM {accesslog} WHERE timestamp >= %d", (time() - 60)));
+SELECT COUNT(timestamp) AS hits FROM accesslog WHERE timestamp >= 0;
+SELECT COUNT(timestamp) AS hits FROM accesslog WHERE timestamp >= 0;

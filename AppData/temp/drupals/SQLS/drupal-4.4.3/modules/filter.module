@@ -1,1 +1,1 @@
-SELECT * FROM {filters} ORDER BY weight ASC;
+SELECT * FROM filters ORDER BY weight ASC;

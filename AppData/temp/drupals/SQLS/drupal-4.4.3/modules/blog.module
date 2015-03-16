@@ -1,6 +1,6 @@
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM {node} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = %d AND n.status = 1 ORDER BY n.nid DESC;
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM {node} n INNER JOIN {users} u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.nid DESC;
-SELECT nid FROM {node} WHERE type = 'blog' AND uid = '$account->uid' AND status = 1 ORDER BY nid DESC", variable_get("default_nodes_main;
-SELECT nid FROM {node} WHERE type = 'blog' AND status = 1 ORDER BY nid DESC", variable_get("default_nodes_main;
-SELECT i.*, f.title as ftitle, f.link as flink FROM {item} i, {feed} f WHERE i.iid = %d AND i.fid = f.fid;
-SELECT n.title, n.nid FROM {node} n WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.nid DESC;
+SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.nid DESC;
+SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.nid DESC;
+SELECT nid FROM node WHERE type = 'blog' AND uid = 0 AND status = 1 ORDER BY nid DESC;
+SELECT nid FROM node WHERE type = 'blog' AND status = 1 ORDER BY nid DESC;
+SELECT i.*, f.title as ftitle, f.link as flink FROM item i, feed f WHERE i.iid = 0 AND i.fid = f.fid;
+SELECT n.title, n.nid FROM node n WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.nid DESC;
