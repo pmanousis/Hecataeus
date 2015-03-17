@@ -53,7 +53,7 @@ CREATE TABLE boxes (
 CREATE TABLE bundle (
   bid INTEGER,
   title varchar(255) NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   PRIMARY KEY  (bid),
   UNIQUE (title)
 );
@@ -95,7 +95,7 @@ CREATE TABLE feed (
   url varchar(255) NOT NULL ,
   refresh integer NOT NULL ,
   timestamp integer NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   link varchar(255) NOT NULL ,
   description varchar(1024) NOT NULL ,
   PRIMARY KEY  (fid),
@@ -124,7 +124,7 @@ CREATE TABLE item (
   author varchar(255) NOT NULL ,
   description varchar(1024) NOT NULL ,
   timestamp integer NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   PRIMARY KEY  (iid)
 );
 CREATE TABLE locales (
@@ -342,7 +342,7 @@ CREATE TABLE node (
   promote integer NOT NULL ,
   moderate integer NOT NULL ,
   users varchar(1024) NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   teaser varchar(1024) NOT NULL ,
   body varchar(1024) NOT NULL ,
   changed integer NOT NULL ,
@@ -356,8 +356,8 @@ CREATE INDEX node_promote_idx ON node(promote);
 CREATE INDEX node_status_idx ON node(status);
 CREATE INDEX node_uid_idx ON node(uid);
 CREATE VIEW ourView AS
-SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, users.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, node.users, attributes, teaser, body, changed, revisions, static
+SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, users.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, node.users, attrs, teaser, body, changed, revisions, static
 FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
 CREATE VIEW ourViewN AS
-SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, users.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, node.users, attributes, teaser, body, changed, revisions, static
+SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, users.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, node.users, attrs, teaser, body, changed, revisions, static
 FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;

@@ -54,7 +54,7 @@ CREATE TABLE boxes (
 CREATE TABLE bundle (
   bid integer,
   title varchar(255) NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   PRIMARY KEY  (bid),
   UNIQUE (title)
 );
@@ -97,7 +97,7 @@ CREATE TABLE feed (
   url varchar(255) NOT NULL ,
   refresh integer NOT NULL ,
   checked integer NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   link varchar(255) NOT NULL ,
   description varchar(1024) NOT NULL ,
   image varchar(1024) NOT NULL ,
@@ -133,7 +133,7 @@ CREATE TABLE item (
   author varchar(255) NOT NULL ,
   description varchar(1024) NOT NULL ,
   timestamp integer NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   PRIMARY KEY  (iid)
 );
 CREATE TABLE locales (

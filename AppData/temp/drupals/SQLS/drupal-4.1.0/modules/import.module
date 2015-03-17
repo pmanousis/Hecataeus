@@ -13,7 +13,7 @@ SELECT iid FROM item WHERE fid = 0 AND title = '%s';
 SELECT iid FROM item WHERE fid = 0 ORDER BY timestamp;
 SELECT * FROM feed WHERE fid = 0;
 SELECT * FROM bundle WHERE bid = 0;
-SELECT f.*, COUNT(i.iid) AS items FROM feed f LEFT JOIN item i ON f.fid = i.fid GROUP BY f.fid, f.title, f.url, f.refresh, f.timestamp, f.attributes, f.link, f.description ORDER BY f.title;
+SELECT f.*, COUNT(i.iid) AS items FROM feed f LEFT JOIN item i ON f.fid = i.fid GROUP BY f.fid, f.title, f.url, f.refresh, f.timestamp, f.attrs, f.link, f.description ORDER BY f.title;
 SELECT * FROM bundle ORDER BY title;
 SELECT * FROM feed WHERE url = '%s';
 SELECT i.*, f.title AS feed FROM item i LEFT JOIN feed f ON i.fid = f.fid ORDER BY i.iid DESC; -- LIMIT 50;

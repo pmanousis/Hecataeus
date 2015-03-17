@@ -54,7 +54,7 @@ CREATE TABLE boxes (
 CREATE TABLE bundle (
   bid integer,
   title varchar(255) NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   PRIMARY KEY  (bid),
   UNIQUE (title)
 );
@@ -97,7 +97,7 @@ CREATE TABLE feed (
   url varchar(255) NOT NULL ,
   refresh integer NOT NULL ,
   timestamp integer NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   link varchar(255) NOT NULL ,
   description varchar(1024) NOT NULL ,
   PRIMARY KEY  (fid),
@@ -126,7 +126,7 @@ CREATE TABLE item (
   author varchar(255) NOT NULL ,
   description varchar(1024) NOT NULL ,
   timestamp integer NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   PRIMARY KEY  (iid)
 );
 CREATE TABLE locales (
@@ -359,7 +359,7 @@ CREATE TABLE node (
   promote integer NOT NULL ,
   moderate integer NOT NULL ,
   users varchar(1024) NOT NULL ,
-  attributes varchar(255) NOT NULL ,
+  attrs varchar(255) NOT NULL ,
   teaser varchar(1024) NOT NULL ,
   body varchar(1024) NOT NULL ,
   changed integer NOT NULL ,
@@ -370,8 +370,8 @@ CREATE TABLE node (
 CREATE INDEX users_timestamp_idx ON users(timestamp);
 CREATE SEQUENCE users_uid_seq INCREMENT 1 START 1;
 CREATE VIEW ourView AS
-SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, timestamp, USERS.status, timezone, language, init, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, NODE.users, attributes, teaser, body, changed, revisions, static
+SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, timestamp, USERS.status, timezone, language, init, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, NODE.users, attrs, teaser, body, changed, revisions, static
 FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
 CREATE VIEW ourViewN AS
-SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, timestamp, USERS.status, timezone, language, init, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, NODE.users, attributes, teaser, body, changed, revisions, static
+SELECT USERS.uid, name, pass, mail, mode, sort, threshold, theme, signature, timestamp, USERS.status, timezone, language, init, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, NODE.users, attrs, teaser, body, changed, revisions, static
 FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;
