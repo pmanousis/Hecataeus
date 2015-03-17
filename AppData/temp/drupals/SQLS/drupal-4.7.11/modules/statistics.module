@@ -8,5 +8,5 @@ SELECT COUNT(a.uid) AS hits, a.uid, u.name, a.hostname, SUM(a.timer) AS total, a
 SELECT COUNT(uid) FROM accesslog;
 SELECT url, COUNT(url) AS hits, MAX(timestamp) AS last FROM accesslog WHERE url <> '%%%s%%' AND url <> '' GROUP BY url;
 SELECT COUNT(url) FROM accesslog WHERE url <> '' AND url <> '%%%s%%';
-SELECT n.nid, n.title, u.uid, u.name FROM node n INNER JOIN node_counter s ON n.nid = s.nid INNER JOIN users u ON n.uid = u.uid WHERE n.status = 1; -- %s <> '0' AND  ORDER BY %s DESC;
+SELECT ov.nid, ov.title, ov.uid, ov.name FROM ourView ov INNER JOIN node_counter s ON ov.nid = s.nid WHERE ov.status = 1; -- %s <> '0' AND  ORDER BY %s DESC;
 SELECT totalcount, daycount, timestamp FROM node_counter WHERE nid = 0;

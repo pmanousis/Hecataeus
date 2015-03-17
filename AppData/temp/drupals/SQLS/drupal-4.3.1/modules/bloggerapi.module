@@ -1,1 +1,1 @@
-SELECT n.*, u.name FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.uid = 0 ORDER BY n.nid DESC;
+SELECT v.* FROM ourView v WHERE v.type = 'blog' AND v.uid = 0 ORDER BY v.nid DESC;

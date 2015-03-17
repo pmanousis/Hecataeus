@@ -20,8 +20,8 @@ SELECT * FROM vocabulary WHERE LOWER('%s') = LOWER(name);
 SELECT * FROM term_data WHERE LOWER('%s') = LOWER(name);
 SELECT * FROM vocabulary WHERE vid = 0;
 SELECT * FROM term_data WHERE tid = 0;
-SELECT n.nid, n.title, n.type, n.created, n.changed, n.uid, n.static, n.created, u.name FROM node n LEFT JOIN term_node r ON n.nid = r.nid LEFT JOIN users u ON n.uid = u.uid WHERE r.tid IN (0,1) AND n.status = '1' ORDER BY static DESC, created DESC;
-SELECT COUNT(n.nid) FROM node n LEFT JOIN term_node r ON n.nid = r.nid LEFT JOIN users u ON n.uid = u.uid WHERE r.tid IN (0,1) AND n.status = '1';
-SELECT n.nid, n.title, n.type, n.created, n.changed, n.uid, u.name FROM node n LEFT JOIN term_node r ON n.nid = r.nid LEFT JOIN users u ON n.uid = u.uid WHERE r.tid IN (0,1) AND n.status = '1' GROUP BY n.nid, n.title, n.type, n.created, n.changed, n.uid, u.name ORDER BY static DESC, created DESC; -- HAVING COUNT(n.nid) = ".count($taxonomy->tids)." 
+SELECT v.nid, v.title, v.type, v.created, v.changed, v.uid, v.static, v.created, v.name FROM ourView v LEFT JOIN term_node r ON v.nid = r.nid WHERE r.tid IN (0,1) AND v.status = '1' ORDER BY static DESC, created DESC;
+SELECT COUNT(v.nid) FROM ourView v LEFT JOIN term_node r ON v.nid = r.nid WHERE r.tid IN (0,1) AND v.status = '1';
+SELECT v.nid, v.title, v.type, v.created, v.changed, v.uid, v.name FROM ourView v LEFT JOIN term_node r ON v.nid = r.nid WHERE r.tid IN (0,1) AND v.status = '1' GROUP BY v.nid, v.title, v.type, v.created, v.changed, v.uid, v.name ORDER BY static DESC, created DESC; -- HAVING COUNT(n.nid) = ".count($taxonomy->tids)." 
 SELECT n.nid FROM node n LEFT JOIN term_node r ON n.nid = r.nid WHERE r.tid IN (0,1) AND n.status = '1' GROUP BY n.nid; -- HAVING COUNT(n.nid) = 
 -- SELECT $count;

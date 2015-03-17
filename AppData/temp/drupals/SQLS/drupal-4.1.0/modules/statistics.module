@@ -18,6 +18,6 @@ SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url <> '' GROUP BY url ORDER 
 SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url = '%". check_input($HTTP_HOST) ."%' GROUP BY url ORDER BY cnt DESC;
 SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url <> '%". check_input($HTTP_HOST) ."%' AND url <> '' GROUP BY url ORDER BY cnt DESC;
 SELECT COUNT(hostname) AS cnt, uid, MAX(timestamp) AS max_timestamp FROM accesslog WHERE timestamp >= '%s' GROUP BY uid ORDER BY max_timestamp DESC;
-SELECT statistics.nid, node.title, u.uid, u.name FROM statistics LEFT JOIN node ON statistics.nid = node.nid LEFT JOIN users u ON node.uid = u.uid WHERE node.status = 1; -- %s <> '0' AND  ORDER BY %s DESC ; -- LIMIT %s;
+SELECT statistics.nid, v.title, v.uid, v.name FROM statistics LEFT JOIN ourView v ON statistics.nid = v.nid WHERE v.status = 1; -- %s <> '0' AND  ORDER BY %s DESC ; -- LIMIT %s;
 SELECT totalcount, daycount, timestamp FROM statistics WHERE nid = 0;
 SELECT statistics.nid,node.title FROM statistics LEFT JOIN node ON statistics.nid = node.nid; -- ORDER BY %s DESC ; -- LIMIT %s;

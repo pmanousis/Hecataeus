@@ -1,5 +1,5 @@
 SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
-SELECT n.*, u.uid, u.name, u.picture, u.data FROM node n INNER JOIN users u ON u.uid = n.uid; -- WHERE '. implode(' AND ;
+SELECT ov.* FROM ourView ov; -- WHERE '. implode(' AND ;
 SELECT COUNT(*) FROM node WHERE status = 1 AND moderate = 0;
 SELECT COUNT(*) FROM node n LEFT JOIN node_comment_statistics c ON n.nid = c.nid WHERE n.status = 1 AND n.moderate = 0 AND (n.created > 0 OR n.changed > 0 OR c.last_comment_timestamp > 0);
 SELECT comment FROM node WHERE nid = 0;

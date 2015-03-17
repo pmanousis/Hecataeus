@@ -1,2 +1,2 @@
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.title = '%s' AND n.status = 1 ORDER BY n.created DESC;
-SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.title = '%". check_query($title) ."%' AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.* FROM ourView ov WHERE ov.title = '%s' AND ov.status = 1 ORDER BY ov.created DESC;
+SELECT ov.* FROM ourView ov WHERE ov.title = '%". check_query($title) ."%' AND ov.status = 1 ORDER BY ov.created DESC;

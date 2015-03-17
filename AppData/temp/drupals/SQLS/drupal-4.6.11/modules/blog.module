@@ -1,5 +1,5 @@
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND u.uid = 0 AND n.status = 1 ORDER BY n.created DESC;
-SELECT n.nid, n.title, n.teaser, n.created, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, ov.teaser, ov.created, ov.name, ov.uid FROM ourView ov WHERE ov.type = 'blog' AND ov.uid = 0 AND ov.status = 1 ORDER BY ov.created DESC;
+SELECT ov.nid, ov.title, ov.teaser, ov.created, ov.name, ov.uid FROM ourView ov WHERE ov.type = 'blog' AND ov.status = 1 ORDER BY ov.created DESC;
 SELECT n.nid, n.sticky, n.created FROM node n WHERE type = 'blog' AND n.uid = 0 AND n.status = 1 ORDER BY n.sticky DESC, n.created DESC;
 SELECT n.nid, n.created FROM node n WHERE n.type = 'blog' AND n.status = 1 ORDER BY n.created DESC;
 SELECT i.*, f.title as ftitle, f.link as flink FROM aggregator_item i, aggregator_feed f WHERE i.iid = 0 AND i.fid = f.fid;

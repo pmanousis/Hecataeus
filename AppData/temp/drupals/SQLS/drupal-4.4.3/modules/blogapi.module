@@ -1,1 +1,1 @@
-SELECT n.nid, n.title, n.body, n.created, u.name FROM node n, users u WHERE n.uid=u.uid AND n.type = 'blog' AND n.uid = 0 ORDER BY n.created DESC;
+SELECT ov.nid, ov.title, ov.body, ov.created, ov.name FROM ourView ov WHERE ov.type = 'blog' AND ov.uid = 0 ORDER BY ov.created DESC;

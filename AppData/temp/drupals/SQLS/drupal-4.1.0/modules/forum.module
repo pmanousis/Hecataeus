@@ -1,6 +1,6 @@
 SELECT * FROM forum WHERE nid = 0 AND shadow = 0;
 SELECT n.nid, n.title, u.uid, u.name, n.created, MAX(c.timestamp) AS sort FROM node n, forum f LEFT JOIN comments c ON c.nid = n.nid LEFT JOIN users u ON n.uid = u.uid WHERE n.type = 'forum' AND n.nid = f.nid AND f.shadow = 0 AND n.status = 1 GROUP BY n.nid ORDER BY sort DESC ; -- LIMIT 5;
-SELECT n.nid, n.title, u.uid, u.name FROM node n LEFT JOIN forum f ON n.nid = f.nid LEFT JOIN users u ON n.uid = u.uid WHERE n.type = 'forum' ORDER BY n.nid DESC ; -- LIMIT 5;
+SELECT v.nid, v.title, v.uid, v.name FROM ourView v LEFT JOIN forum f ON v.nid = f.nid WHERE v.type = 'forum' ORDER BY v.nid DESC ; -- LIMIT 5;
 SELECT n.nid, title, body, n.created, MAX(c.timestamp) AS date_sort, COUNT(c.nid) AS num_comments FROM node n, term_node t, forum f LEFT JOIN comments c ON c.nid = n.nid WHERE n.nid = t.nid AND n.nid = f.nid AND t.tid = 0 AND f.shadow = 0 AND n.status = 1 GROUP BY n.nid; -- ORDER BY $user->sortby;
 SELECT COUNT(cid) AS cnt FROM comments WHERE nid = 0 AND status = 0;
 SELECT timestamp FROM comments WHERE nid = 0 AND status = 0 ORDER BY timestamp DESC ; -- LIMIT 1;

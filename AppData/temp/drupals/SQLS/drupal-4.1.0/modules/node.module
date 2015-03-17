@@ -1,5 +1,5 @@
 SELECT comment FROM node WHERE nid = 0;
-SELECT n.*, u.name, u.uid FROM node n LEFT JOIN users u ON n.uid = u.uid ;
+SELECT v.* FROM ourView v;
 SELECT nid FROM node WHERE promote = '1' AND status = '1' ORDER BY created DESC; -- LIMIT 15;
 SELECT n.nid, type FROM node n LEFT JOIN term_node r ON n.nid = r.nid WHERE tid IN (0,1) AND status = '1' ORDER BY static DESC, created DESC;
 SELECT n.nid, n.type FROM node n LEFT JOIN term_node r ON n.nid = r.nid WHERE tid IN (0,1) AND status = '1' GROUP BY n.nid, n.type, n.status, n.static, n.created ORDER BY static DESC, created DESC; -- HAVING COUNT(n.nid) = '' 
