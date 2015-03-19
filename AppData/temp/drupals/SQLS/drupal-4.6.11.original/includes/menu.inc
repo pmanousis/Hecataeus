@@ -1,0 +1,1 @@
+SELECT * FROM menu ORDER BY mid ASC;

@@ -1,0 +1,5 @@
+SELECT filename, name, type, status, throttle, schema_version FROM system WHERE type = '%s';
+SELECT * FROM system WHERE type = 'theme' AND name = '%s';
+SELECT module FROM blocks WHERE theme = '%s';
+SELECT * FROM blocks WHERE theme = '%s';
+SELECT status FROM system WHERE type = 'theme' AND name = '%s' AND status = 0;

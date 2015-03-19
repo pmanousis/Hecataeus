@@ -1,0 +1,22 @@
+SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
+-- SELECT n.nid, r.vid, n.type, n.status, n.created, n.changed, n.comment, n.promote, n.moderate, n.sticky, r.timestamp AS revision_timestamp, r.title, r.body, r.teaser, r.log, r.format, u.uid, u.name, u.picture, u.data FROM node n INNER JOIN users u ON u.uid = n.uid INNER JOIN node_revisions r ON r.nid = n.nid AND r.vid = 0 WHERE '. $cond, $arguments));
+-- SELECT n.nid, n.vid, n.type, n.status, n.created, n.changed, n.comment, n.promote, n.moderate, n.sticky, r.timestamp AS revision_timestamp, r.title, r.body, r.teaser, r.log, r.format, u.uid, u.name, u.picture, u.data FROM node n INNER JOIN users u ON u.uid = n.uid INNER JOIN node_revisions r ON r.vid = n.vid WHERE '. $cond, $arguments));
+SELECT COUNT(*) FROM node WHERE status = 1;
+SELECT COUNT(*) FROM node n LEFT JOIN node_comment_statistics c ON n.nid = c.nid WHERE n.status = 1 AND (n.created = 0 AND n.changed = 0 AND c.last_comment_timestamp = 0 AND n.nid > 0  OR (n.created > 0 OR n.changed > 0 OR c.last_comment_timestamp > 0));
+SELECT comment FROM node WHERE nid = 0;
+SELECT COUNT(vid) FROM node_revisions WHERE nid = 0;
+SELECT changed FROM node WHERE nid = 0;
+-- SELECT n.*, u.name, u.uid FROM node n '. $filter['join'] .' INNER JOIN users u ON n.uid = u.uid '. $filter['where'] .' ORDER BY n.changed DESC', 50, 0, NULL, $filter['args']);
+SELECT title FROM node WHERE nid = 0;
+SELECT COUNT(vid) FROM node_revisions WHERE nid = 0;
+SELECT COUNT(vid) FROM node_revisions WHERE nid = 0;
+SELECT r.vid, r.title, r.log, r.uid, n.vid AS current_vid, r.timestamp, u.name FROM node_revisions r LEFT JOIN node n ON n.vid = r.vid INNER JOIN users u ON u.uid = r.uid WHERE r.nid = 0 ORDER BY r.timestamp DESC;
+SELECT n.nid, n.created FROM node n WHERE n.promote = 1 AND n.status = 1 ORDER BY n.created DESC;
+SELECT n.nid, n.sticky, n.created FROM node n WHERE n.promote = 1 AND n.status = 1 ORDER BY n.sticky DESC, n.created DESC;
+SELECT nid FROM node WHERE nid = 0;
+SELECT nid FROM node WHERE nid = 0;
+SELECT MAX(comment_count) FROM node_comment_statistics;
+SELECT MAX(totalcount) FROM node_counter;
+-- SELECT GREATEST(IF(c.last_comment_timestamp IS NULL, 0, c.last_comment_timestamp), n.changed) as last_change, n.nid FROM node n LEFT JOIN node_comment_statistics c ON n.nid = c.nid WHERE n.status = 1 AND ((GREATEST(n.changed, c.last_comment_timestamp) = 0 AND n.nid > 0) OR (n.changed > 0 OR c.last_comment_timestamp > 0)) ORDER BY GREATEST(n.changed, c.last_comment_timestamp) ASC, n.nid ASC;
+SELECT COUNT(*) FROM node_access WHERE (nid = 0 OR nid = 0); -- $grants_sql AND grant_$op >= 1;
+SELECT COUNT(*) FROM node_access WHERE nid = 0 AND grant_view >= 1; -- $grants_sql 

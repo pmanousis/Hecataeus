@@ -1,0 +1,2 @@
+-- SELECT COUNT(DISTINCT(n.nid)) FROM node n '. node_access_join_sql() .' LEFT JOIN comments c ON n.nid = c.nid WHERE n.status = 1 AND '. node_access_where_sql() .' AND (n.uid = 0 OR c.uid = 0);
+-- SELECT COUNT(DISTINCT(n.nid)) FROM node n '. node_access_join_sql() .' WHERE n.status = 1 AND ;

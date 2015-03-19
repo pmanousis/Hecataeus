@@ -1,0 +1,28 @@
+-- SELECT d.tid, d.name, MAX(n.created) AS updated, COUNT(*) AS cnt FROM term_data d INNER JOIN term_node INNER JOIN node n WHERE n.status = 1 GROUP BY d.tid, d.name ORDER BY updated DESC, d.name; -- USING (tid) USING (nid) 
+SELECT tid FROM term_data WHERE vid = 0;
+SELECT * FROM vocabulary WHERE nodes = '%s' or nodes = '%s,%%' or nodes = '%%,%s,%%' or nodes = '%%,%s' ORDER BY weight, name;
+SELECT * FROM vocabulary ORDER BY weight, name;
+SELECT * FROM vocabulary WHERE nodes = '%s' or nodes = '%s,%%' or nodes = '%%,%s,%%' or nodes = '%%,%s' ORDER BY weight, name;
+SELECT name FROM term_data WHERE tid = 0;
+SELECT COUNT(n.nid) FROM node n WHERE n.nid = 0 AND ((n.title = '%%%s%%') OR (n.body = '%%%s%%'));
+SELECT t.* FROM term_data t, term_node r WHERE t.tid = r.tid AND t.vid = 0 AND r.nid = 0 ORDER BY weight;
+SELECT t.* FROM term_data t, term_node r WHERE r.tid = t.tid AND r.nid = 0 ORDER BY weight, name;
+SELECT t.*, tid1, tid2 FROM term_relation, term_data t WHERE (t.tid = tid1 OR t.tid = tid2) AND (tid1 = 0 OR tid2 = 0) AND t.tid != 0 ORDER BY weight, name;
+SELECT t.* FROM term_hierarchy h, term_data t WHERE h.parent = t.tid AND h.tid = 0 ORDER BY weight, name;
+SELECT t.* FROM term_hierarchy h, term_data t WHERE t.vid = 0 AND h.tid = t.tid AND h.parent = 0 ORDER BY weight, name;
+SELECT t.* FROM term_hierarchy h, term_data t WHERE h.tid = t.tid AND parent = 0 ORDER BY weight;
+SELECT t.*, parent FROM term_data t, term_hierarchy h WHERE t.tid = h.tid AND t.vid = 0 ORDER BY weight, name;
+SELECT name FROM term_synonym WHERE tid = 0;
+SELECT * FROM term_synonym s, term_data t WHERE t.tid = s.tid AND s.name = '%s';
+-- SELECT t.tid, COUNT(DISTINCT(n.nid)) AS c FROM term_node t INNER JOIN node n ON t.nid = n.nid '. node_access_join_sql() .' WHERE n.status = 1 AND '. node_access_where_sql() .' GROUP BY t.tid;
+-- SELECT t.tid, COUNT(DISTINCT(n.nid)) AS c FROM term_node t, node n ". node_access_join_sql() ." WHERE t.nid = n.nid AND n.status = 1 AND n.type = '%s' AND ". node_access_where_sql() ." GROUP BY t.tid;
+SELECT tid, parent FROM term_hierarchy;
+SELECT * FROM vocabulary WHERE LOWER('%s') = LOWER(name);
+SELECT * FROM term_data WHERE LOWER('%s') = LOWER(name);
+SELECT * FROM vocabulary WHERE vid = 0;
+SELECT * FROM term_data WHERE tid = 0;
+-- SELECT DISTINCT(n.nid), n.sticky, n.created FROM node n '. node_access_join_sql() .' INNER JOIN term_node tn ON n.nid = tn.nid WHERE tn.tid IN ('. $str_tids .') AND n.status = 1 AND '. node_access_where_sql() .' ORDER BY n.sticky DESC, n.created DESC;
+-- SELECT COUNT(DISTINCT(n.nid)) FROM node n '. node_access_join_sql() .' INNER JOIN term_node tn ON n.nid = tn.nid WHERE tn.tid IN ('. $str_tids .') AND n.status = 1 AND '. node_access_where_sql();
+-- SELECT DISTINCT(n.nid), n.sticky, n.created FROM node n '. node_access_join_sql() . $joins .' WHERE n.status = 1 AND '. node_access_where_sql() . $wheres .' ORDER BY n.sticky DESC, n.created DESC';
+-- SELECT COUNT(DISTINCT(n.nid)) FROM node n '. node_access_join_sql() . $joins .' WHERE n.status = 1 AND '. node_access_where_sql() . $wheres;
+-- SELECT name FROM term_data WHERE tid IN (%s)', implode(',', $tids));

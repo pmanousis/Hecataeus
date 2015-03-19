@@ -1,0 +1,2 @@
+SELECT COUNT(sid) AS cnt FROM sessions WHERE timestamp >= 0 AND uid = 0;
+SELECT COUNT(uid) AS cnt FROM sessions WHERE timestamp >= 0 AND uid != 0 GROUP BY uid ORDER BY timestamp DESC;

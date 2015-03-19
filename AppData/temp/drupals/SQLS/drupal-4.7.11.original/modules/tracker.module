@@ -1,0 +1,4 @@
+SELECT n.nid, n.title, n.type, n.changed, n.uid, u.name, n.changed, l.last_comment_timestamp AS last_updated, l.comment_count FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid INNER JOIN users u ON n.uid = u.uid LEFT JOIN comments c ON n.nid = c.nid AND (c.status = 0 OR c.status IS NULL) WHERE n.status = 1 AND (n.uid = 0 OR c.uid = 0) ORDER BY last_updated DESC;
+SELECT COUNT(n.nid) FROM node n LEFT JOIN comments c ON n.nid = c.nid AND (c.status = 0 OR c.status IS NULL) WHERE n.status = 1 AND (n.uid = 0 OR c.uid = 0);
+SELECT n.nid, n.title, n.type, n.changed, n.uid, u.name, n.changed, l.last_comment_timestamp AS last_updated, l.comment_count FROM node n INNER JOIN users u ON n.uid = u.uid INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.status = 1 ORDER BY last_updated DESC;
+SELECT COUNT(n.nid) FROM node n WHERE n.status = 1;

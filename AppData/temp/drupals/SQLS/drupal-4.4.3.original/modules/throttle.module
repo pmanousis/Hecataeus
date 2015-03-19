@@ -1,0 +1,2 @@
+SELECT COUNT(timestamp) AS hits FROM accesslog WHERE timestamp >= 0;
+SELECT COUNT(timestamp) AS hits FROM accesslog WHERE timestamp >= 0;

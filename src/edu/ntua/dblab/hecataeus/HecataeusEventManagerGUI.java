@@ -159,11 +159,11 @@ public class HecataeusEventManagerGUI extends JPanel
 		        {
 					br = new BufferedReader(new FileReader(eventsFile));
 			        String line = br.readLine();
-			        while(line!=null)
+			        while(line != null && line.trim().isEmpty() == false)
 			        {
-				        String name=line.substring(0,line.indexOf(","));
-				        epilegmenosKombos=viewer.graph.findVertexByNameParent(name);
-				        VisualNode pateras=null;
+				        String name = line.substring(0,line.indexOf(","));
+				        epilegmenosKombos = viewer.graph.findVertexByNameParent(name);
+				        VisualNode pateras = null;
 						for(int i=0;i<epilegmenosKombos.getInEdges().size();i++)
 						{
 							if(epilegmenosKombos.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_INPUT||
@@ -171,12 +171,12 @@ public class HecataeusEventManagerGUI extends JPanel
 									epilegmenosKombos.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_SEMANTICS||
 									epilegmenosKombos.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_SCHEMA)
 							{
-								pateras=epilegmenosKombos.getInEdges().get(i).getFromNode();
+								pateras = epilegmenosKombos.getInEdges().get(i).getFromNode();
 							}
 						}
 						if(pateras!=null)
 						{
-							selectedNodeLbl.setText(pateras.getName()+"."+epilegmenosKombos.getName());
+							selectedNodeLbl.setText(pateras.getName() + "." + epilegmenosKombos.getName());
 						}
 				        events.clear();
 				        events.add(line.substring(line.indexOf(",")+1));

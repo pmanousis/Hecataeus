@@ -1,0 +1,3 @@
+SELECT string FROM locales WHERE LENGTH(string) < 75;
+SELECT * FROM locales WHERE lid = 0;
+SELECT lid FROM locales WHERE string = '%s';

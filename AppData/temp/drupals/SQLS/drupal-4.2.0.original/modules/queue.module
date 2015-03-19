@@ -1,0 +1,3 @@
+SELECT COUNT(nid) FROM node WHERE moderate = 1;
+SELECT score FROM node WHERE nid = 0;
+SELECT n.*, u.name, u.uid FROM node n LEFT JOIN users u ON n.uid = u.uid WHERE n.moderate = 1;

@@ -37,6 +37,44 @@ public class TopologicalTravel
 		graph = g;
 	}
 	
+	private int numberOfIncomingUsesEdges(VisualNode node, List<VisualNode> hln)
+	{
+		int toReturn = 0;
+		for(VisualEdge e : node.getInEdges())
+		{
+			if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getToNode()))
+			{
+				toReturn++;
+			}
+		}
+		return(toReturn);
+	}
+	
+	private void removeIncomingUsesEdgesAtConnectedNodes(VisualNode node)
+	{
+		List<VisualNode> connectedNodes = new ArrayList<VisualNode>();
+		for(VisualEdge e : node.getOutEdges())
+		{
+			if(e.getType() == EdgeType.EDGE_TYPE_USES)
+			{
+				connectedNodes.add(e.getToNode());
+			}
+		}
+		for(VisualNode n : connectedNodes)
+		{
+			List<VisualEdge> edgesToRemove = new ArrayList<VisualEdge>();
+			for(VisualEdge e : n.getInEdges())
+			{
+				if(e.getType() == EdgeType.EDGE_TYPE_USES && e.getFromNode() == node)
+				{
+					edgesToRemove.add(e);
+				}
+			}
+			removedEdges.addAll(edgesToRemove);
+			n.getInEdges().removeAll(edgesToRemove);
+		}
+	}
+	
 	/**
 	 * First are the nodes with incoming edges = 0 (startNode).
 	 * They are removed with their outgoing edges (EDGE_TYPE_USES).
@@ -53,66 +91,31 @@ public class TopologicalTravel
 		highLevelNodes.addAll(graph.getVertices(NodeType.NODE_TYPE_RELATION));
 		highLevelNodes.addAll(graph.getVertices(NodeType.NODE_TYPE_VIEW));
 		int counter=highLevelNodes.size();
-		for(int i=0;i<highLevelNodes.size();i++)
-		{
-			for(int j=0;j<highLevelNodes.get(i).getInEdges().size();j++)
-			{	// Remove EDGE_TYPE_CONTAINS since later they gave InEdges.size()=1, not 0.
-				if(highLevelNodes.get(i).getInEdges().get(j).getType()==EdgeType.EDGE_TYPE_CONTAINS)
-				{
-					removedEdges.add(highLevelNodes.get(i).getInEdges().remove(j));
-					//highLevelNodes.get(i).getInEdges().remove(j);
-				}
-			}
-		}
 		while(highLevelNodes.size()>0)
 		{
 			for(int i=0;i<highLevelNodes.size();i++)
 			{
-				if(highLevelNodes.get(i).getInEdges().size()==0)
-				{	// Found start of graph
-					VisualNode startNode=highLevelNodes.get(i);	// Just initialising
+				if(numberOfIncomingUsesEdges(highLevelNodes.get(i), highLevelNodes) == 0)
+				{ // Found start of graph
+					VisualNode startNode=highLevelNodes.get(i);
 					// Assign IDs (maybe later call a function to assign keys to its children)
 					graph.findVertexByName(startNode.getName()).ID=counter;
-					/**
-					 * If PMTopologicalTravel becomes abstruct,
-					 * the previous code could be a function (in case I want to give IDs inside modules)
-					 * and give an abstruct step over here to do the work.
-					 * */
 					counter--;
-					for(int j=0;j<startNode.getOutEdges().size();j++)
-					{	// Go to his parents
-						if(startNode.getOutEdges().get(j).getType()==EdgeType.EDGE_TYPE_USES)
-						{	// Found one of his parents.
-							String name=startNode.getOutEdges().get(j).getToNode().getName();
-							VisualNode parentNode=startNode;	// Just initialising
-							for(int k=0;k<highLevelNodes.size();k++)
-							{
-								if(highLevelNodes.get(k).getName().equals(name))
-								{
-									parentNode=highLevelNodes.get(k);
-									for(int l=0;l<parentNode.getInEdges().size();l++)
-									{	// Go to parentNode, remove the edge to eventually become startNode 
-										if(parentNode.getInEdges().get(l).getFromNode().equals(startNode))
-										{	// Be sure that you remove the correct edge (although unneeded).
-											removedEdges.add(parentNode.getInEdges().remove(l));
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-					removedNodes.add(highLevelNodes.remove(i));	// Remove startNode from list.
+					removeIncomingUsesEdgesAtConnectedNodes(highLevelNodes.get(i));
+					removedNodes.add(highLevelNodes.remove(i)); // Remove startNode from list.
 				}
 			}
-		}
-		for(VisualEdge ve: removedEdges)
-		{
-			graph.addEdge(ve);
 		}
 		for(VisualNode vn: removedNodes)
 		{
 			graph.addVertex(vn);
+		}
+		for(VisualEdge ve: removedEdges)
+		{
+			if(graph.containsEdge(ve) == false)
+			{
+				graph.addEdge(ve);
+			}
 		}
 	}
 	

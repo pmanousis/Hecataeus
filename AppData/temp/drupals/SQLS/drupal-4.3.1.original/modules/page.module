@@ -1,0 +1,2 @@
+SELECT format, link, description FROM page WHERE nid = 0;
+SELECT n.nid, n.title, p.link, p.description FROM page p INNER JOIN node n ON p.nid = n.nid WHERE n.status = '1' AND p.link != '' ORDER BY p.link;

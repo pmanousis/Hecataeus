@@ -1,0 +1,15 @@
+SELECT f.nid FROM forum f WHERE f.tid = 0;
+SELECT * FROM forum WHERE vid = 0;
+SELECT n.nid, n.title, l.comment_count FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.status = 1 AND n.type = 'forum' ORDER BY l.last_comment_timestamp DESC;
+SELECT n.nid, n.title, l.comment_count FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid WHERE n.type = 'forum' AND n.status = 1 ORDER BY n.nid DESC;
+SELECT tid FROM forum WHERE nid = 0 ORDER BY vid DESC;
+SELECT COUNT(*) FROM term_data WHERE tid = 0 AND vid = 0;
+SELECT vid FROM vocabulary WHERE module = '%s';
+SELECT r.tid, COUNT(n.nid) AS topic_count, SUM(l.comment_count) AS comment_count FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid INNER JOIN term_node r ON n.nid = r.nid WHERE n.status = 1 AND n.type = 'forum' GROUP BY r.tid;
+-- SELECT ncs.last_comment_timestamp, IF (ncs.last_comment_uid != 0, u2.name, ncs.last_comment_name) AS last_comment_name, ncs.last_comment_uid FROM node n INNER JOIN users u1 ON n.uid = u1.uid INNER JOIN term_node tn ON n.nid = tn.nid INNER JOIN node_comment_statistics ncs ON n.nid = ncs.nid INNER JOIN users u2 ON ncs.last_comment_uid=u2.uid WHERE n.status = 1 AND n.type='forum' AND tn.tid = 0 ORDER BY ncs.last_comment_timestamp DESC;
+SELECT COUNT(n.nid) FROM node n INNER JOIN term_node tn ON n.nid = tn.nid AND tn.tid = 0 LEFT JOIN history h ON n.nid = h.nid AND h.uid = 0 WHERE n.status = 1 AND n.type = 'forum' AND n.created > 0 AND h.nid IS NULL;
+-- SELECT n.nid, f.tid, n.title, n.sticky, u.name, u.uid, n.created AS timestamp, n.comment AS comment_mode, l.last_comment_timestamp, IF(l.last_comment_uid != 0, cu.name, l.last_comment_name) AS last_comment_name, l.last_comment_uid, l.comment_count AS num_comments FROM node_comment_statistics l, users cu, term_node r, users u, forum f, node n WHERE n.status = 1 AND l.last_comment_uid = cu.uid AND n.nid = l.nid AND n.nid = r.nid AND r.tid = 0 AND n.uid = u.uid AND n.vid = f.vid;
+SELECT COUNT(n.nid) FROM node n INNER JOIN term_node r ON n.nid = r.nid AND r.tid = 0 WHERE n.status = 1 AND n.type = 'forum';
+SELECT n.nid FROM node n LEFT JOIN history h ON n.nid = h.nid AND h.uid = 0 INNER JOIN term_node r ON n.nid = r.nid AND r.tid = 0 WHERE n.status = 1 AND n.type = 'forum' AND h.nid IS NULL AND n.created > 0 ORDER BY created;
+SELECT n.nid, n.title, n.sticky, l.comment_count, l.last_comment_timestamp FROM node n INNER JOIN node_comment_statistics l ON n.nid = l.nid INNER JOIN term_node r ON n.nid = r.nid AND r.tid = 0 WHERE n.status = 1 AND n.type = 'forum' ORDER BY n.sticky DESC;
+SELECT nid, timestamp FROM history WHERE uid = 0;

@@ -1,0 +1,4 @@
+SELECT * FROM site WHERE checked = 0 OR checked + refresh < 0;
+SELECT * FROM site WHERE sid = 0;
+SELECT * FROM site ORDER BY name;
+SELECT * FROM site WHERE changed > '(time() - 604800)' ORDER BY changed DESC;

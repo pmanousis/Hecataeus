@@ -1,0 +1,6 @@
+SELECT SUM(score) FROM search_index WHERE word = '%s';
+SELECT COUNT(*) FROM search_total WHERE word = '%s';
+SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL;
+SELECT i.sid, i.type FROM search_index i; -- $join WHERE $conditions;
+-- SELECT $count;
+SELECT i.type, i.sid, SUM(i.score/t.count) AS score FROM search_index i INNER JOIN search_total t ON i.word = t.word GROUP BY i.type, i.sid ORDER BY score DESC; -- $join WHERE $conditions

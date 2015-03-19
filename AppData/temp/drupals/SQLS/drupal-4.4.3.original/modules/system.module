@@ -1,0 +1,1 @@
+SELECT filename, type, status, throttle FROM system WHERE type = '%s';

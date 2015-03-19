@@ -1,0 +1,9 @@
+SELECT SUM(score) FROM search_index WHERE word = '%s';
+SELECT t.word AS realword, i.word FROM search_total t LEFT JOIN search_index i ON t.word = i.word WHERE i.word IS NULL;
+SELECT n.title, n.nid, n.vid, r.format FROM node n INNER JOIN node_revisions r ON n.vid = r.vid WHERE n.nid = 0;
+-- SELECT i.type, i.sid, SUM(i.score * t.count) AS relevance, COUNT(*) AS matches FROM search_index i INNER JOIN search_total t ON i.word = t.word $join1 WHERE $conditions GROUP BY i.type, i.sid HAVING COUNT(*) >= 0;
+-- table not found -- SELECT MAX(relevance) FROM temp_search_sids;
+-- SELECT i.type, i.sid, $select2 FROM temp_search_sids i INNER JOIN search_dataset d ON i.sid = d.sid AND i.type = d.type $join2 WHERE $conditions $sort_parameters;
+-- table not found -- SELECT COUNT(*) FROM temp_search_results;
+-- SELECT $count;
+-- table not found -- SELECT * FROM temp_search_results;

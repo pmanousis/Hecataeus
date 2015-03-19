@@ -1,0 +1,1 @@
+SELECT n.nid, n.title, n.body, n.created, u.name FROM node n, users u WHERE n.uid=u.uid AND n.type = 'blog' AND n.uid = 0 ORDER BY n.created DESC;

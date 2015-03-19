@@ -1,0 +1,8 @@
+SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
+SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
+SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
+SELECT comment FROM node WHERE nid = 0;
+SELECT n.*, u.name, u.uid FROM node n INNER JOIN users u ON n.uid = u.uid;
+SELECT nid FROM node WHERE promote = 1 AND status = 1 ORDER BY created DESC;
+SELECT nid, type FROM node WHERE promote = 1 AND status = 1 ORDER BY static DESC, created DESC;
+SELECT n.nid as lno, n.title as text1, n.body as text2 FROM node n WHERE n.status = 1 AND moderate = 0 and (created > '' or changed > '');

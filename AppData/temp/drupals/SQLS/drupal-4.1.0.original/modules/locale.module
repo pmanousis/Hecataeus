@@ -1,0 +1,5 @@
+-- SELECT string, %s FROM locales;
+SELECT string FROM locales;
+SELECT * FROM locales WHERE lid = 0;
+-- SELECT lid, $locale FROM locales WHERE string = '%s';
+SELECT lid FROM locales WHERE string = '%s';

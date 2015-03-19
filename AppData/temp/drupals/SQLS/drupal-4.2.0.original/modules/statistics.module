@@ -1,0 +1,17 @@
+SELECT COUNT(timestamp) AS hits FROM accesslog WHERE timestamp >= 0;
+-- SELECT s.nid, s.daycount, s.totalcount, s.timestamp, n.title FROM statistics s LEFT JOIN node n; -- USING (nid) WHERE s.%s <> '0' ORDER BY s.%s DESC;
+SELECT nid, url, hostname, uid, timestamp FROM accesslog WHERE uid = 0 ORDER BY timestamp DESC;
+SELECT nid, url, hostname, uid, MAX(timestamp) AS timestamp FROM accesslog WHERE uid <> '0' GROUP BY uid, nid, url, hostname ORDER BY timestamp DESC;
+SELECT nid, url, hostname, uid, timestamp FROM accesslog WHERE nid = 0 ORDER BY timestamp DESC;
+SELECT nid, url, hostname, uid, timestamp FROM accesslog WHERE hostname = 0 ORDER BY timestamp DESC;
+SELECT nid, url, hostname, uid, timestamp FROM accesslog ORDER BY timestamp DESC;
+SELECT url,timestamp FROM accesslog WHERE url <> '' ORDER BY timestamp DESC;
+SELECT url,timestamp FROM accesslog WHERE url = '%". check_query($_SERVER["HTTP_HOST"]) ."%' ORDER BY timestamp DESC;
+SELECT url,timestamp FROM accesslog WHERE url <> '%". check_query($_SERVER["HTTP_HOST"]) ."%' AND url <> '' ORDER BY timestamp DESC;
+SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url <> '' GROUP BY url ORDER BY cnt DESC;
+SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url = '%". check_query($_SERVER["HTTP_HOST"]) ."%' GROUP BY url ORDER BY cnt DESC;
+SELECT url, COUNT(url) AS cnt FROM accesslog WHERE url <> '%". check_query($_SERVER["HTTP_HOST"]) ."%' AND url <> '' GROUP BY url ORDER BY cnt DESC;
+SELECT COUNT(hostname) AS cnt, uid, MAX(timestamp) AS max_timestamp FROM accesslog WHERE timestamp >= 0 GROUP BY uid ORDER BY max_timestamp DESC;
+SELECT s.nid, n.title, u.uid, u.name FROM statistics s LEFT JOIN node n ON s.nid = n.nid LEFT JOIN users u ON n.uid = u.uid WHERE n.status = 1; -- %s <> '0' AND  ORDER BY %s DESC;
+SELECT totalcount, daycount, timestamp FROM statistics WHERE nid = 0;
+SELECT n.nid, n.title FROM statistics s LEFT JOIN node n ON s.nid = n.nid; -- ORDER BY %s DESC;

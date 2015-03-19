@@ -1,0 +1,15 @@
+SELECT timestamp FROM history WHERE uid = 0 AND nid = 0;
+SELECT n.*, u.uid, u.name, u.picture, u.data FROM node n INNER JOIN users u ON u.uid = n.uid; -- WHERE '. implode(' AND ;
+SELECT COUNT(*) FROM node WHERE status = 1 AND moderate = 0;
+SELECT COUNT(*) FROM node n LEFT JOIN node_comment_statistics c ON n.nid = c.nid WHERE n.status = 1 AND n.moderate = 0 AND (n.created > 0 OR n.changed > 0 OR c.last_comment_timestamp > 0);
+SELECT comment FROM node WHERE nid = 0;
+SELECT changed FROM node WHERE nid = 0;
+SELECT title FROM node WHERE nid = 0;
+-- SELECT n.*, u.name, u.uid FROM node n '. $join .' INNER JOIN users u ON n.uid = u.uid '. $where .' ORDER BY n.changed DESC;
+SELECT n.nid FROM node n WHERE n.promote = 1 AND n.status = 1 ORDER BY n.created DESC;
+SELECT n.nid, n.sticky, n.created FROM node n WHERE n.promote = 1 AND n.status = 1 ORDER BY n.sticky DESC, n.created DESC;
+SELECT nid FROM node WHERE nid = 0;
+SELECT nid FROM node WHERE nid = 0;
+SELECT n.nid, c.last_comment_timestamp FROM node n LEFT JOIN node_comment_statistics c ON n.nid = c.nid WHERE n.status = 1 AND n.moderate = 0 AND (n.created > 0 OR n.changed > 0 OR c.last_comment_timestamp > 0) ORDER BY n.created, n.changed, c.last_comment_timestamp ASC;
+SELECT COUNT(*) FROM node_access WHERE (nid = 0 OR nid = 0) AND realm IN (0,1) AND gid IN (0,1);
+SELECT COUNT(*) FROM node_access WHERE nid = 0 AND realm IN (0,1) AND gid IN (0,1);

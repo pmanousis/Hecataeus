@@ -1,0 +1,1 @@
+SELECT n.*, u.name FROM node n LEFT JOIN users u ON n.uid = u.uid WHERE n.uid = 0 ORDER BY n.nid DESC;

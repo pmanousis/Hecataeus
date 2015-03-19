@@ -1,0 +1,2 @@
+SELECT n.nid, n.title, r.body, r.format, n.comment, n.created, u.name FROM node n, node_revisions r, users u WHERE n.uid = u.uid AND n.vid = r.vid AND n.type = '%s' AND n.uid = 0 ORDER BY n.created DESC;
+SELECT n.nid, n.title, n.created, u.name FROM node n, users u WHERE n.uid = u.uid AND n.type = '%s' AND n.uid = 0 ORDER BY n.created DESC;

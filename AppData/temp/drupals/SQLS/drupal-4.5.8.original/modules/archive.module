@@ -1,0 +1,2 @@
+-- SELECT n.nid, n.created FROM node n '. node_access_join_sql() .' WHERE n.status = 1 AND n.created > 0 AND n.created < 0 AND '. node_access_where_sql() .' ORDER BY n.created;
+-- SELECT n.nid, n.created FROM node n '. node_access_join_sql() .' WHERE n.status = 1 AND n.created > 0 AND n.created < 0 AND '. node_access_where_sql() .' ORDER BY n.created;

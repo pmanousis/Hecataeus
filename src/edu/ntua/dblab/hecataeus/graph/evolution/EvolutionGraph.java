@@ -235,7 +235,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	public V findVertexById(double iD)
 	{
 		for (V u: this.getVertices(NodeCategory.MODULE)) {
-			if (u.ID==iD)
+			if (u.ID == iD)
 			{
 				return u;
 			}
@@ -621,8 +621,12 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 					if(prosEpaneggrafi.neededRewrites == 1)
 					{	// They move to new version.
 						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
+						
+						
 						tempParam = m.doRewrite(tempParam, this, step3,mr);
+						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
+						
+						
 						rewrittenModules++;
 					}
 					if(prosEpaneggrafi.neededRewrites == 2)
@@ -644,8 +648,10 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 						}
 						prosEpaneggrafi.en = neos;
 						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
+
 						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
 						tempParam = m.doRewrite(tempParam, this, step3,mr);
+						
 						rewrittenModules++;
 					}
 				}
