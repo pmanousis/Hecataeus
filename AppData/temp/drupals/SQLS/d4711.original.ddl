@@ -536,9 +536,3 @@ CREATE TABLE users (
 );
 CREATE INDEX users_access_idx ON users(access);
 CREATE SEQUENCE users_uid_seq INCREMENT 1 START 1;
-CREATE VIEW ourView AS
-SELECT users.uid, name, pass, mail, mode, sort , threshold, theme, signature, access, login, users.status, timezone, language, picture, init, data, nid, vid, type, title, users.created, comment, promote, moderate, changed, sticky
-FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
-CREATE VIEW ourViewN AS
-SELECT users.uid, name, pass, mail, mode, sort , threshold, theme, signature, access, login, users.status, timezone, language, picture, init, data, nid, vid, type, title, users.created, comment, promote, moderate, changed, sticky
-FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;

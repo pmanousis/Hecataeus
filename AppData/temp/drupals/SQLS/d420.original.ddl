@@ -355,9 +355,3 @@ CREATE INDEX node_title_idx ON node(title,type);
 CREATE INDEX node_promote_idx ON node(promote);
 CREATE INDEX node_status_idx ON node(status);
 CREATE INDEX node_uid_idx ON node(uid);
-CREATE VIEW ourView AS
-SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, users.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, node.users, attrs, teaser, body, changed, revisions, static
-FROM USERS LEFT JOIN NODE ON USERS.uid = NODE.uid;
-CREATE VIEW ourViewN AS
-SELECT users.uid, name, pass, mail, homepage, mode, sort, threshold, theme, signature, timestamp, hostname, users.status, timezone, rating, language, sid, init, session, data, rid, nid, type, title, score, votes, created, comment, promote, moderate, node.users, attrs, teaser, body, changed, revisions, static
-FROM USERS INNER JOIN NODE ON USERS.uid = NODE.uid;
