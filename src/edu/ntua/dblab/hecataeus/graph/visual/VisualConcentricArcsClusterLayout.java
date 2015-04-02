@@ -1,16 +1,14 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-import java.awt.Dimension;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
-
 
 /**
  * concentric arcs clustering layout 
@@ -22,14 +20,12 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
  */
 public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
 
-    
     protected VisualGraph graph;
     protected double endC;
     private List<VisualNode> queries;
     private List<VisualNode> relations;
     private List<VisualNode> views;
     private ClusterSet cs;
-
     private VisualTotalClusters clusterList;
     protected List<String> files;
     private List<VisualNode> RQV;
@@ -40,14 +36,11 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
         this.graph = g;
         this.endC = endC;
         vcl = new VisualCircleLayout(this.graph);
-        
         queries = new ArrayList<VisualNode>(vcl.getQueries());
         relations = new ArrayList<VisualNode>(vcl.getRelations());
         views = new ArrayList<VisualNode>(vcl.getViews());
-        
         RQV = new ArrayList<VisualNode>(vcl.RQV);
         files = new ArrayList<String>(vcl.files);
-        
     }
   
     /**
@@ -65,21 +58,13 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
 		 */
         clusterList = new VisualTotalClusters();
         clusterList.clearList();
-        clusterId = 0;
-        Dimension d = getSize();
-        double w = d.getWidth();
-        double h = d.getHeight();
         List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
         ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();
         for(Cluster cl : clusters){
             vertices.add(cl.getNode());
         }
-
         Collections.sort(vertices, new ListComparator());
-
-        
         double myRad = 1.0;
-        
         ArrayList<ArrayList<ArrayList<VisualNode>>> sublistofClusters = new ArrayList<ArrayList<ArrayList<VisualNode>>>();
         while((int) Math.pow(2, myRad)<vertices.size()){
             ArrayList<ArrayList<VisualNode>> tmpVl = new ArrayList<ArrayList<VisualNode>>(vertices.subList((int) Math.pow(2, myRad-1), (int) Math.pow(2, myRad)));
@@ -91,37 +76,24 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
             sublistofClusters.add(tmpVl);
         }
         sublistofClusters.add(0, new ArrayList<ArrayList<VisualNode>>(vertices.subList(0, 1)));
-
         double bigCircleRad = 0.0;
-        double bigClusterRad = 0.0;
         double tempCircleRad = 0.0;
         
         for(ArrayList<ArrayList<VisualNode>> listaC: sublistofClusters){
-            ArrayList<ArrayList<VisualNode>> tmp ;
-            if (sublistofClusters.indexOf(listaC)!=sublistofClusters.size()-1){
-                tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)+1));
-            }
-            else{
-                tmp = new ArrayList<ArrayList<VisualNode>>(sublistofClusters.get(sublistofClusters.indexOf(listaC)));    
-            }
-
-            
             double periferia=0;
             for(ArrayList<VisualNode> lista : listaC){
                 periferia+=getSmallRad(lista);
             }
-            
-            tempCircleRad=bigCircleRad+periferia/Math.PI;
-            if(tempCircleRad<bigCircleRad+getSmallRad(listaC.get(listaC.size()-1))){
-                tempCircleRad=bigCircleRad+getSmallRad(listaC.get(listaC.size()-1));
+            tempCircleRad = bigCircleRad + periferia / Math.PI;
+            if(tempCircleRad < bigCircleRad+getSmallRad(listaC.get(listaC.size()-1))){
+                tempCircleRad = bigCircleRad+getSmallRad(listaC.get(listaC.size()-1));
             }
             if(tempCircleRad<periferia){
-                bigCircleRad=periferia/0.90;
+                bigCircleRad = periferia / 0.90;
             }
             else{
-                bigCircleRad=tempCircleRad;
+                bigCircleRad = tempCircleRad;
             }
-            
             double angle = 0.0, sum = 0.0;
             for(ArrayList<VisualNode> lista : listaC){
                 List<VisualNode> nodes = new ArrayList<VisualNode>();
@@ -135,10 +107,9 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
     			else{
     				angle = Math.asin(getSmallRad(nodes)/bigCircleRad)*1.2;
     			}
-                double cx = Math.cos((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 ;// 1.8 is used for white space borders
-                double cy =    Math.sin((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8 ;
-                sum+=angle;
-                circles(nodes, cx, cy, clusterList);
+                Point2D clusterCenter = new Point2D.Double(Math.cos((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8, Math.sin((sum+angle/2)/2*Math.PI) * bigCircleRad*1.8);	// 1.8 is used for white space borders
+                sum += angle;
+                circles(nodes, clusterCenter);
             }
         }
         HecataeusViewer.getActiveViewer().repaint();

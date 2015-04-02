@@ -164,6 +164,18 @@ static int counter;
 		return  this._inEdges;
 	}
 	
+	public int getNumberOfUsesEdges()
+	{
+		int toReturn = 0;
+		for(EvolutionEdge e: this._outEdges)
+		{
+			if(e.getType() == EdgeType.EDGE_TYPE_USES)
+			{
+				toReturn++;
+			}
+		}
+		return(toReturn);
+	}
 	
 	/**
 	*  creates and adds policy to node
