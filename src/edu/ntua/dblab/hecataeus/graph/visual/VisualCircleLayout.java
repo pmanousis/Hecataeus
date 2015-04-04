@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.TreeMap;
 
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
@@ -38,6 +39,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	private int singleQueriesCounter = 0;
 	protected List<String> files = new ArrayList<String>();
 	protected List<VisualNode> RQV = new ArrayList<VisualNode>();
+	private List<List<VisualNode>> groups = new ArrayList<List<VisualNode>>();
 
 	/**
 	 * places nodes in lists with respect to their type
@@ -239,6 +241,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		relations.clear();
 		views.clear();
 		queries.clear();
+		groups.clear();
         ArrayList<VisualNode> singleRelationQueries = new ArrayList<VisualNode>();
         relations.addAll(relationsInCluster(nodes));
         for(VisualNode relation: relations)
@@ -430,7 +433,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	}
 
 	/**
-	 * Places the queries (in a barycentric way) that use more than one relations, or they use a view. 
+	 * Places the queries that use more than one relations, or they use a view. We have created groups of the queries that ask the same relations/views, and we place them in a "cloud" like area in this outer circle. 
 	 * @author pmanousi
 	 * @param nodes The queries that use more than one relations (or they use a view)
 	 * @param qRad The radius of the single table queries
@@ -464,7 +467,112 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			v.setLocation(coord);
 			usedCoordinates.add(v.getLocation());
 			v.setNodeAngle(myAngle);
+			boolean createGroupForThisNode = true;
+			for(List<VisualNode> vnl: groups)
+			{
+				if(vnl != null && vnl.get(vnl.size()-1).getNodeAngle() == v.getNodeAngle())
+				{	// already heaving a group for this angle 
+					vnl.add(v);
+					createGroupForThisNode = false;
+					break;
+				}
+			}
+			if(createGroupForThisNode)
+			{	// we didn't have any group for this angle, so we create one
+				List<VisualNode> group = new ArrayList<VisualNode>();
+				group.add(v);
+				groups.add(group);
+			}
 		}
+		boolean finished = false;
+		while(finished == false)
+		{	// while new groups are created and have not been checked
+			finished = true;
+			List<VisualNode> newGroup = new ArrayList<VisualNode>();
+			for(List<VisualNode> vnl: groups)
+			{	// I am not sure if I should check only the last of the groups but never mind
+				VisualNode firstNodeOfGroup = vnl.get(0);
+				for(VisualNode v : vnl)
+				{
+					if(theyHaveSameProviders(v, firstNodeOfGroup) == false)
+					{
+						newGroup.add(v);
+						continue;
+					}
+				}
+				vnl.removeAll(newGroup);
+			}
+			if(newGroup.size()>0)
+			{
+				finished = false;
+				groups.add(newGroup);
+			}
+		}
+		double groupsAngle = 2 * Math.PI / groups.size();
+		int counter = 0;
+		for(List<VisualNode> vnl : groups)
+		{
+			Point2D groupPosition = new Point2D.Double(Math.cos(groupsAngle * counter) * jqRad + clusterCenter.getX(), Math.sin(groupsAngle * counter) * jqRad + clusterCenter.getY());
+			for(VisualNode v : vnl)
+			{	// place them in a "cloud"
+				Point2D coord = transform(v);
+				coord.setLocation(addSomeNoise(groupPosition, qRad*0.2));	// this should get some random X and Y modification
+				v.setLocation(coord);
+				v.setNodeAngle(groupsAngle * counter);	// this is unneeded
+			}
+			counter++;
+		}
+	}
+	
+	/**
+	 * Adds some "noise" to the current possition of a node (in order to create a "cloud" for the nodes.
+	 * @author pmanousi
+	 * @param currentPossition The possition that this node has up to now
+	 * @param spreadFactor A radius saying how far the node should be placed (now I have it to 20% of the radius of the single table queries
+	 * @return The new possition for this node
+	 */
+	private Point2D addSomeNoise(Point2D currentPossition, Double spreadFactor)
+	{
+		Point2D toReturn = new Point2D.Double();
+		Random randomGenerator = new Random();
+		toReturn.setLocation(currentPossition.getX() + (spreadFactor) * randomGenerator.nextDouble() - spreadFactor / 2, currentPossition.getY() + (spreadFactor) * randomGenerator.nextDouble() - spreadFactor / 2);
+		return toReturn;
+	}
+	
+	/**
+	 * Takes two nodes and searches if they have the same providers (relations or views or other queries -nested-).
+	 * @author pmanousi
+	 * @param v The node that we want to see if it has the same providers with the first one in the list of its group.
+	 * @param fvn The first node in the list of its group.
+	 * @return True if the two nodes have the exast same providers or falst otherwise.
+	 */
+	private boolean theyHaveSameProviders(VisualNode v, VisualNode fvn)
+	{
+		if(v == fvn)
+		{
+			return(true);
+		}
+		int howManyTimesToFindTrue = 0;
+		if(v.getNumberOfUsesEdges() != fvn.getNumberOfUsesEdges())
+		{
+			return(false);
+		}
+		for(VisualEdge efvn : fvn.getOutEdges())
+		{
+			for(VisualEdge ev : v.getOutEdges())
+			{
+				if(ev.getToNode() == efvn.getToNode())
+				{
+					howManyTimesToFindTrue++;
+					continue;
+				}
+			}
+		}
+		if(howManyTimesToFindTrue == v.getNumberOfUsesEdges())
+		{
+			return(true);
+		}
+		return(false);
 	}
 	
 	protected Map<ArrayList<VisualNode>, Integer> getRSimilarity(List<VisualNode> queries2){

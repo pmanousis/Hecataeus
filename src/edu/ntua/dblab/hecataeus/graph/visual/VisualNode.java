@@ -26,11 +26,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	private Color nodeColor;
 	private String label; //used only for node type cluster
 	public int size;
-	
-	
 
-	
-	
 	public VisualNode(){
 		super();
 		this.location = new Point2D.Double();
@@ -99,8 +95,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		this.nodeSize = 0.0;
 		this.label = "";
 	}
-	
-	
+
 	public void setVisible(boolean Value) {
 		this.isVisible = Value;
 	}
@@ -123,16 +118,11 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 	public Boolean getHasEvents(){
 		return (this.getEvents().size()>0? true:false);
 	}
-	
 		
 	public VisualNode clone() {
 		VisualNode node = new VisualNode();
 		node.setName(this.getName());
 		node.setType(this.getType());
-//		Point2D newLoc = new Point2D.Double(this.location.getX(),this.location.getY());
-//		node.setLocation(newLoc);
-//		newLoc = new Point2D.Double(this.lastChildLocation.getX(),this.lastChildLocation.getY());
-//		node.setLastChildLocation(newLoc.getX(),newLoc.getY());
 		node.setSQLDefinition(this.getSQLDefinition());
 		node.setEvents(this.getEvents());
 		node.setPolicies(this.getPolicies());
@@ -147,12 +137,4 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setFile(this.getFile());
 		return node;
 	}
-
-//	public void addMouseListener(HecataeusModalGraphMouse myListener, MouseEvent e) {
-//		// TODO Auto-generated method stub
-//		if (e.isPopupTrigger())
-//			myListener.graphReleased(this, e);
-//	}
-	
-
 }
