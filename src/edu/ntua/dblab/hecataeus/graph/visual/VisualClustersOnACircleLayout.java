@@ -116,7 +116,7 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		visTimer.start();
 		clustersOnaCircle();
 		visTimer.stop();
-		System.out.print(clusterTimer.toString() + "\t" + visTimer.toString() + "\t");
+//		System.out.print(clusterTimer.toString() + "\t" + visTimer.toString() + "\t");
 	//	System.out.println("Visualization TIMER " + visTimer.toString());
 		//end visualization
 		HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));

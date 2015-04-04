@@ -30,15 +30,9 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
 public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> extends DirectedSparseGraph<V, E>{
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private V arxikoModule = null;
-
 	protected static int _KeyGenerator;
-	
 	protected Map<V, Integer> nodeKeys;
 	protected Map<E, Integer> edgeKeys;
 	protected Map<VisualGraph, Integer> graphkMap;

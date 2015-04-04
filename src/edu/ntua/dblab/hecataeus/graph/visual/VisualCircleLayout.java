@@ -269,10 +269,10 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
         ArrayList<VisualNode> multyV = new ArrayList<VisualNode>(views);
         double viewBand = getViewBandSize(multyV, relationRad);
         if(qRad <= viewBand){
-        	qRad = viewBand*2;
+        	qRad = viewBand*1.4;
         }
         if(qRad <= relationRad){
-        	qRad = relationRad*2;
+        	qRad = relationRad*1.4;
         }
         for(VisualNode r : relations)
         {
@@ -283,7 +283,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			}
         	placeRelation(r, relationAngle, relationRad, clusterCenter, getSingleTableQueriesOfRelation(r).size());
         }
-        placeMultyViews(multyV, clusterCenter, relationRad+10);
+        placeMultyViews(multyV, relationRad*1.2, clusterCenter);
         placeOutQueries(queries, qRad, clusterCenter);
 	}
 	
@@ -293,14 +293,11 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	 * @param clusterCenter
 	 * @param l0Rad
 	 */
-	protected void placeMultyViews(ArrayList<VisualNode> views, Point2D clusterCenter, double l0Rad)
+	protected void placeMultyViews(ArrayList<VisualNode> views, double l0Rad, Point2D clusterCenter)
 	{
 		TreeMap<Double, ArrayList<VisualNode>>  topologicallySortedNodes = new TreeMap<Double, ArrayList<VisualNode>> ();
-		if(views.size() > 1)
-		{
-			TopologicalTravel tt = new TopologicalTravel(graph);
-			topologicallySortedNodes = tt.travelLevel();
-		}
+		TopologicalTravel tt = new TopologicalTravel(graph);
+		topologicallySortedNodes = tt.travelLevel();
 		double vRad;
 		for(Map.Entry<Double, ArrayList<VisualNode>> entry : topologicallySortedNodes.entrySet())
 		{
@@ -378,17 +375,15 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	}
 
 	protected double getViewBandSize(ArrayList<VisualNode> mv, double relRad){
-		if(mv.size()<1){
-			return 0;
-		}else{
+		if(mv.size()>1)
+		{
 			TreeMap<Double, ArrayList<VisualNode>> myViews = new TreeMap<Double, ArrayList<VisualNode>>();
 			TopologicalTravel tt = new TopologicalTravel(graph);
-			//tt.travelLevel();
 			myViews = tt.travelLevel();
-
 			double size = myViews.lastKey();
-			return relRad/3*size+relRad*1.25;
+			return(relRad / 5 * size + relRad * 1.4);
 		}
+		return(0);
 	}
 
 	protected ArrayList<VisualNode> getSortedArray(Map<ArrayList<VisualNode>, Integer> sorted, List<VisualNode> relations2){
@@ -442,7 +437,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	protected void placeOutQueries(List<VisualNode> nodes, double qRad, Point2D clusterCenter)
 	{
 		List<Point2D> usedCoordinates = new ArrayList<Point2D>();
-		double jqRad = qRad * 1.2;
+		double jqRad = qRad * 1.4;
 		for(VisualNode v : queries)
 		{
 			double myAngle = 0.0;

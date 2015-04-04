@@ -136,7 +136,7 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
         CirclingCusters();
         visTimer.stop();
 		//System.out.println("Visualization TIMER " + visTimer.toString());
-		System.out.print(clusterTimer.toString() + "\t" + visTimer.toString() + "\t");
+//		System.out.print(clusterTimer.toString() + "\t" + visTimer.toString() + "\t");
 		//end visualization
         HecataeusViewer.getActiveViewer().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewer().getPickedVertexState()));
 		HecataeusViewer.getActiveViewer().repaint();
