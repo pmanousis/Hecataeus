@@ -55,46 +55,20 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	private void clustersOnaCircle()
 	{
 		ArrayList<Cluster> Clusters = new ArrayList<Cluster>(cs.getClusters());/** list with clusters created with clustering algo */
-		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();       //lista me ta clusters 
-		for(Cluster cl : Clusters)
+		Collections.shuffle(Clusters);
+		double circumference = 0;
+		for(Cluster cl: Clusters)
 		{
-			vertices.add(cl.getNode());
-			Collections.shuffle(vertices);
+			circumference += getSmallRad(cl.getNodesOfCluster());
 		}
-		double myRad = 0.0;
-		double halfCircumference = 0;
-		//taksinomei tin lista --> prwta ta relations meta ta upoloipa k briskei aktina
-		for(ArrayList<VisualNode> lista : vertices)
-		{
-			List<VisualNode> nodes = new ArrayList<VisualNode>();
-			Collections.sort(lista, new CustomComparator());
-			nodes.addAll(lista);
-			halfCircumference += getSmallRad(nodes);
-		}
-		myRad = halfCircumference/Math.PI;
+		double myRad = circumference * 1.1 / Math.PI;
 		double angle = 0.0, sum = 0.0;
-		for(ArrayList<VisualNode> lista : vertices)
+		for(Cluster cl: Clusters)
 		{
-			List<VisualNode> nodes = new ArrayList<VisualNode>();
-			Collections.sort(lista, new CustomComparator());
-			nodes.addAll(lista);
-			
-			if(getSmallRad(nodes) >= myRad)
-			{
-				double temp =   (2*Math.pow(myRad, 2)  - Math.pow(getSmallRad(nodes), 2)*0.94)/(2*Math.pow(myRad, 2) );// 0.94 is used simulate strait lines to curves
-				angle = (Math.acos(temp))*2; 
-			}
-			else
-			{
-				angle = Math.asin(getSmallRad(nodes)/myRad)*2;
-			}
-			//we draw the circle in the center of the canvas (0,0)
-			Point2D clusterCenter = new Point2D.Double(Math.cos(sum+angle/2) * myRad*1.8, Math.sin(sum+angle/2) * myRad*1.8);	// 1.8 is used for white space borders
-			Point2D coord1 = transform(nodes.get(0));
-			coord1.setLocation(clusterCenter);
-			sum += angle;
-			circles(nodes, clusterCenter);	
-			lista.get(0).setLocation(coord1);
+			angle = Math.acos(1 - (Math.pow(getSmallRad(cl.getNodesOfCluster()), 2)) / (2 * Math.pow(myRad, 2)));
+			Point2D clusterCenter = new Point2D.Double(Math.cos(sum + angle) * myRad, Math.sin(sum + angle) * myRad);
+			circles(cl.getNodesOfCluster(), clusterCenter);
+			sum += angle * 2;
 		}
 	}
 

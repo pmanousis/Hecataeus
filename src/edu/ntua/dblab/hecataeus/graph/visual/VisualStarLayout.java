@@ -44,7 +44,7 @@ public class VisualStarLayout extends VisualCircleLayout{
 		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();       //lista me ta clusters 
 		ArrayList<ArrayList<VisualNode>> V = new ArrayList<ArrayList<VisualNode>>();   // tin xrisimopoio gia na anakatevw tin vertices gia na min einai olla ta megala cluster mazi
 		for(Cluster cl : clusters){
-			vertices.add(cl.getNode());
+			vertices.add(cl.getNodesOfCluster());
 			Collections.sort(vertices, new ListComparator());
 		}
 		V.addAll(vertices);

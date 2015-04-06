@@ -61,7 +61,7 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
         List<Cluster> clusters = new ArrayList<Cluster>(cs.getClusters());
         ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();
         for(Cluster cl : clusters){
-            vertices.add(cl.getNode());
+            vertices.add(cl.getNodesOfCluster());
         }
         Collections.sort(vertices, new ListComparator());
         double myRad = 1.0;

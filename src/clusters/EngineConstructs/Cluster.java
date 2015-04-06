@@ -34,7 +34,7 @@ public class Cluster {
 		return extension.size();
 	}
 	
-	public ArrayList<VisualNode> getNode(){
+	public ArrayList<VisualNode> getNodesOfCluster(){
 		Iterator<ClusterableObject> it = extension.iterator();
 		ArrayList<VisualNode> nodes = new ArrayList<VisualNode>();
 		while(it.hasNext()){

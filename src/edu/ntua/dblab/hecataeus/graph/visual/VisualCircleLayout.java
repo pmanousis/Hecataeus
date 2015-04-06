@@ -14,15 +14,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
-
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
-import edu.uci.ics.jung.visualization.renderers.Renderer;
-import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel;
 
 /**
  * @author eva
@@ -101,16 +97,15 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	 * @return radius of the cicle for these nodes
 	 */
 	protected double getSmallRad(List<VisualNode> komboi){
-		if(komboi.size()==1){
-			return(Math.log(komboi.size()));
+		if(komboi.size()==1)
+		{
+			return(0);
 		}
-		else{
-			return(3*Math.log(komboi.size())+3*komboi.size());
-		}
+		return(1.4 * 3 * (Math.log(komboi.size()) + komboi.size()));
 	}
 	
 	protected double getQueryRad(int numOfNodes){
-		return(3*Math.log(numOfNodes)+3*numOfNodes);
+		return(3 * (Math.log(numOfNodes) + numOfNodes));
 	}
 	
 	/**

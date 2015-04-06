@@ -61,7 +61,7 @@ public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
 		ArrayList<ArrayList<VisualNode>> vertices = new ArrayList<ArrayList<VisualNode>>();
 		for(Cluster cl : clusters)
 		{
-			vertices.add(cl.getNode());
+			vertices.add(cl.getNodesOfCluster());
 		}
 		ArrayList<ArrayList<VisualNode>> sortedV = new ArrayList<ArrayList<VisualNode>>();
 		if(endC == 1)
