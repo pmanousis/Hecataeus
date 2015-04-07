@@ -45,7 +45,7 @@ public class HecataeusButtonTabComponent extends JPanel {
 				if (i != -1) {
 					return pane.getTitleAt(i);
 				}
-				return null;
+				return(pane.getTitleAt(0));
 			}
 		};
 

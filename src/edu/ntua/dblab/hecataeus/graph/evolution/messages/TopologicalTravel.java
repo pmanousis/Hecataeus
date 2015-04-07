@@ -22,6 +22,7 @@ public class TopologicalTravel
 	VisualGraph graph;
 	List<VisualEdge> removedEdges;
 	List<VisualNode> removedNodes;
+	TreeMap<Integer, List<VisualNode>> strata;
 	
 	public TopologicalTravel(HecataeusViewer viewer)
 	{
@@ -37,7 +38,7 @@ public class TopologicalTravel
 		graph = g;
 	}
 	
-	private int numberOfIncomingUsesEdges(VisualNode node, List<VisualNode> hln)
+	public int numberOfIncomingUsesEdges(VisualNode node, List<VisualNode> hln)
 	{
 		int toReturn = 0;
 		for(VisualEdge e : node.getInEdges())
@@ -50,7 +51,7 @@ public class TopologicalTravel
 		return(toReturn);
 	}
 	
-	private void removeIncomingUsesEdgesAtConnectedNodes(VisualNode node)
+	public void removeIncomingUsesEdgesAtConnectedNodes(VisualNode node)
 	{
 		List<VisualNode> connectedNodes = new ArrayList<VisualNode>();
 		for(VisualEdge e : node.getOutEdges())
@@ -83,6 +84,7 @@ public class TopologicalTravel
 	 * */
 	public void travel()
 	{
+		strata = new TreeMap<Integer, List<VisualNode>>();
 		for(int i=0;i<graph.getVertices().size();i++)
 		{
 			graph.getVertices().get(i).ID=0;
@@ -90,7 +92,8 @@ public class TopologicalTravel
 		List<VisualNode> highLevelNodes=graph.getVertices(NodeType.NODE_TYPE_QUERY);
 		highLevelNodes.addAll(graph.getVertices(NodeType.NODE_TYPE_RELATION));
 		highLevelNodes.addAll(graph.getVertices(NodeType.NODE_TYPE_VIEW));
-		int counter=highLevelNodes.size();
+		int highLevelNodeCounter = highLevelNodes.size();
+		int strataCounter = 0;
 		while(highLevelNodes.size()>0)
 		{
 			for(int i=0;i<highLevelNodes.size();i++)
@@ -98,12 +101,26 @@ public class TopologicalTravel
 				if(numberOfIncomingUsesEdges(highLevelNodes.get(i), highLevelNodes) == 0)
 				{ // Found start of graph
 					VisualNode startNode=highLevelNodes.get(i);
+					
+					if(startNode.getType() == NodeType.NODE_TYPE_VIEW)
+					{
+						if(strata.get(strataCounter) == null)
+						{
+							strata.put(strataCounter, new ArrayList<VisualNode>());
+						}
+						strata.get(strataCounter).add(startNode);
+					}
+					
 					// Assign IDs (maybe later call a function to assign keys to its children)
-					graph.findVertexByName(startNode.getName()).ID=counter;
-					counter--;
+					graph.findVertexByName(startNode.getName()).ID=highLevelNodeCounter;
+					highLevelNodeCounter--;
 					removeIncomingUsesEdgesAtConnectedNodes(highLevelNodes.get(i));
 					removedNodes.add(highLevelNodes.remove(i)); // Remove startNode from list.
 				}
+			}
+			if(strata.get(strataCounter) != null)
+			{
+				strataCounter++;
 			}
 		}
 		for(VisualNode vn: removedNodes)
@@ -112,48 +129,21 @@ public class TopologicalTravel
 		}
 		for(VisualEdge ve: removedEdges)
 		{
-			if(graph.containsEdge(ve) == false)
+			if(graph.containsEdge(ve) != false)
 			{
-				graph.addEdge(ve);
+				graph.removeEdge(ve);
 			}
+			graph.addEdge(ve);
 		}
 	}
 	
 	
-	public TreeMap<Double, ArrayList<VisualNode>> travelLevel()
+	public TreeMap<Integer, List<VisualNode>> viewStratificationLevels()
 	{
-		List<VisualNode> highLevelNodes= graph.getVertices(NodeType.NODE_TYPE_VIEW);
-		Double counter= (double)highLevelNodes.size();
-		for(int i=0;i<highLevelNodes.size();i++)
+		if(strata == null)
 		{
-			for(int j=0;j<highLevelNodes.get(i).getInEdges().size();j++)
-			{	// Remove EDGE_TYPE_CONTAINS since later they gave InEdges.size()=1, not 0.
-				if(highLevelNodes.get(i).getInEdges().get(j).getType()==EdgeType.EDGE_TYPE_CONTAINS)
-				{
-					highLevelNodes.get(i).getInEdges().remove(j);
-				}
-			}
+			travel();
 		}
-		TreeMap<Double, ArrayList<VisualNode>> layers = new TreeMap<Double, ArrayList<VisualNode>>(); 
-		double layerCounter = 0.0;
-		double layerIndicator = 0.0;
-		while(highLevelNodes.size()>0)
-		{
-			ArrayList<VisualNode> sameLayerNodes = new ArrayList<VisualNode>();
-			for(int i=0;i<highLevelNodes.size();i++)
-			{
-				if(highLevelNodes.get(i).getInEdges().size()==layerCounter)
-				{
-					sameLayerNodes.add(highLevelNodes.get(i));
-				}
-			}
-			if(sameLayerNodes.size()>0){
-				highLevelNodes.removeAll(sameLayerNodes);
-				layers.put(layerIndicator, sameLayerNodes);
-				layerIndicator++;
-			}
-			layerCounter++;
-		}
-		return layers;
+		return strata;
 	}
 }

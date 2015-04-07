@@ -14,10 +14,10 @@ public class CustomComparator implements Comparator<VisualNode> {
     		return 1;
     	}
     	if(o1.getType() == NodeType.NODE_TYPE_RELATION && o2.getType()== NodeType.NODE_TYPE_RELATION){
-    		return 0;
+    		return(compareLevel(o1, o2));
     	}
     	if(o1.getType()== NodeType.NODE_TYPE_QUERY && o2.getType() == NodeType.NODE_TYPE_QUERY){
-    		return 0;
+    		return(compareLevel(o1, o2));
     	}
     	if(o1.getType() == NodeType.NODE_TYPE_RELATION && o2.getType() == NodeType.NODE_TYPE_VIEW){
     		return -1;
@@ -31,6 +31,18 @@ public class CustomComparator implements Comparator<VisualNode> {
     	if(o1.getType() == NodeType.NODE_TYPE_QUERY && o2.getType() == NodeType.NODE_TYPE_VIEW){
     		return 1;
     	}
+    	if(o1.getType()== NodeType.NODE_TYPE_VIEW && o2.getType() == NodeType.NODE_TYPE_VIEW){
+    		return(compareLevel(o1, o2));
+    	}
     	return 0;
+    }
+    
+    public int compareLevel(VisualNode o1, VisualNode o2)
+    {
+    	if(o1.ID > o2.ID)
+    	{
+    		return(1);
+    	}
+    	return(-1);
     }
 }

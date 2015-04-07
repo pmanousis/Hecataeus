@@ -36,11 +36,6 @@ public class VisualNodeIcon implements Transformer<VisualNode, Icon> {
 			return new ImageIcon(path+"folder.png");
 		if (type ==NodeType.NODE_TYPE_ANONYMOUS_BLOCK)
 			return new ImageIcon(path+"block.png");
-
 		return null;
-		 
 	}
-
-	 
-
 }

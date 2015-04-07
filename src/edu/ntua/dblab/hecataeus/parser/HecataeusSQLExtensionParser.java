@@ -912,27 +912,30 @@ public final class HecataeusSQLExtensionParser{
 			throw new HecataeusException( "Unexpected Token: " + policyClause.nextToken());
 			}
 		//add new policy to Node, if not the same exists
-		switch (node.getParentNode().getType()) {
-		case NODE_TYPE_INPUT:
-			whateverSentences.add(0,node.getName()+": on DELETE_PROVIDER then "+policyType.toString());
-			whateverSentences.add(0,node.getName()+": on RENAME_PROVIDER then "+policyType.toString());
-			break;
-		case NODE_TYPE_OUTPUT:
-			switch (node.getParentNode().getParentNode().getType()) {
-			case NODE_TYPE_RELATION:
-				whateverSentences.add(0,node.getName()+": on DELETE_SELF then "+policyType.toString());
-				whateverSentences.add(0,node.getName()+": on RENAME_SELF then "+policyType.toString());
-				break;
-			default:
-				whateverSentences.add(0,node.getName()+": on DELETE_SELF then "+policyType.toString());
-				whateverSentences.add(0,node.getName()+": on RENAME_SELF then "+policyType.toString());
+		if(node.getParentNode() != null)
+		{
+			switch (node.getParentNode().getType()) {
+			case NODE_TYPE_INPUT:
 				whateverSentences.add(0,node.getName()+": on DELETE_PROVIDER then "+policyType.toString());
 				whateverSentences.add(0,node.getName()+": on RENAME_PROVIDER then "+policyType.toString());
 				break;
+			case NODE_TYPE_OUTPUT:
+				switch (node.getParentNode().getParentNode().getType()) {
+				case NODE_TYPE_RELATION:
+					whateverSentences.add(0,node.getName()+": on DELETE_SELF then "+policyType.toString());
+					whateverSentences.add(0,node.getName()+": on RENAME_SELF then "+policyType.toString());
+					break;
+				default:
+					whateverSentences.add(0,node.getName()+": on DELETE_SELF then "+policyType.toString());
+					whateverSentences.add(0,node.getName()+": on RENAME_SELF then "+policyType.toString());
+					whateverSentences.add(0,node.getName()+": on DELETE_PROVIDER then "+policyType.toString());
+					whateverSentences.add(0,node.getName()+": on RENAME_PROVIDER then "+policyType.toString());
+					break;
+				}
+				break;
+			default:
+				break;
 			}
-			break;
-		default:
-			break;
 		}
 	};
 	
@@ -983,10 +986,13 @@ public final class HecataeusSQLExtensionParser{
 			whateverSentences.add(0,node.getName()+": on RENAME_SELF then "+policyType.toString());
 			whateverSentences.add(0,node.getName()+".ATTRIBUTES: on DELETE_SELF then "+policyType.toString());
 			whateverSentences.add(0,node.getName()+".ATTRIBUTES: on RENAME_SELF then "+policyType.toString());
-			if(node.getParentNode().getType().equals(NodeType.NODE_TYPE_RELATION)==false)
+			if(node.getParentNode() != null)
 			{
-				whateverSentences.add(0,node.getName()+".ATTRIBUTES: on DELETE_PROVIDER then "+policyType.toString());
-				whateverSentences.add(0,node.getName()+".ATTRIBUTES: on RENAME_PROVIDER then "+policyType.toString());
+				if(node.getParentNode().getType().equals(NodeType.NODE_TYPE_RELATION)==false)
+				{
+					whateverSentences.add(0,node.getName()+".ATTRIBUTES: on DELETE_PROVIDER then "+policyType.toString());
+					whateverSentences.add(0,node.getName()+".ATTRIBUTES: on RENAME_PROVIDER then "+policyType.toString());
+				}
 			}
 		case NODE_TYPE_SEMANTICS:
 			whateverSentences.add(0,node.getName()+": on ALTER_SEMANTICS then "+policyType.toString());

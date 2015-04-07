@@ -22,6 +22,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.collections15.functors.ConstantTransformer;
 
@@ -184,9 +185,11 @@ public class HecataeusEventManagerGUI extends JPanel
 				        SHOWIMPACT();
 			        	line=br.readLine();
 			        }
+			        br.close();
 	            }
 			    catch (Exception ex){
-			    	System.err.println("188, "+ex.getLocalizedMessage());
+			    	System.err.print("Event Manager GUI: 189-> ");
+			    	ex.printStackTrace();
 			    }
 			    finally
 			    {

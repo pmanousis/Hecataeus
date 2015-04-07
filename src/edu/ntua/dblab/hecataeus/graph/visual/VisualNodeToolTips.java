@@ -1,29 +1,21 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
-
 import java.util.ArrayList;
-
 import org.apache.commons.collections15.Transformer;
-
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 /**
- * 
  * class for setting tooltip on the graph
  */
 public final class VisualNodeToolTips implements Transformer<VisualNode,String> {
-
 	public String transform(VisualNode node) {
 		if (node.getVisible()) {
-			
 			if(node.getType()==NodeType.NODE_TYPE_CLUSTER){
-				
 				String tooltip="<html>";
 				String cat = node.getType().toString();
 				tooltip += cat + "  ";
-
 				int clusterId = Integer.parseInt(node.getName());
 				String nN = node.getName();
 				VisualTotalClusters vtc = new VisualTotalClusters();
@@ -61,12 +53,9 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 					tooltip += "<b>SQL Definition</b><br>";
 					String definition = node.getSQLDefinition();
 					definition= definition.replace("\n","<br>");
-					
 					tooltip += definition;
 					tooltip += "<hr>";
-					
 				}
-				
 				if (node.getHasPolicies()) {
 					for (EvolutionPolicy<VisualNode> p : node.getPolicies()) {
 						tooltip += "<i>Policy:</i>" + p;
@@ -79,7 +68,6 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 						tooltip += "<br>";
 					}
 				}
-				
 				if (node.getType()== NodeType.NODE_TYPE_FILE){		//
 					tooltip += "<i>Path: </i>"+node.getPath()+"<br/>";		//added by sgerag
 				}																						//
@@ -93,6 +81,5 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 			}
 		}
 		return null;
-		
 	}
 }

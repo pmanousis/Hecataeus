@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
-import java.util.TreeMap;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
@@ -272,14 +271,20 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
         for(VisualNode r : relations)
         {
 			placeQueries(getSingleTableQueriesOfRelation(r), clusterCenter, qRad, singleRelationQueries.size());
-			if(getSingleTableQueriesOfRelation(r).size()>0)
+			if(getSingleTableQueriesOfRelation(r).size() > 0)
 			{
 				relationAngle = (getSingleTableQueriesOfRelation(r).get(getSingleTableQueriesOfRelation(r).size()-1).getNodeAngle() + getSingleTableQueriesOfRelation(r).get(0).getNodeAngle()) / 2.0;	// Barycentered placement of the relation node, based on the single table queries.
 			}
         	placeRelation(r, relationAngle, relationRad, clusterCenter, getSingleTableQueriesOfRelation(r).size());
         }
-        placeMultyViews(multyV, relationRad*1.2, clusterCenter);
-        placeOutQueries(queries, qRad, clusterCenter);
+        if(multyV.size() > 0)
+        {
+        	placeMultyViews(multyV, relationRad*1.2, clusterCenter);
+        }
+        if(queries.size() > 0)
+        {
+        	placeOutQueries(queries, qRad, clusterCenter);
+        }
 	}
 	
 	/**
@@ -290,37 +295,32 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	 */
 	protected void placeMultyViews(ArrayList<VisualNode> views, double l0Rad, Point2D clusterCenter)
 	{
-		TreeMap<Double, ArrayList<VisualNode>>  topologicallySortedNodes = new TreeMap<Double, ArrayList<VisualNode>> ();
 		TopologicalTravel tt = new TopologicalTravel(graph);
-		topologicallySortedNodes = tt.travelLevel();
 		double vRad;
-		for(Map.Entry<Double, ArrayList<VisualNode>> entry : topologicallySortedNodes.entrySet())
+		for(Entry<Integer, List<VisualNode>> entry : tt.viewStratificationLevels().entrySet())
 		{
-			for(VisualNode nodeInTopologicallySortedNodes : entry.getValue())
+			for(VisualNode stratifiedView : entry.getValue())
 			{
-				if(views.contains(nodeInTopologicallySortedNodes))
+				double angle = 0;
+				int angleCounter = 0;
+				for(VisualEdge e : stratifiedView.getOutEdges())
 				{
-					double Angle = 0;
-					int counter = 0;
-					for(VisualEdge e : nodeInTopologicallySortedNodes.getOutEdges())
+					if(e.getToNode().getType().getCategory() == NodeCategory.MODULE)
 					{
-						if(e.getToNode().getType().getCategory() == NodeCategory.MODULE)
-						{
-							Angle += e.getToNode().getNodeAngle();
-							counter++;
-						}
+						angle += e.getToNode().getNodeAngle();
+						angleCounter++;
 					}
-					Angle /= counter;
-					vRad = entry.getKey() * l0Rad / 3 + l0Rad * 1.25;
-					Point2D coord = transform(nodeInTopologicallySortedNodes);
-					coord.setLocation(Math.cos(Angle)*vRad+clusterCenter.getX(), Math.sin(Angle)*vRad+clusterCenter.getY());
-					nodeInTopologicallySortedNodes.setLocation(coord);
-					nodeInTopologicallySortedNodes.setNodeAngle(Angle);
 				}
+				angle /= angleCounter;
+				vRad = entry.getKey() * l0Rad / 3 + l0Rad * 1.25;
+				Point2D coord = transform(stratifiedView);
+				coord.setLocation(Math.cos(angle)*vRad+clusterCenter.getX(), Math.sin(angle)*vRad+clusterCenter.getY());
+				stratifiedView.setLocation(coord);
+				stratifiedView.setNodeAngle(angle);
 			}
 		}
 	}
-	
+
 	/**
 	 * Places the single table queries to a circle. This circle is guiding the placement of the relations in a later step.
 	 * @author pmanousi
@@ -369,13 +369,12 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		relation.setNodeAngle(relationAnglePossition);
 	}
 
-	protected double getViewBandSize(ArrayList<VisualNode> mv, double relRad){
+	protected double getViewBandSize(ArrayList<VisualNode> mv, double relRad)
+	{
 		if(mv.size()>1)
 		{
-			TreeMap<Double, ArrayList<VisualNode>> myViews = new TreeMap<Double, ArrayList<VisualNode>>();
 			TopologicalTravel tt = new TopologicalTravel(graph);
-			myViews = tt.travelLevel();
-			double size = myViews.lastKey();
+			double size = tt.viewStratificationLevels().lastKey();
 			return(relRad / 5 * size + relRad * 1.4);
 		}
 		return(0);

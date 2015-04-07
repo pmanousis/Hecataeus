@@ -134,7 +134,7 @@ public class VisualNode extends EvolutionNode<VisualEdge>{
 		node.setNodeColor(this.nodeColor);
 		node.setNodeSize(this.nodeSize);
 		node.setLocation(this.getLocation());
-		node.setFile(this.getFile());
+		node.setFile(null);
 		return node;
 	}
 }

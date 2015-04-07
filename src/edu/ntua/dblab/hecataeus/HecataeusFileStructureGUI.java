@@ -118,14 +118,18 @@ public class HecataeusFileStructureGUI extends JPanel
 	FileNode getFileNode(DefaultMutableTreeNode node)
 	{
 		if (node == null)
+		{
 			return null;
+		}
 		Object obj = node.getUserObject();
 		if (obj instanceof IconData)
 			obj = ((IconData)obj).getObject();
 		if (obj instanceof FileNode)
 			return (FileNode)obj;
 		else
+		{
 			return null;
+		}
 	}
 
     // Make sure expansion is threaded and updating the tree model
@@ -384,7 +388,9 @@ class FileNode
 	protected File[] listFiles()
 	{
 		if (!m_file.isDirectory())
+		{
 			return null;
+		}
 		try
 		{
 			return m_file.listFiles();

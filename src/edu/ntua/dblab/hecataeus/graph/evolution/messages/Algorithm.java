@@ -25,17 +25,20 @@ public abstract class Algorithm<V extends EvolutionNode<E>,E extends EvolutionEd
 	{
 		EvolutionPolicies plcs=node.getPolicies();
 		EvolutionPolicy<V> plc=plcs.get(event);
-		if(plc.getPolicyType()==PolicyType.BLOCK)
+		if(plc!=null)
 		{
-			node.setStatus(StatusType.BLOCKED,false);
-		}
-		else if(plc.getPolicyType()==PolicyType.PROPAGATE)
-		{
-			node.setStatus(StatusType.PROPAGATE,false);
-		}
-		else if(plc.getPolicyType()==PolicyType.PROMPT)
-		{
-			node.setStatus(StatusType.PROMPT,false);
+			if(plc.getPolicyType()==PolicyType.BLOCK)
+			{
+				node.setStatus(StatusType.BLOCKED,false);
+			}
+			else if(plc.getPolicyType()==PolicyType.PROPAGATE)
+			{
+				node.setStatus(StatusType.PROPAGATE,false);
+			}
+			else if(plc.getPolicyType()==PolicyType.PROMPT)
+			{
+				node.setStatus(StatusType.PROMPT,false);
+			}
 		}
 		return node.getStatus();
 	}

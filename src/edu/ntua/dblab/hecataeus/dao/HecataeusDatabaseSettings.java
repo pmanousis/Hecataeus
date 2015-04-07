@@ -90,14 +90,9 @@ public class HecataeusDatabaseSettings {
 		case Oracle:
 			return "select text VIEW_DEFINITION from all_views where view_name = '%1$s'";
 		case DB2:
-			return null;
 		case MySQL:
-			return null;
 		case HSQL:
-			return null;
-		case Ingres:
-			//return String.format("jdbc:ingres://localhost:II7/demodb" );
-			return null;
+		case Ingres:	//return String.format("jdbc:ingres://localhost:II7/demodb" );
 		case Postgres:
 			return null;
 		default:
@@ -113,14 +108,9 @@ public class HecataeusDatabaseSettings {
 		case Oracle:
 			return "SELECT DISTINCT REFERENCED_NAME table_name FROM ALL_DEPENDENCIES WHERE TYPE = 'VIEW' AND NAME= '%1$s'";
 		case DB2:
-			return null;
 		case MySQL:
-			return null;
 		case HSQL:
-			return null;
-		case Ingres:
-			//return String.format("jdbc:ingres://localhost:II7/demodb" );
-			return null;
+		case Ingres:	//return String.format("jdbc:ingres://localhost:II7/demodb" );
 		case Postgres:
 			return null;
 		default:
@@ -136,14 +126,9 @@ public class HecataeusDatabaseSettings {
 		case Oracle:
 			return this._username.toUpperCase();
 		case DB2:
-			return null;
 		case MySQL:
-			return null;
 		case HSQL:
-			return null;
-		case Ingres:
-			//return String.format("jdbc:ingres://localhost:II7/demodb" );
-			return null;
+		case Ingres:	//return String.format("jdbc:ingres://localhost:II7/demodb" );
 		case Postgres:
 			return null;
 		default:
@@ -159,20 +144,14 @@ public class HecataeusDatabaseSettings {
 		case Oracle:
 			return "CREATE VIEW " +viewName+ " AS " + dbSentence.replace("WITH READ ONLY", "");
 		case DB2:
-			return null;
 		case MySQL:
-			return null;
 		case HSQL:
-			return null;
-		case Ingres:
-			//return String.format("jdbc:ingres://localhost:II7/demodb" );
-			return null;
+		case Ingres:	//return String.format("jdbc:ingres://localhost:II7/demodb" );
 		case Postgres:
 			return null;
 		default:
 			break;
 		}
-		return null; 
-		
+		return null;
 	}
 }

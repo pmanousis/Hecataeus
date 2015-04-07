@@ -125,9 +125,7 @@ public class VisualCluster {
 	}
 	
 	protected void printInClusterEdges(){
-
 		ArrayList<MyPair> myEdges = new ArrayList<MyPair>();
-		int arrCnt = 0;
 		// edge :  query to relation
 		for(VisualNode v : this.queries){
 			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);

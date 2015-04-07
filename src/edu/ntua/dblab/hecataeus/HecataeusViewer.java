@@ -64,6 +64,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
+import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
@@ -406,6 +407,12 @@ public class HecataeusViewer {
 		@Override
 		public int compare(VisualNode o1, VisualNode o2)
 		{
+			if (o1 == null ^ o2 == null) {
+		        return (o1 == null) ? -1 : 1;
+		    }
+		    if (o1 == null && o2 == null) {
+		        return 0;
+		    }
 			return(o1.getFileName().compareTo(o2.getFileName()));
 		}
 	};
@@ -578,12 +585,12 @@ public class HecataeusViewer {
 				frame.setVisible(true);
 			    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+//				try {
+//					Thread.sleep(10);
+//				} catch (InterruptedException e1) {
+//					 TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 				//TODO: FIX THIS
 				zoomToWindow(activeViewer,null);
@@ -2270,7 +2277,6 @@ public class HecataeusViewer {
 				if (i > 0 && i < filename.length() - 1) {
 					return filename.substring(i + 1).toLowerCase();
 				}
-				;
 			}
 			return null;
 		}
@@ -2406,10 +2412,10 @@ public class HecataeusViewer {
 					{
 					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
-					try {
-						Thread.sleep(20);
-					} catch (InterruptedException ex) {
-					}
+//					try {
+//						Thread.sleep(20);
+//					} catch (InterruptedException ex) {
+//					}
 				}
 			}
 		}
@@ -2505,8 +2511,8 @@ public class HecataeusViewer {
 				}
 			}
 		};
-		Thread thread = new Thread(animator);
-		thread.start();
+//		Thread thread = new Thread(animator);
+//		thread.start();
 		//TODO: FIX THIS
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
 		activeViewerZOOM.getRenderContext().getMultiLayerTransformer().setToIdentity();
@@ -2518,15 +2524,15 @@ public class HecataeusViewer {
 			public void run() {
 				for (int i = 0; i < 5; i++) {
 					activeViewerZOOM.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).translate(dxZOOM, dyZOOM);
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException ex) {
-					}
+//					try {
+//						Thread.sleep(100);
+//					} catch (InterruptedException ex) {
+//					}
 				}
 			}
 		};
-		Thread threadZOOM = new Thread(animatorZOOM);
-		threadZOOM.start();
+//		Thread threadZOOM = new Thread(animatorZOOM);
+//		threadZOOM.start();
 	}
 	
 	public static VisualizationViewer<VisualNode, VisualEdge> getActiveViewerZOOM(){
@@ -2566,9 +2572,6 @@ public class HecataeusViewer {
 					return vr;
 				}
 			}
-		}
-		else{
-			return null;
 		}
 		return null;
 	}

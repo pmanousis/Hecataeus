@@ -146,10 +146,10 @@ public class EvolutionEdge{
 	 */
 	public void addPolicy(EventType eventType, EvolutionNode<? extends EvolutionEdge> eventNode, PolicyType policyType) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(eventType/*, eventNode*/);
+		EvolutionPolicy policy = policies.get(eventType);
 		if(policy!=null)
 				policies.remove(policy);
-		policies.add(new EvolutionPolicy(eventType/*,eventNode*/,policyType));
+		policies.add(new EvolutionPolicy(eventType, policyType));
 	}
 
 	/* (non-Javadoc)
@@ -157,9 +157,11 @@ public class EvolutionEdge{
 	 */
 	public void addPolicy(EvolutionPolicy p) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType()/*, p.getSourceEvent().getEventNode()*/);
+		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType());
 		if(policy!=null)
-				policies.remove(policy);
+		{
+			policies.remove(policy);
+		}
 		policies.add(p);
 	}
 	

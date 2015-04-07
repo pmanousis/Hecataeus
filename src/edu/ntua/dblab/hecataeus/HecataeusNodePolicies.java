@@ -211,11 +211,13 @@ public final class HecataeusNodePolicies extends JDialog {
 				VisualNode eventNode  = (VisualNode) comboBoxEventNodeChild.getSelectedItem();
 				if (eventNode!=null) {
 					// create and add selected policy
-					EvolutionPolicy<VisualNode> newPolicy = new EvolutionPolicy<VisualNode>(eventType/*,eventNode*/, policyType);
+					EvolutionPolicy<VisualNode> newPolicy = new EvolutionPolicy<VisualNode>(eventType, policyType);
 					EvolutionPolicies policies = node.getPolicies();
-					if (policies.get(eventType/*, eventNode*/)!=null) {
+					if (policies.get(eventType)!=null) {
 						if (JOptionPane.showConfirmDialog(null,"This policy already exists! Do you want to replace it?","Warning Message",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION)
+						{
 							node.addPolicy(newPolicy);
+						}
 					}else {
 						node.addPolicy(newPolicy);
 					}

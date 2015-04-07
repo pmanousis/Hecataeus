@@ -54,7 +54,11 @@ static int counter;
 	 * Returns the name of the file
 	 */
 	public String getFileName() {
-		return this._File.getAbsolutePath();
+		if(this._File != null)
+		{
+			return this._File.getAbsolutePath();
+		}
+		return("null");
 	}
 	
 	/**
@@ -180,22 +184,22 @@ static int counter;
 	/**
 	*  creates and adds policy to node
 	**/
-	public void addPolicy(EventType eventType/*, EvolutionNode child*/, PolicyType policyType) {
+	public void addPolicy(EventType eventType, PolicyType policyType) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType/*, child*/);
+		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType);
 		if(policy!=null)
 				policies.remove(policy);
-		if(eventType.equals(EventType.DELETE_PROVIDER)||eventType.equals(EventType.RENAME_PROVIDER))
+		if(eventType == EventType.DELETE_PROVIDER || eventType == EventType.RENAME_PROVIDER)
 		{
 			if(this.getParentNode()!=null)
 			{
-				if(this.getParentNode().getType().equals(NodeType.NODE_TYPE_RELATION))
+				if(this.getParentNode().getType() == NodeType.NODE_TYPE_RELATION)
 				{
 					return;
 				}
 			}
 		}
-		policies.add(new EvolutionPolicy<EvolutionNode>(eventType/*,child*/,policyType));
+		policies.add(new EvolutionPolicy<EvolutionNode>(eventType,policyType));
 	}
 
 	/**
@@ -203,9 +207,11 @@ static int counter;
 	**/
 	public void addPolicy(EvolutionPolicy p) {
 		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType()/*, p.getSourceEvent().getEventNode()*/);
+		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType());
 		if(policy!=null)
-				policies.remove(policy);
+		{
+			policies.remove(policy);
+		}
 		policies.add(p);
 	}
 	
@@ -308,16 +314,17 @@ static int counter;
 		 for (EvolutionEdge e: this.getInEdges()){
 			 //if node is attribute then 
 			 if (((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA && e.getFromNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
+				||((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_OUTPUT && e.getFromNode().getType()==NodeType.NODE_TYPE_OUTPUT))
 				||((this.getType()==NodeType.NODE_TYPE_CONDITION) && (e.getType()==EdgeType.EDGE_TYPE_OPERATOR))
 				||((this.getType()==NodeType.NODE_TYPE_OPERAND) && ((e.getType()==EdgeType.EDGE_TYPE_OPERATOR)
 				||(e.getType()==EdgeType.EDGE_TYPE_WHERE)))
 				||(this.getType()==NodeType.NODE_TYPE_CONSTANT)
 				||((this.getType()==NodeType.NODE_TYPE_GROUP_BY) && (e.getType()==EdgeType.EDGE_TYPE_GROUP_BY))
 				||(this.getType()==NodeType.NODE_TYPE_FUNCTION)
-				|| (this.getType()==NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
-				|| (this.getType()==NodeType.NODE_TYPE_ATTRIBUTE && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
-				|| (this.getType()==NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT))
-				|| (this.getType()==NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS))
+				||(this.getType()==NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
+				||(this.getType()==NodeType.NODE_TYPE_ATTRIBUTE && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
+				||(this.getType()==NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT))
+				||(this.getType()==NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS))
 			 )
 				 return (EvolutionNode<EvolutionEdge>) e.getFromNode();
 		 }

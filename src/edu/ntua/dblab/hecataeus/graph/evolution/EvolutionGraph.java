@@ -69,6 +69,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 * adds edge by HecataeusEdge
 	 **/
+	@SuppressWarnings("unchecked")
 	public boolean addEdge(E Edge) {
 		edgeKeys.put(Edge, ++EvolutionGraph._KeyGenerator);
 		// add edge to incoming edges of ToNode
@@ -161,7 +162,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 				return u;
 			}
 		}
-		
 		return null;
 	}
 
@@ -174,7 +174,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 				return u;
 			}
 		}
-		
 		return null;
 	}
 	
@@ -187,7 +186,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 				return u;
 			}
 		}
-		
 		return null;
 	}
 	
@@ -195,6 +193,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
  *  get node by its name, after finding his parent
  *  OTHERWISE return node
  **/
+	@SuppressWarnings("unchecked")
 	public V findVertexByNameParent(String name) {
 		String parent="";
 		String node="";
@@ -245,7 +244,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 			if (edgeKeys.get(e)==key) 
 				 return e;
 		 }
-		 return null;	
+		 return null;
 	}
 
 	/**
@@ -288,7 +287,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 				}
 			}
 		}
-		
 		return null;
 	}
 
@@ -319,6 +317,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 * calculates the path of nodes that are connected via out edges with a node
 	 **/
+	@SuppressWarnings("unused")
 	private void getOutTree(V node, List<V> OutNodes) {
 		// for each incoming edge add adjacent node to collection
 		// only adjacent nodes connected via a directed edge
@@ -358,6 +357,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 * calculates the path of outgoing edges that are connected with a node
 	 **/
+	@SuppressWarnings("unused")
 	private void getOutPath(V node, List<E> OutEdges) {
 		// for each node edge add out edge to collection
 		// only adjacent nodes connected via a directed edge
@@ -393,6 +393,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 *  makes the necessary initializations to execute propagateChanges()
 	 **/
+	@SuppressWarnings("unchecked")
 	public void initializeChange(EvolutionEvent<V> event){
 		
 		setArxikoModule(null);
@@ -500,7 +501,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/**
 	 *  sets the status of the parts of the graph affected by an event
 	 **/
-	@SuppressWarnings("unused")
+	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
 	private void propagateChanges(Message<V,E> message)
 	{
 		setArxikoModule(message.toNode);
@@ -515,7 +516,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		List<ModuleNode<V,E>> epireasmenoi=new LinkedList<ModuleNode<V,E>>();
 		StopWatch step1 = new StopWatch();	/** @author pmanousi For time count of step 1. */
 		step1.start();
-		
 		while (!queue.isEmpty())
 		{
 			try
@@ -535,14 +535,9 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 				epireasmenoi.add(new ModuleNode(maestro.arxikoMinima.toNode, messages, message.event));
 				maestro.propagateMessages();	// Status determination
 			}
-			catch(Exception e)
-			{
-			}
+			catch(Exception e) {}
 		}
 		step1.stop();	/** @author pmanousi For time count of step 1. */
-		/*
-		 * counting nodes with status! 
-		 */
 		for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
 		{
 			if(entry.getKey().getStatus() != StatusType.NO_STATUS && entry.getKey().getType() != NodeType.NODE_TYPE_OPERAND)
@@ -572,7 +567,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 			V schemaProsElegxo = (V) rel.get(i).getOutEdges().get(0).getToNode();
 			relNodes += schemaProsElegxo.getOutEdges().size();
 		}
-
 		for(int k = 0; k < epireasmenoi.size(); k++)
 		{
 			epireasmenoi.get(k).setEmeis(epireasmenoi);
@@ -598,7 +592,6 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		int rewrittenModules=0;
 		StopWatch step3 = new StopWatch();	/** @author pmanousi For time count of step 3. */
 		step3.start();
-	
 		if(graphStatus == StatusType.BLOCKED)
 		{
 			if(message.toNode.getType() == NodeType.NODE_TYPE_RELATION && message.event != EventType.ADD_ATTRIBUTE)
@@ -615,15 +608,11 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 					if(prosEpaneggrafi.neededRewrites == 1)
 					{	// They move to new version.
 						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-						
-						
 						tempParam = m.doRewrite(tempParam, this, step3,mr);
-						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
-						
-						
+						m.moveToNewInputsIfExist(this, prosEpaneggrafi.module);
 						rewrittenModules++;
 					}
-					if(prosEpaneggrafi.neededRewrites == 2)
+					else if(prosEpaneggrafi.neededRewrites == 2)
 					{	// They copy themselves and do rewrite on new version.
 						V neos=prosEpaneggrafi.cloneQVModule(this);
 						clonedModules++;
@@ -631,21 +620,19 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 						while(j.hasNext())
 						{	// messages are for neos node...
 							Message<V, E> n = j.next();
-							for(int k = 0; k < neos.getOutEdges().size(); k++)
+							for(E noe: neos.getOutEdges())
 							{
-								if(neos.getOutEdges().get(k).getToNode().getName().equals(n.toSchema.getName().replace(n.toNode.getName(), neos.getName())))
+								if(noe.getToNode().getName().equals(n.toSchema.getName().replace(n.toNode.getName(), neos.getName())))
 								{
-									n.toSchema = (V) neos.getOutEdges().get(k).getToNode();
+									n.toSchema = (V) noe.getToNode();
 								}
 							}
 							n.toNode = neos;
 						}
-						prosEpaneggrafi.en = neos;
+						prosEpaneggrafi.module = neos;
 						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-
-						m.moveToNewInputsIfExist(this, prosEpaneggrafi.en);
 						tempParam = m.doRewrite(tempParam, this, step3,mr);
-						
+						m.moveToNewInputsIfExist(this, prosEpaneggrafi.module);
 						rewrittenModules++;
 					}
 				}
@@ -681,6 +668,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	 * @param2 = Node receiving the message
 	 * @param3 = The previous prevailing policy
 	 **/
+	@SuppressWarnings("unused")
 	private PolicyType determinePolicy(EvolutionEvent<V> event, V nr, E edge, PolicyType previousPolicyType) {
 
 		//  policy hierarchy
@@ -702,6 +690,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	/*
 	 * gets the prevailing policy in a module (e.g. a query, relation, view)
 	 */
+	@SuppressWarnings("unchecked")
 	private PolicyType getPrevailingPolicy(EvolutionEvent<V> event, V nr, PolicyType previousPolicyType) {
 
 		EvolutionPolicies policies = nr.getPolicies();
@@ -962,6 +951,7 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void exportPoliciesToFile(File file) {
 		try {
 			BufferedWriter out = new BufferedWriter(new FileWriter(file));

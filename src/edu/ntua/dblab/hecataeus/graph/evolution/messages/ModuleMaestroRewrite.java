@@ -68,19 +68,18 @@ public class ModuleMaestroRewrite<V extends EvolutionNode<E>,E extends Evolution
 				inNode.getOutEdges().get(i).setToNode(newprovOut);
 			}
 		}
-		inNode.setName(inNode.getName().substring(0,inNode.getName().lastIndexOf("_"))+newpprov.getName());
+		inNode.setName(inNode.getName().substring(0,inNode.getName().lastIndexOf("_")+1)+newpprov.getName());
 	}
 	
 	private void moveUsesEdgeToNewProvider(V node, V newpprov, V pprov, EvolutionGraph<V,E> graph)
 	{
-		for(int i=0;i<node.getOutEdges().size();i++)
+		for(E e: node.getOutEdges())
 		{
-			if(node.getOutEdges().get(i).getType()==EdgeType.EDGE_TYPE_USES&&
-					node.getOutEdges().get(i).getToNode()==graph.findVertexById(pprov.ID))
+			if(e.getType() == EdgeType.EDGE_TYPE_USES && e.getToNode() == graph.findVertexById(pprov.ID))
 			{
-				if(node.getOutEdges().get(i).getToNode() == pprov)
+				if(e.getToNode() == pprov)
 				{
-					node.getOutEdges().get(i).setToNode(newpprov);
+					e.setToNode(newpprov);
 				}
 			}
 		}
@@ -116,7 +115,6 @@ public class ModuleMaestroRewrite<V extends EvolutionNode<E>,E extends Evolution
 			{
 				V inNode = (V) e.getToNode();
 				V pprov = findProvider(inNode);
-
 				V newpprov = graph.findVertexById(pprov.ID + 0.4);
 				if(newpprov != null)
 				{	// All children of inNode need to move to their edges to newpprov.

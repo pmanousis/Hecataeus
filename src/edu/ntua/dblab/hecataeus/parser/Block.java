@@ -421,8 +421,6 @@ public abstract class Block{
 				if (id<cur.getId())		id=cur.getId();
 			}
 		}	
-		
-		
 		return id;
 	}
 	
@@ -430,14 +428,11 @@ public abstract class Block{
 		
 		for (int i=0;i<stmts.size();i++){
 			Statement st=stmts.get(i);
-			
 			if (st instanceof Variable){
 				Variable var=(Variable)st;
-				
 				if (var.getName().equals(na))	return var;
 			}
 		}
-			
 		return null;		
 	}
 	

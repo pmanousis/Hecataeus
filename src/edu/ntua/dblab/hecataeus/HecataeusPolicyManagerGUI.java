@@ -221,6 +221,7 @@ public class HecataeusPolicyManagerGUI extends JPanel
 	 * @author pmanousi
 	 * When LOAD or SAVE functions are called they call this function to load to our graph the new policy (the one that is shown in policyEditor).
 	 * */
+	@SuppressWarnings("static-access")
 	void loadPolicy()
 	{
 		File file = new File(this.projectConf.curPath+"/"+this.currentPolicyFilename);
@@ -234,7 +235,6 @@ public class HecataeusPolicyManagerGUI extends JPanel
 			new HecataeusMessageDialog(this.viewer.frame, "Error importing Policies", ex.getMessage());
 		}
 		this.viewer.vv.repaint();
-		//this.viewer.vvContainer.repaint();
 	}
 
 	/**
