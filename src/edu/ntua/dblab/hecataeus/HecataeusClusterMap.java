@@ -47,7 +47,7 @@ public class HecataeusClusterMap extends JPanel{
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void createMap(){
-		myNodes.clear();
+		/*myNodes.clear();
 		if(myViewer!=null){
 			myViewer.removeAll();
 		}
@@ -96,6 +96,6 @@ public class HecataeusClusterMap extends JPanel{
 		
 		GraphZoomScrollPane sp = new GraphZoomScrollPane(myViewer);
 		sp.add(myViewer);
-		this.add(sp);
+		this.add(sp);*/
 	}
 }

@@ -132,17 +132,20 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		ArrayList<VisualNode> queries = new ArrayList<VisualNode>();
 		for(VisualNode v : nodes)
 		{
-			if(v.getType() == NodeType.NODE_TYPE_QUERY && v.getNumberOfUsesEdges() > 1)
-			{	// multiInput
-				queries.add(v);
-				continue;
-			}
-			for(VisualEdge e: v.getOutEdges())
+			if(v.getType() == NodeType.NODE_TYPE_QUERY)
 			{
-				if(e.getToNode().getType() == NodeType.NODE_TYPE_VIEW)
-				{	// view usage
+				if(v.getNumberOfUsesEdges() > 1)
+				{	// multiInput
 					queries.add(v);
-					break;
+					continue;
+				}
+				for(VisualEdge e: v.getOutEdges())
+				{
+					if(e.getToNode().getType() == NodeType.NODE_TYPE_VIEW)
+					{	// view usage
+						queries.add(v);
+						break;
+					}
 				}
 			}
 		}
@@ -226,7 +229,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	 * a) A circle that contains the queries of the cluster, that use only one relation
 	 * b) A circle that has the relations of the cluster, based on the placement of the single relation queries
 	 * c) A circular disc that has the views that use the relations of the cluster, this disk is between the relations and the single relation queries
-	 * d) A ?? that has the queries that use either (i) views or (ii) more than one relations
+	 * d) A circle made of "cloud" like points that has the queries that use either (i) views or (ii) more than one relations
 	 * @author pmanousi
 	 * @param nodes The nodes of a cluster
 	 * @param clusterCenter The center of the cluster circle
@@ -288,13 +291,13 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	}
 	
 	/**
-	 * TODO: fix this, what is relationRad+10 for l0Rad.. are we kidding ourselves? 
 	 * @param views
 	 * @param clusterCenter
 	 * @param l0Rad
 	 */
 	protected void placeMultyViews(ArrayList<VisualNode> views, double l0Rad, Point2D clusterCenter)
 	{
+		List<Point2D> usedPoints = new ArrayList<Point2D>();
 		TopologicalTravel tt = new TopologicalTravel(graph);
 		double vRad;
 		for(Entry<Integer, List<VisualNode>> entry : tt.viewStratificationLevels().entrySet())
@@ -315,6 +318,11 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 				vRad = entry.getKey() * l0Rad / 3 + l0Rad * 1.25;
 				Point2D coord = transform(stratifiedView);
 				coord.setLocation(Math.cos(angle)*vRad+clusterCenter.getX(), Math.sin(angle)*vRad+clusterCenter.getY());
+				while(usedPoints.contains(coord) == true)
+				{	// here I should change sth a little bit.
+					coord.setLocation(addSomeNoise(coord, vRad*0.2));	// this should get some random X and Y modification
+				}
+				usedPoints.add(coord);
 				stratifiedView.setLocation(coord);
 				stratifiedView.setNodeAngle(angle);
 			}
@@ -590,6 +598,64 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			}
 		}
 		return set;
+	}
+	
+	protected double getMaxRadius(List<VisualNode> nodes)
+	{
+		double toReturn = 0;
+		relations.clear();
+		views.clear();
+		queries.clear();
+		groups.clear();
+        ArrayList<VisualNode> singleRelationQueries = new ArrayList<VisualNode>();
+        relations.addAll(relationsInCluster(nodes));
+        for(VisualNode relation: relations)
+        {
+        	singleRelationQueries.addAll(getSingleTableQueriesOfRelation(relation));
+        }
+        queries.addAll(multiInputOrViewUsingQueriesInCluster(nodes));
+        views.addAll(viewsInCluster(nodes));
+        Map<ArrayList<VisualNode>, Integer> set = new HashMap<ArrayList<VisualNode>, Integer>(getRSimilarity(queries));
+        Map<ArrayList<VisualNode>, Integer> Vset = new HashMap<ArrayList<VisualNode>, Integer>(getVSimilarity(views));
+        if(relationsInCluster(nodes).size()>3)
+        {
+        	Map<ArrayList<VisualNode>, Integer> sorted = sortByComparator(set);
+        	Map<ArrayList<VisualNode>, Integer> Vsorted = sortByComparator(Vset);
+            ArrayList<VisualNode> sortedR = new ArrayList<VisualNode>(getSortedArray(sorted, relations));
+            ArrayList<VisualNode> sortedV = new ArrayList<VisualNode>(getSortedArray(Vsorted, views));
+            relations.clear();
+            views.clear();
+            relations.addAll(sortedR);
+            views.addAll(sortedV);
+        }
+        double relationRad = 1.9*getSmallRad(relations);
+        double qRad = getQueryRad(nodes.size() - relations.size()- views.size());
+        ArrayList<VisualNode> multyV = new ArrayList<VisualNode>(views);
+        double viewBand = getViewBandSize(multyV, relationRad);
+        if(qRad <= viewBand){
+        	qRad = viewBand*1.4;
+        }
+        if(qRad <= relationRad){
+        	qRad = relationRad*1.4;
+        }
+        for(VisualNode r : relations)
+        {
+        	toReturn = qRad * 0.8;
+			if(getSingleTableQueriesOfRelation(r).size() > 0)
+			{
+				toReturn = qRad;
+			}
+        }
+        if(multyV.size() > 0)
+        {
+        	TopologicalTravel tt = new TopologicalTravel(graph);
+        	toReturn = tt.viewStratificationLevels().lastKey() * (relationRad*1.2) / 3 + (relationRad*1.2) * 1.25;;
+        }
+        if(queries.size() > 0)
+        {// this is not correct, it should have been smaller, actually, fist I should have them to groups, but this is not needed for radius size.
+        	toReturn = (qRad * 2);	
+        }
+		return(toReturn);
 	}
 	
 	protected Map<ArrayList<VisualNode>, Integer> getVSimilarity(List<VisualNode> views2){

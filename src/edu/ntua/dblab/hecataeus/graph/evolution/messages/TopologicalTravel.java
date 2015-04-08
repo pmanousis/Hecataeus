@@ -2,9 +2,7 @@ package edu.ntua.dblab.hecataeus.graph.evolution.messages;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
-
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
@@ -22,7 +20,6 @@ public class TopologicalTravel
 	VisualGraph graph;
 	List<VisualEdge> removedEdges;
 	List<VisualNode> removedNodes;
-	TreeMap<Integer, List<VisualNode>> strata;
 	
 	public TopologicalTravel(HecataeusViewer viewer)
 	{
@@ -38,12 +35,12 @@ public class TopologicalTravel
 		graph = g;
 	}
 	
-	public int numberOfIncomingUsesEdges(VisualNode node, List<VisualNode> hln)
+	private int numberOfIncomingUsesEdges(VisualNode node, List<VisualNode> hln)
 	{
 		int toReturn = 0;
 		for(VisualEdge e : node.getInEdges())
 		{
-			if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getToNode()))
+			if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getToNode()) && removedEdges.contains(e) == false)
 			{
 				toReturn++;
 			}
@@ -51,12 +48,25 @@ public class TopologicalTravel
 		return(toReturn);
 	}
 	
-	public List<VisualEdge> removeIncomingUsesEdgesAtConnectedNodes(VisualNode node)
+	private int numberOfOutgoingUsesEdges(VisualNode node, List<VisualNode> hln)
+	{
+		int toReturn = 0;
+		for(VisualEdge e : node.getOutEdges())
+		{
+			if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getToNode()) && removedEdges.contains(e) == false)
+			{
+				toReturn++;
+			}
+		}
+		return(toReturn);
+	}
+	
+	private List<VisualEdge> removeIncomingUsesEdgesAtConnectedNodes(VisualNode node, List<VisualNode> hln)
 	{
 		List<VisualNode> connectedNodes = new ArrayList<VisualNode>();
 		for(VisualEdge e : node.getOutEdges())
 		{
-			if(e.getType() == EdgeType.EDGE_TYPE_USES)
+			if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getToNode()) && removedEdges.contains(e) == false)
 			{
 				connectedNodes.add(e.getToNode());
 			}
@@ -66,15 +76,38 @@ public class TopologicalTravel
 		{
 			for(VisualEdge e : n.getInEdges())
 			{
-				if(e.getType() == EdgeType.EDGE_TYPE_USES && e.getFromNode() == node)
+				if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getToNode()) && e.getFromNode() == node && removedEdges.contains(e) == false)
 				{
 					edgesToRemove.add(e);
 				}
 			}
-			removedEdges.addAll(edgesToRemove);
 		}
 		return(edgesToRemove);
 	}
+	
+	private List<VisualEdge> removeOutgoingUsesEdgesAtConnectedNodes(VisualNode node, List<VisualNode> hln)
+	{
+		List<VisualNode> connectedNodes = new ArrayList<VisualNode>();
+		for(VisualEdge e : node.getInEdges())
+		{
+			if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getFromNode()) && removedEdges.contains(e) == false)
+			{
+				connectedNodes.add(e.getFromNode());
+			}
+		}
+		List<VisualEdge> edgesToRemove = new ArrayList<VisualEdge>();
+		for(VisualNode n : connectedNodes)
+		{
+			for(VisualEdge e : n.getOutEdges())
+			{
+				if(e.getType() == EdgeType.EDGE_TYPE_USES && hln.contains(e.getFromNode()) && e.getToNode() == node && removedEdges.contains(e) == false)
+				{
+					edgesToRemove.add(e);
+				}
+			}
+		}
+		return(edgesToRemove);
+	} 
 	
 	/**
 	 * First are the nodes with incoming edges = 0 (startNode).
@@ -84,7 +117,6 @@ public class TopologicalTravel
 	 * */
 	public void travel()
 	{
-		strata = new TreeMap<Integer, List<VisualNode>>();
 		for(int i=0;i<graph.getVertices().size();i++)
 		{
 			graph.getVertices().get(i).ID=0;
@@ -93,176 +125,78 @@ public class TopologicalTravel
 		highLevelNodes.addAll(graph.getVertices(NodeType.NODE_TYPE_RELATION));
 		highLevelNodes.addAll(graph.getVertices(NodeType.NODE_TYPE_VIEW));
 		int highLevelNodeCounter = highLevelNodes.size();
-		int strataCounter = 0;
-		while(highLevelNodes.size()>0)
+		while(highLevelNodes.size() > 0)
 		{
 			List<VisualEdge> edgesToRemove = new ArrayList<VisualEdge>();
-			for(int i=0;i<highLevelNodes.size();i++)
+			List<VisualNode> nodesToRemove = new ArrayList<VisualNode>();
+			for(VisualNode n: highLevelNodes)
 			{
-				if(numberOfIncomingUsesEdges(highLevelNodes.get(i), highLevelNodes) == 0)
+				if(numberOfIncomingUsesEdges(n, highLevelNodes) == 0 && removedNodes.contains(n) == false)
 				{ // Found start of graph
-					VisualNode startNode=highLevelNodes.get(i);
-					if(startNode.getType() == NodeType.NODE_TYPE_VIEW)
-					{
-						if(strata.get(strataCounter) == null)
-						{
-							strata.put(strataCounter, new ArrayList<VisualNode>());
-						}
-						strata.get(strataCounter).add(startNode);
-					}
-					// Assign IDs (maybe later call a function to assign keys to its children)
-					graph.findVertexByName(startNode.getName()).ID=highLevelNodeCounter;
+					graph.findVertexByName(n.getName()).ID = highLevelNodeCounter;
 					highLevelNodeCounter--;
-					edgesToRemove.addAll(removeIncomingUsesEdgesAtConnectedNodes(highLevelNodes.get(i)));
-					removedNodes.add(highLevelNodes.remove(i)); // Remove startNode from list.
+					edgesToRemove.addAll(removeIncomingUsesEdgesAtConnectedNodes(n, highLevelNodes));
+					if(removedNodes.contains(n) == false)
+					{
+						nodesToRemove.add(n);
+					}
 				}
 			}
 			for(VisualEdge e: edgesToRemove)
 			{
-				graph.removeEdge(e);
+				removedEdges.add(e);
 			}
-			edgesToRemove.clear();
-			if(strata.get(strataCounter) != null)
+			for(VisualNode n: nodesToRemove)
 			{
-				strataCounter++;
+				removedNodes.add(n);
+				highLevelNodes.remove(n);
 			}
-		}
-		for(VisualNode vn: removedNodes)
-		{
-			graph.addVertex(vn);
-		}
-		for(VisualEdge ve: removedEdges)
-		{
-			if(graph.containsEdge(ve) != false)
-			{
-				graph.removeEdge(ve);
-			}
-			graph.addEdge(ve);
-		}
-	}
-	
-	private boolean mapsComparison(TreeMap<Integer, List<VisualNode>> one, TreeMap<Integer, List<VisualNode>> two)
-	{
-		if(one.size() != two.size())
-		{
-			return(false);
-		}
-		boolean toReturn = true;
-		ArrayList<Integer> keysOne = new ArrayList<Integer>(one.keySet());
-		ArrayList<Integer> keysTwo = new ArrayList<Integer>(two.keySet());
-		for(int i = 0; i < keysOne.size(); i++)
-		{
-		    if(one.get(keysOne.get(i)).equals(two.get(keysTwo.get(i))) == false || keysOne.get(i) != (keysTwo).get(i))
-		    {
-		    	toReturn = false;
-		    }
-		}
-		return(toReturn);
-	}
-	
-	/**
-	 * In order to terminate early enough the "squizing" of TreeMaps, we check to see if there are no differences between steps. To achieve that, we need a deep copy clone of the TreeMap before the modifications we want to do.
-	 * @author pmanousi
-	 * @param original The TreeMap we want to copy
-	 * @return A TreeMap that has the same contents with the original
-	 */
-	private TreeMap<Integer, List<VisualNode>> deepCopy(TreeMap<Integer, List<VisualNode>> original)
-	{
-		TreeMap<Integer, List<VisualNode>> toReturn = new TreeMap<Integer, List<VisualNode>>();
-		for (Map.Entry<Integer, List<VisualNode>> entry : original.entrySet())
-		{
-			List<VisualNode> toAdd = new ArrayList<VisualNode>();
-			for(VisualNode n: entry.getValue())
-			{
-				toAdd.add(n);
-			}
-			toReturn.put(entry.getKey(),toAdd);
-		}
-		return(toReturn);
-	}
-	
-	/**
-	 * Removes from obj the keys that have no contents.
-	 * @author pmanousi
-	 * @param obj The TreeMap that we want to reduce its set of keys.
-	 */
-	private void cleanUp(TreeMap<Integer, List<VisualNode>> obj)
-	{
-		List<Integer> toRemove = new ArrayList<Integer>();
-		for (Map.Entry<Integer, List<VisualNode>> entry : obj.entrySet())
-		{
-			if(entry.getValue().isEmpty())
-			{
-				toRemove.add(entry.getKey());
-			}
-		}
-		for(Integer i: toRemove)
-		{
-			obj.remove(i);
 		}
 	}
 	
 	/**
-	 * In order to place the views in the space between the relations and the single relation queries, we need to know how many levels of views over views etc we have. This function (with the help of travel) has these values. We just have to "squize" them in order to have many of them in the relation-single relation space. 
+	 * In order to place the views in the space between the relations and the single relation queries, we need to know how many levels of views over views etc we have.
+	 * We have in the same level all the nodes that depend to relations.
+	 * Next we have those that depend to a view (and maybe relations)...
+	 * Then those that depend to a view over view (and of course the previous stratum)... 
 	 * @author pmanousi
 	 * @return A tree map with the stratified levels of views.
 	 */
 	public TreeMap<Integer, List<VisualNode>> viewStratificationLevels()
 	{
 		TreeMap<Integer, List<VisualNode>> toReturn = new TreeMap<Integer, List<VisualNode>>();
-		if(strata == null)
+		List<VisualNode> highLevelNodes = graph.getVertices(NodeType.NODE_TYPE_VIEW);
+		int strataCounter = 0;
+		while(highLevelNodes.size() > 0)
 		{
-			travel();
-		}
-		ArrayList<Integer> keys = new ArrayList<Integer>(strata.keySet());
-		for(int i=keys.size()-1; i>=0;i--)
-		{
-		    toReturn.put(keys.get(keys.size()-1)-keys.get(i), strata.get(keys.get(i)));
-		}
-		int contentsLength = 0;
-		for(int i =0;i < toReturn.size();i++)
-		{
-			contentsLength += toReturn.get(i).size();
-		}
-		TreeMap<Integer, List<VisualNode>> toCompare = null;
-		for(int j=0;j<keys.size()*contentsLength;j++)
-		{
-			toCompare = deepCopy(toReturn);
-			for (int i=1; i<keys.size();i++)
+			List<VisualEdge> edgesToRemove = new ArrayList<VisualEdge>();
+			List<VisualNode> nodesToRemove = new ArrayList<VisualNode>();
+			for(VisualNode n : highLevelNodes)
 			{
-				boolean pushToPreviousLevel = true;
-				VisualNode current = null;
-				for(VisualNode vn1: toReturn.get(i))
+				if(numberOfOutgoingUsesEdges(n, highLevelNodes) == 0 && removedNodes.contains(n) == false)
 				{
-					pushToPreviousLevel = true;
-					current = vn1;
-					for(VisualEdge e1: current.getOutEdges())
+					if(toReturn.get(strataCounter) == null)
 					{
-						for(VisualNode vn0: toReturn.get(i-1))
-						{
-							if(e1.getType() == EdgeType.EDGE_TYPE_USES && e1.getToNode() == vn0)
-							{
-								pushToPreviousLevel = false;
-								break;
-							}
-						}
-						if(pushToPreviousLevel == false)
-						{
-							break;
-						}
+						toReturn.put(strataCounter, new ArrayList<VisualNode>());
+					}
+					toReturn.get(strataCounter).add(n);
+					edgesToRemove.addAll(removeOutgoingUsesEdgesAtConnectedNodes(n, highLevelNodes));
+					if(removedNodes.contains(n) == false)
+					{
+						nodesToRemove.add(n);
 					}
 				}
-				if(pushToPreviousLevel == true && current != null)
-				{
-					toReturn.get(i-1).add(current);
-					toReturn.get(i).remove(current);
-				}
 			}
-			if(mapsComparison(toCompare,toReturn) == true)
+			for(VisualEdge e: edgesToRemove)
 			{
-				cleanUp(toReturn);
-				break;
+				removedEdges.add(e);
 			}
+			for(VisualNode n: nodesToRemove)
+			{
+				removedNodes.add(n);
+				highLevelNodes.remove(n);
+			}
+			strataCounter++;
 		}
 		return toReturn;
 	}

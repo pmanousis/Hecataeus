@@ -47,7 +47,7 @@ NODE_TYPE_SEMANTICS (NodeCategory.INOUTSCHEMA),
 	NODE_TYPE_EMBEDDED_STATEMENT(NodeCategory.CONTAINER),				/**added by sgerag*/
 
 	
-	NODE_TYPE_CLUSTER	(NodeCategory.CONTAINER),						/**added by evakont*/
+//	NODE_TYPE_CLUSTER	(NodeCategory.CONTAINER),						/**added by evakont*/
 	
 	;
 	

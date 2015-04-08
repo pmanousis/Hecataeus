@@ -10,19 +10,8 @@ public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
      */
     public String transform(VisualNode v) {
     	switch (v.getType()) {
-    	//case NODE_TYPE_RELATION:
-    	//	return v.getName();
-    	//default: return(v.toString()); 
-//    	case NODE_TYPE_RELATION:
-//    		String test = " " + v.getNodeAngle();
-//    		return test;
-//    	case NODE_TYPE_QUERY:
-//    		String test1 = " " + v.getNodeAngle();
-//    		return test1;
-    	//default: return(v.toString()); 
-    	
-    	case NODE_TYPE_CLUSTER:
-    		return v.getNodeLabel();
+    	/*case NODE_TYPE_CLUSTER:
+    		return v.getNodeLabel();*/
     	case NODE_TYPE_RELATION:
     	{
     		if(this.visible==true && v.getInEdges().size()>1)
@@ -32,7 +21,7 @@ public class VisualNodeLabel extends ToStringLabeller<VisualNode> {
     	}
 		case NODE_TYPE_QUERY:
     	case NODE_TYPE_VIEW:
-    		return("");
+    			return("");
     	default: return(v.toString()); 
     	}
     }

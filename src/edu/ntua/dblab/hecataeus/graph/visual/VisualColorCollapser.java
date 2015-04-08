@@ -13,7 +13,7 @@ public class VisualColorCollapser extends GraphCollapser{
 		this.originalGraph = originalGraph;
 	}
 	
-	VisualGraph createGraph() throws InstantiationException, IllegalAccessException {
+/*	VisualGraph createGraph() throws InstantiationException, IllegalAccessException {
 		return (VisualGraph)originalGraph.getClass().newInstance();
 	}
 	
@@ -107,5 +107,5 @@ public VisualGraph collapse(VisualGraph inGraph, VisualGraph clusterGraph) {
             }
         }
         return clusterGraph;
-    }
+    }*/
 }

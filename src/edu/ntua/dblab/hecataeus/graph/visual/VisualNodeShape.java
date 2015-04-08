@@ -41,15 +41,15 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 				}
 				else if (type.getCategory()== NodeCategory.CONTAINER){
 					//return INITIAL_SIZE * 4 ;
-					if(v.getType() == NodeType.NODE_TYPE_CLUSTER){
+					/*if(v.getType() == NodeType.NODE_TYPE_CLUSTER){
 						v.size=(int)v.getNodeSize();
 						int ns = 3*(int)Math.log(v.getNodeSize()) + (int)v.getNodeSize()*2; //(int)v.getNodeSize()
 						return ns;
 					}
-					else{
+					else{*/
 						v.size=INITIAL_SIZE;
 						return 10;
-					}
+					/*}*/
 				}
 				/***
 				 * @author pmanousi
@@ -95,7 +95,7 @@ public class VisualNodeShape extends AbstractVertexShapeTransformer<VisualNode> 
 				|| type==NodeType.NODE_TYPE_EMBEDDED_STATEMENT)
 			return factory.getRectangle(v);
 		else if (type ==NodeType.NODE_TYPE_RELATION
-				|| type ==NodeType.NODE_TYPE_CLUSTER)
+/*				|| type ==NodeType.NODE_TYPE_CLUSTER*/)
 			return factory.getEllipse(v);
 		else if (type ==NodeType.NODE_TYPE_VIEW)
 			return factory.getRegularPolygon(v,3);

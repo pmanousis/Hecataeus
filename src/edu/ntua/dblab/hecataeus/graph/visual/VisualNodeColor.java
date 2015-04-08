@@ -120,8 +120,8 @@ public final class VisualNodeColor implements Transformer<VisualNode, Paint>
 						return Color.ORANGE;
 					else if (type==NodeType.NODE_TYPE_SEMANTICS)
 						return Color.MAGENTA;
-					else if(type == NodeType.NODE_TYPE_CLUSTER)
-						return new Color(0.3f,0.9f,0.6f, alpha); //67,205,128
+					/*else if(type == NodeType.NODE_TYPE_CLUSTER)
+						return new Color(0.3f,0.9f,0.6f, alpha); //67,205,128*/
                 	else return Color.WHITE;
                 }
         	}

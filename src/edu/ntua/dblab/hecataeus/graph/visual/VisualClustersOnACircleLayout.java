@@ -55,20 +55,30 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	private void clustersOnaCircle()
 	{
 		ArrayList<Cluster> Clusters = new ArrayList<Cluster>(cs.getClusters());/** list with clusters created with clustering algo */
-		Collections.shuffle(Clusters);
 		double circumference = 0;
+		double biggestCluster = 0;
+		Cluster biggerCluster = null;
 		for(Cluster cl: Clusters)
-		{
-			circumference += getSmallRad(cl.getNodesOfCluster());
+		{	// simulate placement to find maximum radius for each cluster
+			biggestCluster = getMaxRadius(cl.getNodesOfCluster());
+			circumference += biggestCluster;
+			biggerCluster = cl;
 		}
-//		double myRad = circumference * 1.1 / Math.PI;
+		Collections.shuffle(Clusters);
+		if(biggestCluster > (circumference / 2))
+		{
+			circumference = 2 * biggestCluster;
+			Cluster tmp = Clusters.get(Clusters.size()-1);
+			int biggestCurrentPossition = Clusters.indexOf(biggerCluster);
+			Clusters.set(Clusters.size()-1, Clusters.get(biggestCurrentPossition));	// put the bigger to end
+			Clusters.set(biggestCurrentPossition, tmp);
+		}
 		double myRad = circumference / Math.PI;
 		double angle = 0.0, sum = 0.0;
 		for(Cluster cl: Clusters)
 		{
-			angle = Math.acos(1 - (Math.pow(getSmallRad(cl.getNodesOfCluster()), 2)) / (2 * Math.pow(myRad, 2)));
-			Point2D clusterCenter = new Point2D.Double(Math.cos(sum + angle) * myRad, Math.sin(sum + angle) * myRad);
-			circles(cl.getNodesOfCluster(), clusterCenter);
+			angle = Math.acos(1 - (Math.pow(getMaxRadius(cl.getNodesOfCluster()), 2)) / (2 * Math.pow(myRad, 2)));
+			circles(cl.getNodesOfCluster(), new Point2D.Double(Math.cos(sum + angle) * myRad * 1.25, Math.sin(sum + angle) * myRad * 1.25));
 			sum += angle * 2;
 		}
 	}

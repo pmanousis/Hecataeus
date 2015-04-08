@@ -54,10 +54,10 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		return super.addVertex(Node);
 	}
 
-	public boolean addVertex(VisualGraph g) {
-		graphkMap.put(g, ++EvolutionGraph._KeyGenerator);
-		return true;
-	}
+//	public boolean addVertex(VisualGraph g) {
+//		graphkMap.put(g, ++EvolutionGraph._KeyGenerator);
+//		return true;
+//	}
 		
 	/**
 	 * adds edge by HecataeusEdge

@@ -12,7 +12,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 public final class VisualNodeToolTips implements Transformer<VisualNode,String> {
 	public String transform(VisualNode node) {
 		if (node.getVisible()) {
-			if(node.getType()==NodeType.NODE_TYPE_CLUSTER){
+			/*if(node.getType()==NodeType.NODE_TYPE_CLUSTER){
 				String tooltip="<html>";
 				String cat = node.getType().toString();
 				tooltip += cat + "  ";
@@ -42,7 +42,7 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 				tooltip += "</html>";
 				return tooltip;
 			}
-			else{
+			else{*/
 				String tooltip="<html>";
 				String cat = node.getType().getCategory().toString();
 				tooltip += cat + "  ";
@@ -78,7 +78,7 @@ public final class VisualNodeToolTips implements Transformer<VisualNode,String> 
 					+ node.getStatus();
 				tooltip += "</html>";
 			return tooltip;
-			}
+			/*}*/
 		}
 		return null;
 	}
