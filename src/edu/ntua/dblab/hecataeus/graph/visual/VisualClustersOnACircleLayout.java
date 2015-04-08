@@ -61,7 +61,8 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		{
 			circumference += getSmallRad(cl.getNodesOfCluster());
 		}
-		double myRad = circumference * 1.1 / Math.PI;
+//		double myRad = circumference * 1.1 / Math.PI;
+		double myRad = circumference / Math.PI;
 		double angle = 0.0, sum = 0.0;
 		for(Cluster cl: Clusters)
 		{

@@ -270,9 +270,9 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
         }
         for(VisualNode r : relations)
         {
-			placeQueries(getSingleTableQueriesOfRelation(r), clusterCenter, qRad, singleRelationQueries.size());
 			if(getSingleTableQueriesOfRelation(r).size() > 0)
 			{
+				placeQueries(getSingleTableQueriesOfRelation(r), clusterCenter, qRad, singleRelationQueries.size());
 				relationAngle = (getSingleTableQueriesOfRelation(r).get(getSingleTableQueriesOfRelation(r).size()-1).getNodeAngle() + getSingleTableQueriesOfRelation(r).get(0).getNodeAngle()) / 2.0;	// Barycentered placement of the relation node, based on the single table queries.
 			}
         	placeRelation(r, relationAngle, relationRad, clusterCenter, getSingleTableQueriesOfRelation(r).size());
