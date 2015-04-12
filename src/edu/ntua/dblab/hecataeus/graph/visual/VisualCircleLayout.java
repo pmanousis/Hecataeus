@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+
+import clusters.EngineConstructs.Cluster;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
@@ -261,32 +263,31 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
             views.addAll(sortedV);
         }
         double relationRad = 1.9*getSmallRad(relations);
-        double qRad = getQueryRad(nodes.size() - relations.size()- views.size());
+        double singleRelationQueriesRad = getQueryRad(singleRelationQueries.size());
+        double maxViewRad = getMaxViewRadius(views, relationRad);
+        if(singleRelationQueriesRad < maxViewRad + (relationRad * 0.5)){
+        	singleRelationQueriesRad = maxViewRad + (relationRad * 0.5);
+        }
+        if(singleRelationQueriesRad < relationRad * 2){
+        	singleRelationQueriesRad = relationRad * 2;
+        }
         double relationAngle = 0;
-        ArrayList<VisualNode> multyV = new ArrayList<VisualNode>(views);
-        double viewBand = getViewBandSize(multyV, relationRad);
-        if(qRad <= viewBand){
-        	qRad = viewBand*1.4;
-        }
-        if(qRad <= relationRad){
-        	qRad = relationRad*1.4;
-        }
         for(VisualNode r : relations)
         {
 			if(getSingleTableQueriesOfRelation(r).size() > 0)
 			{
-				placeQueries(getSingleTableQueriesOfRelation(r), clusterCenter, qRad, singleRelationQueries.size());
+				placeQueries(getSingleTableQueriesOfRelation(r), clusterCenter, singleRelationQueriesRad, singleRelationQueries.size());
 				relationAngle = (getSingleTableQueriesOfRelation(r).get(getSingleTableQueriesOfRelation(r).size()-1).getNodeAngle() + getSingleTableQueriesOfRelation(r).get(0).getNodeAngle()) / 2.0;	// Barycentered placement of the relation node, based on the single table queries.
 			}
         	placeRelation(r, relationAngle, relationRad, clusterCenter, getSingleTableQueriesOfRelation(r).size());
         }
-        if(multyV.size() > 0)
+        if(views.size() > 0)
         {
-        	placeMultyViews(multyV, relationRad*1.2, clusterCenter);
+        	placeMultyViews(views, relationRad, clusterCenter);
         }
         if(queries.size() > 0)
         {
-        	placeOutQueries(queries, qRad, clusterCenter);
+        	placeOutQueries(queries, singleRelationQueriesRad, clusterCenter);
         }
 	}
 	
@@ -295,7 +296,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	 * @param clusterCenter
 	 * @param l0Rad
 	 */
-	protected void placeMultyViews(ArrayList<VisualNode> views, double l0Rad, Point2D clusterCenter)
+	protected void placeMultyViews(List<VisualNode> views, double l0Rad, Point2D clusterCenter)
 	{
 		List<Point2D> usedPoints = new ArrayList<Point2D>();
 		TopologicalTravel tt = new TopologicalTravel(graph);
@@ -315,7 +316,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 					}
 				}
 				angle /= angleCounter;
-				vRad = entry.getKey() * l0Rad / 3 + l0Rad * 1.25;
+				vRad = (entry.getKey() + 1.5) * l0Rad ;
 				Point2D coord = transform(stratifiedView);
 				coord.setLocation(Math.cos(angle)*vRad+clusterCenter.getX(), Math.sin(angle)*vRad+clusterCenter.getY());
 				while(usedPoints.contains(coord) == true)
@@ -377,13 +378,12 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		relation.setNodeAngle(relationAnglePossition);
 	}
 
-	protected double getViewBandSize(ArrayList<VisualNode> mv, double relRad)
+	protected double getMaxViewRadius(List<VisualNode> mv, double relRad)
 	{
 		if(mv.size()>1)
 		{
 			TopologicalTravel tt = new TopologicalTravel(graph);
-			double size = tt.viewStratificationLevels().lastKey();
-			return(relRad / 5 * size + relRad * 1.4);
+			return(relRad * (tt.viewStratificationLevels().lastKey() + 1.5));
 		}
 		return(0);
 	}
@@ -602,7 +602,6 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 	
 	protected double getMaxRadius(List<VisualNode> nodes)
 	{
-		double toReturn = 0;
 		relations.clear();
 		views.clear();
 		queries.clear();
@@ -629,33 +628,15 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
             views.addAll(sortedV);
         }
         double relationRad = 1.9*getSmallRad(relations);
-        double qRad = getQueryRad(nodes.size() - relations.size()- views.size());
-        ArrayList<VisualNode> multyV = new ArrayList<VisualNode>(views);
-        double viewBand = getViewBandSize(multyV, relationRad);
-        if(qRad <= viewBand){
-        	qRad = viewBand*1.4;
+        double singleRelationQueriesRad = getQueryRad(singleRelationQueries.size());
+        double maxViewRad = getMaxViewRadius(views, relationRad);
+        if(singleRelationQueriesRad < maxViewRad + (relationRad * 0.5)){
+        	singleRelationQueriesRad = maxViewRad + (relationRad * 0.5);
         }
-        if(qRad <= relationRad){
-        	qRad = relationRad*1.4;
+        if(singleRelationQueriesRad < relationRad * 2){
+        	singleRelationQueriesRad = relationRad * 2;
         }
-        for(VisualNode r : relations)
-        {
-        	toReturn = qRad * 0.8;
-			if(getSingleTableQueriesOfRelation(r).size() > 0)
-			{
-				toReturn = qRad;
-			}
-        }
-        if(multyV.size() > 0)
-        {
-        	TopologicalTravel tt = new TopologicalTravel(graph);
-        	toReturn = tt.viewStratificationLevels().lastKey() * (relationRad*1.2) / 3 + (relationRad*1.2) * 1.25;;
-        }
-        if(queries.size() > 0)
-        {// this is not correct, it should have been smaller, actually, fist I should have them to groups, but this is not needed for radius size.
-        	toReturn = (qRad * 2);	
-        }
-		return(toReturn);
+		return(singleRelationQueriesRad * 2.4);
 	}
 	
 	protected Map<ArrayList<VisualNode>, Integer> getVSimilarity(List<VisualNode> views2){
@@ -684,5 +665,29 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 			}
 		}
 		return set;
+	}
+	
+	/**
+	 * Given a list of clusters, it sorts them, according their size, it creates small lists of 2^i segments and returns them to the caller function.
+	 * @author pmanousi
+	 * @param clusters The clusters of the graph.
+	 * @return A sorted list that contains 2^i clusters in its i list-node.
+	 */
+	protected ArrayList<ArrayList<Cluster>> createTwoToISegments(List<Cluster> clusters)
+	{
+		Collections.sort(clusters, new ClusterComparator());
+		ArrayList<ArrayList<Cluster>> listOfClusters = new ArrayList<ArrayList<Cluster>>();
+		int segmentCounter = 0;	// from now we will take 2^conCircle clusters
+		while(Math.pow(2, segmentCounter) < clusters.size())
+		{
+			double upperLimit = Math.pow(2, segmentCounter + 1);
+			if(upperLimit > clusters.size())
+			{
+				upperLimit = clusters.size() + 1;
+			}
+			listOfClusters.add(new ArrayList<Cluster>(clusters.subList((int) (Math.pow(2, segmentCounter) - 1) /* whatever^0 = 1, so I perform a slide to take 0 from list of clusters*/, (int) (upperLimit - 1))));	// sublist does not take the upper limit
+			segmentCounter++;
+		}
+		return(listOfClusters);
 	}
 }

@@ -64,9 +64,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualCluster;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdgeBetweennessClustering;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualFileColor;
@@ -79,7 +77,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeLabel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeStroke;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
 import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.ntua.dblab.hecataeus.parser.HecataeusSQLParser;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
@@ -93,8 +90,7 @@ public class HecataeusViewer {
 	// a dummy counter for tabs  
 	public static int countOpenTabs = 0;
 	// the visual graph object
-/**@author pmanousi Needed for topologicalTravel so became public. */
-	public static VisualGraph graph;
+	public static VisualGraph graph;	/**@author pmanousi Needed for topologicalTravel so became public. */
 	public Viewers viewer;
 	
 	protected Container content;
@@ -116,8 +112,8 @@ public class HecataeusViewer {
 	public static JFrame frame;
 	public static boolean nodeSize;
 	public static HecataeusViewer myViewer;
-/**@author pmanousi Needed for informing user. */
-	private JTextArea informationArea;
+
+	private JTextArea informationArea;	/**@author pmanousi Needed for informing user. */
 	private JLabel informationAreaLabel;
 	public JPanel informationPanel;
 
@@ -585,12 +581,12 @@ public class HecataeusViewer {
 				frame.setVisible(true);
 			    frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 				frame.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-//				try {
-//					Thread.sleep(10);
-//				} catch (InterruptedException e1) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e1) {
 //					 TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
+					e1.printStackTrace();
+				}
 				final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.getActiveViewer();
 				//TODO: FIX THIS
 				zoomToWindow(activeViewer,null);
@@ -622,43 +618,6 @@ public class HecataeusViewer {
 			}
 		});
 		mnNewMenu.add(mntmCloseProject);
-
-		JMenuItem mntmExportClusterData = new JMenuItem("Export Cluster Data");
-		mntmExportClusterData.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				VisualTotalClusters vtc = new VisualTotalClusters(0);
-				String message = "<html><head><title>Hecataeus</title></head><body>";
-				message+="<h3 style=\"background-color:red;\">Cluster Data</h3>";
-				for(VisualCluster vc : vtc.getClusters()){
-					message+="<tr><h3>Cluster Name: " + vc.getClusterLabel(vc) + "</h3></tr>";
-					message+="<h3>Relations in cluster: </h3>";
-					for(VisualNode v : vc.getRelationsInCluster()){
-						message+="<b>"+v.getName()+"</b>"+"<br>";
-					}
-					message+="<h3>Views in cluster: </h3>";
-					for(VisualNode v : vc.getViewsInCluster()){
-						message+="<b>"+v.getName()+"</b>"+ " from file: " + v.getFileName()+"<br>";
-					}
-					message+="<h3>Queries in cluster: </h3>";
-					for(VisualNode v : vc.getQueriesInCluster()){
-						message+="<b>"+v.getName()+"</b>" + " from file: " + v.getFileName()+"<br>";
-					}
-					message+="<hr>";
-				}
-				message+="</body></html>";
-				
-				JFileChooser chooser = new JFileChooser(projectConf.curPath+"/OTHER");
-				FileFilterImpl filter = new FileFilterImpl("txt","Text File");
-				chooser.addChoosableFileFilter(filter);
-				if ((chooser.showSaveDialog(frame)) == JFileChooser.APPROVE_OPTION) {
-					String fileDescription = chooser.getSelectedFile().getAbsolutePath();
-					if (!fileDescription.endsWith(".html"))
-						fileDescription += ".html";				
-					writeHtmlFile(new File(fileDescription),message);
-				}
-			}
-		});
-		mnNewMenu.add(mntmExportClusterData);
 
 		JMenuItem mntmSaveProject = new JMenuItem("Save Project");
 		mntmSaveProject.addActionListener(new ActionListener() {
@@ -849,100 +808,6 @@ public class HecataeusViewer {
 		});
 		mnAlgorithms.add(mntmRevert);
 		
-		/*
-		 * eixe ginei gia na zwgrafizei me D3 douleuei alla telika to paratisame
-		 * 
-		 */
-		
-		
-//		JMenuItem mntmWeb = new JMenuItem("web");
-//		mntmWeb.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				VisualCircleLayout vcl = new VisualCircleLayout(graph);
-//				List<VisualNode> relations = new ArrayList<VisualNode>(vcl.getRelations());
-//				System.out.println(relations);
-//				List<VisualNode> queries = new ArrayList<VisualNode>(vcl.getQueries());
-//				List<VisualNode> views = new ArrayList<VisualNode>(vcl.getViews());
-//
-//				try {
-//					File file = new File("/home/eva/newTest1/data1.json");
-//					FileWriter fw = new FileWriter(file.getAbsoluteFile());
-//					BufferedWriter bw = new BufferedWriter(fw);
-//					
-//					String content = "[";
-//					
-//					for(VisualNode r : relations){
-//						content += "{" + "\"name\":\"" + r.getName() + "\"" + ",\"imports\":\n";
-//						List<VisualEdge> inEdges = new ArrayList<VisualEdge>(r._inEdges);
-//						
-//						for(VisualEdge edge : inEdges){
-//							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-//								content+="[";
-//								break;
-//							}
-//						}
-//						for(VisualEdge edge : inEdges){
-//							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-//								//content+=edge.getFromNode().getName()+"," ;
-//								
-//								content+="\" "+edge.getFromNode().getName() +"\""+"," ;
-//							}
-//						}
-//						content=content.substring(0,content.length()-1);
-//						content+="]},";
-//					}
-//					content=content.substring(0,content.length()-1);
-//					content+="]";
-//					
-////					String content = "{\n";
-////					content+="\"name\":\"eva\""+",\n";
-////					content+="\"children\": [\n \t{\n";
-////					FileWriter fw = new FileWriter(file.getAbsoluteFile());
-////					BufferedWriter bw = new BufferedWriter(fw);
-////					
-////					for(VisualNode r : relations){
-////						content+="\"name\":\""+ r.getName()+"\""+",\n";
-////						List<VisualEdge> inEdges = new ArrayList<VisualEdge>(r._inEdges);
-////						
-////						for(VisualEdge edge : inEdges){
-////							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-////								content+="\"children\": [\n";
-////								break;
-////							}
-////						}
-////						
-////						for(VisualEdge edge : inEdges){
-////							if(edge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-////							//	content+="\"children\": [\n {";
-////								content+="{"+"\"name\":\""+ edge.getFromNode().getName()+"\""+"}," ;
-//////								if(edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-//////									List<VisualEdge> inViewEdges = new ArrayList<VisualEdge>(edge.getFromNode()._inEdges);
-//////									for(VisualEdge vEdge :  inViewEdges){
-//////										if(vEdge.getFromNode().getType() == NodeType.NODE_TYPE_QUERY || edge.getFromNode().getType() == NodeType.NODE_TYPE_VIEW){
-//////											content+="\"children\": [\n {";
-//////											content+="\"name\":\""+ vEdge.getFromNode().getName()+"\""+",\n" ;
-//////										}
-//////									}
-//////									
-//////								}
-////							}
-////						}
-////						content=content.substring(0, content.length()-1);
-////						content+= "\n]\n},{";
-////						
-////					}
-////					content=content.substring(0, content.length()-2);
-////					
-////					content+= "\n]\n}";
-//					bw.write(content);
-//					bw.close();
-//				} catch (IOException fileE) {
-//					fileE.printStackTrace();
-//				}
-//			}
-//		});
-//		mnAlgorithms.add(mntmWeb);
-		
 		mnVisualize.addSeparator();
 		
 		JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("Icons On");
@@ -1034,7 +899,6 @@ public class HecataeusViewer {
 				}
 				if (v != null)
 				{
-//					centerAt(v.getLocation());
 					centerAt(activeViewer.getGraphLayout().transform(v));
 					centerAt(activeViewerZOOM.getGraphLayout().transform(v));
 					epilegmenosKombos=v;
@@ -1312,61 +1176,6 @@ public class HecataeusViewer {
 			}
 		});
 		mnMetsics.add(mntmGraphEdgeCrossings);
-		
-		JMenuItem mntmGraphEdgeData = new JMenuItem("Graph Cluster Data");
-		mntmGraphEdgeData.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String message = "Cluster ID: \t Cluster Rad: \t Cluster edge crossings \t Cluster Line Length\n";
-				
-				VisualTotalClusters vtc = new VisualTotalClusters();
-				message += vtc.getClustersData();
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Cluster Metrics", message);
-				
-			}
-		});
-		mnMetsics.add(mntmGraphEdgeData);
-		
-		JMenuItem mntmGraphSpace = new JMenuItem("Graph Space");
-		mntmGraphSpace.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				String message ="";
-				System.out.println("layout S   " +layout.getSize());
-				Dimension viwerDim = layout.getSize();
-				double w = viwerDim.getWidth(), h = viwerDim.getHeight();
-				double maxX = 0, minX = w, maxY = 0, minY = h;
-				for(VisualNode node: graph.getVertices()){
-					if(node.getVisible()){
-						if(node.getLocation().getX()>maxX){
-							maxX=node.getLocation().getX();
-						}
-						if(node.getLocation().getX()<minX){
-							minX = node.getLocation().getX();
-						}
-						if(node.getLocation().getY()>maxY){
-							maxY = node.getLocation().getY();
-						}
-						if(node.getLocation().getY()<minY){
-							minY = node.getLocation().getY();
-						}
-					}
-				}
-				Point2D myMaxX= new Point2D.Double(maxX,0);
-				Point2D myMinX= new Point2D.Double(minX,0);
-				Point2D myMaxY= new Point2D.Double(0,maxY);
-				Point2D myMinY= new Point2D.Double(0,minY);
-				double distX = myMaxX.distance(myMinX);
-				double distY = myMaxY.distance(myMinY);
-				double area = distX*distY;
-				area = (double) Math.round(area * 100) / 100;
-				VisualTotalClusters vtc = new VisualTotalClusters(0);
-				message += "Area used by graph: "  +area;
-				message += "\nTotal area occupied by clusters: "+vtc.getTotalArea();
-				message += "\nPersent% "+ Math.round(((100*vtc.getTotalArea())/area)* 100) / 100;
-				//JOptionPane.showMessageDialog(frame, message, "Total used space", JOptionPane.INFORMATION_MESSAGE );
-				final HecataeusMessageDialog m = new HecataeusMessageDialog(frame, "Total used space", message);
-			}
-		});
-		mnMetsics.add(mntmGraphSpace);
 		
 		JMenuItem mntmOutpoutForModule = new JMenuItem("Output For Module Nodes");
 		mntmOutpoutForModule.addActionListener(new ActionListener() {
@@ -2386,20 +2195,6 @@ public class HecataeusViewer {
 		}
 	}
 	
-	
-	private void writeHtmlFile(File file, String message){
-		try {
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write(message);
-			bw.close();
-			System.out.println("Done writing");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
 	public void zoomToWindow(VisualizationViewer<VisualNode, VisualEdge> currentViewer, JTabbedPane jtp){
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewer;
 		activeViewer = currentViewer;
@@ -2412,10 +2207,10 @@ public class HecataeusViewer {
 					{
 					scaler.scale(activeViewer, 1 / 1.1f, vvcenter);
 					p = activeViewer.getRenderContext().getMultiLayerTransformer().transform(activeViewer.getGraphLayout().transform(jungNode));
-//					try {
-//						Thread.sleep(20);
-//					} catch (InterruptedException ex) {
-//					}
+					try {
+						Thread.sleep(20);
+					} catch (InterruptedException ex) {
+					}
 				}
 			}
 		}
@@ -2511,9 +2306,9 @@ public class HecataeusViewer {
 				}
 			}
 		};
-//		Thread thread = new Thread(animator);
-//		thread.start();
-		//TODO: FIX THIS
+		Thread thread = new Thread(animator);
+		thread.start();
+//		TODO: FIX THIS
 		final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.getActiveViewerZOOM();
 		activeViewerZOOM.getRenderContext().getMultiLayerTransformer().setToIdentity();
 		Point2D vvCenterZOOM = activeViewerZOOM.getRenderContext().getMultiLayerTransformer().inverseTransform(activeViewerZOOM.getCenter());
@@ -2524,15 +2319,15 @@ public class HecataeusViewer {
 			public void run() {
 				for (int i = 0; i < 5; i++) {
 					activeViewerZOOM.getRenderContext().getMultiLayerTransformer().getTransformer(Layer.LAYOUT).translate(dxZOOM, dyZOOM);
-//					try {
-//						Thread.sleep(100);
-//					} catch (InterruptedException ex) {
-//					}
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException ex) {
+					}
 				}
 			}
 		};
-//		Thread threadZOOM = new Thread(animatorZOOM);
-//		threadZOOM.start();
+		Thread threadZOOM = new Thread(animatorZOOM);
+		threadZOOM.start();
 	}
 	
 	public static VisualizationViewer<VisualNode, VisualEdge> getActiveViewerZOOM(){
@@ -2637,142 +2432,7 @@ public class HecataeusViewer {
 		return frame;
 	}
 	
-	
 	public List<VisualGraph> getGraphs(){
 		return this.graphs;
-	}
-
-	/**
-	 * Class for choosing a node of the graph
-	 * @author gpapas
-	 *
-	 */
-	private final class NodeChooser extends JDialog {
-		protected JComboBox comboBoxNode;
-		protected JComboBox comboBoxChildNode;
-		protected JComboBox comboBoxEvent;
-		protected JButton okButton;
-		final int mode = NodeChooser.FOR_EVENT;
-
-		static final int FOR_EVENT = 1;
-		static final int FOR_POLICY = 2;
-
-		public NodeChooser(final int mode) {
-			super(frame, "Select a node", true);
-			setSize(440, 160);
-			setLocationRelativeTo(frame);
-			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
-			GridBagLayout gridbag = new GridBagLayout();
-			HecataeusGridBagConstraints constraints = new HecataeusGridBagConstraints();
-			JPanel pane = new JPanel();
-			pane.setLayout(gridbag);
-
-			// label for top level node
-			constraints.reset(0, 0, 1, 1, 0, 40);
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.EAST;
-			JLabel labelNode = new JLabel("Choose a top level node: ",
-					JLabel.LEFT);
-			gridbag.setConstraints(labelNode, constraints);
-			pane.add(labelNode);
-
-			// combo box for top level node
-			comboBoxNode = new JComboBox();
-			constraints.reset(1, 0, 2, 1, 0, 0);
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			gridbag.setConstraints(comboBoxNode, constraints);
-			comboBoxNode.addItem(null);
-			for (VisualNode node: graph.getVertices()) {
-				 if (node.getType().getCategory() == NodeCategory.MODULE){
-					comboBoxNode.addItem(node);
-				}
-			}
-			// add action listener to fill childcombo
-			comboBoxNode.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// get parent node
-					VisualNode parentNode= (VisualNode) comboBoxNode.getSelectedItem();
-					// reset child combo
-					comboBoxChildNode.removeAllItems();
-					if (parentNode != null) {
-						// get descendant nodes
-						for (VisualNode node: graph.getModule(parentNode)) {
-							comboBoxChildNode.addItem(node);
-						}
-					}
-				}
-			});
-
-			pane.add(comboBoxNode);
-
-			// label for low level node
-			constraints.reset(0, 1, 1, 1, 0, 40);
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.EAST;
-			labelNode = new JLabel("Choose a child node: ", JLabel.LEFT);
-			gridbag.setConstraints(labelNode, constraints);
-			pane.add(labelNode);
-
-			// combo box for low level node
-			constraints.reset(1, 1, 2, 1, 0, 0);
-			constraints.fill = GridBagConstraints.HORIZONTAL;
-			comboBoxChildNode = new JComboBox();
-			gridbag.setConstraints(comboBoxChildNode, constraints);
-			pane.add(comboBoxChildNode);
-
-			// OK button
-			constraints.reset(1, 3, 1, 1, 100, 20);
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.CENTER;
-			okButton = new JButton("OK");
-			gridbag.setConstraints(okButton, constraints);
-			// create the selected event on the selected node
-			okButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// get key for node
-					VisualNode node = (VisualNode) comboBoxChildNode.getSelectedItem();
-					if (node!= null) {
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.this.getActiveViewer();
-						if (mode == NodeChooser.FOR_EVENT) {
-							HecataeusNodeEvents nde = new HecataeusNodeEvents(
-									activeViewer, node);
-						}
-						if (mode == NodeChooser.FOR_POLICY) {
-							HecataeusNodePolicies ndp = new HecataeusNodePolicies(
-									activeViewer, node);
-						}
-						//TODO: FIX THIS
-						final VisualizationViewer<VisualNode, VisualEdge> activeViewerZOOM = HecataeusViewer.this.getActiveViewerZOOM();
-						if (mode == NodeChooser.FOR_EVENT) {
-							HecataeusNodeEvents nde = new HecataeusNodeEvents(activeViewerZOOM, node);
-						}
-						if (mode == NodeChooser.FOR_POLICY) {
-							HecataeusNodePolicies ndp = new HecataeusNodePolicies(activeViewerZOOM, node);
-						}
-						dispose();
-					}
-				}
-			});// add actionListener for okButton
-			pane.add(okButton);
-
-			// Cancel button
-			constraints.reset(2, 3, 1, 1, 100, 20);
-			constraints.fill = GridBagConstraints.NONE;
-			constraints.anchor = GridBagConstraints.WEST;
-			JButton cancelButton = new JButton("Cancel");
-			gridbag.setConstraints(cancelButton, constraints);
-			cancelButton.addActionListener(new ActionListener() {
-
-				public void actionPerformed(ActionEvent e) {
-					dispose();
-				}
-			});
-			pane.add(cancelButton);
-
-			setContentPane(pane);
-			setVisible(true);
-		}
-
 	}
 }

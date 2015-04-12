@@ -18,7 +18,7 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeToolTips;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualStaticLayout;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
+//import edu.ntua.dblab.hecataeus.graph.visual.VisualTotalClusters;
 import edu.uci.ics.jung.algorithms.layout.Layout;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
