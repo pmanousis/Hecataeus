@@ -102,11 +102,11 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		{
 			return(0);
 		}
-		return(1.4 * 3 * (Math.log(komboi.size()) + komboi.size()));
+		return(8 * (Math.log(komboi.size()) + komboi.size()));
 	}
 	
 	protected double getQueryRad(int numOfNodes){
-		return(3 * (Math.log(numOfNodes) + numOfNodes));
+		return(2 * (Math.log(numOfNodes) + numOfNodes));
 	}
 	
 	/**
@@ -262,7 +262,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
             relations.addAll(sortedR);
             views.addAll(sortedV);
         }
-        double relationRad = 1.9*getSmallRad(relations);
+        double relationRad = getSmallRad(relations);
         double singleRelationQueriesRad = getQueryRad(singleRelationQueries.size());
         double maxViewRad = getMaxViewRadius(views, relationRad);
         if(singleRelationQueriesRad < maxViewRad + (relationRad * 0.5)){
@@ -627,7 +627,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
             relations.addAll(sortedR);
             views.addAll(sortedV);
         }
-        double relationRad = 1.9*getSmallRad(relations);
+        double relationRad = getSmallRad(relations);
         double singleRelationQueriesRad = getQueryRad(singleRelationQueries.size());
         double maxViewRad = getMaxViewRadius(views, relationRad);
         if(singleRelationQueriesRad < maxViewRad + (relationRad * 0.5)){
@@ -636,7 +636,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
         if(singleRelationQueriesRad < relationRad * 2){
         	singleRelationQueriesRad = relationRad * 2;
         }
-		return(singleRelationQueriesRad * 2.4);
+		return(singleRelationQueriesRad * 2.6);
 	}
 	
 	protected Map<ArrayList<VisualNode>, Integer> getVSimilarity(List<VisualNode> views2){
