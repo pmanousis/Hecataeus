@@ -636,7 +636,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
         if(singleRelationQueriesRad < relationRad * 2){
         	singleRelationQueriesRad = relationRad * 2;
         }
-		return(singleRelationQueriesRad * 2.6);
+		return(singleRelationQueriesRad * 3);
 	}
 	
 	protected Map<ArrayList<VisualNode>, Integer> getVSimilarity(List<VisualNode> views2){

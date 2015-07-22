@@ -47,6 +47,8 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
 	 * Implements what the class is about
 	 */
     protected void arcs(){
+    	double currentMaxRad = 0.0;
+    	double maxClusterRad = 0.0;
     	ArrayList<ArrayList<Cluster>> listOfClusters = createTwoToISegments(cs.getClusters());
         for(ArrayList<Cluster> sublistOfClusters: listOfClusters)
         {
@@ -54,9 +56,16 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
     		for(Cluster cl: sublistOfClusters)
     		{	// simulate placement to find maximum radius for each cluster
     			circumference += getMaxRadius(cl.getNodesOfCluster());
+    			maxClusterRad = getMaxRadius(cl.getNodesOfCluster());
     		}
     		Collections.shuffle(sublistOfClusters);
-    		double angle = 0.0, sum = 0.0, myRad = (circumference / Math.PI) * 4;	// * 4: because we want pi/4 arcs.
+    		
+    		double angle = 0.0, sum = 0.0, myRad = (circumference / Math.PI) * 4;
+    		if(myRad < currentMaxRad + maxClusterRad)
+    		{
+    			myRad = currentMaxRad + maxClusterRad;
+    		}
+    		currentMaxRad = myRad;
     		for(Cluster cl: sublistOfClusters)
     		{
     			angle = Math.acos(1 - (Math.pow(getMaxRadius(cl.getNodesOfCluster()), 2)) / (2 * Math.pow(myRad, 2)));
