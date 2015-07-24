@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sun.scenario.effect.Offset;
-
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
