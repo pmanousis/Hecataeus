@@ -9,7 +9,6 @@ import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 /**
  * concentric arcs clustering layout 
@@ -21,15 +20,14 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
  */
 public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
 
-    protected VisualGraph graph;
-    protected double endC;
+	private VisualGraph graph;
+	private double endC;
     private List<VisualNode> queries;
     private List<VisualNode> relations;
     private List<VisualNode> views;
     private ClusterSet cs;
-    protected List<String> files;
     private List<VisualNode> RQV;
-    protected VisualCircleLayout vcl;
+	private VisualCircleLayout vcl;
     
     protected VisualConcentricArcsClusterLayout(VisualGraph g, double endC) {
         super(g);
@@ -90,7 +88,6 @@ public class VisualConcentricArcsClusterLayout extends VisualCircleLayout{
 		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewerZOOM().getPickedVertexState()));
 		HecataeusViewer.getActiveViewerZOOM().repaint();
-		HecataeusViewer.hecMap.createMap();
     }
 
     @Override

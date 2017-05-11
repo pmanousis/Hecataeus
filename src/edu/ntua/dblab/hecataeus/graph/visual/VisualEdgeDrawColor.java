@@ -14,7 +14,7 @@ import edu.uci.ics.jung.visualization.picking.PickedInfo;
 public class VisualEdgeDrawColor implements Transformer<VisualEdge, Paint>{
 
 
-    protected PickedInfo<VisualEdge> picked;
+	private PickedInfo<VisualEdge> picked;
     
     public VisualEdgeDrawColor(PickedInfo<VisualEdge> pi)
     {

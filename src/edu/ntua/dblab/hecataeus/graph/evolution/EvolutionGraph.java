@@ -5,7 +5,6 @@
 package edu.ntua.dblab.hecataeus.graph.evolution;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -19,146 +18,136 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 
+import edu.ntua.dblab.hecataeus.graph.EvolutionToVisualConverter;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.Message;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.MessageCompare;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestro;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleMaestroRewrite;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.ModuleNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
+import edu.ntua.dblab.hecataeus.graph.util.Observable;
+import edu.ntua.dblab.hecataeus.graph.util.Observer;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.util.Pair;
 
-public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> extends DirectedSparseGraph<V, E>{
+public class EvolutionGraph extends DirectedSparseGraph<EvolutionNode, EvolutionEdge> implements Observable {
 	private static final long serialVersionUID = 1L;
-	private V arxikoModule = null;
-	protected static int _KeyGenerator;
-	protected Map<V, Integer> nodeKeys;
-	protected Map<E, Integer> edgeKeys;
-	protected Map<VisualGraph, Integer> graphkMap;
-	//used by function initializeChange() to increase the SID(Session ID) by one
-	static int SIDGenerator = 0;
+	private static int KEY_GENERATOR;
+
+	private final EvolutionToVisualConverter graphConverter = new EvolutionToVisualConverter();
+	private final ArrayList<Observer> observers = new ArrayList<>();
+	private final Map<EvolutionNode, Integer> nodeKeys = new HashMap<>();
+	private final Map<EvolutionEdge, Integer> edgeKeys = new HashMap<>();
+
+	private EvolutionNode arxikoModule = null;
 
 	public EvolutionGraph() {
-		nodeKeys = new HashMap<V, Integer>();
-		edgeKeys = new HashMap<E, Integer>();
-		graphkMap = new HashMap<VisualGraph, Integer>();
-	}
-		
-	/**
-	 * adds a new EvolutionNode
-	 **/
-	public boolean addVertex(V Node) {
-		// assign key
-		nodeKeys.put(Node, ++EvolutionGraph._KeyGenerator);
-		return super.addVertex(Node);
 	}
 
-//	public boolean addVertex(VisualGraph g) {
-//		graphkMap.put(g, ++EvolutionGraph._KeyGenerator);
-//		return true;
-//	}
-		
-	/**
-	 * adds edge by HecataeusEdge
-	 **/
-	public boolean addEdge(E Edge, V fromNode, V toNode) {
-		return this.addEdge(Edge);		
-	}
-	
-	/**
-	 * adds edge by HecataeusEdge
-	 **/
-	@SuppressWarnings("unchecked")
-	public boolean addEdge(E Edge) {
-		edgeKeys.put(Edge, ++EvolutionGraph._KeyGenerator);
-		// add edge to incoming edges of ToNode
-		V fromNode = (V) Edge.getFromNode();
-		if(fromNode==null||fromNode.getOutEdges()==null)
-		{
-			if(fromNode==null)
-			{
-				System.out.println("85, fromNode=NULL!!! on edge: "+ Edge.getName()+" to node:"+Edge.getToNode());
-			}
-			else
-			{
-				System.out.println("89, line: "+fromNode.getName());
-			}
+	public boolean addVertex(EvolutionNode Node) {
+		nodeKeys.put(Node, ++EvolutionGraph.KEY_GENERATOR);
+
+		if (super.addVertex(Node)) {
+			notifyObserversForVertexAdd(Node);
+			return true;
 		}
-		else if (!fromNode.getOutEdges().contains(Edge))
+		return false;
+	}
+
+	/**
+	 * adds edge by HecataeusEdge
+	 **/
+	public boolean addEdge(EvolutionEdge Edge) {
+		edgeKeys.put(Edge, ++EvolutionGraph.KEY_GENERATOR);
+		// add edge to incoming edges of ToNode
+		EvolutionNode fromNode =   Edge.getFromNode();
+		if (fromNode == null || fromNode.getOutEdges() == null) {
+			if (fromNode == null) {
+				System.out.println("85, fromNode=NULL!!! on edge: " + Edge.getName() + " to node:" + Edge.getToNode());
+			} else {
+				System.out.println("89, line: " + fromNode.getName());
+			}
+		} else if (!fromNode.getOutEdges().contains(Edge))
 			fromNode.getOutEdges().add(Edge);
 		// add edge to outgoing edges of FromNode
-		V toNode = (V) Edge.getToNode();
+		EvolutionNode toNode =   Edge.getToNode();
 		if (!toNode.getInEdges().contains(Edge))
 			toNode.getInEdges().add(Edge);
-		return super.addEdge(Edge, fromNode, toNode);
+
+		if (super.addEdge(Edge, fromNode, toNode)) {
+			notifyObserversForEdgeAdd(Edge);
+			return true;
+		}
+		return false;
 	}
 
-	public boolean removeEdge(E Edge) {
+	public boolean removeEdge(EvolutionEdge Edge) {
 		// remove edge from inEdges
 		Edge.getToNode().getInEdges().remove(Edge);
 		// remove edge from outEdges
 		Edge.getFromNode().getOutEdges().remove(Edge);
 		edgeKeys.remove(Edge);
-		return super.removeEdge(Edge);
+
+		if (super.removeEdge(Edge)) {
+			notifyObserversForEdgeRemove(Edge);
+			return true;
+		}
+		return false;
 	}
-	
-	public boolean removeVertex(V Vertex) {
+
+	public boolean removeVertex(EvolutionNode Vertex) {
 		Vertex.getInEdges().clear();
 		Vertex.getOutEdges().clear();
 		nodeKeys.remove(Vertex);
-		return super.removeVertex(Vertex);
+
+		if (super.removeVertex(Vertex)) {
+			notifyObserversForVertexRemove(Vertex);
+			return true;
+		}
+		return false;
 	}
 
 	/**
-	 *  clears all nodes and edges from the graph
+	 * clears all nodes and edges from the graph
 	 **/
 	public void clear() {
-			
-		edgeKeys.clear();
-		for (E e:this.getEdges()) {
-    		this.removeEdge(e);
-    	}
-		nodeKeys.clear();
-		for (V v:this.getVertices()) {
-    		this.removeVertex(v);
-    	}
+		for (EvolutionEdge e : new ArrayList<>(this.getEdges()))
+			this.removeEdge(e);
 		
-	
-	}
-	
-	/**
-	 * get Vertex by Key
-	 **/
-	public V findVertex(int key) {
-		for (V v : this.getVertices()) {
-			if (nodeKeys.get(v)==key) 
-			 return v;
-		 }
-		 return null;
+		for (EvolutionNode v : new ArrayList<>(this.getVertices()))
+			this.removeVertex(v);
+
+		Iterator<Observer> obsIte = observers.iterator();
+		while (obsIte.hasNext()) {
+			obsIte.next();
+			obsIte.remove();
+		}
 	}
 
-	/**
-	 * get Key of a Vertex
-	 **/
-	public Integer getKey(V node) {
+	public EvolutionNode findVertex(int key) {
+		for (EvolutionNode v : this.getVertices()) {
+			if (nodeKeys.get(v) == key)
+				return v;
+		}
+		return null;
+	}
+
+	public Integer getNodeKey(EvolutionNode node) {
 		return nodeKeys.get(node);
 	}
 
-	/**
-	 * set Key of a Vertex
-	 **/
-	public void setKey(V node, Integer key) {
+	public void setNodeKey(EvolutionNode node, Integer key) {
 		nodeKeys.remove(node);
-		nodeKeys.put(node,key);
+		nodeKeys.put(node, key);
 	}
-	
+
 	/**
-	 *  get node by its name and type category, for more than one occurrences, the first is returned
+	 * get node by its name, for more than one occurrences, the first is returned
 	 **/
-	public V findVertexByName(String name, NodeCategory nc) {
-		for (V u: this.getVertices()) {
-			if (u.getName().toUpperCase().equals(name.toUpperCase())&& u.getType().getCategory()==nc) {
+	public EvolutionNode findVertexByName(String name) {
+		for (EvolutionNode u : this.getVertices()) {
+			if (u.getName().equalsIgnoreCase(name)) {
 				return u;
 			}
 		}
@@ -166,591 +155,313 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 	}
 
 	/**
-	 *  get node by its name and type, for more than one occurrences, the first is returned
+	 * get node by its name and type category, for more than one occurrences, the
+	 * first is returned
 	 **/
-	public V findVertexByName(String name, NodeType nt) {
-		for (V u: this.getVertices()) {
-			if (u.getName().toUpperCase().equals(name.toUpperCase())&& u.getType()==nt) {
-				return u;
-			}
-		}
+	public EvolutionNode findVertexByName(String name, NodeCategory nc) {
+		EvolutionNode node = findVertexByName(name);
+		if (node != null && node.getType().getCategory() == nc)
+			return node;
 		return null;
 	}
-	
+
 	/**
-	 *  get node by its name, for more than one occurrences, the first is returned
+	 * get node by its name, after finding his parent OTHERWISE return node
 	 **/
-	public V findVertexByName(String name) {
-		for (V u: this.getVertices()) {
-			if (u.getName().toUpperCase().equals(name.toUpperCase())) {
-				return u;
-			}
-		}
-		return null;
-	}
-	
-/**
- *  get node by its name, after finding his parent
- *  OTHERWISE return node
- **/
-	@SuppressWarnings("unchecked")
-	public V findVertexByNameParent(String name) {
-		String parent="";
-		String node="";
-		if(name.contains("."))
-		{
-			parent=name.substring(0, name.indexOf("."));
-			node=name.substring(name.indexOf(".")+1);
-			for (V u: this.getVertices()) {
+	public EvolutionNode findVertexByNameParent(String name) {
+		String parent = "";
+		String node = "";
+		if (name.contains(".")) {
+			parent = name.substring(0, name.indexOf("."));
+			node = name.substring(name.indexOf(".") + 1);
+			for (EvolutionNode u : this.getVertices()) {
 				if (u.getName().toUpperCase().equals(parent.toUpperCase())) {
-					for(int i=0;i<u.getOutEdges().size();i++)
-					{
-						if(u.getOutEdges().get(i).getToNode().getName().equals(node.toUpperCase()))
-						{
-							return (V) (u.getOutEdges().get(i).getToNode());
+					for (int i = 0; i < u.getOutEdges().size(); i++) {
+						if (u.getOutEdges().get(i).getToNode().getName().equals(node.toUpperCase())) {
+							return   (u.getOutEdges().get(i).getToNode());
 						}
 					}
 				}
 			}
-		}
-		else
-		{
-			return(findVertexByName(name));
+		} else {
+			return (findVertexByName(name));
 		}
 		return null;
 	}
-	
-	/**
-	 * @author pmanousi
-	 * @param iD the number of id we are searching for
-	 * @return node with ID=id
-	 */
-	public V findVertexById(double iD)
-	{
-		for (V u: this.getVertices(NodeCategory.MODULE)) {
-			if (u.ID == iD)
-			{
+
+	public EvolutionNode findVertexById(double iD) {
+		for (EvolutionNode u : this.getVertices(NodeCategory.MODULE)) {
+			if (u.getID() == iD) {
 				return u;
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * get edge by key
-	 **/
-	public E findEdge(int key) {
-		for (E e : this.getEdges()) {
-			if (edgeKeys.get(e)==key) 
-				 return e;
-		 }
-		 return null;
 	}
 
 	/**
 	 * get Key of an edge
 	 **/
-	public Integer getKey(E edge) {
+	public Integer getEdgeKey(EvolutionEdge edge) {
 		return edgeKeys.get(edge);
 	}
 
 	/**
 	 * set Key of an edge
 	 **/
-	public void setKey(E edge, Integer key) {
+	public void setEdgeKey(EvolutionEdge edge, Integer key) {
 		edgeKeys.remove(edge);
-		edgeKeys.put(edge,key);
-	}
-	
-	/**
-	 * get edge by name and type
-	 **/
-	public E findEdge(String Name, EdgeType Type) {
-		for (E u: this.getEdges()) {
-			if ((u.getName().toUpperCase().equals(Name.toUpperCase()) && u.getType() == Type ) ) {
-				return u;
-			}
-		}
-		return null;
+		edgeKeys.put(edge, key);
 	}
 
 	/**
-	 * used for finding explicitly an attribute by its name and its parent relation, view or query node
+	 * makes the necessary initializations to execute propagateChanges()
 	 **/
-	public V getAttributeNode(String TableName, String AttributeName) {
-		for (V u: this.getVertices()) {
-			if (u.getName().toUpperCase().equals(TableName) &&((u.getType().getCategory() == NodeCategory.INOUTSCHEMA)||(u.getType().getCategory() == NodeCategory.MODULE))){ /** @author pmanousi Changed it to work with INOUTSCHEMA */
-				for (E e :  this.getOutEdges(u)) {
-					if ( this.getDest(e).getName().toUpperCase().equals(AttributeName.toUpperCase()) ) {
-						return this.getDest(e);
-					}
-				}
-			}
-		}
-		return null;
-	}
+	public void initializeChange(EvolutionEvent event) {
 
-
-	/**
-	 * calculates the path of nodes that are connected via in edges with a node
-	 **/
-	public void getInTree(V node, List<V> InNodes) {
-		// add itself
-
-		if ( !(InNodes.contains(node)) ) {
-			InNodes.add(node);
-		}		
-		// for each incoming edge add adjacent node to collection
-		// only adjacent nodes connected via a directed edge
-		// TOWARDS the affecting node are affected
-		for (E e: this.getInEdges(node)) {
-			// count only once if multiple paths found
-			if (!(InNodes.contains(this.getSource(e))) ) {
-				InNodes.add(this.getSource(e)) ;
-				// call recursively for each adjacent node
-				getInTree(this.getSource(e), InNodes);
-			}
-		}
-	}
-
-
-	/**
-	 * calculates the path of nodes that are connected via out edges with a node
-	 **/
-	@SuppressWarnings("unused")
-	private void getOutTree(V node, List<V> OutNodes) {
-		// for each incoming edge add adjacent node to collection
-		// only adjacent nodes connected via a directed edge
-		// TOWARDS the affecting node are affected
-		for (E e: this.getOutEdges(node)) {
-			// count only once if multiple paths found
-			if ( !(OutNodes.contains(this.getDest(e))) ) {
-				OutNodes.add(this.getDest(e));
-				// call recursively for each adjacent node
-				this.getOutTree(this.getDest(e), OutNodes);
-			}
-		}
-		// add itself
-		if ( !(OutNodes.contains(node)) ) {
-			OutNodes.add(node);
-		}
-	}
-
-	/**
-	 * calculates the path of incoming edges that are connected with a node
-	 **/
-	private void getInPath(V node, List<E> InEdges) {
-		// for each node edge add in edge to collection
-		// only adjacent nodes connected via a directed edge
-		// TOWARDS the affecting node are affected
-		for (E e : this.getInEdges(node)) {
-			// count only once if multiple paths found
-			if (!(InEdges.contains(e))) {
-				InEdges.add(e);
-				// call recursively for each adjacent node
-				getInPath(this.getSource(e), InEdges);
-			}
-		}
-	}
-
-
-	/**
-	 * calculates the path of outgoing edges that are connected with a node
-	 **/
-	@SuppressWarnings("unused")
-	private void getOutPath(V node, List<E> OutEdges) {
-		// for each node edge add out edge to collection
-		// only adjacent nodes connected via a directed edge
-		// FROM the affecting node are affected
-		for (E e : this.getInEdges(node)) {
-			// count only once if multiple paths found
-			if ( !(OutEdges.contains(e)) ) {
-				OutEdges.add(e);
-				// call recursively for each adjacent node
-				getOutPath(this.getDest(e), OutEdges);
-			}
-		}
-	}
-
-	/**
-	 *  returns the set of nodes affected by an event forced on the affecting_node
-	 **/
-	public List<V> getAffectedNodes(V affecting_node, EventType eventType) {
-		List<V> AffectedNodes = new ArrayList<V>();
-		getInTree(affecting_node, AffectedNodes);
-		return AffectedNodes;
-	}
-
-	/**
-	 *  returns the set of incoming edges affected by an event forced on the affecting_node
-	 **/
-	public List<E> getAffectedEdges(V affecting_node, EventType eventType) {
-		List<E> AffectedEdges = new ArrayList<E>();
-		getInPath(affecting_node, AffectedEdges);
-		return AffectedEdges;
-	}
-
-	/**
-	 *  makes the necessary initializations to execute propagateChanges()
-	 **/
-	@SuppressWarnings("unchecked")
-	public void initializeChange(EvolutionEvent<V> event){
-		
 		setArxikoModule(null);
-		for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
-		{	// Clear statuses of nodes.
-			entry.getKey().setStatus(StatusType.NO_STATUS,true);
+		for (Entry<EvolutionNode, Pair<Map<EvolutionNode, EvolutionEdge>>> entry : this.vertices.entrySet()) { // Clear statuses of nodes.
+			entry.getKey().setStatus(StatusType.NO_STATUS, true);
 		}
-		for(Entry<E, Pair<V>> entry : this.edges.entrySet())
-		{	// Clear statuses of edges.
-			entry.getKey().setStatus(StatusType.NO_STATUS,true);
+		for (Entry<EvolutionEdge, Pair<EvolutionNode>> entry : this.edges.entrySet()) { // Clear statuses of edges.
+			entry.getKey().setStatus(StatusType.NO_STATUS, true);
 		}
-		
-		V node= event.getEventNode();
-		V toNode = null;
-		V toSchema = null;
-		String parameter="";
-		switch(node.getType())
-		{
+
+		EvolutionNode node = event.getEventNode();
+		EvolutionNode toNode = null;
+		EvolutionNode toSchema = null;
+		String parameter = "";
+		switch (node.getType()) {
 		case NODE_TYPE_RELATION:
 		case NODE_TYPE_QUERY:
 		case NODE_TYPE_VIEW:
-			toNode=node;
-			for(int i=0;i<node.getOutEdges().size();i++)
-			{
-				toSchema= (V) node.getOutEdges().get(i).getToNode();
-				if(toSchema.getType()==NodeType.NODE_TYPE_OUTPUT)
-				{
-					parameter=node.getName();
+			toNode = node;
+			for (int i = 0; i < node.getOutEdges().size(); i++) {
+				toSchema =   node.getOutEdges().get(i).getToNode();
+				if (toSchema.getType() == NodeType.NODE_TYPE_OUTPUT) {
+					parameter = node.getName();
 					break;
 				}
 			}
 			break;
-		
+
 		case NODE_TYPE_OUTPUT:
 		case NODE_TYPE_SEMANTICS:
-			toSchema=node;
-			for(int i=0;i<node.getInEdges().size();i++)
-			{
-				if(node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_OUTPUT||node.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
-				{
-					toNode=(V) node.getInEdges().get(i).getFromNode();
+			toSchema = node;
+			for (int i = 0; i < node.getInEdges().size(); i++) {
+				if (node.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_OUTPUT ||
+					node.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_SEMANTICS) {
+					toNode =   node.getInEdges().get(i).getFromNode();
 					break;
 				}
-				parameter=node.getName();
-				if(event.getEventType()==EventType.ADD_ATTRIBUTE)
-				{
-					parameter="";
+				parameter = node.getName();
+				if (event.getEventType() == EventType.ADD_ATTRIBUTE) {
+					parameter = "";
 				}
-				
+
 			}
 			break;
-		
+
 		default:
-			for(int i=0;i<node.getInEdges().size();i++)
-			{
-				if(node.getInEdges().get(i).getFromNode().getType()==NodeType.NODE_TYPE_OUTPUT)
-				{
-					toSchema=(V) node.getInEdges().get(i).getFromNode();
-					for(int j=0;j<toSchema.getInEdges().size();j++)
-					{
-						if(toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_RELATION||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_QUERY||toSchema.getInEdges().get(j).getFromNode().getType()==NodeType.NODE_TYPE_VIEW)
-						{
-							toNode=(V) toSchema.getInEdges().get(j).getFromNode();
+			for (int i = 0; i < node.getInEdges().size(); i++) {
+				if (node.getInEdges().get(i).getFromNode().getType() == NodeType.NODE_TYPE_OUTPUT) {
+					toSchema =   node.getInEdges().get(i).getFromNode();
+					for (int j = 0; j < toSchema.getInEdges().size(); j++) {
+						if (toSchema.getInEdges().get(j).getFromNode().getType() == NodeType.NODE_TYPE_RELATION ||
+							toSchema.getInEdges().get(j).getFromNode().getType() == NodeType.NODE_TYPE_QUERY ||
+							toSchema.getInEdges().get(j).getFromNode().getType() == NodeType.NODE_TYPE_VIEW) {
+							toNode =   toSchema.getInEdges().get(j).getFromNode();
 						}
 					}
-					parameter=node.getName();
-					if(event.getEventType()==EventType.DELETE_SELF)
-					{
+					parameter = node.getName();
+					if (event.getEventType() == EventType.DELETE_SELF) {
 						event.setEventType(EventType.DELETE_ATTRIBUTE);
-					}
-					else if(event.getEventType()==EventType.RENAME_SELF)
-					{
+					} else if (event.getEventType() == EventType.RENAME_SELF) {
 						event.setEventType(EventType.RENAME_ATTRIBUTE);
 					}
 					break;
 				}
 			}
-			if(toSchema==null)
-			{
-				while(toNode==null)
-				{
-					toSchema=(V) node.getInEdges().get(0).getFromNode();
-					if(toSchema.getType()==NodeType.NODE_TYPE_SEMANTICS)
-					{
+			if (toSchema == null) {
+				while (toNode == null) {
+					toSchema =   node.getInEdges().get(0).getFromNode();
+					if (toSchema.getType() == NodeType.NODE_TYPE_SEMANTICS) {
 						event.setEventType(EventType.ALTER_SEMANTICS);
-						toNode=(V) toSchema.getInEdges().get(0).getFromNode();
+						toNode =   toSchema.getInEdges().get(0).getFromNode();
 					}
 				}
 			}
 			break;
 		}
-		Message<V,E> firstMessage=new Message<V,E>(toNode,toSchema,event.getEventType(),parameter);
+		Message  firstMessage = new Message (toNode, toSchema, event.getEventType(), parameter);
 		propagateChanges(firstMessage);
 	}
 
-
-	private void setArxikoModule(V toNode)
-	{
-		if(arxikoModule == null || toNode == null)
-		{
-			arxikoModule=toNode;
+	private void setArxikoModule(EvolutionNode toNode) {
+		if (arxikoModule == null || toNode == null) {
+			arxikoModule = toNode;
 		}
 	}
-	
+
 	/**
-	 *  sets the status of the parts of the graph affected by an event
+	 * sets the status of the parts of the graph affected by an event
 	 **/
-	@SuppressWarnings({ "unused", "unchecked", "rawtypes" })
-	private void propagateChanges(Message<V,E> message)
-	{
+	private void propagateChanges(Message  message) {
 		setArxikoModule(message.toNode);
-		EvolutionGraph<V, E> ograph = new EvolutionGraph<V,E>();
+		EvolutionGraph  ograph = new EvolutionGraph ();
 		ograph.vertices.putAll(this.vertices);
-		int modulesAffected=0;
-		int internalsAffected=0;
-		int numberOfModules=0;
-		int numberOfNodes=0;
-		PriorityQueue<Message<V,E>> queue= new PriorityQueue<Message<V,E>>(1, new MessageCompare());
+		int modulesAffected = 0;
+		int internalsAffected = 0;
+		int numberOfModules = 0;
+		int numberOfNodes = 0;
+		PriorityQueue<Message > queue = new PriorityQueue<Message >(1, new MessageCompare());
 		queue.add(message);
-		List<ModuleNode<V,E>> epireasmenoi=new LinkedList<ModuleNode<V,E>>();
-		StopWatch step1 = new StopWatch();	/** @author pmanousi For time count of step 1. */
+		List<ModuleNode > epireasmenoi = new LinkedList<ModuleNode >();
+		StopWatch step1 =
+			new StopWatch(); /** @author pmanousi For time count of step 1. */
 		step1.start();
-		while (!queue.isEmpty())
-		{
-			try
-			{
-				ModuleMaestro<V,E> maestro = new ModuleMaestro<V,E>(queue);
-				PriorityQueue<Message<V, E>> messages = new PriorityQueue<Message<V,E>>();
+		while (!queue.isEmpty()) {
+			try {
+				ModuleMaestro  maestro = new ModuleMaestro (queue);
+				PriorityQueue<Message > messages = new PriorityQueue<Message >();
 				messages.add(maestro.arxikoMinima.clone());
-				Iterator<Message<V,E>> i = maestro.myQueue.iterator();
-				while(i.hasNext())
-				{
-					Message<V,E> tmpPMMsg = i.next();
-					if(messages.contains(tmpPMMsg) == false)
-					{
+				Iterator<Message > i = maestro.myQueue.iterator();
+				while (i.hasNext()) {
+					Message  tmpPMMsg = i.next();
+					if (messages.contains(tmpPMMsg) == false) {
 						messages.add(tmpPMMsg.clone());
 					}
 				}
 				epireasmenoi.add(new ModuleNode(maestro.arxikoMinima.toNode, messages, message.event));
-				maestro.propagateMessages();	// Status determination
+				maestro.propagateMessages(); // Status determination
+			} catch (Exception e) {
 			}
-			catch(Exception e) {}
 		}
-		step1.stop();	/** @author pmanousi For time count of step 1. */
-		for(Entry<V, Pair<Map<V, E>>> entry : this.vertices.entrySet())
-		{
-			if(entry.getKey().getStatus() != StatusType.NO_STATUS && entry.getKey().getType() != NodeType.NODE_TYPE_OPERAND)
-			{
-				V v = entry.getKey();
-				if(entry.getKey().getType().getCategory() == NodeCategory.MODULE && entry.getKey() != arxikoModule)
-				{
+		step1.stop(); /** @author pmanousi For time count of step 1. */
+		for (Entry<EvolutionNode, Pair<Map<EvolutionNode, EvolutionEdge>>> entry : this.vertices.entrySet()) {
+			if (entry.getKey().getStatus() != StatusType.NO_STATUS &&
+				entry.getKey().getType() != NodeType.NODE_TYPE_OPERAND) {
+				entry.getKey();
+				if (entry.getKey().getType().getCategory() == NodeCategory.MODULE && entry.getKey() != arxikoModule) {
 					modulesAffected++;
-				}
-				else
-				{
-					if(entry.getKey().getType().getCategory() != NodeCategory.INOUTSCHEMA && entry.getKey().getType().getCategory() != NodeCategory.SEMANTICS && entry.getKey().getType().getCategory() != NodeCategory.MODULE)
-					{
+				} else {
+					if (entry.getKey().getType().getCategory() != NodeCategory.INOUTSCHEMA &&
+						entry.getKey().getType().getCategory() != NodeCategory.SEMANTICS &&
+						entry.getKey().getType().getCategory() != NodeCategory.MODULE) {
 						internalsAffected++;
 					}
 				}
 			}
 		}
-		numberOfModules = this.getVertices(NodeType.NODE_TYPE_QUERY).size() + this.getVertices(NodeType.NODE_TYPE_VIEW).size();
+		numberOfModules =
+			this.getVertices(NodeType.NODE_TYPE_QUERY).size() + this.getVertices(NodeType.NODE_TYPE_VIEW).size();
 		numberOfNodes = this.getVertexCount();
-		int relNodes = 0;
-		List<V> rel = this.getVertices(NodeType.NODE_TYPE_RELATION);
-		for(int i = 0; i < rel.size(); i++)
-		{
-			relNodes += 2;
-			V relationProsElegxo = rel.get(i);
-			V schemaProsElegxo = (V) rel.get(i).getOutEdges().get(0).getToNode();
-			relNodes += schemaProsElegxo.getOutEdges().size();
+		List<EvolutionNode> rel = this.getVertices(NodeType.NODE_TYPE_RELATION);
+		for (int i = 0; i < rel.size(); i++) {
+			rel.get(i);
+			EvolutionNode schemaProsElegxo =   rel.get(i).getOutEdges().get(0).getToNode();
+			schemaProsElegxo.getOutEdges().size();
 		}
-		for(int k = 0; k < epireasmenoi.size(); k++)
-		{
+		for (int k = 0; k < epireasmenoi.size(); k++) {
 			epireasmenoi.get(k).setEmeis(epireasmenoi);
 		}
 		// Check graph for block status
 		StatusType graphStatus = StatusType.PROPAGATE;
-		Iterator<ModuleNode<V,E>> i = epireasmenoi.iterator();
-		StopWatch step2 = new StopWatch();	/** @author pmanousi For time count of step 2. */
+		Iterator<ModuleNode > i = epireasmenoi.iterator();
+		StopWatch step2 =
+			new StopWatch(); /** @author pmanousi For time count of step 2. */
 		step2.start();
-		while (i.hasNext())
-		{
-			ModuleNode<V, E> prosElegxo=i.next();
-			if(prosElegxo.getStatus() == StatusType.BLOCKED)
-			{
+		while (i.hasNext()) {
+			ModuleNode  prosElegxo = i.next();
+			if (prosElegxo.getStatus() == StatusType.BLOCKED) {
 				graphStatus = StatusType.BLOCKED;
 				prosElegxo.backPropagation();
-				prosElegxo.neededRewrites=0;
+				prosElegxo.neededRewrites = 0;
 			}
 		}
-		step2.stop();	/** @author pmanousi For time count of step 2. */
-		MetriseisRewrite mr=new MetriseisRewrite();
-		int clonedModules=0;
-		int rewrittenModules=0;
-		StopWatch step3 = new StopWatch();	/** @author pmanousi For time count of step 3. */
+		step2.stop(); /** @author pmanousi For time count of step 2. */
+		MetriseisRewrite mr = new MetriseisRewrite();
+		int clonedModules = 0;
+		int rewrittenModules = 0;
+		StopWatch step3 =
+			new StopWatch(); /** @author pmanousi For time count of step 3. */
 		step3.start();
-		if(graphStatus == StatusType.BLOCKED)
-		{
-			if(message.toNode.getType() == NodeType.NODE_TYPE_RELATION && message.event != EventType.ADD_ATTRIBUTE)
-			{	// Whatever happens to relation stops there!
+		if (graphStatus == StatusType.BLOCKED) {
+			if (message.toNode.getType() == NodeType.NODE_TYPE_RELATION && message.event != EventType.ADD_ATTRIBUTE) { // Whatever happens to relation stops there!
 				rewrittenModules = 0;
-			}
-			else
-			{
-				i=epireasmenoi.iterator();
+			} else {
+				i = epireasmenoi.iterator();
 				String tempParam = "";
-				while (i.hasNext())
-				{
-					ModuleNode<V, E> prosEpaneggrafi = i.next();
-					if(prosEpaneggrafi.neededRewrites == 1)
-					{	// They move to new version.
-						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-						tempParam = m.doRewrite(tempParam, this, step3,mr);
+				while (i.hasNext()) {
+					ModuleNode  prosEpaneggrafi = i.next();
+					if (prosEpaneggrafi.neededRewrites == 1) { // They move to new version.
+						ModuleMaestroRewrite  m = new ModuleMaestroRewrite (prosEpaneggrafi.messages);
+						tempParam = m.doRewrite(tempParam, this, step3, mr);
 						m.moveToNewInputsIfExist(this, prosEpaneggrafi.module);
 						rewrittenModules++;
-					}
-					else if(prosEpaneggrafi.neededRewrites == 2)
-					{	// They copy themselves and do rewrite on new version.
-						V neos=prosEpaneggrafi.cloneQVModule(this);
+					} else if (prosEpaneggrafi.neededRewrites == 2) { // They copy themselves and do rewrite on new version.
+						EvolutionNode neos = prosEpaneggrafi.cloneQVModule(this);
 						clonedModules++;
-						Iterator<Message<V, E>> j = prosEpaneggrafi.messages.iterator();
-						while(j.hasNext())
-						{	// messages are for neos node...
-							Message<V, E> n = j.next();
-							for(E noe: neos.getOutEdges())
-							{
-								if(noe.getToNode().getName().equals(n.toSchema.getName().replace(n.toNode.getName(), neos.getName())))
-								{
-									n.toSchema = (V) noe.getToNode();
+						Iterator<Message > j = prosEpaneggrafi.messages.iterator();
+						while (j.hasNext()) { // messages are for neos node...
+							Message  n = j.next();
+							for (EvolutionEdge noe : neos.getOutEdges()) {
+								if (noe.getToNode().getName().equals(
+									n.toSchema.getName().replace(n.toNode.getName(), neos.getName()))) {
+									n.toSchema =   noe.getToNode();
 								}
 							}
 							n.toNode = neos;
 						}
 						prosEpaneggrafi.module = neos;
-						ModuleMaestroRewrite<V, E> m = new ModuleMaestroRewrite<V, E>(prosEpaneggrafi.messages);
-						tempParam = m.doRewrite(tempParam, this, step3,mr);
+						ModuleMaestroRewrite  m = new ModuleMaestroRewrite (prosEpaneggrafi.messages);
+						tempParam = m.doRewrite(tempParam, this, step3, mr);
 						m.moveToNewInputsIfExist(this, prosEpaneggrafi.module);
 						rewrittenModules++;
 					}
 				}
 			}
-		}
-		else
-		{
-			i=epireasmenoi.iterator();
+		} else {
+			i = epireasmenoi.iterator();
 			String tempParam = "";
-			while (i.hasNext())
-			{
-				ModuleNode<V, E> prosEpaneggrafi = i.next();
-				
-				ModuleMaestroRewrite<V,E> rewriter = new ModuleMaestroRewrite<V,E>(prosEpaneggrafi.messages);
-				tempParam=rewriter.doRewrite(tempParam, this, step3,mr);	// Rewrite
+			while (i.hasNext()) {
+				ModuleNode  prosEpaneggrafi = i.next();
+
+				ModuleMaestroRewrite  rewriter = new ModuleMaestroRewrite (prosEpaneggrafi.messages);
+				tempParam = rewriter.doRewrite(tempParam, this, step3, mr); // Rewrite
 				rewrittenModules++;
 			}
 		}
-		step3.stop();	/** * @author pmanousi For time count of step 3. */
-		try
-		{
-		    PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
-		    out.println(message.event.toString()+": "+message.toSchema.getName()+"."+message.parameter+","+modulesAffected+","+numberOfModules+","+internalsAffected+","+numberOfNodes+","+rewrittenModules+","+clonedModules+","+step1.toString()+","+step2.toString()+","+step3.toString());
-		    out.close();
-		} catch (IOException e)
-		{}
+		step3.stop(); /** * @author pmanousi For time count of step 3. */
+		try {
+			PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("time.csv", true)));
+			out.println(message.event.toString() + ": " + message.toSchema.getName() + "." + message.parameter + "," +
+				modulesAffected + "," + numberOfModules + "," + internalsAffected + "," + numberOfNodes + "," +
+				rewrittenModules + "," + clonedModules + "," + step1.toString() + "," + step2.toString() + "," +
+				step3.toString());
+			out.close();
+		} catch (IOException e) {
+		}
 	}
 
-
-	/**
-	 * used for finding the policy of a node
-	 * @param1 = event,
-	 * @param2 = Node receiving the message
-	 * @param3 = The previous prevailing policy
-	 **/
-	@SuppressWarnings("unused")
-	private PolicyType determinePolicy(EvolutionEvent<V> event, V nr, E edge, PolicyType previousPolicyType) {
-
-		//  policy hierarchy
-		// 1. query.condition, 2. query.attribute, 3. query, 4. relation.condition, 5. relation.attribute, 6. relation
-		//  search for policy towards the path 
-
-		System.out.println("determining policy for : " + nr.getName());
-		//if edge is part of and child node has policy
-		//then override parent's policy 
-		if (edge!=null && edge.isPartOf()){
-			return previousPolicyType;
-		}
-
-		//if edge is dependency then get prevailing policy
-		return getPrevailingPolicy(event,nr,previousPolicyType);
-
-	}
-
-	/*
-	 * gets the prevailing policy in a module (e.g. a query, relation, view)
-	 */
-	@SuppressWarnings("unchecked")
-	private PolicyType getPrevailingPolicy(EvolutionEvent<V> event, V nr, PolicyType previousPolicyType) {
-
-		EvolutionPolicies policies = nr.getPolicies();
-		//if policy for this event exist override previousPolicy coming from provider node
-		for (EvolutionPolicy<V> nrPolicy : policies){
-			if ((nrPolicy.getSourceEvent().getEventNode().equals(event.getEventNode()))
-					&&(nrPolicy.getSourceEvent().getEventType()==event.getEventType())){
-				return nrPolicy.getPolicyType();
-			}
-		}
-
-		//If no policy is returned check parents' policy for this event to override provider's policy
-		if (nr.getParentNode()!=null) {
-			EvolutionEvent<V> newEvent = new EvolutionEvent<V>(/*nr,*/event.getEventType());
-			return getPrevailingPolicy(newEvent,(V) nr.getParentNode(),previousPolicyType);
-		}
-
-		//if no self or parents policy exists then return provider's policy
-		return previousPolicyType;	
-	}
-
-	/**
-	 * used for finding the providerEdges of a node (through from, map-select, operand edges, gb edges)
-	 **/
-	public List<E> getProviderEdges(V node) {
-	
-		List<E> providerEdges= new ArrayList<E>();
-
-		for (E e: this.getInEdges(node)){
-			if ((e.getType()==EdgeType.toEdgeType("EDGE_TYPE_MAPPING"))
-					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_FROM"))
-					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_GROUP_BY"))
-					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_OPERATOR"))
-					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_ALIAS"))
-					||(e.getType()==EdgeType.toEdgeType("EDGE_TYPE_USES"))){
-				providerEdges.add(e);
-			}
-		}
-		return providerEdges;	
-	}
 	/**
 	 * used for getting the subgraph of a module (query, relation, view)
 	 **/
-	public List<V> getModule(V parentNode) {
-		List<V> subGraph = new ArrayList<V>();
+	public List<EvolutionNode> getModule(EvolutionNode parentNode) {
+		List<EvolutionNode> subGraph = new ArrayList<EvolutionNode>();
 		subGraph.add(parentNode);
 		return this.subGraph(parentNode, subGraph);
 
 	}
 
-
 	/**
 	 * used for getting the subgraph of a parent node (query, relation, view)
 	 **/
-	private List<V> subGraph(V node, List<V> subGraph) {
+	private List<EvolutionNode> subGraph(EvolutionNode node, List<EvolutionNode> subGraph) {
 
-		for (E e : this.getOutEdges(node)){
+		for (EvolutionEdge e : this.getOutEdges(node)) {
 			//if edge is intramodule then add tonode
 			if (e.isPartOf()) {
-				if ( !(subGraph.contains(this.getDest(e)))) {
+				if (!(subGraph.contains(this.getDest(e)))) {
 					subGraph.add(this.getDest(e));
 				}
 				// call recursively for each adjacent node
@@ -760,185 +471,106 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		return subGraph;
 
 	}
-		
+
 	/**
-	 * propagates the frequency of a query node towards the graph
-	 * set the frequency of all provider nodes of a query
+	 * propagates the frequency of a query node towards the graph set the frequency
+	 * of all provider nodes of a query
+	 * 
 	 * @param node
 	 */
-	public void propagateFrequency(V node) {
-		
-		List<V> subGraph =this.getModule(node); 
-		for (V evNode : subGraph) {
+	public void propagateFrequency(EvolutionNode node) {
+		List<EvolutionNode> subGraph = this.getModule(node);
+		for (EvolutionNode evNode : subGraph) {
 			evNode.setFrequency(node.getFrequency());
 		}
-		for (E edge : this.getOutEdges(node)) {
+		for (EvolutionEdge edge : this.getOutEdges(node)) {
 			if (edge.isProvider()) {
-				edge.getToNode().setFrequency(edge.getToNode().getFrequency()+node.getFrequency());
+				edge.getToNode().setFrequency(edge.getToNode().getFrequency() + node.getFrequency());
 				this.propagateFrequency(this.getDest(edge));
 			}
 		}
 	}
+
 	/**
 	 * used for finding the top_level node of each module, given an containing node
-	 * @param node
-	 * @return
 	 */
-	public V getTopLevelNode(V node) {
-		if (node.getType().getCategory()==NodeCategory.MODULE)
+	public EvolutionNode getTopLevelNode(EvolutionNode node) {
+		if (node.getType().getCategory() == NodeCategory.MODULE)
 			return node;
-		for (E e : this.getInEdges(node)){
-			if (e.isPartOf()){
+		for (EvolutionEdge e : this.getInEdges(node)) {
+			if (e.isPartOf()) {
 				return getTopLevelNode(this.getSource(e));
 			}
 		}
 		return null;
 	}
-	
-	 /**
-	  * get two set of Nodes (Modules) and return true if they are connected 
-	  * @param fromModule
-	  * @param toModule
-	  * @return
-	  */
-	 public  boolean isConnected(List<V> fromModule, List<V> toModule) {
-		 for (V node : fromModule) {
-			 for (E edge : this.getOutEdges(node)) {
-				 if (edge.isProvider()&&toModule.contains(edge.getToNode())) 
-					 return true;
-			 }
-		 }
-		return false;
-	 }
-	 /**
-	  * calculates the number of connections between two modules (subGraphs) as
-	  * the number of all dependency edges between these modules
-	  * directing from the fromModule towards the toModule
-	  * @param fromModule is the parent node of outgoing edges module
-	  * @param toModule is the parent node of incoming edges module
-	  * @return strength
-	  */
-	 public int getConnections(List<V> fromModule, List<V> toModule) {
-		 List<EvolutionEdge> connections = new ArrayList<EvolutionEdge>();
-		 for ( V node : fromModule) {
-			 for (E edge : node.getOutEdges()) {
-				 if (edge.isProvider()
-						 &&toModule.contains(edge.getToNode())
-						 &&(!connections.contains(edge))) {
-					 connections.add(edge);
-				 }
-			 }
-		 }
-		return connections.size();
-	 }
-	 /**
-	  * get two  Nodes and return the number of paths between them
-	  * @param fromNode: starting node 
-	  * @param toNode : ending node
-	  * @return True if there is a path from fromNode towards toNode, False otherwise
-	  */
-	 public int getPaths(V fromNode, V toNode) {
-		 int paths=0;
-		 for ( E edge : this.getOutEdges(fromNode)) {
-			 if(edge.getToNode().equals(toNode)) {
-				 paths++;
-			 }
-			paths += this.getPaths(this.getDest(edge), toNode);
-		 }
-		 return paths;
-	 }
 
-	 /**
-	  * @return
-	  * all nodes of the graph of specific type category NodeCategory
-	  */
-	 public List<V> getVertices(NodeCategory category) {
-		 List<V> nodes =  new ArrayList<V>();
-		 for (V node: this.getVertices()) {
-			 if (node.getType().getCategory()== category) {
-				 nodes.add(node);
-			 }
+	/**
+	 * @return all nodes of the graph of specific type category NodeCategory
+	 */
+	public List<EvolutionNode> getVertices(NodeCategory category) {
+		List<EvolutionNode> nodes = new ArrayList<EvolutionNode>();
+		for (EvolutionNode node : this.getVertices()) {
+			if (node.getType().getCategory() == category) {
+				nodes.add(node);
+			}
 		}
 		return nodes;
-	 }
-	 
-	 /**
-	  * @return
-	  * all nodes of the graph of specific type NodeType
-	  */
-	 public List<V> getVertices(NodeType type) {
-		 List<V> nodes =  new ArrayList<V>();
-		 for (V node: this.getVertices()) {
-			 if (node.getType()== type) {
-				 nodes.add(node);
-			 }
+	}
+
+	/**
+	 * @return all nodes of the graph of specific type NodeType
+	 */
+	public List<EvolutionNode> getVertices(NodeType type) {
+		List<EvolutionNode> nodes = new ArrayList<EvolutionNode>();
+		for (EvolutionNode node : this.getVertices()) {
+			if (node.getType() == type) {
+				nodes.add(node);
+			}
 		}
 		return nodes;
-	 }
+	}
 
-	 /***
-	  * 
-	  * @return
-	  * all edges of the graph of specific type EdgeType
-	  */
-	 public List<E> getEdges(EdgeType type) {
-		 List<E> edges = new ArrayList<E>();
-		 for (E edge: this.getEdges()) {
-			 if (edge.getType()== type) {
-				 edges.add(edge);
-			 }
+	/***
+	 * @return all edges of the graph of specific type EdgeType
+	 */
+	public List<EvolutionEdge> getEdges(EdgeType type) {
+		List<EvolutionEdge> edges = new ArrayList<EvolutionEdge>();
+		for (EvolutionEdge edge : this.getEdges()) {
+			if (edge.getType() == type) {
+				edges.add(edge);
+			}
 		}
 		return edges;
-
-	 }
-		
-	
-
-	/**
-	 * sets the keyGenerator to zero, to start counting the elements from the beginning
-	 */
-	public void resetKeyGenerator() {
-		EvolutionGraph._KeyGenerator = 0;
 	}
 
-	/**
-	 * returns the value of the keyGenerator, that is the number of elements the graph has
-	 */
-	public int getKeyGenerator() {
-		return EvolutionGraph._KeyGenerator;
+	public static int getKeyGenerator() {
+		return EvolutionGraph.KEY_GENERATOR;
 	}
-	/**
-	 * sets explicitly the value of the keyGenerator, that is the number of elements the graph has
-	 */
+
 	public void setKeyGenerator(int value) {
-		EvolutionGraph._KeyGenerator = value;
+		EvolutionGraph.KEY_GENERATOR = value;
 	}
 
-	//collection of string for holding default policy definitions
-	private ArrayList<String> _defaultPolicyClauses = new ArrayList<String>(); 
-	public ArrayList<String> getDefaultPolicyDecsriptions(){
-		return this._defaultPolicyClauses;
-	}
-	
-	/***
-	 * Creates a new graph object containing the nodes of the argument
-	 * It does not clone the nodes / edges. It just creates a new graph
-	 * and adds them to the collection of graph's nodes and edges 
-	 * @return a graph object
+	/**
+	 * Creates a new graph object containing the nodes of the argument. It does not
+	 * create new nodes / edges; uses references. It just creates a new graph and
+	 * adds them to the collection of graph's nodes and edges
+	 * 
+	 * @return a newly allocated EvolutionGraph object
 	 */
-	@SuppressWarnings("unchecked")
-	public <G extends EvolutionGraph<V,E>> G toGraphE(List<V> nodes){
-		G subGraph;
+	private EvolutionGraph  createSubGraph(List<EvolutionNode> nodes) {
+		EvolutionGraph  subGraph;
 		try {
-			subGraph = (G) this.getClass().newInstance();
-			for(V vertex : nodes) {
+			subGraph = this.getClass().newInstance();
+			for (EvolutionNode vertex : nodes) {
 				subGraph.addVertex(vertex);
-				Collection<E> incidentEdges = this.getIncidentEdges(vertex);
-				for(E edge : incidentEdges) {
-					Pair<V> endpoints = this.getEndpoints(edge);
-					if(nodes.containsAll(endpoints)) {
+				Collection<EvolutionEdge> incidentEdges = this.getIncidentEdges(vertex);
+				for (EvolutionEdge edge : incidentEdges) {
+					Pair<EvolutionNode> endpoints = this.getEndpoints(edge);
+					if (nodes.containsAll(endpoints)) {
 						// put this edge into the subgraph
-						subGraph.addEdge(edge, endpoints.getFirst(), endpoints.getSecond());
+						subGraph.addEdge(edge);
 					}
 				}
 			}
@@ -950,24 +582,58 @@ public class EvolutionGraph<V extends EvolutionNode<E>,E extends EvolutionEdge> 
 		}
 		return null;
 	}
-	
-	@SuppressWarnings("unchecked")
-	public void exportPoliciesToFile(File file) {
-		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter(file));
-			for (V v : this.getVertices()){
-				for (EvolutionPolicy<V> p : v.getPolicies()) {
-					out.write(v + ": " + p.toString() + ";");
-					out.newLine();
-				}	
-			}
-			out.close();
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
-		
+
+	/**
+	 * Creates a visual graph from the given Evolution nodes. In order to create the
+	 * visual subgraph, we need first to create a evolution subgraph from the given
+	 * nodes. The parent of the produced visual graph is the caller of this method,
+	 * not the SubGraph that gets created in the process.
+	 */
+	public VisualGraph produceVisualGraph(List<EvolutionNode> nodes) {
+		return graphConverter.productVisualGraphWithDifferentParent(createSubGraph(nodes), this);
 	}
+
+	/**
+	 * Creates a visual graph from the current evolution graph.
+	 */
+	public VisualGraph produceVisualGraph() {
+		return graphConverter
+			.productVisualGraph(this);
+	}
+
+	@Override
+	public void addObserver(Observer o) {
+		observers.add(o);
+	}
+
+	@Override
+	public void removeObserver(Observer o) {
+		observers.remove(o);
+	}
+
+	@Override
+	public void notifyObserversForEdgeAdd(EvolutionEdge addedEdge) {
+		for (Observer o : observers)
+			o.evolutionEdgeAdded(addedEdge);
+	}
+
+	@Override
+	public void notifyObserversForVertexAdd(EvolutionNode addedNode) {
+		for (Observer o : observers)
+			o.evolutionVertexAdded(addedNode);
+	}
+
+	@Override
+	public void notifyObserversForEdgeRemove(EvolutionEdge removedEdge) {
+		for (Observer o : observers)
+			o.evolutionEdgeRemoved(removedEdge);
+	}
+
+	@Override
+	public void notifyObserversForVertexRemove(EvolutionNode removedNode) {
+		for (Observer o : observers)
+			o.evolutionVertexRemoved(removedNode);
+	}
+
 }

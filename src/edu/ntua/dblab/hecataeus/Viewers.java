@@ -27,7 +27,6 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeToolTips;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.picking.LayoutLensShapePickSupport;
@@ -79,9 +78,7 @@ public class Viewers {
 		vv.getRenderContext().setVertexIncludePredicate(new VisualNodeVisible());
 		vv.getRenderContext().setVertexIconTransformer(new VisualNodeIcon());
 		
-//		double amount = 1.0;
-//		ScalingControl scaler = new CrossoverScalingControl();
-//		scaler.scale(vv, amount > 0 ? 1.1f : 1 / 1.1f, vv.getCenter());
+
 		vv.getRenderContext().getMultiLayerTransformer().addChangeListener(vv);
 		HecataeusModalGraphMouse gm = new HecataeusModalGraphMouse();
 		gm.HecataeusViewerPM(viewer);

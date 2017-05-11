@@ -7,7 +7,7 @@ package edu.ntua.dblab.hecataeus.graph.evolution;
 /**
  * @author  FOTINI
  */
-public class EvolutionPolicy<V extends EvolutionNode> {
+public class EvolutionPolicy {
     /**
 	 * ON event TO x node THEN raise Event to y Node
 	 */
@@ -15,45 +15,37 @@ public class EvolutionPolicy<V extends EvolutionNode> {
    
 	//what event occurred: Attribute_Addition	
 	// to which node : x Node
-	 private EvolutionEvent<V> _sourceEvent = null;
+	private EvolutionEvent _sourceEvent = null;
      
      // which policy : propagate, block, prompt
 	private PolicyType _policyType = null;
 	   
 	 //what event raised: Attribute_Addition	
 	 // to which node : x Node
-	private EvolutionEvent<V> _raisedEvent = null;
+	private EvolutionEvent _raisedEvent = null;
 
- 
-
-	public EvolutionPolicy() {
-		// just create the policy and set afterwards its properties
-	}
-
-	public EvolutionPolicy(EventType eventType/*, V eventNode*/, PolicyType policyType) {
-		EvolutionEvent<V> event = new EvolutionEvent<V>(/*eventNode,*/ eventType);
+	public EvolutionPolicy(EvolutionEvent event, PolicyType policyType) {
 		this._sourceEvent = event;
 		this._policyType = policyType;
 	}
 
-	public EvolutionPolicy(EvolutionEvent<V> event, PolicyType policyType) {
-		this._sourceEvent = event;
-		this._policyType = policyType;
+	public EvolutionPolicy(EventType eventType, PolicyType policyType) {
+		this(new EvolutionEvent(eventType), policyType);
 	}
-	
-	public EvolutionEvent<V> getSourceEvent() {
+
+	public EvolutionEvent getSourceEvent() {
 		return this._sourceEvent;
 	}
 
-	public void setSourceEvent(EvolutionEvent<V> Value) {
+	public void setSourceEvent(EvolutionEvent Value) {
 		this._sourceEvent = Value;
 	}
 	
-	public EvolutionEvent<V> getRaisedEvent() {
+	public EvolutionEvent getRaisedEvent() {
 		return this._raisedEvent;
 	}
 
-	public void setRaisedEvent(EvolutionEvent<V> Value) {
+	public void setRaisedEvent(EvolutionEvent Value) {
 		this._raisedEvent = Value;
 	}
 

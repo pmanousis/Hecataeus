@@ -12,9 +12,9 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
  */
 public class VisualGraphEdgeCrossings {
 
-	protected VisualGraph graph;
-	protected int numberOfEdges;
-	protected double avgEdgeLength;
+	private VisualGraph graph;
+	private int numberOfEdges;
+	private double avgEdgeLength;
 	
 	public VisualGraphEdgeCrossings(VisualGraph g){
 		this.graph = g;
@@ -35,7 +35,7 @@ public class VisualGraphEdgeCrossings {
 		}
 		
 		for(VisualNode v : queries){
-			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);
+			List<VisualEdge> edges = new ArrayList<VisualEdge>(v.getOutEdges());
 			for(VisualEdge e : edges){
 				if(e.getToNode().getType()==NodeType.NODE_TYPE_RELATION || e.getToNode().getType()==NodeType.NODE_TYPE_VIEW){
 					MyPair p = new MyPair(v.getLocation(), e.getToNode().getLocation());
@@ -45,7 +45,7 @@ public class VisualGraphEdgeCrossings {
 		}
 		
 		for(VisualNode v : views){
-			List<VisualEdge> edges = new ArrayList<VisualEdge>(v._outEdges);
+			List<VisualEdge> edges = new ArrayList<VisualEdge>(v.getOutEdges());
 			for(VisualEdge e : edges){
 				if(e.getToNode().getType()==NodeType.NODE_TYPE_RELATION || e.getToNode().getType()==NodeType.NODE_TYPE_VIEW){
 					MyPair p = new MyPair(v.getLocation(), e.getToNode().getLocation());

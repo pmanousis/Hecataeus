@@ -42,11 +42,6 @@ public final class VisualEdgeColor implements Transformer<VisualEdge, Paint>
 	public Paint transform(VisualEdge e){
 		
 		if(picked == null){
-			if(unpicked && e.getHilight()){
-		//		e.setHighlight(false);
-        		return color;
-			}
-			//return Color.WHITE;
 			return new Color(1f, 1f, 1f, 0f);
 		}
 		else{
