@@ -23,8 +23,8 @@ public class VisualCreateAdjMatrix {
 		int pos = 0, k = 0;
 		for(int i = 0; i < this.RQV.size(); i++){
 			VisualNode v = this.RQV.get(i);
-			List<VisualEdge> outE = new ArrayList<VisualEdge>(v._outEdges);
-			List<VisualEdge> inE = new ArrayList<VisualEdge>(v._inEdges);
+			List<VisualEdge> outE = new ArrayList<VisualEdge>(v.getOutEdges());
+			List<VisualEdge> inE = new ArrayList<VisualEdge>(v.getInEdges());
 			List<VisualEdge> allE = new ArrayList<VisualEdge>();
 			allE.addAll(outE);
 			allE.addAll(inE);

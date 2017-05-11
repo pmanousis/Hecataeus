@@ -2,14 +2,12 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 /**
  * circular concentric clustering layout 
@@ -20,16 +18,14 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
  */
 
 public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
-	protected VisualGraph graph;
-	protected double endC;
+	private VisualGraph graph;
+	private double endC;
 	private List<VisualNode> queries;
 	private List<VisualNode> relations;
 	private List<VisualNode> views;
 	private ClusterSet cs;
-	protected List<String> files;
 	private List<VisualNode> RQV;
-	protected VisualCircleLayout vcl;
-	public double totalArea=0;
+	private VisualCircleLayout vcl;
 	
 	protected VisualConcentricCirlesClustersLayout(VisualGraph g, double endC) {
 		super(g);
@@ -95,7 +91,6 @@ public class VisualConcentricCirlesClustersLayout extends VisualCircleLayout{
 		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewerZOOM().getPickedVertexState()));
 		HecataeusViewer.getActiveViewerZOOM().repaint();
-		HecataeusViewer.hecMap.createMap();
 	}
 
 	@Override

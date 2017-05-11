@@ -1,28 +1,24 @@
 package edu.ntua.dblab.hecataeus.graph.evolution.messages;
 
-public class StopWatch
-{
+public class StopWatch {
 	long timeUptoNow;
 	long tillNow;
-	
-	public StopWatch()
-	{
-		timeUptoNow=0;
+
+	public StopWatch() {
+		timeUptoNow = 0;
 	}
-	
-	public void start()
-	{
-		tillNow=System.nanoTime();
+
+	public void start() {
+		tillNow = System.nanoTime();
 	}
-	
-	public void stop()
-	{
-		timeUptoNow+=System.nanoTime()-tillNow;
+
+	public void stop() {
+		timeUptoNow += System.nanoTime() - tillNow;
 	}
-	
-	public String toString()
-	{
-		return(String.valueOf(timeUptoNow));
+
+	@Override
+	public String toString() {
+		return String.valueOf(timeUptoNow);
 	}
 
 }

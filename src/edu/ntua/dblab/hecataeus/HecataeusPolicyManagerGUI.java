@@ -225,14 +225,14 @@ public class HecataeusPolicyManagerGUI extends JPanel
 	void loadPolicy()
 	{
 		File file = new File(this.projectConf.curPath+"/"+this.currentPolicyFilename);
-		HecataeusSQLExtensionParser parser = new HecataeusSQLExtensionParser(this.viewer.graph, file);
+		HecataeusSQLExtensionParser parser = new HecataeusSQLExtensionParser(viewer.getEvolutionGraph(), file);
 		try
 		{
 			parser.processFile();
 		}
 		catch (HecataeusException ex)
 		{
-			new HecataeusMessageDialog(this.viewer.frame, "Error importing Policies", ex.getMessage());
+			new HecataeusMessageDialog(viewer.getFrame(), "Error importing Policies", ex.getMessage());
 		}
 		this.viewer.vv.repaint();
 	}
@@ -414,7 +414,7 @@ public class HecataeusPolicyManagerGUI extends JPanel
 			this.epilegmenosKombos=this.viewer.epilegmenosKombos;
 			this.okBtn.setEnabled(true);
 			
-			VisualNode pateras=null;			
+			VisualNode pateras = null;
 			for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 			{
 				if(this.epilegmenosKombos.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_INPUT||
@@ -486,7 +486,7 @@ public class HecataeusPolicyManagerGUI extends JPanel
 		{
 			return;	
 		}
-		VisualNode pateras=null;			
+		VisualNode pateras = null;
 		for(int i=0;i<this.epilegmenosKombos.getInEdges().size();i++)
 		{
 			if(this.epilegmenosKombos.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_INPUT||

@@ -4,11 +4,11 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import clusters.HAggloEngine;
 import clusters.EngineConstructs.Cluster;
 import clusters.EngineConstructs.ClusterSet;
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
 
 /**
  * circular clustering layout 
@@ -19,16 +19,14 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.StopWatch;
  */
 public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 	
-	protected double endC;
-	protected VisualGraph graph;
+	private double endC;
+	private VisualGraph graph;
 	private List<VisualNode> queries;
 	private List<VisualNode> relations;
 	private List<VisualNode> views;
 	private ClusterSet cs;
-	static int a = 0;
-	protected List<String> files;
 	private List<VisualNode> RQV;
-	protected VisualCircleLayout vcl;
+	private VisualCircleLayout vcl;
 	
 	public VisualClustersOnACircleLayout(VisualGraph g, double endC) {
 		super(g);
@@ -91,7 +89,6 @@ public class VisualClustersOnACircleLayout extends VisualCircleLayout {
 		HecataeusViewer.getActiveViewer().repaint();
 		HecataeusViewer.getActiveViewerZOOM().getRenderContext().setVertexFillPaintTransformer(new VisualClusteredNodeColor(HecataeusViewer.getActiveViewerZOOM().getPickedVertexState()));
 		HecataeusViewer.getActiveViewerZOOM().repaint();
-		HecataeusViewer.hecMap.createMap();
 	}
 
 	@Override

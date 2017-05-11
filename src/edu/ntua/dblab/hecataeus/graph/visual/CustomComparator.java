@@ -39,7 +39,7 @@ public class CustomComparator implements Comparator<VisualNode> {
     
     public int compareLevel(VisualNode o1, VisualNode o2)
     {
-    	if(o1.ID > o2.ID)
+		if (o1.getID() > o2.getID())
     	{
     		return(1);
     	}

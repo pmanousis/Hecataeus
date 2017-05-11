@@ -17,11 +17,11 @@ import edu.uci.ics.jung.algorithms.layout.Layout;
  */
 public class VisualAggregateLayout extends AggregateLayout<VisualNode, VisualEdge> {
 	
-	VisualLayoutType topLayoutType;
-	VisualLayoutType subLayoutType;
-	VisualGraph graph;
-	VisualGraph topLayoutGraph;
-	Map<VisualNode, VisualGraph> subGraphs;
+	private VisualLayoutType topLayoutType;
+	private VisualLayoutType subLayoutType;
+	private VisualGraph graph;
+	private VisualGraph topLayoutGraph;
+	private Map<VisualNode, VisualGraph> subGraphs;
 	
 	/***
 	 * Constructs a new VisualAggregateLayout class

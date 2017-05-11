@@ -1,10 +1,6 @@
 package edu.ntua.dblab.hecataeus;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Shape;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -13,43 +9,17 @@ import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
-import org.apache.commons.collections15.Transformer;
-
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
-import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
-import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualAggregateLayout;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualLayoutType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible.VisibleLayer;
-import edu.ntua.dblab.hecataeus.metrics.HecataeusMetricManager;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
-import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.PluggableRenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.decorators.EllipseVertexShapeTransformer;
 import edu.uci.ics.jung.visualization.picking.PickedState;
-import edu.uci.ics.jung.visualization.subLayout.GraphCollapser;
 
 public class PopUpClickListener extends MouseAdapter{
 	protected VisualizationViewer<VisualNode,VisualEdge> vv = null;
@@ -61,7 +31,7 @@ public class PopUpClickListener extends MouseAdapter{
 	protected HecataeusPopupGraphMousePlugin hpgmp;
 	protected VisualAggregateLayout containerLayout;
 	protected HecataeusViewer viewer;
-	public static VisualNode clickedVertex ;
+	public static VisualNode clickedVertex;
 	protected VisualEdge clickedEdge ;
 	protected Set<VisualNode> pickedNodes;
 	protected PickedState<VisualNode> pickedNodeState;
@@ -80,7 +50,6 @@ public class PopUpClickListener extends MouseAdapter{
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void handlePopup(MouseEvent e) {
 		hpgmp = new HecataeusPopupGraphMousePlugin();
 		vv = (VisualizationViewer<VisualNode,VisualEdge>)e.getSource();
@@ -98,7 +67,7 @@ public class PopUpClickListener extends MouseAdapter{
 			pickedEdgeState = vv.getPickedEdgeState();
 			//if mouse click on vertex
 			if(clickedVertex != null) {
-				pickedNodeState.pick(clickedVertex, true);
+				pickedNodeState.pick(pickSupport.getVertex(layout, pointClicked.getX(), pointClicked.getY()), true);
 				pickedNodes = pickedNodeState.getPicked();
 				if (pickedNodes.size() == 1) {
 					viewer.epilegmenosKombos = clickedVertex;
@@ -108,49 +77,19 @@ public class PopUpClickListener extends MouseAdapter{
 			}
 		}
 	}
-
-	class ClusterVertexShapeFunction<V> extends EllipseVertexShapeTransformer<V> {
-
-		ClusterVertexShapeFunction() {
-			setSizeTransformer(new ClusterVertexSizeFunction<V>(20));
-		}
-		@Override
-		public Shape transform(V v) {
-			if(v instanceof Graph) {
-				int size = ((Graph)v).getVertexCount();
-				int sides = Math.max(10, 3);
-				return factory.getRegularPolygon(v, sides);
-			}
-			return super.transform(v);
-			}
-		}
-		class ClusterVertexSizeFunction<V> implements Transformer<V,Integer> {
-			int size;
-			public ClusterVertexSizeFunction(Integer size) {
-				this.size = size;
-			}
-
-			public Integer transform(V v) {
-				if(v instanceof Graph) {
-					return 30;
-				}
-				return size;
-			}
-		}
 		
 
 	protected AbstractAction zoomToNewModuleTab(){
 		return new AbstractAction("Zoom -> Module level") {
-			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();
 			public void actionPerformed(ActionEvent e) {
 				String onoma=new String();
-				List<VisualNode> parent = new ArrayList<VisualNode>();
+				List<EvolutionNode> parent = new ArrayList<>();
 				//get parentNode
-				for(final VisualNode node :pickedNodes) {
-					parent.addAll(graph.getModule(node));
+				for (final VisualNode node : pickedNodes) {
+					parent.addAll(viewer.getEvolutionGraph().getModule(node.getParentEvolutionNode()));
 					onoma+=node.getName()+" ";
 				}
-				VisualGraph GV = new VisualGraph(graph.toGraph(parent));
+				VisualGraph GV = viewer.getEvolutionGraph().produceVisualGraph(parent);
 				HecataeusViewer.myViewer.zoomToModuleTab(parent, GV, onoma.trim());
 			}
 		};
@@ -158,7 +97,6 @@ public class PopUpClickListener extends MouseAdapter{
 	
 	protected AbstractAction selectNode(){
 		return new AbstractAction("select") {
-			final VisualizationViewer<VisualNode, VisualEdge> activeViewer = HecataeusViewer.myViewer.getActiveViewer();
 			public void actionPerformed(ActionEvent e) {
 				viewer.epilegmenosKombos = clickedVertex;
 				viewer.updateManagers();

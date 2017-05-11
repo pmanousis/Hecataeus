@@ -9,19 +9,19 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Comparator;
 
 import edu.ntua.dblab.hecataeus.HecataeusException;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 
 /**
  * Class for parsing SQL language extensions that assign policies on nodes of a graph.  
@@ -35,52 +35,13 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
  */
 public final class HecataeusSQLExtensionParser{
 
-	private VisualGraph _graph;
-	private File _inputFile;
+	private EvolutionGraph evoGraph;
+	private File inputFile;
 	
-//	private enum DBEvents { 
-//		ADDITION, 
-//		DELETION, 
-//		MODIFICATION;
-//
-//		static DBEvents toType(String value) {
-//			return valueOf(value);
-//		}
-//	}
-
-	/**
-	 * Additional event types used for parsing Database wide policies
-	 */
-	private enum DBNodes{
-		NODE,
-		RELATION,
-		QUERY,
-		INSERT,				/**added by sgerag*/
-		DELETE,				/**added by sgerag*/
-		UPDATE,				/**added by sgerag*/
-		// FIXME: ADD AND HANDLE ALL TYPES OF NODES IN POLICY PARSING
-		VIEW, 
-		ATTRIBUTE,
-		CONDITION,
-		CONSTANT,
-		GROUP_BY,
-		FUNCTION,
-		PK,
-		FK,
-		NC,
-		UC;
-		
-		static DBNodes toType(String value) {
-			return valueOf(value);
-		}
-	}
-	
-	/**
-	 * Creates a HecataeusSQLExtensionParser 
-	 */
-	public HecataeusSQLExtensionParser(VisualGraph graph, File inputFile) {
-		this._graph =  graph;
-		this._inputFile = inputFile ;
+	public HecataeusSQLExtensionParser(	EvolutionGraph graph,
+										File inputFile) {
+		this.evoGraph =  graph;
+		this.inputFile = inputFile ;
 	};
 	
 	public void processFile() throws HecataeusException
@@ -99,7 +60,7 @@ public final class HecataeusSQLExtensionParser{
 		ArrayList<String> queryTempSentences = new ArrayList<String>();	//holds database wide policies for queries that are to be concatenated with querySentences
 		try
 		{
-			BufferedReader reader = new BufferedReader(new FileReader(this._inputFile )); 
+			BufferedReader reader = new BufferedReader(new FileReader(this.inputFile )); 
 			this.clearPolicies();
 			while (reader.ready())
 			{
@@ -202,15 +163,15 @@ public final class HecataeusSQLExtensionParser{
 					{
 						this.parseQueryPolicy(sentence, querySentences);
 					}
-					else if(this._graph.findVertexByName(ndName,NodeCategory.MODULE)!=null)
+					else if(this.evoGraph.findVertexByName(ndName,NodeCategory.MODULE)!=null)
 					{
 						this.parseModulePolicy(sentence, whateverSentences);
 					}
-					else if(this._graph.findVertexByName(ndName,NodeCategory.INOUTSCHEMA)!=null)
+					else if(this.evoGraph.findVertexByName(ndName,NodeCategory.INOUTSCHEMA)!=null)
 					{
 						this.parseSchemaPolicy(sentence, whateverSentences);
 					}
-					else if(this._graph.findVertexByName(ndName,NodeCategory.SCHEMA)!=null)
+					else if(this.evoGraph.findVertexByName(ndName,NodeCategory.SCHEMA)!=null)
 					{
 						this.parseAttributesPolicy(sentence, whateverSentences);
 					}
@@ -267,9 +228,8 @@ public final class HecataeusSQLExtensionParser{
 	 */
 	private void clearPolicies() {
 	
-		for (VisualNode node: this._graph.getVertices()) {
+		for (EvolutionNode node : this.evoGraph.getVertices()) {
 			node.getPolicies().clear();	
-			this._graph.getDefaultPolicyDecsriptions().clear();
 		}
 	}
 	
@@ -278,7 +238,8 @@ public final class HecataeusSQLExtensionParser{
 	 * Sets policy to a specific node.
 	 * @throws HecataeusException 
 	 */
-	private void setPolicy(String policy, VisualNode node) throws HecataeusException
+	private void setPolicy(String policy, EvolutionNode evolutionNode)
+		throws HecataeusException
 	{
 		StringTokenizer policyClause= new StringTokenizer(policy);
 		String currentWord = policyClause.nextToken(" ").trim();
@@ -312,24 +273,26 @@ public final class HecataeusSQLExtensionParser{
 		{
 			throw new HecataeusException( "Unknown Policy: " + currentWord); 
 		}
-		node.addPolicy(eventType, policyType);
+		evolutionNode.addPolicy(eventType, policyType);
 	}
 	
 	/**
 	 * @author pmanousi
 	 * Sets policy to relation node or relation's attributes nodes.
 	 */
+	@SuppressWarnings("unchecked")
 	private void parseRelationPolicy(String policyStringClause) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String selfOrAttributes = policyClause.nextToken(":").trim();	//Relation policies always start with reserved word RELATION.OUT.(SELF|ATTRIBUTES)
 		
-		List<VisualNode> nodes = this._graph.getVertices(NodeType.NODE_TYPE_RELATION);
+		List<EvolutionNode> nodes = this.evoGraph.getVertices(NodeType.NODE_TYPE_RELATION);
 		String tmpString = policyClause.nextToken().trim();
 		if(selfOrAttributes.endsWith(".OUT.ATTRIBUTES")==true)
 		{ // For all RELATIONS of graph go to their ATTRS.
 			for(int i=0;i<nodes.size();i++)
 			{
-				VisualNode schemaNode=nodes.get(i).getOutEdges().get(0).getToNode();	// RELATION.SCHEMA
+				EvolutionNode schemaNode =
+					(EvolutionNode) nodes.get(i).getOutEdges().get(0).getToNode(); // RELATION.SCHEMA
 				for(int j=0;j<schemaNode.getOutEdges().size();j++)
 				{
 					setPolicy(tmpString, schemaNode.getOutEdges().get(j).getToNode());
@@ -343,30 +306,30 @@ public final class HecataeusSQLExtensionParser{
 				setPolicy(tmpString, nodes.get(i).getOutEdges().get(0).getToNode());
 			}
 		}
-		this._graph.getDefaultPolicyDecsriptions().add(policyStringClause);
 	}
 	
 	/**
 	 * @author pmanousi
 	 * Sets policy to view's: smtx, in, out nodes or in's, out's attributes.
 	 */
+	@SuppressWarnings("unchecked")
 	private void parseViewPolicy(String policyStringClause) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String selfOrAttributes = policyClause.nextToken(":").trim();	//View policies always start with reserved word VIEW.(IN|SMTX|OUT).(SELF|ATTRIBUTES)
 		
-		List<VisualNode> nodes = this._graph.getVertices(NodeType.NODE_TYPE_VIEW);
+		List<EvolutionNode> nodes = this.evoGraph.getVertices(NodeType.NODE_TYPE_VIEW);
 		
 		String tmpString = policyClause.nextToken().trim();
 		if(selfOrAttributes.endsWith(".OUT.ATTRIBUTES"))
 		{ // For all VIEWS of graph go to their ATTRS.
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
 					{
-						VisualNode outNode=edges.get(j).getToNode();	// VIEW.OUT
+						EvolutionNode outNode = (EvolutionNode) edges.get(j).getToNode(); // VIEW.OUT
 						for(int k=0;k<outNode.getOutEdges().size();k++)
 						{
 							setPolicy(tmpString, outNode.getOutEdges().get(k).getToNode());
@@ -379,7 +342,7 @@ public final class HecataeusSQLExtensionParser{
 		{ // For all VIEWS of graph
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
@@ -393,12 +356,12 @@ public final class HecataeusSQLExtensionParser{
 		{ // For all VIEWS of graph go to their ATTRS.
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
 					{
-						VisualNode outNode=edges.get(j).getToNode();	// VIEW.IN
+						EvolutionNode outNode = (EvolutionNode) edges.get(j).getToNode(); // VIEW.IN
 						for(int k=0;k<outNode.getOutEdges().size();k++)
 						{
 							if(outNode.getOutEdges().get(k).getType()!=EdgeType.EDGE_TYPE_FROM)
@@ -414,7 +377,7 @@ public final class HecataeusSQLExtensionParser{
 		{ // For all VIEWS of graph
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
@@ -428,7 +391,7 @@ public final class HecataeusSQLExtensionParser{
 		{ // For all VIEWS of graph
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
@@ -438,30 +401,30 @@ public final class HecataeusSQLExtensionParser{
 				}
 			}
 		}
-		this._graph.getDefaultPolicyDecsriptions().add(policyStringClause);
 	}
 	
 	/**
 	 * @author pmanousi
 	 * Sets policy to query's: smtx, in, out nodes or in's, out's attributes.
 	 */
+	@SuppressWarnings("unchecked")
 	private void parseQueryPolicy(String policyStringClause) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String selfOrAttributes = policyClause.nextToken(":").trim();	//Query policies always start with reserved word QUERY.(IN|SMTX|OUT).(SELF|ATTRIBUTES)
 		
-		List<VisualNode> nodes = this._graph.getVertices(NodeType.NODE_TYPE_QUERY);
+		List<EvolutionNode> nodes = this.evoGraph.getVertices(NodeType.NODE_TYPE_QUERY);
 		
 		if(selfOrAttributes.endsWith(".OUT.ATTRIBUTES"))
 		{ // For all QUERIES of graph go to their ATTRS.
 			String tmpString = policyClause.nextToken().trim();
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
 					{
-						VisualNode outNode=edges.get(j).getToNode();	// QUERY.OUT
+						EvolutionNode outNode = (EvolutionNode) edges.get(j).getToNode(); // QUERY.OUT
 						for(int k=0;k<outNode.getOutEdges().size();k++)
 						{
 							setPolicy(tmpString, outNode.getOutEdges().get(k).getToNode());
@@ -475,7 +438,7 @@ public final class HecataeusSQLExtensionParser{
 			String tmpString = policyClause.nextToken().trim();
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_OUTPUT)
@@ -490,12 +453,12 @@ public final class HecataeusSQLExtensionParser{
 			String tmpString = policyClause.nextToken().trim();
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
 					{
-						VisualNode outNode=edges.get(j).getToNode();	// QUERY.IN
+						EvolutionNode outNode = (EvolutionNode) edges.get(j).getToNode(); // QUERY.IN
 						for(int k=0;k<outNode.getOutEdges().size();k++)
 						{
 							if(outNode.getOutEdges().get(k).getType()!=EdgeType.EDGE_TYPE_FROM)
@@ -512,7 +475,7 @@ public final class HecataeusSQLExtensionParser{
 			String tmpString = policyClause.nextToken().trim();
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_INPUT)
@@ -527,7 +490,7 @@ public final class HecataeusSQLExtensionParser{
 			String tmpString = policyClause.nextToken().trim();
 			for(int i=0;i<nodes.size();i++)
 			{
-				List<VisualEdge> edges=nodes.get(i).getOutEdges();
+				List<EvolutionEdge> edges = nodes.get(i).getOutEdges();
 				for(int j=0;j<edges.size();j++)
 				{
 					if(edges.get(j).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
@@ -537,7 +500,6 @@ public final class HecataeusSQLExtensionParser{
 				}
 			}
 		}
-		this._graph.getDefaultPolicyDecsriptions().add(policyStringClause);
 	}
 
 	/**
@@ -659,7 +621,6 @@ public final class HecataeusSQLExtensionParser{
 	 */
 	private void parseQueryPolicy(String policyStringClause, ArrayList<String> querySentences) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
-		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
 		String currentWord = policyClause.nextToken(" ").trim(); 	// It is *
 		currentWord = policyClause.nextToken(" ").trim();
@@ -710,7 +671,6 @@ public final class HecataeusSQLExtensionParser{
 	 */
 	private void parseViewPolicy(String policyStringClause, ArrayList<String> viewSentences) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
-		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
 		String currentWord = policyClause.nextToken(" ").trim(); 	// It is *
 		currentWord = policyClause.nextToken(" ").trim();
@@ -761,7 +721,6 @@ public final class HecataeusSQLExtensionParser{
 	 */
 	private void parseRelationPolicy(String policyStringClause, ArrayList<String> relationSentences) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
-		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
 		String currentWord = policyClause.nextToken(" ").trim(); 	// It is *
 		currentWord = policyClause.nextToken(" ").trim();
@@ -806,8 +765,8 @@ public final class HecataeusSQLExtensionParser{
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
-		VisualNode node;
-		node = this._graph.findVertexByName(nodeName,NodeCategory.MODULE);
+		EvolutionNode node;
+		node = this.evoGraph.findVertexByName(nodeName,NodeCategory.MODULE);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
 		String currentWord = policyClause.nextToken(" ").trim();
@@ -882,8 +841,7 @@ public final class HecataeusSQLExtensionParser{
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
-		VisualNode node;
-		node = this._graph.findVertexByName(nodeName,NodeCategory.SCHEMA);
+		EvolutionNode node = this.evoGraph.findVertexByName(nodeName,NodeCategory.SCHEMA);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
 		String currentWord = policyClause.nextToken(" ").trim();
@@ -949,8 +907,7 @@ public final class HecataeusSQLExtensionParser{
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
-		VisualNode node;
-		node = this._graph.findVertexByName(nodeName,NodeCategory.INOUTSCHEMA);
+		EvolutionNode node = this.evoGraph.findVertexByName(nodeName, NodeCategory.INOUTSCHEMA);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
 		String currentWord = policyClause.nextToken(" ").trim();
@@ -1018,8 +975,7 @@ public final class HecataeusSQLExtensionParser{
 	private void parseNodeAttributesPolicy(String policyStringClause) throws HecataeusException {
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String nodeName = policyClause.nextToken(":").trim();	//get node on which policy is applied
-		VisualNode node;
-		node = this.getNodeByName(nodeName);
+		EvolutionNode node = this.getNodeByName(nodeName);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
 		String tmpString = policyClause.nextToken().trim();
@@ -1033,11 +989,11 @@ public final class HecataeusSQLExtensionParser{
 		StringTokenizer policyClause = new StringTokenizer(policyStringClause);
 		String nodeName = policyClause.nextToken(":").trim();
 		//get node on which policy is applied
-		VisualNode node;
+		EvolutionNode node;
 		if(nodeName.contains("."))
-			node = this._graph.findVertexByNameParent(nodeName);
+			node = this.evoGraph.findVertexByNameParent(nodeName);
 		else
-			node = this._graph.findVertexByName(nodeName);
+			node = this.evoGraph.findVertexByName(nodeName);
 		if (node==null)
 			throw new HecataeusException("Unknown Node: " + nodeName);
 		if (node.getType().getCategory().equals(NodeCategory.MODULE))
@@ -1077,18 +1033,16 @@ public final class HecataeusSQLExtensionParser{
 		node.addPolicy(eventType, policyType);
 	};
 	
-	private VisualNode getNodeByName(String name) {
+	private EvolutionNode getNodeByName(String name) {
 		//check if name is of the form TABLENAME.ATTRIBUTE
 		String result[]= name.split("\\.");
-		VisualNode node = null;
-		node = this._graph.findVertexByName(result[0].trim().toUpperCase());
+		EvolutionNode node = this.evoGraph.findVertexByName(result[0].trim().toUpperCase());
 		if (result.length>1) {
-			for (VisualNode childNode : this._graph.getModule(node)) {
+			for (EvolutionNode childNode : this.evoGraph.getModule(node)) {
 				if (childNode.getName().equalsIgnoreCase(result[1].trim()))
 					return childNode;
 			}
-		}else
-			return node;
+		}
 		return node;
 	}
 		

@@ -10,7 +10,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 public class VisualNodeIcon implements Transformer<VisualNode, Icon> {
 	
-	String path = "resources/";
+	private String path = "resources/";
 	@Override
 	public Icon transform(VisualNode v) {
 		NodeType type = (v.getType());

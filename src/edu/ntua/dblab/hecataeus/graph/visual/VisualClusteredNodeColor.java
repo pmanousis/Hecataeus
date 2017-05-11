@@ -1,7 +1,6 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 
 import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +8,6 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 
-import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
@@ -33,7 +31,6 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 	
 	@Override
 	public Paint transform(VisualNode node) {
-		VisualNode file = null;
 		float alpha = 0.2f;
 		StatusType status = (node.getStatus());
 		if (picked.isPicked(node)){
@@ -43,8 +40,8 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 			Collection<VisualNode> toNodes = new ArrayList<VisualNode>();
 			Collection<VisualNode> fromNodes = new ArrayList<VisualNode>();
 			
-			List<VisualEdge> inE = new ArrayList<VisualEdge>(node._inEdges);
-			List<VisualEdge> outE = new ArrayList<VisualEdge>(node._outEdges);
+			List<VisualEdge> inE = new ArrayList<VisualEdge>(node.getInEdges());
+			List<VisualEdge> outE = new ArrayList<VisualEdge>(node.getOutEdges());
 			VisualFileColor vfs = new VisualFileColor();
 			
 			for(VisualEdge edgeIndx : inE){
@@ -93,7 +90,6 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 							if(node.getType() == NodeType.NODE_TYPE_VIEW){
 								//ta views einai prasina
 								this.color = 150;
-								node.setNodeColor(getColor(this.color));
 							}
 							else{ //QUERY
 								String fileName = node.getFileName();
@@ -103,7 +99,6 @@ public class VisualClusteredNodeColor  implements Transformer<VisualNode, Paint>
 						}
 						else{//ta relation einai grey
 							this.color = 100;
-							node.setNodeColor(getColor(this.color));
 						}
 					}
 					else{

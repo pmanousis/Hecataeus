@@ -5,7 +5,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
@@ -173,7 +172,7 @@ public class VisualConcentricCircleLayout extends AbstractLayout<VisualNode,Visu
 	
 	protected ArrayList<VisualNode> FindSem(VisualNode node){
 		ArrayList<VisualNode> sem = new ArrayList<VisualNode>();
-		List<VisualEdge> outE = new ArrayList<VisualEdge>(node._outEdges);
+		List<VisualEdge> outE = new ArrayList<VisualEdge>(node.getOutEdges());
 
 		for(VisualEdge edgeIndx : outE){
 			if(edgeIndx.getToNode()!=null){

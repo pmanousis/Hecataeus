@@ -7,16 +7,12 @@ package edu.ntua.dblab.hecataeus;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.JMenu;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
@@ -137,7 +133,7 @@ protected HecataeusViewer viewer;
 			if(node.getType()==NodeType.NODE_TYPE_RELATION)
 			{
 				List<String> filenames=new ArrayList<String>();
-				for(EvolutionEdge inEdge: node.getInEdges())
+				for (VisualEdge inEdge : node.getInEdges())
 				{
 					if(filenames.contains(inEdge.getFromNode().getFileName())==false)
 					{

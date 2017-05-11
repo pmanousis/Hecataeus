@@ -19,5 +19,6 @@
 	<classpathentry exported="true" kind="lib" path="forms-1.3.0.jar" sourcepath="forms-1.3.0-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="commons-lang3-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="jsqlparser-0.7.0.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
