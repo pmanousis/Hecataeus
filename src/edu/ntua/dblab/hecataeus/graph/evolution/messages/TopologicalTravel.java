@@ -3,6 +3,7 @@ package edu.ntua.dblab.hecataeus.graph.evolution.messages;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+
 import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;

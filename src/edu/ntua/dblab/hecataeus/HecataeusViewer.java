@@ -16,9 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,10 +31,7 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -56,7 +51,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 
-import net.miginfocom.swing.MigLayout;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
@@ -84,6 +78,7 @@ import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
+import net.miginfocom.swing.MigLayout;
 
 public class HecataeusViewer {
 	
@@ -269,7 +264,7 @@ public class HecataeusViewer {
 	 * @author pmanousi
 	 * Opens an existing project.
 	 */
-	private void openProject(){
+	public void openProject() {
 		FileDialog fd=new FileDialog((Dialog)null, "Select the project you want to open.", FileDialog.LOAD);
 		fd.setDirectory(projectConf.curPath);
 		fd.setVisible(true);
@@ -2432,6 +2427,14 @@ public class HecataeusViewer {
 		return frame;
 	}
 	
+	public String getInformationAreaText() {
+		return informationArea.getText();
+	}
+
+	public HecataeusEventManagerGUI getEventManagerGUI() {
+		return eventManagerGui;
+	}
+
 	public List<VisualGraph> getGraphs(){
 		return this.graphs;
 	}

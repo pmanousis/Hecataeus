@@ -1,18 +1,14 @@
 package edu.ntua.dblab.hecataeus;
 
 import java.awt.Container;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -22,9 +18,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-
-import org.apache.commons.collections15.functors.ConstantTransformer;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
@@ -34,14 +27,8 @@ import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeColor;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeFont;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeLabel;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeShape;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNodeVisible;
-import edu.uci.ics.jung.visualization.RenderContext;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.renderers.Renderer.VertexLabel.Position;
 
 @SuppressWarnings("serial")
 public class HecataeusEventManagerGUI extends JPanel
@@ -232,16 +219,39 @@ public class HecataeusEventManagerGUI extends JPanel
 		UPDATE();
 	}
 
+	public void SHOWIMPACTtest(EvolutionEvent event) {
+		TopologicalTravel pmtt = new TopologicalTravel(this.viewer.graphs.get(0));
+		pmtt.travel();
+		this.epilegmenosKombos =
+			this.viewer.graphs.get(0).findVertexByNameParent(this.selectedNodeLbl.getText());
+		event.setEventNode(this.epilegmenosKombos);
+		VisualGraph agraph = (VisualGraph) this.viewer.graphs.get(0);
+
+		this.viewer.saveXmlForWhatIf(event.toString(), this.selectedNodeLbl.getText());
+
+		agraph.initializeChange(event);
+		//get new layout's positions
+		this.viewer.getLayoutPositions();
+		HecataeusViewer
+			.getArchitectureGraphActiveViewer().getRenderContext().setVertexShapeTransformer(new VisualNodeShape());
+
+		HecataeusViewer.getArchitectureGraphActiveViewer().repaint();
+		this.viewer.policyManagerGui.loadPolicy();
+		this.viewer.showImpact();
+	}
+
 	protected void SHOWIMPACT()
 	{
 		TopologicalTravel pmtt=new TopologicalTravel(this.viewer.graphs.get(0));
 		pmtt.travel();
 		if(this.epilegmenosKombos!=null)
 		{
-			this.epilegmenosKombos=this.viewer.graphs.get(0).findVertexByNameParent(this.selectedNodeLbl.getText()); /** @author pmanousi Because of many panes, we need to say specifically to run events on the first one, with the original graph. */
-			EvolutionEvent<VisualNode> event =new EvolutionEvent<VisualNode>(EventType.toEventType((String)this.eventCombo.getSelectedItem()));
+			this.epilegmenosKombos = this.viewer.graphs.get(0).findVertexByNameParent(this.selectedNodeLbl
+				.getText());
+			EvolutionEvent<VisualNode> event =
+				new EvolutionEvent<VisualNode>(EventType.toEventType((String) this.eventCombo.getSelectedItem()));
 			event.setEventNode(this.epilegmenosKombos);
-			VisualGraph agraph = (VisualGraph)this.viewer.graphs.get(0);
+			VisualGraph agraph = (VisualGraph) this.viewer.graphs.get(0);
 /**
  * @author pmanousi
  * IMHO: This should better be a tree with all events that produced new graphs at a Manager in HecataeusViewer.
@@ -317,5 +327,9 @@ public class HecataeusEventManagerGUI extends JPanel
 				}
 			}
 		}
+	}
+
+	public void setNodeLabelText(String text) {
+		selectedNodeLbl.setText(text);
 	}
 }
