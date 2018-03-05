@@ -1,5 +1,6 @@
 package edu.ntua.dblab.hecataeus.graph.visual;
 import java.util.Comparator;
+
 import clusters.EngineConstructs.Cluster;
 
 public class ClusterComparator implements Comparator <Cluster> {

@@ -6,6 +6,7 @@ package edu.ntua.dblab.hecataeus.graph.visual;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
+import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 
 /**
  * The class implements a visual edge of the graph
@@ -15,41 +16,61 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
  * 
  */
 
-public class VisualEdge extends EvolutionEdge{
+public class VisualEdge {
 	
-		
-	/**
-	 * Creates an edge Object, with specific name,type,fromNode and toNode.
-	 * 
-	 */
-	public VisualEdge(String name, EdgeType type , VisualNode fromNode, VisualNode toNode) {
-		super(name, type, fromNode, toNode);
+	final private EvolutionEdge parentEvolutionEdge;
+	private VisualGraph visualGraphInWhichContained;
+
+	public VisualEdge(EvolutionEdge parentEvolutionEdge) {
+		this.parentEvolutionEdge = parentEvolutionEdge;
+    }
+	
+	public EvolutionEdge getParentEvolutionEdge() {
+		return parentEvolutionEdge;
 	}
 
-	public VisualEdge() {
-    	super();
-    }
-	
+	public void setVisualGraphInWhichContained(VisualGraph visualGraphInWhichContained) {
+		this.visualGraphInWhichContained = visualGraphInWhichContained;
+	}
+
     public VisualNode getFromNode() {
-        return (VisualNode) super.getFromNode();
+    	return visualGraphInWhichContained.getEquivalentVisualNode(parentEvolutionEdge.getFromNode());
     }
-    
     
     public VisualNode getToNode() {
-        return (VisualNode) super.getToNode();
+    	return visualGraphInWhichContained.getEquivalentVisualNode(parentEvolutionEdge.getToNode());
     }
     
+	public String getName() {
+		return parentEvolutionEdge.getName();
+	}
 
-    public VisualEdge clone(){
-    	
-    	VisualEdge edge = new VisualEdge();
-    	
-    	edge.setName(this.getName());
-    	edge.setFromNode(this.getFromNode());
-    	edge.setToNode(this.getToNode());
-    	edge.setPolicies(this.getPolicies());
-    	edge.setStatus(this.getStatus(), true);
-    	edge.setType(this.getType());
-    	return edge;
-    }
+	public EdgeType getType() {
+		return parentEvolutionEdge.getType();
+	}
+
+	public StatusType getStatus() {
+		return parentEvolutionEdge.getStatus();
+	}
+
+	public boolean isPartOf() {
+		return parentEvolutionEdge.isPartOf();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof VisualEdge))
+			return false;
+
+		VisualEdge oth = (VisualEdge) other;
+
+		if (this.getParentEvolutionEdge().equals(oth.getParentEvolutionEdge()) && super.equals(other))
+			return true;
+		return false;
+	}
+
+	public String toString(){
+		return parentEvolutionEdge.toString();
+	}
+
 }

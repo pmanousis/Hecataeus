@@ -1,20 +1,18 @@
 package tests;
 
-import static org.junit.Assert.fail;
-
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.HashSet;
 
 import org.junit.Test;
 
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
+import edu.ntua.dblab.hecataeus.gui.HecataeusViewer;
 
 /**
  * In this test we check if both graphs are identical to its original. Things that
@@ -35,74 +33,44 @@ import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
  */
 public class GraphEqualityTest {
 
-	private final String PATH = "C:\\Users\\Desktop\\splitedVisualGraph.txt";
-
-	private final HecataeusViewer viewer = new HecataeusViewer(new VisualGraph());
+	private final static String PATH = "C:\\Users\\UniQ\\Desktop\\splitedVisualGraph.txt";
 
 	@Test
 	public final void test() {
-
+		HecataeusViewer viewer = new HecataeusViewer(new EvolutionGraph());
 		viewer.openProject();
 		try {
 			Path file = Paths.get(PATH);
-			BufferedReader reader = Files.newBufferedReader(file);
+			BufferedWriter writer = Files.newBufferedWriter(file);
 
-			testEvolutionGraphNumberOfEdgesAndVertices(reader);
+			EvolutionGraph evolutionGraph = viewer.getEvolutionGraph();
+			writer.write("" + evolutionGraph.getVertices().size());
+			writer.newLine();
+			writer.write("" + evolutionGraph.getEdges().size());
+			writer.newLine();
 
-			testVisualGraphNumberOfEdgesAndVertices(reader);
+			VisualGraph visualGraph = viewer.getSummaryVisualGraph();
+			writer.write("" + visualGraph.getVertices().size());
+			writer.newLine();
+			writer.write("" + visualGraph.getEdges().size());
+			writer.newLine();
 
-			testIfAllEdgesExistInRefactoredCode(reader);
+			
+			for (EvolutionNode vertice : evolutionGraph.getVertices()) {
+				writer.write(Arrays.toString(vertice.getInEdges().toArray()));
+				writer.newLine();
+			}
 
-			reader.close();
+			for (EvolutionNode vertice : evolutionGraph.getVertices()) {
+				String q = Arrays.toString(vertice.getOutEdges().toArray());
+				writer.write(q);
+				writer.newLine();
+			}
+			writer.close();
 		} catch (IOException x) {
 			System.out.println(x.getMessage());
 		}
 
-	}
-
-	private void testEvolutionGraphNumberOfEdgesAndVertices(BufferedReader reader) throws IOException {
-		VisualGraph evolutionGraph = viewer.graph;
-		String evolutionGraphTotalVertices = reader.readLine();
-		String evolutionGraphTotalEdges = reader.readLine();
-		if (evolutionGraphTotalVertices.equals(evolutionGraph.getVertices().size()))
-			fail("EVOLUTION GRAPH! TOTAL NUMBER OF VERTICES NOT EQUALS!" + System.lineSeparator() +
-				"Before refactor: " + evolutionGraph.getVertices().size() + System.lineSeparator() + "AFER: " +
-				evolutionGraphTotalVertices);
-		if (evolutionGraphTotalEdges.equals(evolutionGraph.getEdges().size()))
-			fail("EVOLUTION GRAPH! TOTAL NUMBER OF EDGES NOT EQUALS!" + System.lineSeparator() + "Before refactor: " +
-				evolutionGraph.getEdges().size() + System.lineSeparator() + "AFER: " + evolutionGraphTotalEdges);
-
-	}
-
-	private void testVisualGraphNumberOfEdgesAndVertices(BufferedReader reader) throws IOException {
-		VisualGraph visualGraph = viewer.layout.getGraph();
-		String visualGraphTotalVertices = reader.readLine();
-		String visualGraphTotalEdges = reader.readLine();
-		if (visualGraph.equals(visualGraph.getVertices().size()))
-			fail("VISUAL GRAPH! TOTAL NUMBER OF VERTICES NOT EQUALS!" + System.lineSeparator() + "Before refactor: " +
-				visualGraph.getVertices().size() + System.lineSeparator() + "AFER: " + visualGraphTotalVertices);
-		if (visualGraph.equals(visualGraph.getEdges().size()))
-			fail("VISUAL GRAPH! TOTAL NUMBER OF EDGES NOT EQUALS!" + System.lineSeparator() + "Before refactor: " +
-				visualGraph.getEdges().size() + System.lineSeparator() + "AFER: " + visualGraphTotalEdges);
-
-	}
-
-	private void testIfAllEdgesExistInRefactoredCode(BufferedReader reader) throws IOException {
-		VisualGraph evolutionGraph = viewer.graph;
-		HashSet<String> evolutionEdgesNames = new HashSet<>();
-		for (VisualNode vertice : evolutionGraph.getVertices()) {
-			evolutionEdgesNames.add(Arrays.toString(vertice.getInEdges().toArray()));
-		}
-
-		for (VisualNode vertice : evolutionGraph.getVertices()) {
-			evolutionEdgesNames.add(Arrays.toString(vertice.getOutEdges().toArray()));
-		}
-
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			if (!evolutionEdgesNames.contains(line))
-				fail("Found an edge which is not exist in refactored code");
-		}
 	}
 
 }

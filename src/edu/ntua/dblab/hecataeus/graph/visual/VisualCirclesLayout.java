@@ -5,7 +5,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import clusters.EngineConstructs.Cluster;
 import edu.uci.ics.jung.graph.Graph;
 
 /**

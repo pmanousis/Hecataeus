@@ -12,7 +12,7 @@ import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 
 
 public class VisualNodeFont implements Transformer<VisualNode, Font>{
-	protected Font font;
+	private Font font;
 
 	public VisualNodeFont(Font defaultFont) {
 		 this.font = defaultFont;

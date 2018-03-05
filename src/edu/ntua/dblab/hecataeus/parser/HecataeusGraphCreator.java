@@ -10,10 +10,10 @@ import java.util.Vector;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 import edu.ntua.dblab.hecataeus.hsql.Constraint;
 import edu.ntua.dblab.hecataeus.hsql.Expression;
 import edu.ntua.dblab.hecataeus.hsql.Function;
@@ -28,58 +28,54 @@ import edu.ntua.dblab.hecataeus.parser.PlainSQL.SpecificOperator;
 
 public class HecataeusGraphCreator{
 
-	private static int queries;
-	private static int anon_blocks;			//
-	private static int scripts;				//	
-	private static int inserts;				//
-	private static int deletes;				//added by sgerag
-	private static int updates;				//
-	private static int assignments;			//
-	private static int embeddeds;			//
-	private static int mergeIntos;			//
-	private static int line;				//
-	private static String path;				//added by sgerag
-	
-	VisualGraph HGraph;
+	private static int queries = 0;
+	private static int anon_blocks = 0;
+	private static int inserts = 0;
+	private static int deletes = 0;
+	private static int updates = 0;
+	private static int assignments = 0;
+	private static int embeddeds = 0;
+	private static int line = 0;
+	private static String path = "";
+
+	private EvolutionGraph evoGraph;
 
 	HecataeusGraphCreator() {
-		queries=0;
-		inserts=0;						//
-		anon_blocks=0;					//
-		scripts=0;						//
-		deletes=0;						//added by sgerag
-		updates=0;						//
-		assignments=0;					//
-		embeddeds=0;
-		line=0;							//
-		path="";						//
-		HGraph =  new VisualGraph();
+		evoGraph = new EvolutionGraph();
 	}
 
-	HecataeusGraphCreator(VisualGraph graph) {
-		HGraph = graph ;
+	HecataeusGraphCreator(EvolutionGraph graph) {
+		evoGraph = graph;
 	}
 
-	private VisualNode add_node(String Label, NodeType Type, File fName) {
-		VisualNode v = new VisualNode(Label, Type, fName);
-		v.setPath(path);														//added by sgerag
-		v.setLine(line);
-		HGraph.addVertex(v);
-		return v;
-	}
-
-	private VisualEdge add_edge( VisualNode u, VisualNode  v, EdgeType Type, String Label) {
-		VisualEdge e = new VisualEdge(Label, Type, u, v);
-		HGraph.addEdge(e);
-		return  e ;
-	}
-
-	//sgerag modification: return type (boolean--->HecataeusEvolutionNode)
-	public VisualNode add_table(Table tTable, String definition, File fileName) throws SQLException {
+	/**
+	 * adds a file node in the graph
+	 * 
+	 * @author Stefanos Geraggelos
+	 * @param plain
+	 * @exception SQLException
+	 */
+	public boolean addFile(FileContainer file, File fileName) throws SQLException {
 		try {
-			VisualNode u  ;
-			VisualNode v  ;
-			VisualEdge e  ;
+			path = file.getPath();
+			EvolutionNode fileNode = null;
+			Vector<Block> blcks = file.getBlocks();
+			if (!blcks.isEmpty())
+				fileNode = add_node(file.getName(), NodeType.NODE_TYPE_FILE, fileName);
+			for (Block block : blcks) {
+				addBlock(block, fileNode, fileName);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SQLException();
+		}
+		return true;
+	}
+
+	private EvolutionNode add_table(Table tTable, String definition, File fileName) throws SQLException {
+		try {
+			EvolutionNode u;
+			EvolutionNode v;
 			// Add the relation node
 			u = add_node(tTable.getName(), NodeType.NODE_TYPE_RELATION, fileName);
 			u.setSQLDefinition(definition);
@@ -87,17 +83,14 @@ public class HecataeusGraphCreator{
 			* @author pmanousi start
 			* Make a new node called tableName+" OUTPUT" and my table hits this node, later attributes will hit outputNode.
 			*/
-			VisualNode outputNode=add_node(u.getName()+"_SCHEMA", NodeType.NODE_TYPE_OUTPUT, fileName);
-			e=add_edge(u, outputNode, EdgeType.EDGE_TYPE_OUTPUT,"OUT_S");
+			EvolutionNode outputNode =
+				add_node(u.getName() + "_SCHEMA", NodeType.NODE_TYPE_OUTPUT, fileName);
+			add_edge(u, outputNode, EdgeType.EDGE_TYPE_OUTPUT, "OUT_S");
 			// Add the attribute nodes
 			for (int i = 0; i < tTable.getColumnCount();i++) {
 				// Add new attribute node and a new edge with the relation node
 				v = add_node(tTable.getColumnName(i), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
-				/**
-				 * @author pmanousi
-				 * Changed edges to hit outputNode.
-				 */
-				e = add_edge(outputNode, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
+				add_edge(outputNode, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 			}
 			addTableConstraints(tTable, fileName);
 			return u;								//added by sgerag
@@ -112,7 +105,7 @@ public class HecataeusGraphCreator{
 			// Add constraints
 			for (int i=0;i<tTable.getConstraints().size();i++){
 				Constraint c = (Constraint) tTable.getConstraints().get(i);
-				VisualNode w =  addConstraintNode(tTable, c, fileName);
+				addConstraintNode(tTable, c, fileName);
 			}
 		}
 		catch(Exception e)
@@ -121,9 +114,26 @@ public class HecataeusGraphCreator{
 		}                
 	}
 
+	private EvolutionNode add_node(String name, NodeType Type, File fName) {
+		EvolutionNode v = new EvolutionNode(name, Type, fName);
+		v.setPath(path);
+		v.setLine(line);
+		getEvolutionGraph().addVertex(v);
+		return v;
+	}
 
-	private  VisualNode addConstraintNode(Table tTable, Constraint cConstraint, File fileName){
-		VisualNode u;
+	private EvolutionEdge add_edge(EvolutionNode u,
+		EvolutionNode v,
+		EdgeType Type,
+		String name) {
+
+		EvolutionEdge e = new EvolutionEdge(name, Type, u, v);
+		getEvolutionGraph().addEdge(e);
+		return e;
+	}
+
+	private EvolutionNode addConstraintNode(Table tTable, Constraint cConstraint, File fileName) {
+		EvolutionNode u;
 		int cols[] ; 
 		if (cConstraint.getType() == Constraint.PRIMARY_KEY) {
 			//add constraint node
@@ -132,8 +142,8 @@ public class HecataeusGraphCreator{
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
 				int columnNumber = ((Integer)cols[i]).intValue();
-				VisualNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
-				VisualEdge e = add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op");
+				EvolutionNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
+				add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op");
 			}
 			//return constraint node
 			return u;
@@ -144,8 +154,8 @@ public class HecataeusGraphCreator{
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
 				int columnNumber = ((Integer)cols[i]).intValue();
-				VisualNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
-				VisualEdge e = add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op");
+				EvolutionNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
+				add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op");
 			}
 			//return constraint node
 			return u;
@@ -156,8 +166,8 @@ public class HecataeusGraphCreator{
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
 				int columnNumber = ((Integer)cols[i]).intValue();
-				VisualNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
-				VisualEdge e = add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op");
+				EvolutionNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
+				add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op");
 			}
 			//return constraint node
 			return u;
@@ -169,18 +179,16 @@ public class HecataeusGraphCreator{
 			cols = cConstraint.getRefColumns();
 			for (int i = 0; i < cols.length; i++) {
 				int columnNumber = ((Integer)cols[i]).intValue();
-				VisualNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
-				//from attribute nodes (v) -->constraint node(u) 
-				VisualEdge e = add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op" + (i+1));
+				EvolutionNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
+				add_edge(v, u, EdgeType.EDGE_TYPE_OPERATOR, "op" + (i + 1));
 			}
 			//for each column in master table create edges from fk node to attributes nodes
 			tTable = cConstraint.getMain();
 			cols = cConstraint.getMainColumns();
 			for (int i = 0; i < cols.length; i++) {
 				int columnNumber = ((Integer)cols[i]).intValue();
-				VisualNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
-				//from constraint node(u) --> attribute nodes (v)
-				VisualEdge e = add_edge(u, v, EdgeType.EDGE_TYPE_OPERATOR, "op" + (i+1));
+				EvolutionNode v = find_attribute(tTable.getName(), tTable.getColumnName(columnNumber));
+				add_edge(u, v, EdgeType.EDGE_TYPE_OPERATOR, "op" + (i + 1));
 			}
 			//return constraint node
 			return u ;
@@ -190,64 +198,18 @@ public class HecataeusGraphCreator{
 		}
 	}
 
-	private VisualNode find_attribute(String TableName, String Attribute) {
-		VisualNode u ;
-		u = HGraph.getAttributeNode(TableName+"_SCHEMA", Attribute);
+	private EvolutionNode find_attribute(String TableName, String Attribute) {
+		EvolutionNode u ;
+		u = getAttributeNode(TableName + "_SCHEMA", Attribute);
 		/**
 		 * @author pmanousi
 		 * If it is not a table then it is a view we ask about.
 		 */
 		if(u==null)
 		{
-			u = HGraph.getAttributeNode(TableName+"_OUT", Attribute);
+			u = getAttributeNode(TableName + "_OUT", Attribute);
 		}
 		return u ;
-	}
-	
-	private VisualNode dfind_attribute(Select sSelect, String attribute) {
-		Table tTable ;
-		String foundTable = "";
-		int foundColumns = 0;
-		for (int i = 0; i < sSelect.tFilter.length; i++) {
-			tTable = sSelect.tFilter[i].getTable();
-			for (int j = 0; j < tTable.getColumnCount() ;j++) {
-				if (attribute==tTable.getColumnName(j)) {
-					foundColumns++;
-					foundTable = tTable.getName() ;
-				}
-			}
-		}
-		if ( foundColumns == 1 ) {
-			return find_attribute(foundTable, attribute);
-		} else{
-			return null;
-		}
-	}
-	
-	
-	public boolean add_query(Select sSelect, String definition, File fileName) throws SQLException{
-		try {
-			queries++;
-			VisualNode   u = add_node("Q" + queries, NodeType.NODE_TYPE_QUERY, fileName);
-			this.createQuery(u, sSelect, false, fileName);
-			u.setSQLDefinition(definition);
-		} catch (RuntimeException e) {
-			e.printStackTrace();
-			throw new SQLException();
-		}
-		return true;
-	}
-
-	public boolean add_view(Select sSelect, String view_name, String definition, File fileName) throws SQLException{
-		try {
-			VisualNode u = add_node(view_name, NodeType.NODE_TYPE_VIEW, fileName);
-			this.createQuery(u, sSelect, false, fileName);
-			u.setSQLDefinition(definition);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new SQLException();
-		}
-		return true;
 	}
 
 	/**
@@ -257,9 +219,9 @@ public class HecataeusGraphCreator{
 	 * @param fileNode
 	 * @exception SQLException
 	 */
-	private void addBlock(Block block,VisualNode fileNode, File fileName) throws SQLException{
+	private void addBlock(Block block, EvolutionNode fileNode, File fileName) throws SQLException {
 		try{
-			VisualNode blockNode=null;
+			EvolutionNode blockNode = null;
 			boolean emptyBlock=true;
 			
 			if (block instanceof AnonymousBlock){
@@ -272,7 +234,6 @@ public class HecataeusGraphCreator{
 				}
 			}
 			else if (block instanceof Script){
-				scripts++;					
 				line=block.getLine();
 			}
 			else if (block instanceof StoredProcedure){
@@ -309,7 +270,6 @@ public class HecataeusGraphCreator{
 			}
 			else if (block instanceof EmbeddedStatement){
 				embeddeds++;
-				EmbeddedStatement emb=(EmbeddedStatement)block;
 				line=block.getLine();
 				if (!blockHasEmptyChildren(block)){
 					blockNode=add_node("EMBEDDED_"+embeddeds,NodeType.NODE_TYPE_EMBEDDED_STATEMENT, fileName);
@@ -327,7 +287,7 @@ public class HecataeusGraphCreator{
 			}
 			Vector<Statement> stmts=block.getStatements();
 			for (Statement nod:stmts){
-				VisualNode stmtNode=new VisualNode();
+				EvolutionNode stmtNode = new EvolutionNode();
 				if (nod instanceof Relation){
 					Relation rel=((Relation)nod);
 					line=rel.getLine();
@@ -399,7 +359,6 @@ public class HecataeusGraphCreator{
 					stmtNode.setSQLDefinition(assig.getDefinition());
 				}
 				else if (nod instanceof MergeInto){
-					mergeIntos++;
 					MergeInto merge = (MergeInto) nod;
 					line = merge.getLine();
 //					stmtNode=add_node("Merge_"+mergeIntos,NodeType.NODE_TYPE_MERGE_INTO);
@@ -418,29 +377,6 @@ public class HecataeusGraphCreator{
 			e.printStackTrace();
 			throw new SQLException();
 		}	
-	}
-	
-	
-	/**
-	 * adds a file node in the graph
-	 * @author Stefanos Geraggelos
-	 * @param plain
-	 * @exception SQLException
-	 */
-	public boolean addFile(FileContainer file, File fileName) throws SQLException{
-		try {
-			path=file.getPath();
-			VisualNode fileNode=null;
-			Vector<Block> blcks=file.getBlocks();
-			if (!blcks.isEmpty())	fileNode=add_node(file.getName(),NodeType.NODE_TYPE_FILE, fileName);
-			for (Block block:blcks){
-				addBlock(block,fileNode, fileName);
-			}
-		}catch (Exception e){
-			e.printStackTrace();
-			throw new SQLException();
-		}
-		return true;
 	}
 	
 	
@@ -465,24 +401,27 @@ public class HecataeusGraphCreator{
 	 * @author pmanousi
 	 * We check to see if a node already exists in any of the input nodes.  If not we create it and hang it in the table or view it should be getting input from.
 	 */
-	private VisualNode existsInInputSchema(VisualNode qn,String tableName, String nodeName, File fileName)
+	@SuppressWarnings("unchecked")
+	private EvolutionNode existsInInputSchema(EvolutionNode qn,
+		String tableName,
+		String nodeName,
+		File fileName)
 	{
-		VisualNode x=null;
-		VisualEdge e=null;
+		EvolutionNode x = null;
 		for(int i=0;i<qn.getOutEdges().size();i++)
 		{
 			if(qn.getOutEdges().get(i).getToNode().getName().equals(qn.getName()+"_IN_"+tableName))
 			{
-				VisualNode in=qn.getOutEdges().get(i).getToNode();
+				EvolutionNode in = (EvolutionNode) qn.getOutEdges().get(i).getToNode();
 				for(int j=0;j<in.getOutEdges().size();j++)
 				{
 					if(in.getOutEdges().get(j).getToNode().getName().equals(nodeName))
 					{
-						return(in.getOutEdges().get(j).getToNode());
+						return (EvolutionNode) in.getOutEdges().get(j).getToNode();
 					}
 				}
 				x=add_node(nodeName, NodeType.NODE_TYPE_ATTRIBUTE, fileName);
-				e=add_edge(in, x, EdgeType.EDGE_TYPE_INPUT, "S");
+				add_edge(in, x, EdgeType.EDGE_TYPE_INPUT, "S");
 				for(int j=0;j<in.getOutEdges().size();j++)
 				{
 					if(in.getOutEdges().get(j).getName().equals("from"))
@@ -491,7 +430,10 @@ public class HecataeusGraphCreator{
 						{
 							if(in.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode().getName().equals(nodeName))
 							{
-								e=add_edge(x, in.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode(), EdgeType.EDGE_TYPE_MAPPING, "map-select");
+								add_edge(x,
+									(EvolutionNode) in
+										.getOutEdges().get(j).getToNode().getOutEdges().get(k).getToNode(),
+									EdgeType.EDGE_TYPE_MAPPING, "map-select");
 								break;
 							}
 						}
@@ -503,24 +445,23 @@ public class HecataeusGraphCreator{
 		return(x);
 	}
 	
-	private void createQuery(VisualNode u, Select sSelect, boolean nested, File fileName) throws SQLException{
+	@SuppressWarnings("unchecked")
+	private void createQuery(EvolutionNode u, Select sSelect, boolean nested, File fileName)
+		throws SQLException {
 		Expression expression;
 		String GroupByLabel = null;
 		// TableFilter ta
-		VisualNode v = null ;
-		VisualNode w = null ;
-		VisualNode x = null ;
-		VisualNode input=null;
-		VisualNode output=add_node(u.getName()+"_OUT", NodeType.NODE_TYPE_OUTPUT, fileName);
-		VisualNode semantics=add_node(u.getName()+"_SMTX", NodeType.NODE_TYPE_SEMANTICS, fileName);
-		VisualEdge e;
-		e=add_edge(u, output, EdgeType.EDGE_TYPE_OUTPUT,u.getName()+"OUT_S");
-		e=add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS,u.getName()+"SMTX_S");
+		EvolutionNode v = null;
+		EvolutionNode w = null;
+		EvolutionNode x = null;
+		EvolutionNode input = null;
+		EvolutionNode output = add_node(u.getName() + "_OUT", NodeType.NODE_TYPE_OUTPUT, fileName);
+		EvolutionNode semantics =
+			add_node(u.getName() + "_SMTX", NodeType.NODE_TYPE_SEMANTICS, fileName);
+		add_edge(u, output, EdgeType.EDGE_TYPE_OUTPUT, u.getName() + "OUT_S");
+		add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS, u.getName() + "SMTX_S");
 		
 		int tblIndex = 0;
-		// __________________________________________________________________________________________________  
-		// check for self-join
-		boolean SJQuery = false;
 		int len = sSelect.tFilter.length;
 		String[] selfJoinedTables = new String[len]  ; // dim statement
 		selfJoinedTables = checkSelfJoin(sSelect);
@@ -534,7 +475,7 @@ public class HecataeusGraphCreator{
 			if ( selfJoinedTables[i] != null)
 			{
 				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getName(), NodeType.NODE_TYPE_INPUT, fileName);
-				e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
+				add_edge(u, input, EdgeType.EDGE_TYPE_INPUT, "IN_S");
 			}
 			else
 			{
@@ -543,10 +484,14 @@ public class HecataeusGraphCreator{
 				 * Create new schema, also change the from edge from input to table_schema instead of from query to table.
 				 */
 				input=add_node(u.getName()+"_IN_"+sSelect.tFilter[i].getTable().getName(), NodeType.NODE_TYPE_INPUT, fileName);
-				e=add_edge(u, input, EdgeType.EDGE_TYPE_INPUT,"IN_S");
+				add_edge(u, input, EdgeType.EDGE_TYPE_INPUT, "IN_S");
 			}
-			e = add_edge(input.getInEdges().get(0).getFromNode(), find_relationFrom(sSelect.tFilter[i].getTable().getName()).getInEdges().get(0).getFromNode(), EdgeType.EDGE_TYPE_USES, "uses");			
-			e = add_edge(input, find_relationFrom(sSelect.tFilter[i].getTable().getName()), EdgeType.EDGE_TYPE_FROM, "from");
+			add_edge((EvolutionNode) input.getInEdges().get(0).getFromNode(),
+				(EvolutionNode) find_relationFrom(sSelect.tFilter[i].getTable().getName())
+					.getInEdges().get(0).getFromNode(),
+				EdgeType.EDGE_TYPE_USES, "uses");
+			add_edge(input, find_relationFrom(sSelect.tFilter[i].getTable().getName()), EdgeType.EDGE_TYPE_FROM,
+				"from");
 		}
 		// Visualize the select part  
 		// The following loop examines only the selected columns
@@ -556,9 +501,9 @@ public class HecataeusGraphCreator{
 			// Type COLUMN
 			if (expression.getType()== Expression.COLUMN) {
 				v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName) ;
-				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
+				add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 				x=existsInInputSchema(u, expression.getTableName(), expression.getColumnName(), fileName);
-				e = add_edge(v,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
+				add_edge(v, x, EdgeType.EDGE_TYPE_MAPPING, "map-select");
 			}
 			// Type VALUE
 			if (expression.getType()== Expression.VALUE) {
@@ -567,10 +512,11 @@ public class HecataeusGraphCreator{
 						v = add_node(expression.getValue().toString(), NodeType.NODE_TYPE_ATTRIBUTE, fileName) ;
 					}else{
 						v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName) ;
-						VisualNode v1 = add_node(expression.getValue().toString(), NodeType.NODE_TYPE_CONSTANT, fileName) ;
-						e = add_edge(v, v1, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
+						EvolutionNode v1 =
+							add_node(expression.getValue().toString(), NodeType.NODE_TYPE_CONSTANT, fileName);
+						add_edge(v, v1, EdgeType.EDGE_TYPE_MAPPING, "map-select");
 					}
-				e = add_edge(u, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
+					add_edge(u, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
 				}
 				catch (Exception ex){
 					System.out.println("[Expression Object in new_view]"+ ex.getMessage() );
@@ -585,12 +531,12 @@ public class HecataeusGraphCreator{
 				else 
 					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				w = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION, fileName) ;
-				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
-				e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING,"map-select");
-				e= add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, function.getName());
+				add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
+				add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING, "map-select");
+				add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, function.getName());
 				for (int j = 0; j <function.eArg.length ; j++) {
-					VisualNode arg =add_expression(function.eArg[j],u, fileName);
-					e = add_edge(w,	arg, EdgeType.EDGE_TYPE_MAPPING, "op"+(j+1)) ;
+					EvolutionNode arg = add_expression(function.eArg[j], u, fileName);
+					add_edge(w, arg, EdgeType.EDGE_TYPE_MAPPING, "op" + (j + 1));
 				}
 			}
 			// Type COUNT (40), SUM (41), MIN (42), MAX (43), AVG (44)
@@ -623,9 +569,9 @@ public class HecataeusGraphCreator{
 				else 
 					v = add_node(expression.getAlias(), NodeType.NODE_TYPE_ATTRIBUTE, fileName);
 				w = add_node(strFunction, NodeType.NODE_TYPE_FUNCTION, fileName) ;
-				e = add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S") ;
-				e = add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING, "map-select") ;
-				e=add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, strFunction);
+				add_edge(output, v, EdgeType.EDGE_TYPE_SCHEMA, "S");
+				add_edge(v, w, EdgeType.EDGE_TYPE_MAPPING, "map-select");
+				add_edge(semantics, w, EdgeType.EDGE_TYPE_SEMANTICS, strFunction);
 				switch (expression.getArg().getType())
 				{
 				//if the aggregate function's argument is an asterix
@@ -636,7 +582,7 @@ public class HecataeusGraphCreator{
 						//only if no alias exist for this column
 						if (expression.getAlias()== "")
 							v.setName(v.getName()+ "(" + expression.getArg().getTableName() + ".*)");
-						VisualNode x1 = find_relation(expression.getArg().getTableName());
+						EvolutionNode x1 = find_relation(expression.getArg().getTableName());
 						//if no alias relation node is found (i.e., no self join)
 						if (x1 == null){ 
 							//get real table
@@ -696,7 +642,7 @@ public class HecataeusGraphCreator{
 						 * Changed to work with output node of table.
 						 */
 						x=existsInInputSchema(u, expression.getArg().getTableName(), expression.getArg().getColumnName(), fileName);
-					e = add_edge(w,	x, EdgeType.EDGE_TYPE_MAPPING, "map-select");
+					add_edge(w, x, EdgeType.EDGE_TYPE_MAPPING, "map-select");
 					break;
 				default : 
 					/**
@@ -712,31 +658,29 @@ public class HecataeusGraphCreator{
 		// Visualize the where part of a query
 		if (sSelect.eCondition != null ) {
 			v = add_expression(sSelect.eCondition,u, fileName);
-			/**
-			 * @author pmanousi
-			 * Was: e = add_edge(u, v, EdgeType.EDGE_TYPE_WHERE, "where");
-			 */
-			e = add_edge(semantics, v, EdgeType.EDGE_TYPE_WHERE, "where");
+			add_edge(semantics, v, EdgeType.EDGE_TYPE_WHERE, "where");
 		}
 		// __________________________________________________________________________________________________  
 		// Visualize the GROUP BY part of a query
 		if ( sSelect.iGroupLen > 0 ) {
 			// add GB node
 			v = add_node("GB", NodeType.NODE_TYPE_GROUP_BY, fileName) ;
-			e = add_edge(semantics, v, EdgeType.EDGE_TYPE_GROUP_BY, "group by") ;
+			add_edge(semantics, v, EdgeType.EDGE_TYPE_GROUP_BY, "group by");
 			int j = 0;
 			// add edges
 			for (int i = (sSelect.eColumn.length - sSelect.iGroupLen- sSelect.iOrderLen); i < (sSelect.eColumn.length - sSelect.iOrderLen); i++){
 				j++;
 				GroupByLabel = "group by" + j;
 				x = add_expression(sSelect.eColumn[i],u, fileName);
-				e = add_edge(v, x, EdgeType.EDGE_TYPE_GROUP_BY, GroupByLabel);
+				add_edge(v, x, EdgeType.EDGE_TYPE_GROUP_BY, GroupByLabel);
 			}
 		}
 	}
 	
-	private VisualNode  add_expression(Expression expr, VisualNode head, File fileName){
-		VisualNode u=null;
+	private EvolutionNode add_expression(Expression expr,
+		EvolutionNode head,
+		File fileName) {
+		EvolutionNode u = null;
 		switch (expr.getType()){
 		case Expression.NOT:
 			u = add_node(" != ", NodeType.NODE_TYPE_OPERAND, fileName);
@@ -825,15 +769,14 @@ public class HecataeusGraphCreator{
 			Function function = expr.getFunction();
 			u = add_node(function.getName(), NodeType.NODE_TYPE_FUNCTION, fileName) ;
 			for (int j = 0; j <function.eArg.length ; j++) {
-				VisualNode arg =add_expression(function.eArg[j],head, fileName);
-				VisualEdge e = add_edge(u,	arg, EdgeType.EDGE_TYPE_OPERATOR, "op"+(j+1)) ;
+				EvolutionNode arg = add_expression(function.eArg[j], head, fileName);
+				add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR, "op" + (j + 1));
 			}
 			break;
 		default:
 			break ;
 		}
-		VisualEdge newedge ;
-		VisualNode arg ;
+		EvolutionNode arg;
 		if (expr.getArg()!=null) {
 			arg = add_expression(expr.getArg(),head, fileName) ;
 			if (arg!=null)
@@ -844,11 +787,11 @@ public class HecataeusGraphCreator{
 				 */
 				if(find_relationFrom(arg.getName())==null||arg.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
 				{
-					newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op1");
+					add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR, "op1");
 				}
 				else
 				{
-					newedge = add_edge(u, find_relationFrom(arg.getName()), EdgeType.EDGE_TYPE_OPERATOR,"op1");
+					add_edge(u, find_relationFrom(arg.getName()), EdgeType.EDGE_TYPE_OPERATOR, "op1");
 				}
 			}
 		}
@@ -862,57 +805,34 @@ public class HecataeusGraphCreator{
 				 */
 				if(find_relationFrom(arg.getName())==null||arg.getType()==NodeType.NODE_TYPE_CONSTANT)
 				{
-					newedge = add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR,"op2");
+					add_edge(u, arg, EdgeType.EDGE_TYPE_OPERATOR, "op2");
 				}
 				else
 				{
-					newedge = add_edge(u, find_relationFrom(arg.getName()), EdgeType.EDGE_TYPE_OPERATOR,"op2");
+					add_edge(u, find_relationFrom(arg.getName()), EdgeType.EDGE_TYPE_OPERATOR, "op2");
 				}
 			}
 		}
 		return u;
 	}
 
-	private VisualNode find_relation(String relation) {
-		VisualNode v ;
-		v = HGraph.findVertexByName(relation);
+	private EvolutionNode find_relation(String relation) {
+		EvolutionNode v;
+		v = getEvolutionGraph().findVertexByName(relation);
 		return v ;
 	}
 	
-	private VisualNode find_relationFrom(String relation)
+	private EvolutionNode find_relationFrom(String relation)
 	{
-		VisualNode v ;
-		v = HGraph.findVertexByName(relation+"_SCHEMA");
+		EvolutionNode v;
+		v = getEvolutionGraph().findVertexByName(relation+"_SCHEMA");
 		if(v==null)
 		{
-			v=HGraph.findVertexByName(relation+"_OUT");
+			v=getEvolutionGraph().findVertexByName(relation+"_OUT");
 		}
 		return v ;
 	}
 	
-
-	private void CopyTable(String tblName, String tblAlias, File fileName) {
-		//get src relation
-		VisualNode srcTable = find_relation(tblName) ;
-		//create table alias node
-		VisualNode aliasTable =  new VisualNode(tblAlias, NodeType.NODE_TYPE_RELATION, fileName);
-		// add node to graph
-		HGraph.addVertex(aliasTable);
-		aliasTable.setSQLDefinition(srcTable.getSQLDefinition());
-		// create edge for alias
-		this.add_edge(aliasTable, srcTable, EdgeType.EDGE_TYPE_ALIAS, "alias");
-		//  for each attribute in source table create new attribute nodes
-		for (EvolutionEdge edgeAttribute: srcTable.getOutEdges()) {
-			if (edgeAttribute.getType()==EdgeType.EDGE_TYPE_SCHEMA)  {
-				VisualNode aliasAttr =  new VisualNode(edgeAttribute.getToNode().getName(),NodeType.NODE_TYPE_ATTRIBUTE, fileName);
-				HGraph.addVertex(aliasAttr);
-				this.add_edge(aliasTable, aliasAttr, EdgeType.EDGE_TYPE_SCHEMA,"S");
-				//if map select is added between the alias attributes and the source attributes
-				this.add_edge(aliasAttr, (VisualNode) edgeAttribute.getToNode(),EdgeType.EDGE_TYPE_MAPPING,"map-select" );
-			}
-		}
-	}
-
 
 	private String[] checkSelfJoin(Select sSelect) {
 		int len = sSelect.tFilter.length;
@@ -926,14 +846,7 @@ public class HecataeusGraphCreator{
 				}
 			}
 		}
-		/***
-		 * @author pmanousi
-		 * No need for nodes that are alias now with the new schema.
-		 */
-		/*for (int i = 0; i < len; i++) {
-			if (tblNames[i]!=null)
-				CopyTable(sSelect.tFilter[i].getTable().getName(),tblNames[i]);
-		}*/
+
 		return tblNames;
 	}
 	private void Resolve(Select sSelect, TableFilter f, Expression expr, boolean SelfJoinQuery) {
@@ -989,4 +902,30 @@ public class HecataeusGraphCreator{
 				Resolve(sSelect, sSelect.tFilter[i], false) ;
 		}
 	}
+
+	/**
+	 * used for finding explicitly an attribute by its name and its parent relation,
+	 * view or query node
+	 **/
+	private EvolutionNode getAttributeNode(String TableName, String AttributeName) {
+		for (EvolutionNode u : evoGraph.getVertices()) {
+
+			if (u.getName().toUpperCase().equals(TableName) &&
+				((u.getType().getCategory() == NodeCategory.INOUTSCHEMA) ||
+					(u.getType().getCategory() == NodeCategory.MODULE))) {
+
+				for (EvolutionEdge e : evoGraph.getOutEdges(u)) {
+					if (evoGraph.getDest(e).getName().toUpperCase().equals(AttributeName.toUpperCase())) {
+						return evoGraph.getDest(e);
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public EvolutionGraph getEvolutionGraph() {
+		return evoGraph;
+	}
+
 }

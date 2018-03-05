@@ -12,236 +12,155 @@ import edu.ntua.dblab.hecataeus.graph.evolution.MetriseisRewrite;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 
-public abstract class MaestroAbstract<V extends EvolutionNode<E>,E extends EvolutionEdge>
-{
-	List<Algorithm<V,E>> policyCheckAlgorithms;
-	PriorityQueue<Message<V,E>> myGQueue;
-	
-	public MaestroAbstract(PriorityQueue<Message<V,E>> q)
-	{
-		this.policyCheckAlgorithms=new LinkedList<Algorithm<V,E>>();
-		myGQueue=q;
+public abstract class MaestroAbstract {
+	List<Algorithm> policyCheckAlgorithms;
+	PriorityQueue<Message> myGQueue;
+
+	public MaestroAbstract(final PriorityQueue<Message> q) {
+		policyCheckAlgorithms = new LinkedList<>();
+		myGQueue = q;
 	}
-	
-	@SuppressWarnings("unchecked")
-	protected void colorizeSmtx(V start, StatusType smtxStatus, V smtxNode)
-	{
-		start.setStatus(smtxStatus,false);
-		for(int i=0;i<start.getInEdges().size();i++)
-		{
-			if(start.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_OPERATOR)
-			{
-				start.getInEdges().get(i).setStatus(smtxStatus,false);
-				colorizeSmtx((V) start.getInEdges().get(i).getFromNode(), smtxStatus, smtxNode);
-			}
-			if(start.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_WHERE)
-			{
-				start.getInEdges().get(i).setStatus(smtxStatus,false);
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")	
-	public void goToSmtxNode(Message<V,E> message)
-	{
-		for(int i=0;i<message.toNode.getOutEdges().size();i++)
-		{
-			if(message.toNode.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_SEMANTICS)
-			{
-				message.toSchema=(V) message.toNode.getOutEdges().get(i).getToNode();
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")	
-	protected List<V> connectionWithSmtxSearch(Message<V,E> message)
-	{	// Searching in IN node for OP or GROUP BY edges (they come from SMTX node), if there is a connection, I move message.toSchema to SMTX node.
-		List<V> toRet=new LinkedList<V>();
-		for(int j=0;j<message.toSchema.getOutEdges().size();j++)
-		{	// For nodes of input schema.
-			V prosElegxo=(V) message.toSchema.getOutEdges().get(j).getToNode();
-			if(prosElegxo.getName().equals(message.parameter))
-			{	// Found node that gets a change.
-				for(int k=0;k<prosElegxo.getInEdges().size();k++)
-				{
-					if(prosElegxo.getInEdges().get(k).getType()==EdgeType.EDGE_TYPE_OPERATOR||
-							prosElegxo.getInEdges().get(k).getType()==EdgeType.EDGE_TYPE_GROUP_BY||
-							prosElegxo.getInEdges().get(k).getType()==EdgeType.EDGE_TYPE_ORDER_BY||
-							prosElegxo.getInEdges().get(k).getType()==EdgeType.EDGE_TYPE_SEMANTICS)
-					{
-						toRet.add((V) prosElegxo.getInEdges().get(k).getFromNode());
-					}
-				}
-			}
-		}
-		if(toRet.size()==0)
-		{
-			return(null);
-		}
-		return(toRet);
-	}
-	
-	@SuppressWarnings("unchecked")
-	public void goToOutputNode(Message<V,E> message)
-	{
-		for(int i=0;i<message.toNode.getOutEdges().size();i++)
-		{
-			if(message.toNode.getOutEdges().get(i).getToNode().getType()==NodeType.NODE_TYPE_OUTPUT)
-			{
-				message.toSchema=(V) message.toNode.getOutEdges().get(i).getToNode();
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected List<V> connectionWithOutputSearch(Message<V,E> message)
-	{	// Searching in IN node for MAP-SELECT edges (they come from OUT node), if there is a connection, I move message.toSchema to OUT node.
-		List<V> toRet=new LinkedList<V>();
-		for(int j=0;j<message.toSchema.getOutEdges().size();j++)
-		{	// For nodes of input schema.
-			V prosElegxo=(V) message.toSchema.getOutEdges().get(j).getToNode();
-			if(prosElegxo.getName().equals(message.parameter))
-			{	// Found node that gets a change.
-				for(int k=0;k<prosElegxo.getInEdges().size();k++)
-				{
-					if(prosElegxo.getInEdges().get(k).getType()==EdgeType.EDGE_TYPE_MAPPING)
-					{	//Go to OUTPUT
-						if(prosElegxo.getInEdges().get(k).getFromNode().getInEdges().get(0).getType()==EdgeType.EDGE_TYPE_SCHEMA||prosElegxo.getInEdges().get(k).getFromNode().getInEdges().get(0).getType()==EdgeType.EDGE_TYPE_OUTPUT)
-						{	// Output value
-							toRet.add((V) prosElegxo.getInEdges().get(k).getFromNode());
-						}
-						else
-						{	// Aggregate function renamed AS sth
-							V function = (V) prosElegxo.getInEdges().get(k).getFromNode();
-							for(int i=0;i<function.getInEdges().size();i++)
-							{
-								if(function.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_MAPPING)
-								{
-									V outV = (V) function.getInEdges().get(i).getFromNode();
-									if(outV.getInEdges().get(0).getType()==EdgeType.EDGE_TYPE_SCHEMA||outV.getInEdges().get(0).getType()==EdgeType.EDGE_TYPE_OUTPUT)
-									{
-										toRet.add(outV);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if(toRet.size()==0)
-		{
-			return(null);
-		}
-		return(toRet);
-	}
-	
-	@SuppressWarnings("unchecked")
-	void treeCleaner(V kombos, EvolutionGraph<V, E> graph)
-	{
-		V left=null;
-		V right=null;
-		if(kombos==null)
-		{
+
+	abstract String doRewrite(Message currentMessage,
+		String tempParam,
+		EvolutionGraph graph,
+		StopWatch stw,
+		MetriseisRewrite mr);
+
+	abstract void propagateMessage(Message msg);
+
+	void treeCleaner(final EvolutionNode kombos, final EvolutionGraph graph) {
+		EvolutionNode left = null;
+		EvolutionNode right = null;
+		if (kombos == null)
 			return;
-		}
-		if(kombos.getType()==NodeType.NODE_TYPE_ATTRIBUTE||kombos.getType()==NodeType.NODE_TYPE_CONSTANT)
-		{
-			List<E> prosDiagrafi=new LinkedList<E>(); 
-			for(int i=0;i<kombos.getInEdges().size();i++)
-			{
-				if(kombos.getInEdges().get(i).getType()==EdgeType.EDGE_TYPE_OPERATOR)
-				{
+		if (kombos.getType() == NodeType.NODE_TYPE_ATTRIBUTE || kombos.getType() == NodeType.NODE_TYPE_CONSTANT) {
+			final List<EvolutionEdge> prosDiagrafi = new LinkedList<>();
+			for (int i = 0; i < kombos.getInEdges().size(); i++)
+				if (kombos.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_OPERATOR)
 					prosDiagrafi.add(kombos.getInEdges().get(i));
-				}
-			}
-			for(int i=0;i<prosDiagrafi.size();i++)
-			{
+			for (int i = 0; i < prosDiagrafi.size(); i++)
 				graph.removeEdge(prosDiagrafi.get(i));
-			}
-			if(kombos.getType()==NodeType.NODE_TYPE_CONSTANT)
-			{
+			if (kombos.getType() == NodeType.NODE_TYPE_CONSTANT)
 				graph.removeVertex(kombos);
-			}
 			return;
 		}
-		for(int i=0;i<kombos.getOutEdges().size();i++)
-		{
-			if(kombos.getOutEdges().get(i).getName().equals("op1"))
-			{
-				left=(V) kombos.getOutEdges().get(i).getToNode();
-			}
-			if(kombos.getOutEdges().get(i).getName().equals("op2"))
-			{
-				right=(V) kombos.getOutEdges().get(i).getToNode();
-			}
+		for (int i = 0; i < kombos.getOutEdges().size(); i++) {
+			if (kombos.getOutEdges().get(i).getName().equals("op1"))
+				left = kombos.getOutEdges().get(i).getToNode();
+			if (kombos.getOutEdges().get(i).getName().equals("op2"))
+				right = kombos.getOutEdges().get(i).getToNode();
 		}
-		treeCleaner(left,graph);
+		treeCleaner(left, graph);
 		treeCleaner(right, graph);
 		graph.removeVertex(kombos);
 	}
-	
-	/**
-	 * @author pmanousi
-	 * Checks if module is ok and informs his consumers with the list of messages he generated.
-	 * */
-	public void setModuleStatus(Message<V,E> msg)
-	{
-		//msg.toNode.setStatus(StatusType.PROPAGATE,false);
-		for(E e : msg.toNode.getOutEdges())
-		{
-			if(e.getType()==EdgeType.EDGE_TYPE_OUTPUT||
-					e.getType()==EdgeType.EDGE_TYPE_INPUT||
-					e.getType()==EdgeType.EDGE_TYPE_SEMANTICS||
-					e.getType()==EdgeType.EDGE_TYPE_SCHEMA)
-			{
-				msg.toNode.setStatus(e.getToNode().getStatus(),false);
-			}
-		}
-	}
-	
-	@SuppressWarnings("unchecked")
-	protected List<V> cleanUpUnneededAttrs(V kombos)
-	{
-		List<V> toRet=new LinkedList();
-		for(int i=0;i<kombos.getOutEdges().size();i++)
-		{
-			if(kombos.getOutEdges().get(i).getType()==EdgeType.EDGE_TYPE_INPUT)
-			{
-				V inSchema= (V) kombos.getOutEdges().get(i).getToNode();
+
+	protected List<EvolutionNode> cleanUpUnneededAttrs(final EvolutionNode kombos) {
+		final List<EvolutionNode> toRet = new LinkedList<>();
+		for (int i = 0; i < kombos.getOutEdges().size(); i++)
+			if (kombos.getOutEdges().get(i).getType() == EdgeType.EDGE_TYPE_INPUT) {
+				final EvolutionNode inSchema = kombos.getOutEdges().get(i).getToNode();
 				{
-					for(int j=0;j<inSchema.getOutEdges().size();j++)
-					{
-						if(inSchema.getOutEdges().get(j).getToNode().getInEdges().size()==1)
-						{
-							toRet.add((V) inSchema.getOutEdges().get(j).getToNode());
-						}
-					}
+					for (int j = 0; j < inSchema.getOutEdges().size(); j++)
+						if (inSchema.getOutEdges().get(j).getToNode().getInEdges().size() == 1)
+							toRet.add(inSchema.getOutEdges().get(j).getToNode());
 				}
 			}
-		}
-		return(toRet);
+		return toRet;
 	}
-	
-	@SuppressWarnings("unchecked")
-	protected List<V> cleanUpUnneededIns(V kombos)
-	{
-		List<V> toRet=new LinkedList();
-		for(int i=0;i<kombos.getOutEdges().size();i++)
-		{
-			if(kombos.getOutEdges().get(i).getType()==EdgeType.EDGE_TYPE_INPUT)
-			{
-				V inSchema= (V) kombos.getOutEdges().get(i).getToNode();
-				if(inSchema.getOutEdges().size()==1)
-				{
+
+	protected List<EvolutionNode> cleanUpUnneededIns(final EvolutionNode kombos) {
+		final List<EvolutionNode> toRet = new LinkedList<>();
+		for (int i = 0; i < kombos.getOutEdges().size(); i++)
+			if (kombos.getOutEdges().get(i).getType() == EdgeType.EDGE_TYPE_INPUT) {
+				final EvolutionNode inSchema = kombos.getOutEdges().get(i).getToNode();
+				if (inSchema.getOutEdges().size() == 1)
 					toRet.add(inSchema);
-				}
 			}
-		}
-		return(toRet);
+		return toRet;
 	}
-	
-	abstract void propagateMessage(Message<V,E> msg);
-	
-	abstract String doRewrite(Message<V,E> currentMessage, String tempParam, EvolutionGraph<V,E> graph, StopWatch stw, MetriseisRewrite mr);
+
+	protected void colorizeSmtx(final EvolutionNode start, final StatusType smtxStatus, final EvolutionNode smtxNode) {
+		start.setStatus(smtxStatus, false);
+		for (int i = 0; i < start.getInEdges().size(); i++) {
+			if (start.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_OPERATOR) {
+				start.getInEdges().get(i).setStatus(smtxStatus, false);
+				colorizeSmtx(start.getInEdges().get(i).getFromNode(), smtxStatus, smtxNode);
+			}
+			if (start.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_WHERE)
+				start.getInEdges().get(i).setStatus(smtxStatus, false);
+		}
+	}
+
+	protected List<EvolutionNode> connectionWithOutputSearch(final Message message) { // Searching in IN node for MAP-SELECT edges (they come from OUT node), if there is a connection, I move message.toSchema to OUT node.
+		final List<EvolutionNode> toRet = new LinkedList<>();
+		for (int j = 0; j < message.toSchema.getOutEdges().size(); j++) { // For nodes of input schema.
+			final EvolutionNode prosElegxo = message.toSchema.getOutEdges().get(j).getToNode();
+			if (prosElegxo.getName().equals(message.parameter))
+				for (int k = 0; k < prosElegxo.getInEdges().size(); k++)
+					if (prosElegxo.getInEdges().get(k).getType() == EdgeType.EDGE_TYPE_MAPPING)
+						if (prosElegxo
+							.getInEdges().get(k).getFromNode().getInEdges().get(0)
+							.getType() == EdgeType.EDGE_TYPE_SCHEMA ||
+							prosElegxo
+								.getInEdges().get(k).getFromNode().getInEdges().get(0)
+								.getType() == EdgeType.EDGE_TYPE_OUTPUT)
+							toRet.add(prosElegxo.getInEdges().get(k).getFromNode());
+						else { // Aggregate function renamed AS sth
+							final EvolutionNode function = prosElegxo.getInEdges().get(k).getFromNode();
+							for (int i = 0; i < function.getInEdges().size(); i++)
+								if (function.getInEdges().get(i).getType() == EdgeType.EDGE_TYPE_MAPPING) {
+									final EvolutionNode outV = function.getInEdges().get(i).getFromNode();
+									if (outV.getInEdges().get(0).getType() == EdgeType.EDGE_TYPE_SCHEMA ||
+										outV.getInEdges().get(0).getType() == EdgeType.EDGE_TYPE_OUTPUT)
+										toRet.add(outV);
+								}
+						}
+		}
+		if (toRet.size() == 0)
+			return null;
+		return toRet;
+	}
+
+	protected List<EvolutionNode> connectionWithSmtxSearch(final Message message) { // Searching in IN node for OP or GROUP BY edges (they come from SMTX node), if there is a connection, I move message.toSchema to SMTX node.
+		final List<EvolutionNode> toRet = new LinkedList<>();
+		for (int j = 0; j < message.toSchema.getOutEdges().size(); j++) { // For nodes of input schema.
+			final EvolutionNode prosElegxo = message.toSchema.getOutEdges().get(j).getToNode();
+			if (prosElegxo.getName().equals(message.parameter))
+				for (int k = 0; k < prosElegxo.getInEdges().size(); k++)
+					if (prosElegxo.getInEdges().get(k).getType() == EdgeType.EDGE_TYPE_OPERATOR ||
+						prosElegxo.getInEdges().get(k).getType() == EdgeType.EDGE_TYPE_GROUP_BY ||
+						prosElegxo.getInEdges().get(k).getType() == EdgeType.EDGE_TYPE_ORDER_BY ||
+						prosElegxo.getInEdges().get(k).getType() == EdgeType.EDGE_TYPE_SEMANTICS)
+						toRet.add(prosElegxo.getInEdges().get(k).getFromNode());
+		}
+		if (toRet.size() == 0)
+			return null;
+		return toRet;
+	}
+
+	public void goToOutputNode(final Message message) {
+		for (int i = 0; i < message.toNode.getOutEdges().size(); i++)
+			if (message.toNode.getOutEdges().get(i).getToNode().getType() == NodeType.NODE_TYPE_OUTPUT)
+				message.toSchema = message.toNode.getOutEdges().get(i).getToNode();
+	}
+
+	public void goToSmtxNode(final Message message) {
+		for (int i = 0; i < message.toNode.getOutEdges().size(); i++)
+			if (message.toNode.getOutEdges().get(i).getToNode().getType() == NodeType.NODE_TYPE_SEMANTICS)
+				message.toSchema = message.toNode.getOutEdges().get(i).getToNode();
+	}
+
+	/**
+	 * @author pmanousi Checks if module is ok and informs his consumers with the
+	 *         list of messages he generated.
+	 */
+	public void setModuleStatus(final Message msg) {
+		//msg.toNode.setStatus(StatusType.PROPAGATE,false);
+		for (final EvolutionEdge e : msg.toNode.getOutEdges())
+			if (e.getType() == EdgeType.EDGE_TYPE_OUTPUT || e.getType() == EdgeType.EDGE_TYPE_INPUT ||
+				e.getType() == EdgeType.EDGE_TYPE_SEMANTICS || e.getType() == EdgeType.EDGE_TYPE_SCHEMA)
+				msg.toNode.setStatus(e.getToNode().getStatus(), false);
+	}
 }

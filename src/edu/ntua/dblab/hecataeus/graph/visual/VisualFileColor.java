@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 public class VisualFileColor {
-	protected static List<String> files;
-	protected static HashMap<String, Color> FileColor;
+	private static List<String> files;
+	private static HashMap<String, Color> FileColor;
 	private static List<colorDepth> fName;
 	
 	public VisualFileColor(){

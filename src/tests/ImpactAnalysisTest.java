@@ -1,21 +1,23 @@
 package tests;
 
-import static org.junit.Assert.fail;
-
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import edu.ntua.dblab.hecataeus.HecataeusEventManagerGUI;
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
 import edu.ntua.dblab.hecataeus.graph.evolution.EventType;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEvent;
-import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
-import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
+import edu.ntua.dblab.hecataeus.gui.HecataeusEventManagerGUI;
+import edu.ntua.dblab.hecataeus.gui.HecataeusViewer;
 
+/**
+ * Executes the {@link #EVENT_TYPE event} on the given {@link #NODE_NAME node} The
+ * results of this is event is written to {@link #PATH file}
+ */
 public class ImpactAnalysisTest {
 
 	private final String PATH = "C:\\Users\\Desktop\\impactAnalysis.txt";
@@ -25,19 +27,21 @@ public class ImpactAnalysisTest {
 	private final String EVENT_TYPE = "DELETE_SELF";
 
 	@Test
-	public final void test() {
-		HecataeusViewer viewer = new HecataeusViewer(new VisualGraph());
+	public void test() {
+		HecataeusViewer viewer = new HecataeusViewer(new EvolutionGraph());
 		viewer.main(null);
 		viewer.openProject();
 
 		try {
+			Path file = Paths.get(PATH);
+			BufferedWriter writer = Files.newBufferedWriter(file);
 
 			//Pick the node
 			HecataeusEventManagerGUI eventManager = viewer.getEventManagerGUI();
 			eventManager.setNodeLabelText(NODE_NAME);
 
 			//Create and run the event
-			EvolutionEvent<EvolutionNode<EvolutionEdge>> event = new EvolutionEvent<>(EventType.toEventType(EVENT_TYPE));
+			EvolutionEvent event = new EvolutionEvent(EventType.toEventType(EVENT_TYPE));
 			eventManager.SHOWIMPACTtest(event);
 
 			/*
@@ -45,16 +49,12 @@ public class ImpactAnalysisTest {
 			 * It is the easiest way to find if the same nodes deleted.
 			 */
 			String deletionText = viewer.getInformationAreaText();
-			String deletionTextRead = new String(Files.readAllBytes(Paths.get(PATH)));
+			writer.write(deletionText);
 
-			if(!deletionTextRead.equals(deletionText)) {
-				fail("EVENT: " + EVENT_TYPE + " ON NODE: " + NODE_NAME + " PRODUCED DIFFERENT RESULT" +
-					System.lineSeparator() + "result: " + deletionTextRead);
-			}
+			writer.close();
 		} catch (IOException x) {
 			System.out.println(x.getMessage());
 		}
-
 	}
 
 }
