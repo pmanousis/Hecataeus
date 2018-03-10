@@ -18,7 +18,6 @@ import clusters.EngineConstructs.Cluster;
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
-import edu.ntua.dblab.hecataeus.graph.evolution.messages.TopologicalTravel;
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
 /**
@@ -47,7 +46,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 		nodes = new ArrayList<VisualNode>((Collection<? extends VisualNode>) g.getVertices());
 		for(VisualNode v : nodes){
 			if(v.getType().getCategory() == NodeCategory.MODULE ){
-				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
+				List<VisualEdge> edges = new ArrayList<VisualEdge>(v.getInEdges());
 				for(VisualEdge e : edges){
 					if(e.getType() == EdgeType.EDGE_TYPE_CONTAINS){
 						if(files.contains(e.getFromNode().getName())==false){
@@ -60,7 +59,7 @@ public class VisualCircleLayout extends AbstractLayout<VisualNode, VisualEdge>{
 				getQueries().add(v);
 			}
 			else if(v.getType() == NodeType.NODE_TYPE_RELATION){
-				List<VisualEdge> edges = new ArrayList<VisualEdge>(v._inEdges);
+				List<VisualEdge> edges = new ArrayList<VisualEdge>(v.getInEdges());
 				for(VisualEdge e : edges){
 					if(e.getType() == EdgeType.EDGE_TYPE_USES){
 						if(getRelations().contains(v)==false){

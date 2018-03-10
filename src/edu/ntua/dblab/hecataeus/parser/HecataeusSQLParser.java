@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.hsql.Channel;
 import edu.ntua.dblab.hecataeus.hsql.Database;
 import edu.ntua.dblab.hecataeus.hsql.User;
@@ -42,8 +42,8 @@ public class HecataeusSQLParser{
 	boolean isSelectInto;
 	static int globalCounter;
 	
-	public HecataeusSQLParser(VisualGraph HGraph) {
-		graphCreator = new HecataeusGraphCreator (HGraph);
+	public HecataeusSQLParser(EvolutionGraph evoGraph) {
+		graphCreator = new HecataeusGraphCreator (evoGraph);
 		this.connectDatabase();
 	}
 	
@@ -75,8 +75,8 @@ public class HecataeusSQLParser{
 	}
 	
 	
-	public VisualGraph getParsedGraph(){
-		return this.graphCreator.HGraph;
+	public EvolutionGraph getParsedGraph() {
+		return this.graphCreator.getEvolutionGraph();
 	}
 	
 	/**

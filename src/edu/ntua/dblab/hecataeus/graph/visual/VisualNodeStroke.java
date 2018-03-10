@@ -10,50 +10,27 @@ import java.util.List;
 
 import org.apache.commons.collections15.Transformer;
 
-import edu.ntua.dblab.hecataeus.HecataeusViewer;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.picking.PickedInfo;
 /**
  * @author eva
  * stroke type for nodes
  */
-public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
+public class VisualNodeStroke  implements Transformer<VisualNode,Stroke> {
 	
-	private static int i = 0;
-	float[] dotting = {1.0f, 3.0f};
-	float[] dashing = {5.0f};
-	protected PickedInfo<VisualNode> picked;
-	protected VisualNode myNode;
-	protected boolean highlight = true;
-	protected Stroke heavy = new BasicStroke(5);
-	//protected Stroke medium = new BasicStroke(3);
-	
-	
-	
-	protected Stroke mediumIn = new BasicStroke(3f,BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, dotting, 0f);
-	
-	protected Stroke mediumOut = new BasicStroke(2f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 1.0f, dashing, 0f);
-	
-	
- 	protected Stroke light = new BasicStroke(0);
- 	protected VisualGraph graph;
- 	protected Collection<VisualNode> neighbors;
+	private static final float[] dotting = { 1.0f, 3.0f };
+	private static final float[] dashing = { 5.0f };
+	private PickedInfo<VisualNode> picked;
+	private Stroke heavy = new BasicStroke(5);
+	private Stroke mediumIn = new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, dotting, 0f);
+	private Stroke mediumOut = new BasicStroke(2f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 1.0f, dashing, 0f);
+	private Stroke light = new BasicStroke(0);
+	private Collection<VisualNode> neighbors;
  	
- 	protected VisualizationViewer viewer;
- 	
-	public VisualNodeStroke(PickedInfo<VisualNode> pi, VisualGraph g ,VisualizationViewer vv){
+	public VisualNodeStroke(PickedInfo<VisualNode> pi){
 		this.picked = pi;
-		this.graph = g;
-		this.viewer = vv;
-		
 	}
 	
 	public Stroke transform(VisualNode v){
-//		i = 0;
-		if(HecataeusViewer.nodeSize){
-			mediumIn = new BasicStroke(3f,BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 2.0f, dotting, 0f);
-			mediumOut = new BasicStroke(3f,BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 2.0f, dashing, 0f);
-		}
 		if (picked.isPicked(v)){
 			return heavy;
 		}
@@ -61,8 +38,8 @@ public class VisualNodeStroke<V,E> implements Transformer<VisualNode,Stroke> {
 			Collection<VisualNode> toNodes = new ArrayList<VisualNode>();
 			Collection<VisualNode> fromNodes = new ArrayList<VisualNode>();
 			
-			List<VisualEdge> inE = new ArrayList<VisualEdge>(v._inEdges);
-			List<VisualEdge> outE = new ArrayList<VisualEdge>(v._outEdges);
+			List<VisualEdge> inE = new ArrayList<VisualEdge>(v.getInEdges());
+			List<VisualEdge> outE = new ArrayList<VisualEdge>(v.getOutEdges());
 			neighbors = new ArrayList<VisualNode>();
 			
 			for(VisualEdge edgeIndx : inE){

@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import edu.ntua.dblab.hecataeus.HecataeusException;
+import edu.ntua.dblab.hecataeus.gui.HecataeusException;
 
 
 public class HecataeusDatabase {

@@ -9,325 +9,219 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author  George Papastefanatos
+ * @author George Papastefanatos
  */
-public class EvolutionNode<E extends EvolutionEdge>{
-/** @author pmanousi To be used in topological sorting for messages. */
-public double ID=0.0;
-static int counter;
+public class EvolutionNode {
 
-	private String _Name = null;
-	private File _File = null;
-	private NodeType _Type ;
-	private int _frequency = 0;
-	
-	private EvolutionPolicies  _policies = null;
-	private EvolutionEvents _events = null;
-	public List<E> _outEdges = null;
-	public List<E> _inEdges = null;
-	private StatusType _status = StatusType.NO_STATUS;
-	
+	private static int COUNTER = 0;
+
+	private double ID = 0.0;
+
+	private int line = 0;
+
+	private int frequency = 0;
+
+	private String name = null;
+
+	private String SQLDefinition = "";
+
+	private String path = "";
+
+	private List<EvolutionEdge> inEdges = null;
+
+	private List<EvolutionEdge> outEdges = null;
+
+	private EvolutionPoliciesManager policies = null;
+
+	private EvolutionEventsManager events = null;
+
+	private StatusType status = StatusType.NO_STATUS;
+
+	private NodeType type;
+
+	private File file = null;
 
 	public EvolutionNode() {
-		// just create the node and set afterwards its properties
-		this._outEdges = new ArrayList<E>();
-		this._inEdges = new ArrayList<E>();
-		this._policies = new EvolutionPolicies();
-		this._events = new EvolutionEvents();
-		counter++;
-		ID=counter;
+		this.outEdges = new ArrayList<EvolutionEdge>();
+		this.inEdges = new ArrayList<EvolutionEdge>();
+		this.policies = new EvolutionPoliciesManager();
+		this.events = new EvolutionEventsManager();
+		COUNTER++;
+		ID = COUNTER;
 	}
 
 	public EvolutionNode(String Name, NodeType Type, File fName) {
-		this._Name = Name;
-		this._File = fName;
-		this._Type = Type;
-		this._outEdges = new ArrayList<E>();
-		this._inEdges = new ArrayList<E>();
-		this._policies = new EvolutionPolicies();
-		this._events = new EvolutionEvents();
-		counter++;
-		ID=counter;
+		this();
+		this.name = Name;
+		this.file = fName;
+		this.type = Type;
 	}
-	
-	/**
-	 * Returns the name of the file
-	 */
+
 	public String getFileName() {
-		if(this._File != null)
-		{
-			return this._File.getAbsolutePath();
+		if (this.file != null) {
+			return this.file.getAbsolutePath();
 		}
-		return("null");
+		return ("null");
+	}
+
+	public void setID(double ID) {
+		this.ID = ID;
 	}
 	
-	/**
-	 * Returns the file
-	 */
+	public double getID() {
+		return ID;
+	}
+
 	public File getFile() {
-		return this._File;
+		return this.file;
 	}
-	
-	/**
-	 * Sets the file
-	 */
+
 	public void setFile(File fName) {
-		this._File=fName;
+		this.file = fName;
 	}
 
-	/**
-	 * Returns the name of the node
-	 */
 	public String getName() {
-		return this._Name;
+		return this.name;
 	}
 
-	/**
-	 * Sets the name of the node
-	 */
 	public void setName(String Value) {
-		this._Name = Value;
+		this.name = Value;
 	}
 
-	/**
-	 * Returns the type of the node
-	 */
 	public NodeType getType() {
-		return this._Type;
+		return this.type;
 	}
 
-	/**
-	 * Sets the type of the node
-	 */
 	public void setType(NodeType Value) {
-		this._Type = Value;
+		this.type = Value;
 	}
 
-		
-	/**
-	 * Returns the frequency of the node
-	 */
 	public int getFrequency() {
-		return this._frequency ;
+		return this.frequency;
 	}
 
-	/**
-	 * Sets the frequency of the node
-	 */
 	public void setFrequency(int Value) {
-		this._frequency  = Value;
-	}
-	
-	public void setPolicies(EvolutionPolicies policies) {
-		this._policies = policies;
-	}
-	
-	public EvolutionPolicies getPolicies() {
-		return this._policies;
-	}
-        
-	public void setEvents(EvolutionEvents events) {
-		this._events = events;
-	}
-	
-	
-	public EvolutionEvents getEvents() {
-		return this._events;
-	}
-	
-	public void setStatus(StatusType status,boolean enforceStatus) {
-		if(enforceStatus==true)
-		{
-			this._status = status;
-		}
-		else	//check if you are alredy BLOCKED, in which case you remain BLOCKED
-		{
-			if(this._status == StatusType.BLOCKED)
-			{
-				return;
-			}
-			else if(this._status == StatusType.NO_STATUS)
-			{
-				this._status = status;
-			}
-			else if((this._status == StatusType.PROPAGATE)&&(status == StatusType.NO_STATUS)){
-				return;
-			}
-		}
-	}
-	
-	public StatusType getStatus() {
-		return this._status ;
-	}
-	
-    public List<E> getOutEdges() {
-		return  this._outEdges;
+		this.frequency = Value;
 	}
 
-	public List<E> getInEdges() {
-		return  this._inEdges;
+	public EvolutionPolicy getPolict(EventType eventType) {
+		return policies.get(eventType);
 	}
-	
-	public int getNumberOfUsesEdges()
-	{
-		int toReturn = 0;
-		for(EvolutionEdge e: this._outEdges)
+
+	public ArrayList<EvolutionPolicy> getPolicies() {
+		return this.policies.getPolicies();
+	}
+
+	public ArrayList<EvolutionEvent> getEvents() {
+		return this.events.getEvents();
+	}
+
+	public void setStatus(StatusType status, boolean enforceStatus) {
+		if (enforceStatus == true) {
+			this.status = status;
+		} else //check if you are alredy BLOCKED, in which case you remain BLOCKED
 		{
-			if(e.getType() == EdgeType.EDGE_TYPE_USES)
-			{
-				toReturn++;
+			if (this.status == StatusType.BLOCKED) {
+				return;
+			} else if (this.status == StatusType.NO_STATUS) {
+				this.status = status;
+			} else if ((this.status == StatusType.PROPAGATE) && (status == StatusType.NO_STATUS)) {
+				return;
 			}
 		}
-		return(toReturn);
 	}
-	
-	/**
-	*  creates and adds policy to node
-	**/
+
+	public StatusType getStatus() {
+		return this.status;
+	}
+
+	public List<EvolutionEdge> getOutEdges() {
+		return this.outEdges;
+	}
+
+	public List<EvolutionEdge> getInEdges() {
+		return this.inEdges;
+	}
+
 	public void addPolicy(EventType eventType, PolicyType policyType) {
-		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy<EvolutionNode> policy = policies.get(eventType);
-		if(policy!=null)
-				policies.remove(policy);
-		if(eventType == EventType.DELETE_PROVIDER || eventType == EventType.RENAME_PROVIDER)
-		{
-			if(this.getParentNode()!=null)
-			{
-				if(this.getParentNode().getType() == NodeType.NODE_TYPE_RELATION)
-				{
+		EvolutionPoliciesManager policies = this.policies;
+		EvolutionPolicy policy = policies.get(eventType);
+		if (policy != null)
+			policies.remove(policy);
+		if (eventType == EventType.DELETE_PROVIDER || eventType == EventType.RENAME_PROVIDER) {
+			if (this.getParentNode() != null) {
+				if (this.getParentNode().getType() == NodeType.NODE_TYPE_RELATION) {
 					return;
 				}
 			}
 		}
-		policies.add(new EvolutionPolicy<EvolutionNode>(eventType,policyType));
+		policies.add(new EvolutionPolicy(eventType, policyType));
 	}
 
-	/**
-	*  adds policy to node, if policy already exists then it replaces it
-	**/
-	public void addPolicy(EvolutionPolicy p) {
-		EvolutionPolicies policies = this._policies;
-		EvolutionPolicy policy = policies.get(p.getSourceEvent().getEventType());
-		if(policy!=null)
-		{
-			policies.remove(policy);
-		}
-		policies.add(p);
-	}
-	
-	/**
-	*  removes policy from node
-	**/
-	public void removePolicy(EvolutionPolicy policy) {
-		this._policies.remove(policy);
-	}
-
-	/**
-	*  creates and adds a self event to node
-	**/
-	public void addEvent(EventType eventType) {
-	
-		EvolutionEvents events = this._events;
-		for (int i=0; i<events.size(); i++){
-			EvolutionEvent event = events.get(i);
-			if ((event.getEventType()==eventType))
-				events.remove(event);
-		}
-		events.add(new EvolutionEvent(/*this,*/ eventType));
-	}
-
-	/**
-	*  adds event to node
-	**/
-	public void addEvent(EvolutionEvent e) {
-		
-		EvolutionEvents events = this._events;
-		for (int i=0; i<events.size(); i++){
-			EvolutionEvent event = events.get(i);
-			if ((event.getEventType()==e.getEventType())&&(event.getEventNode().equals(e.getEventNode())))
-				events.remove(event);
-		}
-		events.add(e);
-	}
-	/**
-	*  removes event from node
-	**/
-	public void removeEvent(EvolutionEvent event) {
-		this._events.remove(event);
-	}
-
-	
-	private String _SQLDefinition="";
-	/***
-	 * Gets the sql definition that created the node
-	 */
 	public String getSQLDefinition() {
-		return this._SQLDefinition;
-	}
-	/***
-	 * Sets the sql definition that created the node
-	 */
-	public void setSQLDefinition(String value) {
-		this._SQLDefinition = value;
-	}
-	
-	@Override
-	/***
-	 * overrides object toString
-	 */
-	public String toString() {
-		return this._Name;
-	}
-	
-	private String _path="";									/*added by sgerag*/
-	/***
-	 * Gets path of the sql definition that created the node
-	 */
-	public String getPath() {									/*added by sgerag*/
-		return this._path;
-	}
-	/***
-	 * Sets the path of the sql definition that created the node
-	 */
-	public void setPath(String path) {							/*added by sgerag*/	
-		this._path=path;
-	}
-	
-	private int _line=0;										/*added by sgerag*/
-	/***
-	 * Gets line of the sql definition that created the node
-	 */
-	public int getLine() {										/*added by sgerag*/
-		return this._line;
-	}
-	/***
-	 * Sets the line of the sql definition that created the node
-	 */
-	public void setLine(int line) {								/*added by sgerag*/	
-		this._line=line;
+		return this.SQLDefinition;
 	}
 
-	 /**
-	  * used for finding the parent of a node (query, view, relation)
-	  **/
-	 public EvolutionNode<EvolutionEdge> getParentNode() {
-		 for (EvolutionEdge e: this.getInEdges()){
-			 //if node is attribute then 
-			 if (((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_SCHEMA && e.getFromNode().getType()!=NodeType.NODE_TYPE_ATTRIBUTE))
-				||((this.getType()==NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType()==EdgeType.EDGE_TYPE_OUTPUT && e.getFromNode().getType()==NodeType.NODE_TYPE_OUTPUT))
-				||((this.getType()==NodeType.NODE_TYPE_CONDITION) && (e.getType()==EdgeType.EDGE_TYPE_OPERATOR))
-				||((this.getType()==NodeType.NODE_TYPE_OPERAND) && ((e.getType()==EdgeType.EDGE_TYPE_OPERATOR)
-				||(e.getType()==EdgeType.EDGE_TYPE_WHERE)))
-				||(this.getType()==NodeType.NODE_TYPE_CONSTANT)
-				||((this.getType()==NodeType.NODE_TYPE_GROUP_BY) && (e.getType()==EdgeType.EDGE_TYPE_GROUP_BY))
-				||(this.getType()==NodeType.NODE_TYPE_FUNCTION)
-				||(this.getType()==NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
-				||(this.getType()==NodeType.NODE_TYPE_ATTRIBUTE && e.getType().equals(EdgeType.EDGE_TYPE_INPUT))
-				||(this.getType()==NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT))
-				||(this.getType()==NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS))
-			 )
-				 return (EvolutionNode<EvolutionEdge>) e.getFromNode();
-		 }
-		 return null;
-	 }
+	public void setSQLDefinition(String value) {
+		this.SQLDefinition = value;
+	}
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
+
+	public String getPath() {
+		return this.path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	public int getLine() {
+		return this.line;
+	}
+
+	public void setLine(int line) {
+		this.line = line;
+	}
+
+	public EvolutionNode getParentNode() {
+		for (EvolutionEdge e : this.getInEdges()) {
+			//if node is attribute then 
+			if (((this.getType() == NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType() == EdgeType.EDGE_TYPE_SCHEMA &&
+				e.getFromNode().getType() != NodeType.NODE_TYPE_ATTRIBUTE)) ||
+				((this.getType() == NodeType.NODE_TYPE_ATTRIBUTE) && (e.getType() == EdgeType.EDGE_TYPE_OUTPUT &&
+					e.getFromNode().getType() == NodeType.NODE_TYPE_OUTPUT)) ||
+				((this.getType() == NodeType.NODE_TYPE_CONDITION) && (e.getType() == EdgeType.EDGE_TYPE_OPERATOR)) ||
+				((this.getType() == NodeType.NODE_TYPE_OPERAND) &&
+					((e.getType() == EdgeType.EDGE_TYPE_OPERATOR) || (e.getType() == EdgeType.EDGE_TYPE_WHERE))) ||
+				(this.getType() == NodeType.NODE_TYPE_CONSTANT) ||
+				((this.getType() == NodeType.NODE_TYPE_GROUP_BY) && (e.getType() == EdgeType.EDGE_TYPE_GROUP_BY)) ||
+				(this.getType() == NodeType.NODE_TYPE_FUNCTION) ||
+				(this.getType() == NodeType.NODE_TYPE_INPUT && e.getType().equals(EdgeType.EDGE_TYPE_INPUT)) ||
+				(this.getType() == NodeType.NODE_TYPE_ATTRIBUTE && e.getType().equals(EdgeType.EDGE_TYPE_INPUT)) ||
+				(this.getType() == NodeType.NODE_TYPE_OUTPUT && e.getType().equals(EdgeType.EDGE_TYPE_OUTPUT)) ||
+				(this.getType() == NodeType.NODE_TYPE_SEMANTICS && e.getType().equals(EdgeType.EDGE_TYPE_SEMANTICS)))
+				return (EvolutionNode) e.getFromNode();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof EvolutionNode))
+			return false;
+
+		EvolutionNode oth = (EvolutionNode) other;
+		if (this.getCounter() == oth.getCounter() && super.equals(oth))
+			return true;
+		return false;
+	};
+
+	private int getCounter() {
+		return COUNTER;
+	}
+
 }

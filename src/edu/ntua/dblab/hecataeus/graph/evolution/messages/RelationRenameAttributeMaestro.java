@@ -9,39 +9,35 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.MetriseisRewrite;
 
-public class RelationRenameAttributeMaestro<V extends EvolutionNode<E>,E extends EvolutionEdge> extends MaestroAbstract<V,E>
-{
-	public RelationRenameAttributeMaestro(PriorityQueue<Message<V,E>> q)
-	{
+public class RelationRenameAttributeMaestro extends MaestroAbstract {
+	public RelationRenameAttributeMaestro(final PriorityQueue<Message> q) {
 		super(q);
-		policyCheckAlgorithms.add(new FCASSNO<V, E>());
+		policyCheckAlgorithms.add(new FCASSNO());
 	}
-	
+
 	@Override
-	void propagateMessage(Message<V,E> msg)
-	{
-		policyCheckAlgorithms.get(0).execute(msg, this.myGQueue);
-		setModuleStatus(msg);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	String doRewrite(Message<V,E> msg, String tempParam, EvolutionGraph<V,E> graph, StopWatch stw, MetriseisRewrite mr)
-	{
-		List<E> lista=msg.toSchema.getOutEdges();
-		for(int i=0;i<lista.size();i++)
-		{
-			if(lista.get(i).getToNode().getName().equals(msg.parameter))
-			{
-				V en=(V) lista.get(i).getToNode();
+	String doRewrite(final Message msg,
+		final String tempParam,
+		final EvolutionGraph graph,
+		final StopWatch stw,
+		final MetriseisRewrite mr) {
+		final List<EvolutionEdge> lista = msg.toSchema.getOutEdges();
+		for (int i = 0; i < lista.size(); i++)
+			if (lista.get(i).getToNode().getName().equals(msg.parameter)) {
+				final EvolutionNode en = lista.get(i).getToNode();
 				stw.stop();
 				//en.setName(JOptionPane.showInputDialog("Give new name for node: "+en.getName()));
 				en.setName(UUID.randomUUID().toString());
 				stw.start();
 				mr.iaR++;
-				return(en.getName());
+				return en.getName();
 			}
-		}
-		return("");
+		return "";
+	}
+
+	@Override
+	void propagateMessage(final Message msg) {
+		policyCheckAlgorithms.get(0).execute(msg, myGQueue);
+		setModuleStatus(msg);
 	}
 }
