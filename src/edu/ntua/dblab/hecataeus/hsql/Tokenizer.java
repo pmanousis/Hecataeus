@@ -32,6 +32,9 @@ public class Tokenizer {
 	private final static int QUOTED_IDENTIFIER=9;
 	private final static int REMARK_LINE=10;
 	private final static int REMARK=11;
+	
+	/** @author pmanousi */
+	private final static int QUOTED_IDENTIFIER2=13;
 
 	private String sCommand;
 	private char cCommand[];
@@ -83,6 +86,8 @@ public class Tokenizer {
 			return sToken;
 		} else if(iType==QUOTED_IDENTIFIER) {
 			return sToken.toUpperCase();
+		} else if(iType==QUOTED_IDENTIFIER2) {
+			return sToken.toUpperCase();
 		}
 		throw Trace.error(Trace.UNEXPECTED_TOKEN,sToken);
 	}
@@ -103,6 +108,9 @@ public class Tokenizer {
 	}
 	boolean wasName() {
 		if(iType==QUOTED_IDENTIFIER) {
+			return true;
+		}
+		if(iType==QUOTED_IDENTIFIER2) {
 			return true;
 		}
 		if(iType!=NAME) {
@@ -207,6 +215,8 @@ public class Tokenizer {
 			iType=SPECIAL;
 		} else if(c=='\"') {
 			iType=QUOTED_IDENTIFIER;
+		}else if(c=='`') {
+			iType=QUOTED_IDENTIFIER2;
 		} else if(c=='\'') {
 			iType=STRING;
 			name.append('\'');
@@ -259,6 +269,21 @@ public class Tokenizer {
 						return;
 					}
 					if(c!='\"') {
+						sToken=name.toString();
+						return;
+					}
+				}
+				name.append(c);
+				break;
+			case QUOTED_IDENTIFIER2:
+				if(c=='`') {
+					iIndex++;
+					if(iIndex>=iLength) {
+						sToken=name.toString();
+						return;
+					}
+					c=cCommand[iIndex];
+					if(c!='`') {
 						sToken=name.toString();
 						return;
 					}

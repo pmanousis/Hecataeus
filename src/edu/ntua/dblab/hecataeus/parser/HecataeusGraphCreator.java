@@ -462,6 +462,9 @@ public class HecataeusGraphCreator{
 		add_edge(u, semantics, EdgeType.EDGE_TYPE_SEMANTICS, u.getName() + "SMTX_S");
 		
 		int tblIndex = 0;
+		if(sSelect == null) {
+			return;
+		}
 		int len = sSelect.tFilter.length;
 		String[] selfJoinedTables = new String[len]  ; // dim statement
 		selfJoinedTables = checkSelfJoin(sSelect);

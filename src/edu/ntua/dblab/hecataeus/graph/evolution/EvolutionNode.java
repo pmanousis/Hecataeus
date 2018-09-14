@@ -223,5 +223,32 @@ public class EvolutionNode {
 	private int getCounter() {
 		return COUNTER;
 	}
-
+	
+	public List<EvolutionNode> getInputSchemata() {
+		List<EvolutionNode> toReturn = new ArrayList<EvolutionNode>();
+		for(EvolutionEdge e: this.getOutEdges()) {
+			if(e.getType() == EdgeType.EDGE_TYPE_INPUT) {
+				toReturn.add(e.getToNode());
+			}
+		}
+		return(toReturn);
+	}
+	
+	public EvolutionNode getOutputSchema() {
+		for(EvolutionEdge e: this.getOutEdges()) {
+			if(e.getType() == EdgeType.EDGE_TYPE_OUTPUT) {
+				return(e.getToNode());
+			}
+		}
+		return(null);
+	}
+	
+	public EvolutionNode getSemanticsSchema() {
+		for(EvolutionEdge e: this.getOutEdges()) {
+			if(e.getType() == EdgeType.EDGE_TYPE_SEMANTICS) {
+				return(e.getToNode());
+			}
+		}
+		return(null);
+	}
 }

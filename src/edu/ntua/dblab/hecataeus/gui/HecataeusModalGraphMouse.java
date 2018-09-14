@@ -133,7 +133,7 @@ protected HecataeusViewer viewer;
 			if(node.getType()==NodeType.NODE_TYPE_RELATION)
 			{
 				List<String> filenames=new ArrayList<String>();
-				for (VisualEdge inEdge : node.getInEdges())
+				for(VisualEdge inEdge: node.getInEdges())
 				{
 					if(filenames.contains(inEdge.getFromNode().getFileName())==false)
 					{
@@ -146,6 +146,11 @@ protected HecataeusViewer viewer;
 				for(String filename: filenames)
 				{
 					output+=filename.substring(filename.indexOf(viewer.projectConf.projectName)+viewer.projectConf.projectName.length()+5)+eol;
+				}
+				output += eol + "Queries using it: ";
+				for(VisualEdge queryedge: node.getInEdges()) {
+					if(queryedge.getType() == EdgeType.EDGE_TYPE_USES)
+					output += queryedge.getFromNode().getName() + eol;
 				}
 				this.viewer.setTextToInformationArea("Scripts using relation "+node.getName()+":"+eol+output);
 			}

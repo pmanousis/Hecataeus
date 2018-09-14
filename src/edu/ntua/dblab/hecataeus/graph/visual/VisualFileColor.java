@@ -9,12 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 
 public class VisualFileColor {
-	private static List<String> files;
-	private static HashMap<String, Color> FileColor;
+	protected static List<String> files;
+	protected static HashMap<String, Color> FileColor;
 	private static List<colorDepth> fName;
+	List<Integer> givenColors;
 	
 	public VisualFileColor(){
 		fName=new ArrayList<colorDepth>();
+		givenColors = new ArrayList<Integer>();
 	}
 	
 	public void setFileNames(List<String> files){
@@ -32,8 +34,11 @@ public class VisualFileColor {
 	
 	private HashMap<String, Color> setColorForFiles(List<String> fileNames){
 		List<String> foldersAndFiles=new ArrayList<>();
-		String prjFolder= fileNames.get(0);
 		HashMap<String, Color> FileColor = new HashMap<String, Color>();
+		if(fileNames.size() == 0) {
+			return(FileColor);
+		}
+		String prjFolder= fileNames.get(0);
 		for(String name : fileNames)
 		{
 			String fNames = name.substring(name.indexOf("SQLS/")+5);
@@ -67,7 +72,8 @@ public class VisualFileColor {
 			}
 			if(c==null)
 			{	// your father doesn't have color, so get a color
-				FileColor.put(prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf, getColor(cnt%7));
+				FileColor.put(prjFolder.substring(0, prjFolder.indexOf("SQLS/")+5)+pf, getColor(givenColors.size()));
+				givenColors.add(cnt%7);
 			}
 			else
 			{	// since your father had a color, just change it a little bit
@@ -101,8 +107,7 @@ public class VisualFileColor {
 		
 		for(int i=0; i<paceOfRecoloring; i++)
 		{
-			color+=4;
-			color+=2*128;
+			color-=8;
 		}
 		c=new Color(color%16777215);
 		return(c);
@@ -110,16 +115,14 @@ public class VisualFileColor {
 	
 	private Color getColor(int c){
 		switch (c){
-		case 0: return new Color(200,181,200);	// Purple
-		//case 1: return new Color(102,178,255);	// Light Blue
-		case 1: return new Color(10,70,137);	// Dark Blue
-		case 2: return new Color(178,255,102);	// Nice Green
-		case 3: return new Color(255,178, 102);	// Orange
-		//case 3: return new Color(127,80,55);	// Brown
-		case 4: return new Color(16, 78, 139);	// Mildy Dark Blue
-		case 5: return new Color(127,63,0);	// Dark Orange
-		case 6: return new Color(255,102,178);	// Darker Purple?
-		default : return new Color(0,0,0);
+		case 0: return new Color(100, 20, 255);
+		case 1: return new Color(180, 50, 200);
+		case 2: return new Color(140, 80, 145);
+		case 3: return new Color(127, 163, 255);
+		case 4: return new Color(255, 172, 180);
+		case 5: return new Color(200, 181, 100);
+		case 6: return new Color(10, 80, 255);
+		default : return new Color(0, 0, 0);
 		}
 	}
 }

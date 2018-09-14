@@ -7,6 +7,7 @@ package edu.ntua.dblab.hecataeus.metrics;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import edu.ntua.dblab.hecataeus.graph.evolution.EdgeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionEdge;
@@ -15,9 +16,13 @@ import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionGraph;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionNode;
 import edu.ntua.dblab.hecataeus.graph.evolution.EvolutionPolicy;
 import edu.ntua.dblab.hecataeus.graph.evolution.NodeCategory;
+import edu.ntua.dblab.hecataeus.graph.evolution.NodeType;
 import edu.ntua.dblab.hecataeus.graph.evolution.PolicyType;
 import edu.ntua.dblab.hecataeus.graph.evolution.StatusType;
 import edu.ntua.dblab.hecataeus.graph.evolution.util.GraphUtilities;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualEdge;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualGraph;
+import edu.ntua.dblab.hecataeus.graph.visual.VisualNode;
 
 public class HecataeusMetricManager {
 	
@@ -25,6 +30,106 @@ public class HecataeusMetricManager {
 		
 	}
 	 
+	private static double coupling(VisualNode v, int t) {
+		if(t > 1 && v.getNumberOfUsesEdges() < t) {
+			return(1 - Math.log(v.getNumberOfUsesEdges()) / Math.log(t));
+		}
+		return(0);
+	}
+	
+	private static double tblCoupling(VisualNode v) {
+		double providersTotal = 0;
+		double nodesInputTotal = 0;
+		for(VisualEdge e: v.getOutEdges()) {
+			if(e.getType() == EdgeType.EDGE_TYPE_USES) {
+				providersTotal += e.getToNode().getOutEdges().get(0).getToNode().getOutEdges().size();
+			}
+			if(e.getType() == EdgeType.EDGE_TYPE_INPUT) {
+				nodesInputTotal += e.getToNode().getOutEdges().size() - 1 /* there is always an EDGE_TYPE_FROM */;
+			}
+		}
+		return(nodesInputTotal / providersTotal);
+		
+	}
+	
+	static int lastOrdinalIndexOf(String str, String substr, int n) {
+	    int pos = str.lastIndexOf(substr);
+	    while (--n > 0 && pos != -1)
+	        pos = str.lastIndexOf(substr, pos + 1);
+	    return pos;
+	}
+	
+	static List<List<VisualNode>> groupby(List<VisualNode> queriesAndViews, int levelFromGround) {
+		List<List<VisualNode>> queriesAndViewsRepresentatives = new ArrayList<List<VisualNode>>();
+		queriesAndViewsRepresentatives.add(new ArrayList<VisualNode>());
+		queriesAndViewsRepresentatives.get(0).add(queriesAndViews.get(0));	// initialization the first node goes to the first group
+		for(VisualNode vn : queriesAndViews) {
+			boolean found = false;
+			for(int i = 0; i < queriesAndViewsRepresentatives.size(); i++) {
+				if(queriesAndViewsRepresentatives.get(i).get(0).getFileName().substring(0, lastOrdinalIndexOf(queriesAndViewsRepresentatives.get(i).get(0).getFileName(), "/", levelFromGround)).equals(vn.getFileName().substring(0, lastOrdinalIndexOf(vn.getFileName(), "/", levelFromGround))) && queriesAndViewsRepresentatives.contains(vn) == false) { // find if it should be part of a group AND not already present
+					queriesAndViewsRepresentatives.get(i).add(vn);
+					found = true;
+					break;
+				}
+			}
+			if (found == false) { // otherwise append to a new group
+				queriesAndViewsRepresentatives.add(new ArrayList<VisualNode>());
+				queriesAndViewsRepresentatives.get(queriesAndViewsRepresentatives.size() - 1).add(vn);
+			}
+		}
+		return(queriesAndViewsRepresentatives);
+	}
+	
+	/** @author pmanousi 1 - log_(1/t)(d(s)/t) as described in paper.
+	 * ability to have a level selection goes here or in the viewer?
+	 * I shall put it here, and I will talk to pv for making sure. 
+	 * */
+	 public static String coupling(VisualGraph activeGraph) {
+		 String toReturn = "";
+		 List<VisualNode> rels = activeGraph.getVertices(NodeType.NODE_TYPE_RELATION);
+		 List<VisualNode> queriesAndViews = activeGraph.getVertices(NodeType.NODE_TYPE_QUERY);
+		 queriesAndViews.addAll(activeGraph.getVertices(NodeType.NODE_TYPE_VIEW));
+		 
+		 List<List<VisualNode>> qvgroupreps = groupby(queriesAndViews, 1);
+		 
+		 // Queries
+		 int t = rels.size();
+		 for(List<VisualNode> lvn : qvgroupreps) {
+			 for(VisualNode v: lvn) {
+				 toReturn += "file: " + v.getFileName()
+				 + " query: " + v.getSQLDefinition()
+//				 + " V: " + v.getName()
+				 + " db-coupling: " + coupling(v, t)
+//				 + " tbls-coupling: " + tblCoupling(v)
+				 + "\n";
+			 }
+		 }
+		 
+		 // Relations
+//		 int [][] relationsQueries = new int[rels.size()][qvgroupreps.size()];
+//		 for(VisualNode r: rels) {
+//			 System.err.print(r.getName() + ",");
+//		 }
+//		 System.err.println("");
+//		 List<String> fnames = new ArrayList<String>();
+//		 for(List<VisualNode> lvn : qvgroupreps) {
+//			 for(VisualNode qv: lvn) {
+//				 for(VisualNode r: rels) {
+//					 int val = 0;
+//					 for(VisualEdge e: qv.getOutEdges()) {
+//						 
+//						 if(e.getToNode().equals(r)) {
+//							 val = 1;
+//						 }
+//					 }
+//					 System.err.print(val + ",");
+//				 }
+//				 System.err.println(qv.getName());
+//			 }
+//		 }
+		 return(toReturn);
+	 }
+	
 	 public static   int countNodes(EvolutionGraph  graph) {
 		 return graph.getVertices().size();
 	 }
