@@ -671,46 +671,38 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 	 * Split for different representation of relation and query/view modules.
 	 * @author pmanousi
 	 */
-	private void ZoomedLayoutForModules()
-	{
+	private void ZoomedLayoutForModules() {
 		initialPosition = new Point2D.Double(this.getSize().getWidth(),this.getSize().getHeight());
 		Point2D location = new Point2D.Double(initialPosition.getX(), initialPosition.getY());
-		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices());
+		List<VisualNode> nodes = new ArrayList<VisualNode>(this.graph.getVertices(NodeType.NODE_TYPE_RELATION));
+		nodes.addAll(this.graph.getVertices(NodeType.NODE_TYPE_VIEW));
+		nodes.addAll(this.graph.getVertices(NodeType.NODE_TYPE_QUERY));
+		
 		int attrnum=0;
 		int modnum=0;
-		for(VisualNode n : nodes)
-		{
-			if(n.getType()==NodeType.NODE_TYPE_ATTRIBUTE)
-			{
+		for(VisualNode n : nodes) {
+			if(n.getType()==NodeType.NODE_TYPE_ATTRIBUTE) {
 				attrnum++;
 			}
-			if(n.getType().getCategory()==NodeCategory.MODULE)
-			{
+			if(n.getType().getCategory()==NodeCategory.MODULE) {
 				modnum++;
 			}
 		}
-		if(attrnum==0)
-		{
+		if(attrnum==0) {
 			attrnum++;
 		}
-		if(modnum==0)
-		{
+		if(modnum==0) {
 			modnum++;
 		}
-		
-		OFFSET.setLocation(new Point2D.Double(size.width/modnum,size.height/attrnum));
-		nodes.sort(new CustomComparator());
-		for(int i=0;i<nodes.size();i++)
-		{	// Find module node to start graph from there.
-			if(nodes.get(i).getType().getCategory()==NodeCategory.MODULE)
-			{
-				if(nodes.get(i).getType()==NodeType.NODE_TYPE_RELATION)
-				{	// this will be the last one to be drawn.
+		OFFSET.setLocation(new Point2D.Double(size.width/modnum, size.height/attrnum));
+		//nodes.sort(new CustomComparator());	// nodes are already sorted due to lines 677 - 679
+		for(int i = 0; i < nodes.size(); i++) {	// Find module node to start graph from there.
+			if(nodes.get(i).getType().getCategory()==NodeCategory.MODULE) {
+				if(nodes.get(i).getType()==NodeType.NODE_TYPE_RELATION) {	// this will be the last one to be drawn.
 					location.setLocation(2.3*(maxYForInputSchemata+OFFSET.getX()), initialPosition.getY());
 					relationSetLocation(graph.getModule(nodes.get(i)), location);
 				}
-				else
-				{
+				else {
 					qvZoomedLayoutForModules(graph.getModule(nodes.get(i)), location);
 					location.setLocation(initialPosition.getX(), location.getY()+OFFSET.getY()*3);
 				}
@@ -718,14 +710,14 @@ public class VisualTopologicalLayout extends AbstractLayout<VisualNode,VisualEdg
 		}
 	}
 	
-	private class CustomComparator implements Comparator<VisualNode> {
-	    @Override
-	    public int compare(VisualNode o1, VisualNode o2) {
-	        if(o1.getType()==NodeType.NODE_TYPE_RELATION)
-	        	return(1);
-	        return(-1);
-	    }
-	}
+//	private class CustomComparator implements Comparator<VisualNode> {
+//	    @Override
+//	    public int compare(VisualNode o1, VisualNode o2) {
+//	        if(o1.getType() == NodeType.NODE_TYPE_RELATION)
+//	        	return(1);
+//	        return(-1);
+//	    }
+//	}
 	
 	/***
 	 * initialize the locations of nodes 

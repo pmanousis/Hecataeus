@@ -93,7 +93,7 @@ public class PopUpClickListener extends MouseAdapter {
 					onoma += node.getName() + " ";
 				}
 				VisualGraph GV = GraphConverterUtilities.convertEvolutionGraphToVisual(evoGraph, parent);
-				HecataeusViewer.myViewer.zoomToModuleTab(parent, GV, onoma.trim());
+				HecataeusViewer.myViewer.zoomToModuleTab(GV, onoma.trim());
 			}
 		};
 	}

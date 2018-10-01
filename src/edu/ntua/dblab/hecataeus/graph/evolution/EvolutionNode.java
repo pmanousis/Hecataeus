@@ -138,9 +138,17 @@ public class EvolutionNode {
 	public List<EvolutionEdge> getOutEdges() {
 		return this.outEdges;
 	}
+	
+	public void setOutEdges(List<EvolutionEdge> e) {
+		this.outEdges = e;
+	}
 
 	public List<EvolutionEdge> getInEdges() {
 		return this.inEdges;
+	}
+	
+	public void setInEdges(List<EvolutionEdge> e) {
+		this.inEdges = e;
 	}
 
 	public void addPolicy(EventType eventType, PolicyType policyType) {

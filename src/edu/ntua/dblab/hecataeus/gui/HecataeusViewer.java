@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -981,8 +983,14 @@ public class HecataeusViewer {
 				}
 				List<EvolutionNode> alreadyCheckedOperatorNodes = new ArrayList<>();
 				for(Map.Entry<Integer, List<EvolutionNode>> entry: joinQueries.entrySet()) {
+System.err.println("984 working on " + entry.getKey());
 					List<EvolutionNode> qs = entry.getValue();
 					for(EvolutionNode nd: qs) {	// for each query I create a view (if not exists) that joins the tables on the attributes of the smtx tree
+String inputs = nd.getSQLDefinition().substring(nd.getSQLDefinition().indexOf(" FROM ") + 6);
+if(nd.getSQLDefinition().contains(" JOIN ") && nd.getSQLDefinition().contains(" WHERE ")) {
+	inputs = nd.getSQLDefinition().substring(nd.getSQLDefinition().indexOf(" FROM ") + 6, nd.getSQLDefinition().indexOf(" WHERE "));
+}
+						
 						EvolutionNode view = null;
 						List<EvolutionNode> ndinputs = nd.getInputSchemata();
 						for(EvolutionNode inputNode: ndinputs) {
@@ -1002,7 +1010,7 @@ public class HecataeusViewer {
 															onConditions += " AND ";
 														}
 														if(alreadyCheckedOperatorNodes.contains(operator) == false) {
-															alreadyCheckedOperatorNodes.add(edg.getFromNode());
+															alreadyCheckedOperatorNodes.add(operator);
 														}
 														onConditions += edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName();
 														firstTable = edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4);
@@ -1014,7 +1022,6 @@ public class HecataeusViewer {
 									}
 									if(onConditions.isEmpty() == false) {
 										if(evolutionGraph.findVertexByName("V_" + firstTable + "_" + secondTable) != null || evolutionGraph.findVertexByName("V_" + secondTable + "_" + firstTable) != null) {	// FIXME: check if join conditions are the same or not!
-//											TODO: rewrite query to view
 											view = evolutionGraph.findVertexByName("V_" + firstTable + "_" + secondTable);
 											if(view == null) {
 												view = evolutionGraph.findVertexByName("V_" + secondTable + "_" + firstTable);
@@ -1056,9 +1063,9 @@ System.err.println("1048 " + viewDefinition);
 											try {
 												parser.processFile(fileWithViews);
 												evolutionGraph = parser.getParsedGraph();
-												while(evolutionGraph.findVertexByName("pmanousis.views") != null) {	// Clean up the NODE_TYPE_FILE CONTAINER nodes.
-													evolutionGraph.removeVertex(evolutionGraph.findVertexByName("pmanousis.views"));
-												}
+//												while(evolutionGraph.findVertexByName("pmanousis.views") != null) {	// Clean up the NODE_TYPE_FILE CONTAINER nodes.
+//													evolutionGraph.removeVertex(evolutionGraph.findVertexByName("pmanousis.views"));
+//												}
 												view = evolutionGraph.findVertexByName("V_" + firstTable + "_" + secondTable);
 											} catch (Exception e1) {	// TODO Auto-generated catch block
 												e1.printStackTrace();
@@ -1071,6 +1078,7 @@ System.err.println("1048 " + viewDefinition);
 						rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
 					}
 				}
+				HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
 			}
 			
 			private void rewriteQuery(EvolutionNode queryNode, EvolutionNode view, List<EvolutionNode> alreadyCheckedOperatorNodes) {
@@ -1082,6 +1090,7 @@ System.err.println("1048 " + viewDefinition);
 						outputs += edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getName() + ", ";
 					}
 					else {	// Aggregate Function
+System.err.println("HecataeusViewer.java(1085) " + queryNode.getFileName() + queryNode.getLine());
 						outputs += edgo.getToNode().getName() + "(" + edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().substring(edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getOutEdges().get(0).getToNode().getName() + "), ";
 					}
 				}
@@ -1093,8 +1102,7 @@ System.err.println("1048 " + viewDefinition);
 						semantics = inorderTraverse(edge.getToNode(), alreadyCheckedOperatorNodes);
 					}
 				}
-
-				File fileWithQueries = new File("pmanousis.queries");	// Here are the view definitions: a static file would do (always removed after parsing).
+				File fileWithQueries = new File("pmanousis.queries");	// Here are the query definitions: a static file would do (always removed after parsing).
 				try {
 					fileWithQueries.createNewFile();
 				} catch (IOException e2) {	// TODO Auto-generated catch block
@@ -1102,7 +1110,13 @@ System.err.println("1048 " + viewDefinition);
 				}
 				try {
 					FileWriter fw = new FileWriter(fileWithQueries, false);
-					fw.write("SELECT " + outputs + " FROM " + view.getName() + ((semantics.trim().length() > 0) ? " WHERE " + semantics.replaceFirst("AND", "") : "") + ";");
+					while(semantics.trim().startsWith("AND ") || semantics.trim().startsWith("OR ") || semantics.trim().endsWith(" AND") || semantics.trim().endsWith(" OR")) {
+						semantics = semantics.trim().replaceFirst("AND ", "");
+						semantics = semantics.trim().replaceFirst("OR ", "");
+						semantics = semantics.trim().replaceAll(" AND$", "");
+						semantics = semantics.trim().replaceAll(" OR$", "");
+					}
+					fw.write("SELECT " + outputs + " FROM " + view.getName() + ((semantics.trim().length() > 0) ? " WHERE " + semantics : "") + ";");
 					fw.close();
 				}
 				catch (IOException ioexception) {
@@ -1114,9 +1128,9 @@ System.err.println("1048 " + viewDefinition);
 					
 					parser.processFile(fileWithQueries);
 					evolutionGraph = parser.getParsedGraph();
-					while(evolutionGraph.findVertexByName("pmanousis.queries") != null) {	// Clean up the NODE_TYPE_FILE CONTAINER nodes.
-						evolutionGraph.removeVertex(evolutionGraph.findVertexByName("pmanousis.queries"));
-					}
+//					while(evolutionGraph.findVertexByName("pmanousis.queries") != null) {	// Clean up the NODE_TYPE_FILE CONTAINER nodes.
+//						evolutionGraph.removeVertex(evolutionGraph.findVertexByName("pmanousis.queries"));
+//					}
 				} catch (Exception e1) {	// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -1142,7 +1156,12 @@ System.err.println("1048 " + viewDefinition);
 						Double.parseDouble(smtxNode.getName());
 					}
 					catch (NumberFormatException ex) {
-						return("'" + smtxNode.getName() + "'");						
+						if(smtxNode.getName() != " ValueList ") {
+							return("'" + smtxNode.getName() + "'");						
+						}
+						else {
+							return("('" + smtxNode.getName() + "')");
+						}
 					}
 					return(smtxNode.getName());
 				}
@@ -2528,10 +2547,10 @@ System.err.println("1048 " + viewDefinition);
 			modulesWithStatus.remove(v);
 		}
 		VisualGraph GV = GraphConverterUtilities.convertEvolutionGraphToVisual(evolutionGraph, modulesWithStatus);
-		HecataeusViewer.myViewer.zoomToModuleTab(modulesWithStatus, GV, "Impact analysis");
+		HecataeusViewer.myViewer.zoomToModuleTab(GV, "Impact analysis");
 	}
 
-	protected void zoomToModuleTab(List<EvolutionNode> modulesWithStatus, VisualGraph sub, String name) {
+	protected void zoomToModuleTab(VisualGraph sub, String name) {
 		subLayout = new VisualAggregateLayout(sub, VisualLayoutType.ZoomedLayoutForModules,
 				VisualLayoutType.ZoomedLayoutForModules);
 		VisualizationViewer<VisualNode, VisualEdge> vv1 = VisualizationViewer.SetViewers(subLayout, this);
