@@ -985,21 +985,15 @@ public class HecataeusViewer {
 				for(Map.Entry<Integer, List<EvolutionNode>> entry: joinQueries.entrySet()) {
 System.err.println("984 working on " + entry.getKey());
 					List<EvolutionNode> qs = entry.getValue();
+					List<String> inputs = new ArrayList<String>();
 					for(EvolutionNode nd: qs) {	// for each query I create a view (if not exists) that joins the tables on the attributes of the smtx tree
-String inputs = nd.getSQLDefinition().substring(nd.getSQLDefinition().indexOf(" FROM ") + 6);
-if(nd.getSQLDefinition().contains(" JOIN ") && nd.getSQLDefinition().contains(" WHERE ")) {
-	inputs = nd.getSQLDefinition().substring(nd.getSQLDefinition().indexOf(" FROM ") + 6, nd.getSQLDefinition().indexOf(" WHERE "));
-}
-						
 						EvolutionNode view = null;
 						List<EvolutionNode> ndinputs = nd.getInputSchemata();
+						List<String> onConditions = new ArrayList<String>();
 						for(EvolutionNode inputNode: ndinputs) {
 							for(EvolutionEdge ed: inputNode.getOutEdges()) {
 								if(ed.getType() == EdgeType.EDGE_TYPE_INPUT) {	// this is an input attribute
 									EvolutionNode inputAttr = ed.getToNode();
-									String onConditions = "";
-									String firstTable = "";
-									String secondTable = "";
 									for(EvolutionEdge edg: inputAttr.getInEdges()) {
 										if(edg.getType() == EdgeType.EDGE_TYPE_OPERATOR) {
 											EvolutionNode operator = edg.getFromNode();
@@ -1007,70 +1001,89 @@ if(nd.getSQLDefinition().contains(" JOIN ") && nd.getSQLDefinition().contains(" 
 												if(edgo != edg) {
 													if(ndinputs.contains(edgo.getToNode().getParentNode())) {
 														if(onConditions.isEmpty() == false) {
-															onConditions += " AND ";
+															onConditions.add(" AND ");
 														}
 														if(alreadyCheckedOperatorNodes.contains(operator) == false) {
 															alreadyCheckedOperatorNodes.add(operator);
 														}
-														onConditions += edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName();
-														firstTable = edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4);
-														secondTable = inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4);
+														if(onConditions.contains(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName()) == false ||
+																onConditions.contains(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName() + operator.getName() + edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName()) == false) {
+															if(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4).compareTo(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4)) > 0) {
+																onConditions.add(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName());
+															}
+															else {
+																onConditions.add(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName() + operator.getName() + edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName());
+															}
+														}
+														if(inputs.contains(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4)) == false) {
+															inputs.add(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4));
+														}
+														if(inputs.contains(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4)) == false) {
+															inputs.add(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4));
+														}
 													}
 												}
 											}
 										}
 									}
-									if(onConditions.isEmpty() == false) {
-										if(evolutionGraph.findVertexByName("V_" + firstTable + "_" + secondTable) != null || evolutionGraph.findVertexByName("V_" + secondTable + "_" + firstTable) != null) {	// FIXME: check if join conditions are the same or not!
-											view = evolutionGraph.findVertexByName("V_" + firstTable + "_" + secondTable);
-											if(view == null) {
-												view = evolutionGraph.findVertexByName("V_" + secondTable + "_" + firstTable);
+								}
+							}
+							inputs.sort(String.CASE_INSENSITIVE_ORDER);
+							if(onConditions.isEmpty() == false) {
+								String tmpinpu = "V_";
+								for(String tn: inputs) {
+									tmpinpu += tn + "_";
+								}
+								tmpinpu = tmpinpu.substring(0, tmpinpu.length() - 1);
+								if(evolutionGraph.findVertexByName(tmpinpu) != null) {	// FIXME: check if join conditions are the same or not!
+									view = evolutionGraph.findVertexByName(tmpinpu);
+									onConditions.clear();
+									inputs.clear();
+									continue;
+								}
+								else {
+									String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
+									for(String tn: inputs) {
+										EvolutionNode provider = evolutionGraph.findVertexByName(tn + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
+										for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
+											if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
+												viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
 											}
-											continue;
 										}
-										else {
-											String viewDefinition = "CREATE VIEW V_" + firstTable + "_" + secondTable + " AS SELECT ";
-											EvolutionNode provider = evolutionGraph.findVertexByName(firstTable + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
-											for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
-												if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
-													viewDefinition += firstTable + "." + attributeEdge.getToNode().getName() + " " + firstTable + "_" + attributeEdge.getToNode().getName() + ", ";
-												}
-											}
-											provider = evolutionGraph.findVertexByName(secondTable + "_SCHEMA");	// then to the second table
-											for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
-												if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
-													viewDefinition += secondTable + "." + attributeEdge.getToNode().getName() + " " + secondTable + "_" + attributeEdge.getToNode().getName() + ", ";
-												}
-											}
-											viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the second table
-											viewDefinition += " FROM " + firstTable + ", " + secondTable + " WHERE " + onConditions + ";"; 
-											File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
-											try {
-												fileWithViews.createNewFile();
-											} catch (IOException e2) {	// TODO Auto-generated catch block
+									}
+									viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
+									viewDefinition += " FROM ";
+									for(String tn: inputs) {
+										viewDefinition += tn + ", "; 
+									}
+									viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
+									viewDefinition += " WHERE ";
+									for(String cs: onConditions) {
+										viewDefinition += cs + " ";
+									}
+									viewDefinition += ";";
+									File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
+									try {
+										fileWithViews.createNewFile();
+									} catch (IOException e2) {	// TODO Auto-generated catch block
 												e2.printStackTrace();
 											}
 											try {
 												FileWriter fw = new FileWriter(fileWithViews, false);
 System.err.println("1048 " + viewDefinition);
-												fw.write(viewDefinition);
-												fw.close();
-											}
-											catch (IOException ioexception) {
-												ioexception.printStackTrace();
-											}
-											HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
-											try {
-												parser.processFile(fileWithViews);
-												evolutionGraph = parser.getParsedGraph();
-//												while(evolutionGraph.findVertexByName("pmanousis.views") != null) {	// Clean up the NODE_TYPE_FILE CONTAINER nodes.
-//													evolutionGraph.removeVertex(evolutionGraph.findVertexByName("pmanousis.views"));
-//												}
-												view = evolutionGraph.findVertexByName("V_" + firstTable + "_" + secondTable);
-											} catch (Exception e1) {	// TODO Auto-generated catch block
-												e1.printStackTrace();
-											}
-										}
+										fw.write(viewDefinition);
+										fw.close();
+									}
+									catch (IOException ioexception) {
+										ioexception.printStackTrace();
+									}
+									HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
+									try {
+										parser.processFile(fileWithViews);
+										evolutionGraph = parser.getParsedGraph();
+										view = evolutionGraph.findVertexByName(tmpinpu);
+									} catch (Exception e1) {	// TODO Auto-generated catch block
+										e1.printStackTrace();
 									}
 								}
 							}
