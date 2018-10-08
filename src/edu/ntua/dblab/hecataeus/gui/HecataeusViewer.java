@@ -985,11 +985,12 @@ public class HecataeusViewer {
 				for(Map.Entry<Integer, List<EvolutionNode>> entry: joinQueries.entrySet()) {
 System.err.println("984 working on " + entry.getKey());
 					List<EvolutionNode> qs = entry.getValue();
-					List<String> inputs = new ArrayList<String>();
 					for(EvolutionNode nd: qs) {	// for each query I create a view (if not exists) that joins the tables on the attributes of the smtx tree
 						EvolutionNode view = null;
+						alreadyCheckedOperatorNodes.clear();
 						List<EvolutionNode> ndinputs = nd.getInputSchemata();
 						List<String> onConditions = new ArrayList<String>();
+						List<String> inputs = new ArrayList<String>();
 						for(EvolutionNode inputNode: ndinputs) {
 							for(EvolutionEdge ed: inputNode.getOutEdges()) {
 								if(ed.getType() == EdgeType.EDGE_TYPE_INPUT) {	// this is an input attribute
@@ -1012,6 +1013,12 @@ System.err.println("984 working on " + entry.getKey());
 																onConditions.add(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName());
 															}
 															else {
+																if(operator.getName().contains("<")) {
+																	operator.setName(operator.getName().replace('<', '>'));
+																}
+																else {
+																	operator.setName(operator.getName().replace('>', '<'));
+																}
 																onConditions.add(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName() + operator.getName() + edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName());
 															}
 														}
@@ -1028,63 +1035,64 @@ System.err.println("984 working on " + entry.getKey());
 									}
 								}
 							}
-							inputs.sort(String.CASE_INSENSITIVE_ORDER);
-							if(onConditions.isEmpty() == false) {
-								String tmpinpu = "V_";
+						}
+						inputs.sort(String.CASE_INSENSITIVE_ORDER);
+						if(onConditions.isEmpty() == false) {
+							String tmpinpu = "V_";
+							for(String tn: inputs) {
+								tmpinpu += tn + "_";
+							}
+							tmpinpu = tmpinpu.substring(0, tmpinpu.length() - 1);
+							if(evolutionGraph.findVertexByName(tmpinpu) != null) {	// FIXME: check if join conditions are the same or not!
+								view = evolutionGraph.findVertexByName(tmpinpu);
+								onConditions.clear();
+								inputs.clear();
+								continue;
+							}
+							else {
+								String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
 								for(String tn: inputs) {
-									tmpinpu += tn + "_";
-								}
-								tmpinpu = tmpinpu.substring(0, tmpinpu.length() - 1);
-								if(evolutionGraph.findVertexByName(tmpinpu) != null) {	// FIXME: check if join conditions are the same or not!
-									view = evolutionGraph.findVertexByName(tmpinpu);
-									onConditions.clear();
-									inputs.clear();
-									continue;
-								}
-								else {
-									String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
-									for(String tn: inputs) {
-										EvolutionNode provider = evolutionGraph.findVertexByName(tn + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
-										for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
-											if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
-												viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
-											}
+									EvolutionNode provider = evolutionGraph.findVertexByName(tn + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
+									for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
+										if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
+											viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
 										}
 									}
-									viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
-									viewDefinition += " FROM ";
-									for(String tn: inputs) {
-										viewDefinition += tn + ", "; 
-									}
-									viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
-									viewDefinition += " WHERE ";
-									for(String cs: onConditions) {
-										viewDefinition += cs + " ";
-									}
-									viewDefinition += ";";
-									File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
-									try {
-										fileWithViews.createNewFile();
-									} catch (IOException e2) {	// TODO Auto-generated catch block
-												e2.printStackTrace();
-											}
-											try {
-												FileWriter fw = new FileWriter(fileWithViews, false);
+								}
+								viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
+								viewDefinition += " FROM ";
+								for(String tn: inputs) {
+									viewDefinition += tn + ", "; 
+								}
+								viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
+								viewDefinition += " WHERE ";
+								for(String cs: onConditions) {
+									viewDefinition += cs + " ";
+								}
+								viewDefinition += ";";
+								File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
+								try {
+									fileWithViews.createNewFile();
+								}
+								catch (IOException e2) {	// TODO Auto-generated catch block
+									e2.printStackTrace();
+								}
+								try {
+									FileWriter fw = new FileWriter(fileWithViews, false);
 System.err.println("1048 " + viewDefinition);
-										fw.write(viewDefinition);
-										fw.close();
-									}
-									catch (IOException ioexception) {
-										ioexception.printStackTrace();
-									}
-									HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
-									try {
-										parser.processFile(fileWithViews);
-										evolutionGraph = parser.getParsedGraph();
-										view = evolutionGraph.findVertexByName(tmpinpu);
-									} catch (Exception e1) {	// TODO Auto-generated catch block
-										e1.printStackTrace();
-									}
+									fw.write(viewDefinition);
+									fw.close();
+								}
+								catch (IOException ioexception) {
+									ioexception.printStackTrace();
+								}
+								HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
+								try {
+									parser.processFile(fileWithViews);
+									evolutionGraph = parser.getParsedGraph();
+									view = evolutionGraph.findVertexByName(tmpinpu);
+								} catch (Exception e1) {	// TODO Auto-generated catch block
+									e1.printStackTrace();
 								}
 							}
 						}
@@ -1122,12 +1130,37 @@ System.err.println("HecataeusViewer.java(1085) " + queryNode.getFileName() + que
 					e2.printStackTrace();
 				}
 				try {
+if(queryNode.getSQLDefinition().contains("AGGREGATOR_CATEGORY_ITEM") &&
+		queryNode.getSQLDefinition().contains("AGGREGATOR_FEED_AGGREGATOR_ITEM") &&
+		queryNode.getSQLDefinition().contains("CID")) {
+	System.err.println("break;");
+}
 					FileWriter fw = new FileWriter(fileWithQueries, false);
-					while(semantics.trim().startsWith("AND ") || semantics.trim().startsWith("OR ") || semantics.trim().endsWith(" AND") || semantics.trim().endsWith(" OR")) {
-						semantics = semantics.trim().replaceFirst("AND ", "");
-						semantics = semantics.trim().replaceFirst("OR ", "");
-						semantics = semantics.trim().replaceAll(" AND$", "");
-						semantics = semantics.trim().replaceAll(" OR$", "");
+					
+					while(semantics.matches("(^|.*)\\s*AND\\s*AND\\s*.*") ||
+							semantics.contains("()") ||
+							semantics.matches(".*\\s+AND\\s+AND\\s+.*") ||
+							semantics.matches(".*\\s+OR\\s+OR\\s+.*") ||
+							semantics.matches(".*\\s+AND\\s+OR\\s+.*") ||
+							semantics.matches(".*\\s+OR\\s+AND\\s+.*") ||
+							semantics.matches("(^|.*)\\s*\\(\\s+AND\\s+(\\)|.*)") ||
+							semantics.matches("(^|.*)\\s*\\(\\s+OR\\s+(\\)|.*)") ||
+							semantics.matches("^\\s*(AND|OR)\\s+.*|.*\\s+(AND|OR)\\s*$")) {
+						semantics = semantics.replaceAll("\\s*AND\\s*AND\\s*", "");
+						semantics = semantics.replace("()", "");
+						semantics = semantics.replaceAll("AND\\s+AND", " AND ");
+						semantics = semantics.replaceAll("OR\\s+OR", " OR ");
+						semantics = semantics.replaceAll("AND\\s+OR", " OR ");
+						semantics = semantics.replaceAll("OR\\s+AND", " AND ");
+						semantics = semantics.replaceAll("\\(\\s+AND\\s+", "(");
+						semantics = semantics.replaceAll("\\(\\s+OR\\s+", "(");
+						semantics = semantics.replaceAll("^\\s*(AND|OR)\\s+", "");
+						semantics = semantics.replaceAll("\\s+(AND|OR)\\s*$", "");
+					}
+					
+					semantics = semantics.trim();
+					if(semantics.equals("AND") || semantics.equals("OR")) {
+						semantics = "";
 					}
 					fw.write("SELECT " + outputs + " FROM " + view.getName() + ((semantics.trim().length() > 0) ? " WHERE " + semantics : "") + ";");
 					fw.close();
@@ -1151,19 +1184,23 @@ System.err.println("HecataeusViewer.java(1085) " + queryNode.getFileName() + que
 
 			private String inorderTraverse(EvolutionNode smtxNode, List<EvolutionNode> alreadyCheckedOperatorNodes) {	// FIXME: aggregate functions
 				String part = "";
-				if(alreadyCheckedOperatorNodes.contains(smtxNode) &&
-						(smtxNode.getOutEdges().get(0).getToNode().getName().equals(alreadyCheckedOperatorNodes.get(alreadyCheckedOperatorNodes.indexOf(smtxNode)).getOutEdges().get(0).getToNode().getName()) &&
-						smtxNode.getOutEdges().get(1).getToNode().getName().equals(alreadyCheckedOperatorNodes.get(alreadyCheckedOperatorNodes.indexOf(smtxNode)).getOutEdges().get(1).getToNode().getName()))) {
+				if((alreadyCheckedOperatorNodes.contains(smtxNode.getParentNode()) &&	// already checked and I am the first child, otherwise, I should print the contents
+						smtxNode.getParentNode().getOutEdges().get(0).getToNode() == smtxNode) || 
+						alreadyCheckedOperatorNodes.contains(smtxNode)) {	// if already checked or my parent was checked, I should forget any traveling? or maybe move on till I have no more operators unchecked?
 					return(part);
 				}
 				if(smtxNode.getOutEdges().size() > 0 && smtxNode.getOutEdges().get(0).getType() == EdgeType.EDGE_TYPE_OPERATOR) {
-					part += inorderTraverse(smtxNode.getOutEdges().get(0).getToNode(), alreadyCheckedOperatorNodes);
+					part += '(' + inorderTraverse(smtxNode.getOutEdges().get(0).getToNode(), alreadyCheckedOperatorNodes) + ')';
 				}
 				if(smtxNode.getType() == NodeType.NODE_TYPE_OPERAND) {
 					part += smtxNode.getName();
+					if(smtxNode.getName().equals(" AND ") == false && smtxNode.getName().equals(" OR ") == false ) {
+						alreadyCheckedOperatorNodes.add(smtxNode);
+					}
 				}
-				if(smtxNode.getType() == NodeType.NODE_TYPE_ATTRIBUTE)
+				if(smtxNode.getType() == NodeType.NODE_TYPE_ATTRIBUTE) {
 					return(smtxNode.getParentNode().getName().substring(smtxNode.getParentNode().getName().indexOf("_IN_") + 4) + "_" + smtxNode.getName());
+				}
 				if(smtxNode.getType() == NodeType.NODE_TYPE_CONSTANT) {
 					try{
 						Double.parseDouble(smtxNode.getName());
