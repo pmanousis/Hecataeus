@@ -1047,7 +1047,7 @@ System.err.println("984 working on " + entry.getKey());
 								view = evolutionGraph.findVertexByName(tmpinpu);
 								onConditions.clear();
 								inputs.clear();
-								continue;
+//								continue;
 							}
 							else {
 								String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
@@ -1096,6 +1096,7 @@ System.err.println("1048 " + viewDefinition);
 								}
 							}
 						}
+System.err.println("1099: rewriting: " + nd.getName());
 						rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
 					}
 				}
@@ -1130,13 +1131,7 @@ System.err.println("HecataeusViewer.java(1085) " + queryNode.getFileName() + que
 					e2.printStackTrace();
 				}
 				try {
-if(queryNode.getSQLDefinition().contains("AGGREGATOR_CATEGORY_ITEM") &&
-		queryNode.getSQLDefinition().contains("AGGREGATOR_FEED_AGGREGATOR_ITEM") &&
-		queryNode.getSQLDefinition().contains("CID")) {
-	System.err.println("break;");
-}
 					FileWriter fw = new FileWriter(fileWithQueries, false);
-					
 					while(semantics.matches("(^|.*)\\s*AND\\s*AND\\s*.*") ||
 							semantics.contains("()") ||
 							semantics.matches(".*\\s+AND\\s+AND\\s+.*") ||
@@ -1171,12 +1166,9 @@ if(queryNode.getSQLDefinition().contains("AGGREGATOR_CATEGORY_ITEM") &&
 				HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
 				try {
 					evolutionGraph.removeVertex(evolutionGraph.findVertexById(queryNode.getID()));	// TODO: check if its children are also removed or not...
-					
 					parser.processFile(fileWithQueries);
 					evolutionGraph = parser.getParsedGraph();
-//					while(evolutionGraph.findVertexByName("pmanousis.queries") != null) {	// Clean up the NODE_TYPE_FILE CONTAINER nodes.
-//						evolutionGraph.removeVertex(evolutionGraph.findVertexByName("pmanousis.queries"));
-//					}
+System.err.println("1171: removing node: " + queryNode.getName());
 				} catch (Exception e1) {	// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
