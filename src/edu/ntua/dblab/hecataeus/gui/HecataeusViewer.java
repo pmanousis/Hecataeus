@@ -1022,18 +1022,18 @@ System.err.println("984 working on " + entry.getKey());
 																onConditions.add(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName() + operator.getName() + edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName());
 															}
 														}
-														if(inputs.contains(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4)) == false) {
-															inputs.add(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4));
-														}
-														if(inputs.contains(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4)) == false) {
-															inputs.add(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4));
-														}
 													}
 												}
 											}
 										}
 									}
 								}
+							}
+							if(inputs.contains(inputNode.getName().indexOf("_IN_") + 4) == false) {
+								inputs.add(inputNode.getName().substring(inputNode.getName().indexOf("_IN_") + 4));
+							}
+							else { // TODO: Add code for aliases
+System.err.println("1036: Add alias");
 							}
 						}
 						inputs.sort(String.CASE_INSENSITIVE_ORDER);
@@ -1043,33 +1043,36 @@ System.err.println("984 working on " + entry.getKey());
 								tmpinpu += tn + "_";
 							}
 							tmpinpu = tmpinpu.substring(0, tmpinpu.length() - 1);
-							if(evolutionGraph.findVertexByName(tmpinpu) != null) {	// FIXME: check if join conditions are the same or not!
-								view = evolutionGraph.findVertexByName(tmpinpu);
-								onConditions.clear();
-								inputs.clear();
-//								continue;
-							}
-							else {
-								String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
-								for(String tn: inputs) {
-									EvolutionNode provider = evolutionGraph.findVertexByName(tn + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
-									for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
-										if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
-											viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
-										}
+							String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
+							for(String tn: inputs) {
+								EvolutionNode provider = evolutionGraph.findVertexByName(tn + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
+								for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
+									if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
+										viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
 									}
 								}
-								viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
-								viewDefinition += " FROM ";
-								for(String tn: inputs) {
-									viewDefinition += tn + ", "; 
-								}
-								viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
-								viewDefinition += " WHERE ";
-								for(String cs: onConditions) {
-									viewDefinition += cs + " ";
-								}
-								viewDefinition += ";";
+							}
+							viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
+							viewDefinition += " FROM ";
+							for(String tn: inputs) {
+								viewDefinition += tn + ", ";
+							}
+							viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
+							viewDefinition += " WHERE ";
+							for(String cs: onConditions) {
+								viewDefinition += cs + " ";
+							}
+							viewDefinition += ";";
+							view = evolutionGraph.findVertexByName(tmpinpu);
+							if(view != null && view.getSQLDefinition().equals(viewDefinition.replace("  ", " ").replace(" ;", ""))) {
+								onConditions.clear();
+								inputs.clear();
+							}
+							else if(view != null) {	// TODO: join conditions are not same!
+System.err.println("1072: Create new view!");
+System.err.println("1073:\n" + view.getSQLDefinition() + "\n" + viewDefinition.replace("  ", " ").replace(" ;", ""));
+							}
+							else {
 								File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
 								try {
 									fileWithViews.createNewFile();
