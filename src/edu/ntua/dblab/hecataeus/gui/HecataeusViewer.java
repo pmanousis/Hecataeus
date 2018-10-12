@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -983,7 +984,6 @@ public class HecataeusViewer {
 				}
 				List<EvolutionNode> alreadyCheckedOperatorNodes = new ArrayList<>();
 				for(Map.Entry<Integer, List<EvolutionNode>> entry: joinQueries.entrySet()) {
-System.err.println("984 working on " + entry.getKey());
 					List<EvolutionNode> qs = entry.getValue();
 					for(EvolutionNode nd: qs) {	// for each query I create a view (if not exists) that joins the tables on the attributes of the smtx tree
 						EvolutionNode view = null;
@@ -1062,17 +1062,48 @@ System.err.println("1036: Add alias");
 							for(String cs: onConditions) {
 								viewDefinition += cs + " ";
 							}
-							viewDefinition += ";";
-							view = evolutionGraph.findVertexByName(tmpinpu);
-							if(view != null && view.getSQLDefinition().equals(viewDefinition.replace("  ", " ").replace(" ;", ""))) {
-								onConditions.clear();
-								inputs.clear();
+							viewDefinition = viewDefinition.replace("  ", " ").trim();
+							List<EvolutionNode> viewsWithName = evolutionGraph.findViewsByName(tmpinpu);
+							
+							String maxViewName = "";
+							
+							if(viewsWithName.size() == 0) {
+								view = null;
 							}
-							else if(view != null) {	// TODO: join conditions are not same!
-System.err.println("1072: Create new view!");
-System.err.println("1073:\n" + view.getSQLDefinition() + "\n" + viewDefinition.replace("  ", " ").replace(" ;", ""));
+							else if(viewsWithName.size() == 1) {
+								view = viewsWithName.get(0);
+								maxViewName = view.getName();
 							}
 							else {
+								for(EvolutionNode v: viewsWithName) {
+									view = v;
+									if(view.getName().length() > maxViewName.length()) {
+										maxViewName = view.getName();
+									}
+									List<String> listString1 = new ArrayList<String>(Arrays.asList(view.getSQLDefinition().substring(view.getSQLDefinition().indexOf(" AS SELECT ")).split(" ")));
+									List<String> listString2 = new ArrayList<String>(Arrays.asList(viewDefinition.substring(viewDefinition.indexOf(" AS SELECT ")).split(" ")));
+									if(listString1.size() == listString2.size()) {
+										listString1.removeAll(listString2);
+							            if(listString1.isEmpty()) {
+											break;
+							            }
+							        }
+								}
+							}
+							if(view != null) {
+								List<String> listString1 = new ArrayList<String>(Arrays.asList(view.getSQLDefinition().substring(view.getSQLDefinition().indexOf(" AS SELECT ")).split(" ")));
+								List<String> listString2 = new ArrayList<String>(Arrays.asList(viewDefinition.substring(viewDefinition.indexOf(" AS SELECT ")).split(" ")));
+								if(areListsEqual(listString1, listString2)) {
+									onConditions.clear();
+									inputs.clear();
+									viewDefinition = "";
+								}
+								else {
+									viewDefinition = "CREATE VIEW " + maxViewName + "_" + viewDefinition.substring(viewDefinition.indexOf(" AS SELECT "));
+									view = null;
+								}
+							}
+							if(view == null){
 								File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
 								try {
 									fileWithViews.createNewFile();
@@ -1082,8 +1113,6 @@ System.err.println("1073:\n" + view.getSQLDefinition() + "\n" + viewDefinition.r
 								}
 								try {
 									FileWriter fw = new FileWriter(fileWithViews, false);
-System.err.println("1048 " + viewDefinition);
-									fw.write(viewDefinition);
 									fw.close();
 								}
 								catch (IOException ioexception) {
@@ -1099,13 +1128,26 @@ System.err.println("1048 " + viewDefinition);
 								}
 							}
 						}
-System.err.println("1099: rewriting: " + nd.getName());
 						rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
 					}
 				}
 				HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
 			}
 			
+			private boolean areListsEqual(List<String> l1, List<String> l2) {
+				if(l1.size() != l2.size()) {
+					return(false);
+				}
+				l1.sort(String.CASE_INSENSITIVE_ORDER);
+				l2.sort(String.CASE_INSENSITIVE_ORDER);
+				for(int i = 0; i < l1.size(); i++) {
+					if(l1.get(i).equals(l2.get(i)) == false) {
+						return(false);
+					}
+				}
+				return(true);
+			}
+		
 			private void rewriteQuery(EvolutionNode queryNode, EvolutionNode view, List<EvolutionNode> alreadyCheckedOperatorNodes) {
 				String outputs = "";
 				for(EvolutionEdge outputEdge: queryNode.getOutputSchema().getOutEdges()) {
@@ -1115,7 +1157,7 @@ System.err.println("1099: rewriting: " + nd.getName());
 						outputs += edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getName() + ", ";
 					}
 					else {	// Aggregate Function
-System.err.println("HecataeusViewer.java(1085) " + queryNode.getFileName() + queryNode.getLine());
+//System.err.println("HecataeusViewer.java(1144) " + queryNode.getFileName() + queryNode.getLine());
 						outputs += edgo.getToNode().getName() + "(" + edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().substring(edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getOutEdges().get(0).getToNode().getName() + "), ";
 					}
 				}
@@ -1171,7 +1213,6 @@ System.err.println("HecataeusViewer.java(1085) " + queryNode.getFileName() + que
 					evolutionGraph.removeVertex(evolutionGraph.findVertexById(queryNode.getID()));	// TODO: check if its children are also removed or not...
 					parser.processFile(fileWithQueries);
 					evolutionGraph = parser.getParsedGraph();
-System.err.println("1171: removing node: " + queryNode.getName());
 				} catch (Exception e1) {	// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
