@@ -1113,6 +1113,7 @@ System.err.println("1036: Add alias");
 								}
 								try {
 									FileWriter fw = new FileWriter(fileWithViews, false);
+									fw.write(viewDefinition + ";");
 									fw.close();
 								}
 								catch (IOException ioexception) {
@@ -1128,7 +1129,14 @@ System.err.println("1036: Add alias");
 								}
 							}
 						}
-						rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
+						if(view != null) {
+							try {
+								rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
+							}
+							catch(Exception ex) {
+System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinition() + ex.getMessage());
+							}
+						}
 					}
 				}
 				HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
@@ -1148,7 +1156,9 @@ System.err.println("1036: Add alias");
 				return(true);
 			}
 		
-			private void rewriteQuery(EvolutionNode queryNode, EvolutionNode view, List<EvolutionNode> alreadyCheckedOperatorNodes) {
+			private void rewriteQuery(EvolutionNode queryNode, EvolutionNode view, List<EvolutionNode> alreadyCheckedOperatorNodes) throws Exception {
+//System.err.println("1160: " + view.getSQLDefinition());
+//System.err.println("1161: " + queryNode.getSQLDefinition());
 				String outputs = "";
 				for(EvolutionEdge outputEdge: queryNode.getOutputSchema().getOutEdges()) {
 					EvolutionNode outputNode = outputEdge.getToNode();
@@ -1210,11 +1220,14 @@ System.err.println("1036: Add alias");
 				}
 				HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
 				try {
-					evolutionGraph.removeVertex(evolutionGraph.findVertexById(queryNode.getID()));	// TODO: check if its children are also removed or not...
 					parser.processFile(fileWithQueries);
 					evolutionGraph = parser.getParsedGraph();
+					evolutionGraph.removeVertex(evolutionGraph.findVertexById(queryNode.getID()));	// TODO: check if its children are also removed or not...
 				} catch (Exception e1) {	// TODO Auto-generated catch block
-					e1.printStackTrace();
+					if(view.getInEdges().size() == 0) {	// This view is unneeded
+						evolutionGraph.removeVertex(view);
+					}
+					throw(e1);
 				}
 			}
 
