@@ -1134,7 +1134,7 @@ System.err.println("1036: Add alias");
 								rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
 							}
 							catch(Exception ex) {
-System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinition() + ex.getMessage());
+System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinition() + " " + ex.getMessage());
 							}
 						}
 					}
@@ -1157,8 +1157,6 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 			}
 		
 			private void rewriteQuery(EvolutionNode queryNode, EvolutionNode view, List<EvolutionNode> alreadyCheckedOperatorNodes) throws Exception {
-//System.err.println("1160: " + view.getSQLDefinition());
-//System.err.println("1161: " + queryNode.getSQLDefinition());
 				String outputs = "";
 				for(EvolutionEdge outputEdge: queryNode.getOutputSchema().getOutEdges()) {
 					EvolutionNode outputNode = outputEdge.getToNode();
@@ -1167,8 +1165,12 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 						outputs += edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getName() + ", ";
 					}
 					else {	// Aggregate Function
-//System.err.println("HecataeusViewer.java(1144) " + queryNode.getFileName() + queryNode.getLine());
-						outputs += edgo.getToNode().getName() + "(" + edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().substring(edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getOutEdges().get(0).getToNode().getName() + "), ";
+						if(edgo.getToNode().getOutEdges().size() > 0) {
+							outputs += edgo.getToNode().getName() + "(" + edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().substring(edgo.getToNode().getOutEdges().get(0).getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "_" + edgo.getToNode().getOutEdges().get(0).getToNode().getName() + "), ";
+						}
+						else {	// FIXME: we falsely? don't connect everyone to aggregate function node
+							outputs += edgo.getToNode().getName() + "(*), ";
+						}
 					}
 				}
 				outputs = outputs.substring(0, outputs.length() - 2);	// remove the last comma FIXME: aggregate functions
@@ -1183,7 +1185,7 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 				try {
 					fileWithQueries.createNewFile();
 				} catch (IOException e2) {	// TODO Auto-generated catch block
-					e2.printStackTrace();
+					throw(new Exception("HecataeusViewer.java(1188) ", e2));
 				}
 				try {
 					FileWriter fw = new FileWriter(fileWithQueries, false);
@@ -1207,8 +1209,10 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 						semantics = semantics.replaceAll("^\\s*(AND|OR)\\s+", "");
 						semantics = semantics.replaceAll("\\s+(AND|OR)\\s*$", "");
 					}
-					
-					semantics = semantics.trim();
+					while(semantics.matches(".*\\s+AND\\s+\\).*")) {
+						semantics = semantics.replaceAll("\\s+AND\\s+\\)", ")");
+					}
+					semantics = semantics.trim().replace("πμ", "()");
 					if(semantics.equals("AND") || semantics.equals("OR")) {
 						semantics = "";
 					}
@@ -1216,7 +1220,7 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 					fw.close();
 				}
 				catch (IOException ioexception) {
-					ioexception.printStackTrace();
+					throw(new Exception("HecataeusViewer.java(1223) ", ioexception));
 				}
 				HecataeusSQLParser parser = new HecataeusSQLParser(evolutionGraph);
 				try {
@@ -1227,7 +1231,7 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 					if(view.getInEdges().size() == 0) {	// This view is unneeded
 						evolutionGraph.removeVertex(view);
 					}
-					throw(e1);
+					throw(new Exception("SELECT " + outputs + " FROM " + view.getName() + ((semantics.trim().length() > 0) ? " WHERE " + semantics : "") + ";", e1));
 				}
 			}
 
@@ -1250,13 +1254,16 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 				if(smtxNode.getType() == NodeType.NODE_TYPE_ATTRIBUTE) {
 					return(smtxNode.getParentNode().getName().substring(smtxNode.getParentNode().getName().indexOf("_IN_") + 4) + "_" + smtxNode.getName());
 				}
+				if(smtxNode.getType() == NodeType.NODE_TYPE_FUNCTION) {
+					return(smtxNode.getName() + "πμ");
+				}
 				if(smtxNode.getType() == NodeType.NODE_TYPE_CONSTANT) {
 					try{
 						Double.parseDouble(smtxNode.getName());
 					}
 					catch (NumberFormatException ex) {
 						if(smtxNode.getName() != " ValueList ") {
-							return("'" + smtxNode.getName() + "'");						
+							return("'" + smtxNode.getName() + "'");
 						}
 						else {
 							return("('" + smtxNode.getName() + "')");
