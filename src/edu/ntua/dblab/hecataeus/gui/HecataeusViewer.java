@@ -1001,13 +1001,10 @@ public class HecataeusViewer {
 											for(EvolutionEdge edgo: operator.getOutEdges()) {
 												if(edgo != edg) {
 													if(ndinputs.contains(edgo.getToNode().getParentNode())) {
-														if(onConditions.isEmpty() == false) {
-															onConditions.add(" AND ");
-														}
 														if(alreadyCheckedOperatorNodes.contains(operator) == false) {
 															alreadyCheckedOperatorNodes.add(operator);
 														}
-														if(onConditions.contains(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName()) == false ||
+														if(onConditions.contains(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName()) == false &&
 																onConditions.contains(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName() + operator.getName() + edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName()) == false) {
 															if(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4).compareTo(inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4)) > 0) {
 																onConditions.add(edgo.getToNode().getParentNode().toString().substring(edgo.getToNode().getParentNode().toString().indexOf("_IN_") + 4) + "." + edgo.getToNode().getName() + operator.getName() + inputNode.getName().substring(inputNode.getName().toString().indexOf("_IN_") + 4) + "." + inputAttr.getName());
@@ -1033,7 +1030,8 @@ public class HecataeusViewer {
 								inputs.add(inputNode.getName().substring(inputNode.getName().indexOf("_IN_") + 4));
 							}
 							else { // TODO: Add code for aliases
-System.err.println("1036: Add alias");
+								System.err.println("1036: Query that needs alias handling (not yet implemented) " + nd.getSQLDefinition());
+								continue;
 							}
 						}
 						inputs.sort(String.CASE_INSENSITIVE_ORDER);
@@ -1060,8 +1058,9 @@ System.err.println("1036: Add alias");
 							viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 2);	// then we have to substring the last comma of the last table
 							viewDefinition += " WHERE ";
 							for(String cs: onConditions) {
-								viewDefinition += cs + " ";
+								viewDefinition += cs + " AND ";
 							}
+							viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 5);	// removing last " AND "
 							viewDefinition = viewDefinition.replace("  ", " ").trim();
 							List<EvolutionNode> viewsWithName = evolutionGraph.findViewsByName(tmpinpu);
 							
@@ -1104,7 +1103,7 @@ System.err.println("1036: Add alias");
 								}
 							}
 							if(view == null){
-								File fileWithViews = new File("pmanousis.views");	// Here are the view definitions: a static file would do (always removed after parsing).
+								File fileWithViews = new File("views");	// Here are the view definitions: a static file would do (always removed after parsing).
 								try {
 									fileWithViews.createNewFile();
 								}
@@ -1125,7 +1124,8 @@ System.err.println("1036: Add alias");
 									evolutionGraph = parser.getParsedGraph();
 									view = evolutionGraph.findVertexByName(tmpinpu);
 								} catch (Exception e1) {	// TODO Auto-generated catch block
-									e1.printStackTrace();
+									System.err.println("1128: " + nd.getSQLDefinition() + " " + viewDefinition + " " + e1.getMessage());
+									continue;
 								}
 							}
 						}
@@ -1134,7 +1134,7 @@ System.err.println("1036: Add alias");
 								rewriteQuery(nd, view, alreadyCheckedOperatorNodes);
 							}
 							catch(Exception ex) {
-System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinition() + " " + ex.getMessage());
+								System.err.println("1138: " + nd.getSQLDefinition() + " " + view.getSQLDefinition() + " " + ex.getMessage());
 							}
 						}
 					}
@@ -1181,7 +1181,7 @@ System.err.println("1137: " + nd.getSQLDefinition() + " " + view.getSQLDefinitio
 						semantics = inorderTraverse(edge.getToNode(), alreadyCheckedOperatorNodes);
 					}
 				}
-				File fileWithQueries = new File("pmanousis.queries");	// Here are the query definitions: a static file would do (always removed after parsing).
+				File fileWithQueries = new File("queries");	// Here are the query definitions: a static file would do (always removed after parsing).
 				try {
 					fileWithQueries.createNewFile();
 				} catch (IOException e2) {	// TODO Auto-generated catch block
