@@ -1123,6 +1123,9 @@ public class HecataeusViewer {
 									parser.processFile(fileWithViews);
 									evolutionGraph = parser.getParsedGraph();
 									view = evolutionGraph.findVertexByName(tmpinpu);
+									if(view == null) {
+										throw (new Exception());
+									}
 								} catch (Exception e1) {	// TODO Auto-generated catch block
 									System.err.println("1128: " + nd.getSQLDefinition() + " " + viewDefinition + " " + e1.getMessage());
 									continue;
