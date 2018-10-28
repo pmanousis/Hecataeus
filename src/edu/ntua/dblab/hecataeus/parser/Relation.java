@@ -5,6 +5,7 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import edu.ntua.dblab.hecataeus.hsql.Channel;
@@ -58,7 +59,12 @@ public class Relation extends Statement{
 		}
 		else {
 			//get table of current schema
-			Table tTable=d.getTable(tableName, channel);
+			Table tTable;
+			try {
+				tTable = d.getTable(tableName, channel);
+			} catch (IOException e) {
+				throw(new SQLException(e.getMessage()));
+			}
 			setDefinition(sentence);
 			setTable(tTable);
 			

@@ -168,7 +168,7 @@ class Log implements Runnable {
 	void stop() {
 		tRunner=null;
 	}
-	void close(boolean compact) throws SQLException {
+	void close(boolean compact) throws SQLException, IOException {
 		if(Trace.TRACE) Trace.trace();
 		if(bReadOnly) {
 			return;
@@ -202,7 +202,7 @@ class Log implements Runnable {
 			db.getLog().close(false);
 		}
 	}
-	void checkpoint() throws SQLException {
+	void checkpoint() throws SQLException, IOException {
 		close(false);
 		pProperties.put("modified","yes");
 		saveProperties();
@@ -212,7 +212,7 @@ class Log implements Runnable {
 	void setLogSize(int mb) {
 		iLogSize=mb;
 	}
-	void write(Channel c,String s) throws SQLException {
+	void write(Channel c,String s) throws SQLException, IOException {
 		if(bRestoring || s==null || s.equals("")) {
 			return;
 		}
@@ -232,7 +232,7 @@ class Log implements Runnable {
 				wScript.flush();
 			}
 		} catch(IOException e) {
-			Trace.error(Trace.FILE_IO_ERROR,sFileScript);
+			throw(Trace.error(Trace.FILE_IO_ERROR,sFileScript));
 		}
 		if(iLogSize>0 && iLogCount++>100) {
 			iLogCount=0;
@@ -248,7 +248,7 @@ class Log implements Runnable {
 		closeProperties();
 	}
 	static void scriptToFile(Database db,String file,boolean full,
-			Channel channel) throws SQLException {
+			Channel channel) throws SQLException, IOException {
 		if((new File(file)).exists()) {
 			// there must be no such file; overwriting not allowed for security
 			throw Trace.error(Trace.FILE_IO_ERROR,file);
@@ -288,7 +288,7 @@ class Log implements Runnable {
 			time=System.currentTimeMillis()-time;
 			if(Trace.TRACE) Trace.trace(time);
 		} catch(IOException e) {
-			Trace.error(Trace.FILE_IO_ERROR,file+" "+e);
+			throw(Trace.error(Trace.FILE_IO_ERROR,file+" "+e));
 		}
 	}
 
@@ -319,7 +319,7 @@ class Log implements Runnable {
     pProperties.put("version",jdbcDriver.VERSION);*/
 		saveProperties();
 	}
-	private boolean isAlreadyOpen() throws SQLException {
+	private boolean isAlreadyOpen() throws Exception {
 		// reading the last modified, wait 3 seconds, read again.
 		// if the same information was read the file was not changed
 		// and is probably, except the other process is blocked
@@ -329,6 +329,7 @@ class Log implements Runnable {
 		try {
 			Thread.sleep(3000);
 		} catch(Exception e) {
+			throw(e);
 		}
 		long l2=f.lastModified();
 		if(l1!=l2) {
@@ -443,7 +444,7 @@ class Log implements Runnable {
 			// todo: use a compressed stream
 			wScript=new BufferedWriter(new FileWriter(sFileScript,true),4096);
 		} catch(Exception e) {
-			Trace.error(Trace.FILE_IO_ERROR,sFileScript);
+			throw(Trace.error(Trace.FILE_IO_ERROR,sFileScript));
 		}
 	}
 	private void closeScript() throws SQLException {
@@ -454,7 +455,7 @@ class Log implements Runnable {
 				wScript=null;
 			}
 		} catch(Exception e) {
-			Trace.error(Trace.FILE_IO_ERROR,sFileScript);
+			throw(Trace.error(Trace.FILE_IO_ERROR,sFileScript));
 		}
 	}
 	private void runScript() throws SQLException {
@@ -513,7 +514,7 @@ class Log implements Runnable {
 		dDatabase.setReferentialIntegrity(true);
 		bRestoring=false;
 	}
-	private void writeScript(boolean full) throws SQLException {
+	private void writeScript(boolean full) throws SQLException, IOException {
 		if(Trace.TRACE) Trace.trace();
 		// create script in '.new' file
 		(new File(sFileScript+".new")).delete();

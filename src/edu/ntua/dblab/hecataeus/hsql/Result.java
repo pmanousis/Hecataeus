@@ -107,7 +107,7 @@ public class Result {
 				}
 			}
 		} catch(IOException e) {
-			Trace.error(Trace.TRANSFER_CORRUPTED);
+			throw(Trace.error(Trace.TRANSFER_CORRUPTED));
 		}
 	}
 	byte[] getBytes() throws SQLException {

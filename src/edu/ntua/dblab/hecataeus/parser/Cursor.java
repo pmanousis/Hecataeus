@@ -5,6 +5,7 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 
@@ -119,7 +120,12 @@ public class Cursor extends Statement{
 		//get SELECT
 		while (!tokenizer.getString().equals("SELECT")){}
 		
-		Select sSelect=parser.parseSelect();
+		Select sSelect;
+		try {
+			sSelect = parser.parseSelect();
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
+		}
 		setSelect(sSelect);
 		
 		//create a relative table in database
@@ -186,7 +192,12 @@ public class Cursor extends Statement{
 		//get SELECT
 		while (!tokenizer.getString().equals("SELECT")){}		
 
-		Select sSelect=parser.parseSelect();
+		Select sSelect;
+		try {
+			sSelect = parser.parseSelect();
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
+		}
 		setSelect(sSelect);
 		setId(HecataeusSQLParser.globalCounter);
 		

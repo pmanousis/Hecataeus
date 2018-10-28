@@ -181,14 +181,10 @@ public class HecataeusSQLParser{
 					file.addBlock(emb);
 				}
 				else	{
-					
 				}
 			}
-			
 			if (currentLine!=totalLines)	totalLines--;
-			
 			reader.close();
-			
 			graphCreator.addFile(file, f);
 		}
 		catch (IOException e){

@@ -1,5 +1,6 @@
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -151,7 +152,11 @@ public class MergeInto extends Statement{
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
 		parser=new Parser(d,selTokenizer,channel);
 			
-		setMatchedSelect(parser.parseSelect());
+		try {
+			setMatchedSelect(parser.parseSelect());
+		} catch (IOException e1) {
+			throw(new SQLException(e1.getMessage()));
+		}
 		
 		if (!token.equals(";")){
 			//get NOT
@@ -214,7 +219,11 @@ public class MergeInto extends Statement{
 			selTokenizer=new Tokenizer(finalSelect);
 			parser=new Parser(d,selTokenizer,channel);
 				
-			setNotMatchedSelect(parser.parseSelect());
+			try {
+				setNotMatchedSelect(parser.parseSelect());
+			} catch (IOException e) {
+				throw(new SQLException(e.getMessage()));
+			}
 		}
 	}
 }

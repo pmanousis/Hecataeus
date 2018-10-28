@@ -5,6 +5,7 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import edu.ntua.dblab.hecataeus.hsql.Channel;
@@ -98,6 +99,8 @@ public class View extends Statement{
 			String message = "[CreateViewGraph]\nThe following command ("+file.getPath()+", "+parent.getDescription()+", line "+getLine()+") not supported:\n" + sentence.toString();
 			System.out.println(message);         
 			throw new SQLException(message);
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
 		}
 	}
 	

@@ -17,6 +17,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
+import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -56,7 +57,7 @@ class DatabaseInformation {
 	static final String META_ASC_OR_DESC="ASC_OR_DESC";
 
 	Table getSystemTable(String name,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		if(name.equals("SYSTEM_PROCEDURES")) {
 			Table t=createTable(name);
 			t.addColumn("PROCEDURE_"+META_CAT,Column.VARCHAR);

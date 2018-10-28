@@ -356,14 +356,14 @@ public class HecataeusDatabase {
 		return dependencies;
 	}
 	
-	public void finalize() {
+	public void finalize() throws Exception {
 		try {
 			if (!this._connection.isClosed()){
 				this._connection.close();
 				this._connection=null;
 			}
 		}catch( Exception e ) {
-			e.printStackTrace();        
+			throw(e);
 		}
 	}
 	

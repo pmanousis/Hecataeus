@@ -5,6 +5,7 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import edu.ntua.dblab.hecataeus.hsql.Channel;
@@ -89,7 +90,11 @@ public class Variable extends Statement{
 			Tokenizer selTokenizer=new Tokenizer(finalSelect);
 			parser=new Parser(d,selTokenizer,channel);
 			
-			setSelect(parser.parseSelect());
+			try {
+				setSelect(parser.parseSelect());
+			} catch (IOException e) {
+				throw(new SQLException(e.getMessage()));
+			}
 		}
 		else {
 			//get name
@@ -115,7 +120,11 @@ public class Variable extends Statement{
 			Tokenizer selTokenizer=new Tokenizer(finalSelect);
 			parser=new Parser(d,selTokenizer,channel);
 			
-			setSelect(parser.parseSelect());
+			try {
+				setSelect(parser.parseSelect());
+			} catch (IOException e) {
+				throw(new SQLException(e.getMessage()));
+			}
 		}
 	}
 }

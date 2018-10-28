@@ -17,6 +17,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -308,7 +309,7 @@ public class Table {
 	Object[] getNewRow() {
 		return new Object[iColumnCount];
 	}
-	void moveData(Table from) throws SQLException {
+	void moveData(Table from) throws SQLException, IOException {
 		Index index=from.getPrimaryIndex();
 		Node n=index.first();
 		while(n!=null) {
@@ -335,7 +336,7 @@ public class Table {
 			}
 		}
 	}
-	void insert(Result result,Channel c) throws SQLException {
+	void insert(Result result,Channel c) throws SQLException, IOException {
 		// if violation of constraints can occur, insert must be rolled back
 		// outside of this function!
 		Record r=result.rRoot;
@@ -349,7 +350,7 @@ public class Table {
 			r=r.next;
 		}
 	}
-	void insert(Object row[],Channel c) throws SQLException {
+	void insert(Object row[],Channel c) throws SQLException, IOException {
 		if(dDatabase.isReferentialIntegrity()) {
 			for(int i=0;i<iConstraintCount;i++) {
 				((Constraint)vConstraint.elementAt(i)).checkInsert(row);
@@ -357,10 +358,10 @@ public class Table {
 		}
 		insertNoCheck(row,c);
 	}
-	void insertNoCheck(Object row[],Channel c) throws SQLException {
+	void insertNoCheck(Object row[],Channel c) throws SQLException, IOException {
 		insertNoCheck(row,c,true);
 	}
-	void insertNoCheck(Object row[],Channel c,boolean log) throws SQLException {
+	void insertNoCheck(Object row[],Channel c,boolean log) throws SQLException, IOException {
 		if(iIdentityColumn!=-1) {
 			Integer id=(Integer)row[iIdentityColumn];
 			if(id==null) {
@@ -403,7 +404,7 @@ public class Table {
 			lLog.write(c,getInsertStatement(row));
 		}
 	}
-	void delete(Object row[],Channel c) throws SQLException {
+	void delete(Object row[],Channel c) throws SQLException, IOException {
 		if(dDatabase.isReferentialIntegrity()) {
 			for(int i=0;i<iConstraintCount;i++) {
 				((Constraint)vConstraint.elementAt(i)).checkDelete(row);
@@ -411,10 +412,10 @@ public class Table {
 		}
 		deleteNoCheck(row,c);
 	}
-	void deleteNoCheck(Object row[],Channel c) throws SQLException {
+	void deleteNoCheck(Object row[],Channel c) throws SQLException, IOException {
 		deleteNoCheck(row,c,true);
 	}
-	void deleteNoCheck(Object row[],Channel c,boolean log) throws SQLException {
+	void deleteNoCheck(Object row[],Channel c,boolean log) throws SQLException, IOException {
 		for(int i=1;i<iIndexCount;i++) {
 			getIndex(i).delete(row,false);
 		}

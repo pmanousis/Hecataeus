@@ -5,6 +5,7 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -93,6 +94,10 @@ public class Assignment extends Statement{
 		
 		tokenizer=new Tokenizer(eqSelect);System.out.println("fetch:"+eqSelect);
 		parser=new Parser(d,tokenizer,channel);
-		setSelect(parser.parseSelect());
+		try {
+			setSelect(parser.parseSelect());
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
+		}
 	}
 }

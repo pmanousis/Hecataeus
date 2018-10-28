@@ -108,9 +108,8 @@ public class HecataeusGraphCreator{
 				addConstraintNode(tTable, c, fileName);
 			}
 		}
-		catch(Exception e)
-		{    //no constraints have been created    
-			System.out.println(e.getMessage().toString());                   
+		catch(Exception e) {    //no constraints have been created    
+			throw(e);
 		}                
 	}
 
@@ -446,8 +445,7 @@ public class HecataeusGraphCreator{
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void createQuery(EvolutionNode u, Select sSelect, boolean nested, File fileName)
-		throws SQLException {
+	private void createQuery(EvolutionNode u, Select sSelect, boolean nested, File fileName) throws Exception {
 		Expression expression;
 		String GroupByLabel = null;
 		// TableFilter ta
@@ -680,9 +678,7 @@ public class HecataeusGraphCreator{
 		}
 	}
 	
-	private EvolutionNode add_expression(Expression expr,
-		EvolutionNode head,
-		File fileName) {
+	private EvolutionNode add_expression(Expression expr, EvolutionNode head, File fileName) {
 		EvolutionNode u = null;
 		switch (expr.getType()){
 		case Expression.NOT:

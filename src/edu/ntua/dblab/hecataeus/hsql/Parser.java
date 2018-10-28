@@ -17,6 +17,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -35,7 +36,7 @@ public class Parser {
 		tTokenizer=t;
 		cChannel=channel;
 	}
-	Result processSelect() throws SQLException {
+	Result processSelect() throws SQLException, IOException {
 		Select select=parseSelect();
 		if(select.sIntoTable==null) {
 			return select.getResult(cChannel.getMaxRows());
@@ -53,7 +54,7 @@ public class Parser {
 			return r;
 		}
 	}
-	Result processCall() throws SQLException {
+	Result processCall() throws SQLException, IOException {
 		Expression e=parseExpression();
 		e.resolve(null);
 		int type=e.getDataType();
@@ -68,7 +69,7 @@ public class Parser {
 		r.add(row);
 		return r;
 	}
-	Result processUpdate() throws SQLException {
+	Result processUpdate() throws SQLException, IOException {
 		String token=tTokenizer.getString();
 		cChannel.checkReadWrite();
 		cChannel.check(token,Access.UPDATE);
@@ -150,7 +151,7 @@ public class Parser {
 		r.iUpdateCount=count;
 		return r;
 	}
-	Result processDelete() throws SQLException {
+	Result processDelete() throws SQLException, IOException {
 		tTokenizer.getThis("FROM");
 		String token=tTokenizer.getString();
 		cChannel.checkReadWrite();
@@ -185,7 +186,7 @@ public class Parser {
 		r.iUpdateCount=count;
 		return r;
 	}
-	Result processInsert() throws SQLException {
+	Result processInsert() throws SQLException, IOException {
 		tTokenizer.getThis("INTO");
 		String token=tTokenizer.getString();
 		cChannel.checkReadWrite();
@@ -284,7 +285,7 @@ public class Parser {
 		return r;
 	}
 
-	public Select parseSelect() throws SQLException {
+	public Select parseSelect() throws SQLException, IOException {
 		Select select=new Select();
 		String token=tTokenizer.getString();
 		if(token.equals("DISTINCT")) {
@@ -459,7 +460,7 @@ public class Parser {
 		}
 		return select;
 	}
-	private TableFilter parseTableFilter(boolean outerjoin) throws SQLException {
+	private TableFilter parseTableFilter(boolean outerjoin) throws SQLException, IOException {
 		String token=tTokenizer.getString();
 		Table t=null;
 		if(token.equals("(")) {
@@ -497,12 +498,12 @@ public class Parser {
 			return new Expression(Expression.AND,e1,e2);
 		}
 	}
-	private Object getValue(int type) throws SQLException {
+	private Object getValue(int type) throws SQLException, IOException {
 		Expression r=parseExpression();
 		r.resolve(null);
 		return r.getValue(type);
 	}
-	private Expression parseExpression() throws SQLException {
+	private Expression parseExpression() throws SQLException, IOException {
 		read();
 		// todo: really this should be in readTerm
 		// but then grouping is much more complex
@@ -521,7 +522,7 @@ public class Parser {
 		tTokenizer.back();
 		return r;
 	}
-	private Expression readOr() throws SQLException {
+	private Expression readOr() throws SQLException, IOException {
 		Expression r=readAnd();
 		while(iToken==Expression.OR) {
 			int type=iToken;
@@ -531,7 +532,7 @@ public class Parser {
 		}
 		return r;
 	}
-	private Expression readAnd() throws SQLException {
+	private Expression readAnd() throws SQLException, IOException {
 		Expression r=readCondition();
 		while(iToken==Expression.AND) {
 			int type=iToken;
@@ -541,7 +542,7 @@ public class Parser {
 		}
 		return r;
 	}
-	private Expression readCondition() throws SQLException {
+	private Expression readCondition() throws SQLException, IOException {
 		if(iToken==Expression.NOT) {
 			int type=iToken;
 			read();
@@ -625,7 +626,7 @@ public class Parser {
 		Trace.check(iToken==type,Trace.UNEXPECTED_TOKEN);
 		read();
 	}
-	private Expression readConcat() throws SQLException {
+	private Expression readConcat() throws SQLException, IOException {
 		Expression r=readSum();
 		while(iToken==Expression.STRINGCONCAT) {
 			int type=Expression.CONCAT;
@@ -635,7 +636,7 @@ public class Parser {
 		}
 		return r;
 	}
-	private Expression readSum() throws SQLException {
+	private Expression readSum() throws SQLException, IOException {
 		Expression r=readFactor();
 		while(true) {
 			int type;
@@ -652,7 +653,7 @@ public class Parser {
 		}
 		return r;
 	}
-	private Expression readFactor() throws SQLException {
+	private Expression readFactor() throws SQLException, IOException {
 		Expression r=readTerm();
 		while(iToken==Expression.MULTIPLY || iToken==Expression.DIVIDE) {
 			int type=iToken;
@@ -662,7 +663,7 @@ public class Parser {
 		}
 		return r;
 	}
-	private Expression readTerm() throws SQLException {
+	private Expression readTerm() throws SQLException, IOException {
 		Expression r=null;
 		if(iToken==Expression.COLUMN) {
 			String name=sToken;

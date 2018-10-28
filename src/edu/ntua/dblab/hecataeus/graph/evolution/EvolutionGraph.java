@@ -150,19 +150,6 @@ public class EvolutionGraph extends DirectedSparseGraph<EvolutionNode, Evolution
 		}
 		return null;
 	}
-	
-	/**
-	 * get views by name, for more than one occurrences, used in view suggestion
-	 **/
-	public List<EvolutionNode> findViewsByName(String name) {
-		List<EvolutionNode> toReturn = new ArrayList<EvolutionNode>();
-		for (EvolutionNode u : this.getVertices(NodeType.NODE_TYPE_VIEW)) {
-			if (u.getName().startsWith(name)) {
-				toReturn.add(u);
-			}
-		}
-		return(toReturn);
-	}
 
 	/**
 	 * get node by its name and type category, for more than one occurrences,

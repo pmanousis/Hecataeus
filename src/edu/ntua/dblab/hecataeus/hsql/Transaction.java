@@ -17,6 +17,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
+import java.io.IOException;
 import java.sql.SQLException;
 
 class Transaction {
@@ -28,7 +29,7 @@ private Object oRow[];
     tTable=table;
     oRow=row;
   }
-  void rollback() throws SQLException {
+  void rollback() throws SQLException, IOException {
     if(bDelete) {
       tTable.insertNoCheck(oRow,null,false);
     } else {

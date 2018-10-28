@@ -5,6 +5,7 @@
 
 package edu.ntua.dblab.hecataeus.parser;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -174,7 +175,12 @@ public class PlainSQL extends Statement{
 			//get SELECT
 			tokenizer.getString();
 			Parser parser=new Parser(d,tokenizer,channel);
-			Select sSelect=parser.parseSelect();
+			Select sSelect;
+			try {
+				sSelect = parser.parseSelect();
+			} catch (IOException e1) {
+				throw(new SQLException(e1.getMessage()));
+			}
 			setSelect(sSelect);
 			setName("QUERY_"+HecataeusSQLParser.globalCounter);
 			
@@ -191,7 +197,11 @@ public class PlainSQL extends Statement{
 			
 			tokenizer=new Tokenizer(varSel);System.out.println("edw:"+varSel);
 			parser=new Parser(d,tokenizer,channel);
-			sSelect=parser.parseSelect();
+			try {
+				sSelect=parser.parseSelect();
+			} catch (IOException e) {
+				throw(new SQLException(e.getMessage()));
+			}
 			assig.setSelect(sSelect);
 			
 			parent.setAssignment(assig);
@@ -223,7 +233,11 @@ public class PlainSQL extends Statement{
 						
 			//get SELECT
 			while (!tokenizer.getString().equals("SELECT")){}			
-			setSelect(parser.parseSelect());
+			try {
+				setSelect(parser.parseSelect());
+			} catch (IOException e) {
+				throw(new SQLException(e.getMessage()));
+			}
 		}		
 	}
 	
@@ -471,7 +485,11 @@ public class PlainSQL extends Statement{
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
 		parser=new Parser(d,selTokenizer,channel);
 
-		sSelect=parser.parseSelect();
+		try {
+			sSelect=parser.parseSelect();
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
+		}
 		
 		setSelect(sSelect);
 	}
@@ -529,7 +547,11 @@ public class PlainSQL extends Statement{
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
 		parser=new Parser(d,selTokenizer,channel);
 
-		sSelect=parser.parseSelect();
+		try {
+			sSelect=parser.parseSelect();
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
+		}
 		
 	
 		setSelect(sSelect);		
@@ -642,7 +664,11 @@ public class PlainSQL extends Statement{
 		Tokenizer selTokenizer=new Tokenizer(finalSelect);
 		parser=new Parser(d,selTokenizer,channel);
 
-		sSelect=parser.parseSelect();
+		try {
+			sSelect=parser.parseSelect();
+		} catch (IOException e) {
+			throw(new SQLException(e.getMessage()));
+		}
 		
 	
 		setSelect(sSelect);

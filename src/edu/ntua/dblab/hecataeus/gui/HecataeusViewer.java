@@ -1026,14 +1026,23 @@ public class HecataeusViewer {
 									}
 								}
 							}
-							if(inputs.contains(inputNode.getName().indexOf("_IN_") + 4) == false) {
-								inputs.add(inputNode.getName().substring(inputNode.getName().indexOf("_IN_") + 4));
-							}
-							else { // TODO: Add code for aliases
-								System.err.println("1036: Query that needs alias handling (not yet implemented) " + nd.getSQLDefinition());
-								continue;
+						}
+						boolean selfJoin = false;
+						for(EvolutionEdge edge: nd.getOutEdges()) {
+							if(edge.getType() == EdgeType.EDGE_TYPE_USES) {
+								if(inputs.contains(edge.getToNode().getName()) == false) {
+									inputs.add(edge.getToNode().getName());
+								}
+								else { // TODO: Add code for aliases in self joins?
+									System.err.println("1037: Query that needs self join handling (not yet implemented) " + nd.getSQLDefinition());
+									selfJoin = true;
+								}
 							}
 						}
+						if(selfJoin == true) {
+							continue;
+						}
+						
 						inputs.sort(String.CASE_INSENSITIVE_ORDER);
 						if(onConditions.isEmpty() == false) {
 							String tmpinpu = "V_";
@@ -1044,9 +1053,11 @@ public class HecataeusViewer {
 							String viewDefinition = "CREATE VIEW " + tmpinpu + " AS SELECT ";
 							for(String tn: inputs) {
 								EvolutionNode provider = evolutionGraph.findVertexByName(tn + "_SCHEMA");	// here we find the attributes and their names so as to concatenate them, first we go to the first table
-								for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
-									if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
-										viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
+								if(provider != null) {
+									for(EvolutionEdge attributeEdge : provider.getOutEdges()) {
+										if(attributeEdge.getType() == EdgeType.EDGE_TYPE_SCHEMA) {
+											viewDefinition += tn + "." + attributeEdge.getToNode().getName() + " " + tn + "_" + attributeEdge.getToNode().getName() + ", ";
+										}
 									}
 								}
 							}
@@ -1062,33 +1073,12 @@ public class HecataeusViewer {
 							}
 							viewDefinition = viewDefinition.substring(0, viewDefinition.length() - 5);	// removing last " AND "
 							viewDefinition = viewDefinition.replace("  ", " ").trim();
-							List<EvolutionNode> viewsWithName = evolutionGraph.findViewsByName(tmpinpu);
 							
-							String maxViewName = "";
+							String viewname = tmpinpu;
+							if((view = evolutionGraph.findVertexByName(tmpinpu)) != null) {
+								viewname += nd.getName();
+							}
 							
-							if(viewsWithName.size() == 0) {
-								view = null;
-							}
-							else if(viewsWithName.size() == 1) {
-								view = viewsWithName.get(0);
-								maxViewName = view.getName();
-							}
-							else {
-								for(EvolutionNode v: viewsWithName) {
-									view = v;
-									if(view.getName().length() > maxViewName.length()) {
-										maxViewName = view.getName();
-									}
-									List<String> listString1 = new ArrayList<String>(Arrays.asList(view.getSQLDefinition().substring(view.getSQLDefinition().indexOf(" AS SELECT ")).split(" ")));
-									List<String> listString2 = new ArrayList<String>(Arrays.asList(viewDefinition.substring(viewDefinition.indexOf(" AS SELECT ")).split(" ")));
-									if(listString1.size() == listString2.size()) {
-										listString1.removeAll(listString2);
-							            if(listString1.isEmpty()) {
-											break;
-							            }
-							        }
-								}
-							}
 							if(view != null) {
 								List<String> listString1 = new ArrayList<String>(Arrays.asList(view.getSQLDefinition().substring(view.getSQLDefinition().indexOf(" AS SELECT ")).split(" ")));
 								List<String> listString2 = new ArrayList<String>(Arrays.asList(viewDefinition.substring(viewDefinition.indexOf(" AS SELECT ")).split(" ")));
@@ -1098,7 +1088,7 @@ public class HecataeusViewer {
 									viewDefinition = "";
 								}
 								else {
-									viewDefinition = "CREATE VIEW " + maxViewName + "_" + viewDefinition.substring(viewDefinition.indexOf(" AS SELECT "));
+									viewDefinition = "CREATE VIEW " + viewname + viewDefinition.substring(viewDefinition.indexOf(" AS SELECT "));
 									view = null;
 								}
 							}
@@ -1138,9 +1128,20 @@ public class HecataeusViewer {
 							}
 							catch(Exception ex) {
 								System.err.println("1138: " + nd.getSQLDefinition() + " " + view.getSQLDefinition() + " " + ex.getMessage());
+								continue;
 							}
 						}
 					}
+				}// cleaning up unused views (there should not be existing but I can't find where the code throws exception, so as to remove right away the view)
+				List<EvolutionNode> viewsToRemove = new ArrayList<EvolutionNode>();
+				List<EvolutionNode> views = evolutionGraph.getVertices(NodeType.NODE_TYPE_VIEW);
+				for(EvolutionNode v: views) {
+					if(v.getInEdges().size() == 1	/* filename edge is always present */) {
+						viewsToRemove.add(v);
+					}
+				}
+				for(EvolutionNode v: viewsToRemove) {
+					evolutionGraph.removeVertex(v);
 				}
 				HecataeusViewer.this.setLayout(VisualLayoutType.ConcentricCircleLayout, VisualLayoutType.ConcentricCircleLayout);
 			}

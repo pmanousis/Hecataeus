@@ -18,6 +18,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -73,7 +74,7 @@ public class Database {
 		return bShutdown;
 	}
 	synchronized Channel connect(String username,String password)
-	throws SQLException {
+	throws SQLException, IOException {
 		User user=aAccess.getUser(username.toUpperCase(),password.toUpperCase());
 		int size=cChannel.size(),id=size;
 		for(int i=0;i<size;i++) {
@@ -217,7 +218,7 @@ public class Database {
 	Log getLog() {
 		return lLog;
 	}
-	public Table getTable(String name,Channel channel) throws SQLException {
+	public Table getTable(String name,Channel channel) throws SQLException, IOException {
 		Table t=null;
 		for(int i=0;i<tTable.size();i++) {
 			t=(Table)tTable.elementAt(i);
@@ -250,7 +251,7 @@ public class Database {
 	}
 
 	private Result processScript(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		String sToken=c.getString();
 		if(c.wasValue()) {
 			sToken=(String)c.getAsValue();
@@ -263,7 +264,7 @@ public class Database {
 		}
 	}
 	private Result processCreate(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		channel.checkReadWrite();
 		channel.checkAdmin();
 		String sToken=c.getString();
@@ -330,7 +331,7 @@ public class Database {
 		return col;
 	}
 	private void createIndex(Channel channel,Table t,int col[],
-			String name,boolean unique) throws SQLException {
+			String name,boolean unique) throws SQLException, IOException {
 		channel.commit();
 		if(t.isEmpty()) {
 			t.createIndex(col,name,unique);
@@ -344,7 +345,7 @@ public class Database {
 	}
 
 	private void addForeignKeyOn(Tokenizer c,Channel channel,String name,Table t)
-	throws SQLException {
+	throws SQLException, IOException {
 		int col[]=processColumnList(c,t);
 		c.getThis("REFERENCES");
 
@@ -377,27 +378,28 @@ public class Database {
 	 * gpapas@21112007 EDIT
 	 * Method declaration
 	 * Explicitly handle primary key constraints
+	 * @throws IOException 
 	 */
 	private void addPrimaryKeyConstraintOn(Tokenizer c,Channel channel,String name,
-			Table t) throws SQLException {
+			Table t) throws SQLException, IOException {
 		int col[]=processColumnList(c,t);
 		createIndex(channel,t,col,name,true);
 		t.addConstraint(new Constraint(Constraint.PRIMARY_KEY,t,col));
 	}
 
 	private void addUniqueConstraintOn(Tokenizer c,Channel channel,String name,
-			Table t) throws SQLException {
+			Table t) throws SQLException, IOException {
 		int col[]=processColumnList(c,t);
 		createIndex(channel,t,col,name,true);
 		t.addConstraint(new Constraint(Constraint.UNIQUE,t,col));
 	}
 	private void addIndexOn(Tokenizer c,Channel channel,String name,
-			Table t,boolean unique) throws SQLException {
+			Table t,boolean unique) throws SQLException, IOException {
 		int col[]=processColumnList(c,t);
 		createIndex(channel,t,col,name,unique);
 	}
 	private void processCreateTable(Tokenizer c,Channel channel,
-			boolean cached) throws SQLException {
+			boolean cached) throws SQLException, IOException {
 		Table t;
 		String sToken=c.getName();
 		if(cached && lLog!=null) {
@@ -516,7 +518,7 @@ public class Database {
 		linkTable(t);
 	}
 	private Result processDrop(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		channel.checkReadWrite();
 		channel.checkAdmin();
 		String sToken=c.getString();
@@ -545,7 +547,7 @@ public class Database {
 		return new Result();
 	}
 	private Result processGrantOrRevoke(Tokenizer c,Channel channel,
-			boolean grant) throws SQLException {
+			boolean grant) throws SQLException, IOException {
 		channel.checkReadWrite();
 		channel.checkAdmin();
 		int right=0;
@@ -590,7 +592,7 @@ public class Database {
 		return new Result();
 	}
 	private Result processDisconnect(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		if(!channel.isClosed()) {
 			channel.disconnect();
 			cChannel.setElementAt(null,channel.getId());
@@ -598,7 +600,7 @@ public class Database {
 		return new Result();
 	}
 	private Result processSet(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		String sToken=c.getString();
 		if(sToken.equals("PASSWORD")) {
 			channel.checkReadWrite();
@@ -662,7 +664,7 @@ public class Database {
 		return new Result();
 	}
 	private Result processRollback(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		String sToken=c.getString();
 		if(!sToken.equals("WORK")) {
 			c.back();
@@ -670,14 +672,15 @@ public class Database {
 		channel.rollback();
 		return new Result();
 	}
-	public void finalize() {
+	public void finalize() throws SQLException, IOException {
 		try {
 			close(0);
 		} catch(SQLException e) {
 			// it's too late now
+			throw(e);
 		}
 	}
-	private void close(int type) throws SQLException {
+	private void close(int type) throws SQLException, IOException {
 		if(lLog==null) {
 			return;
 		}
@@ -693,7 +696,7 @@ public class Database {
 		bShutdown=true;
 	}
 	private Result processShutdown(Tokenizer c,Channel channel)
-	throws SQLException {
+	throws SQLException, IOException {
 		channel.checkAdmin();
 		// don't disconnect system user; need it to save database
 		for(int i=1;i<cChannel.size();i++) {
@@ -715,7 +718,7 @@ public class Database {
 		processDisconnect(c,channel);
 		return new Result();
 	}
-	private Result processCheckpoint(Channel channel) throws SQLException {
+	private Result processCheckpoint(Channel channel) throws SQLException, IOException {
 		channel.checkAdmin();
 		if(lLog!=null) {
 			lLog.checkpoint();

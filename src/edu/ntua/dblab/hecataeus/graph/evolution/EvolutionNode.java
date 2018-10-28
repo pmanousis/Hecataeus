@@ -194,7 +194,7 @@ public class EvolutionNode {
 	public void setLine(int line) {
 		this.line = line;
 	}
-
+	
 	public EvolutionNode getParentNode() {
 		for (EvolutionEdge e : this.getInEdges()) {
 			//if node is attribute then 

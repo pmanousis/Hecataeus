@@ -17,6 +17,7 @@ This software consists of voluntary contributions made by many individuals on be
  */
 
 package edu.ntua.dblab.hecataeus.hsql;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -34,7 +35,7 @@ public class Channel {
 	private boolean bClosed;
 	private int iId;
 
-	public void finalize() throws SQLException {
+	public void finalize() throws SQLException, IOException {
 		disconnect();
 	}
 	public Channel(Channel c,int id) {
@@ -51,7 +52,7 @@ public class Channel {
 	int getId() {
 		return iId;
 	}
-	void disconnect() throws SQLException {
+	void disconnect() throws SQLException, IOException {
 		if(bClosed) {
 			return;
 		}
@@ -112,7 +113,7 @@ public class Channel {
 	void commit() throws SQLException {
 		tTransaction.removeAllElements();
 	}
-	void rollback() throws SQLException {
+	void rollback() throws SQLException, IOException {
 		int i=tTransaction.size()-1;
 		while(i>=0) {
 			Transaction t=(Transaction)tTransaction.elementAt(i);
@@ -129,7 +130,7 @@ public class Channel {
 		iNestedOldTransIndex=tTransaction.size();
 		bNestedTransaction=true;
 	}
-	void endNestedTransaction(boolean rollback) throws SQLException {
+	void endNestedTransaction(boolean rollback) throws SQLException, IOException {
 		Trace.verify(bNestedTransaction,"endNestedTransaction");
 		int i=tTransaction.size()-1;
 		if(rollback) {
